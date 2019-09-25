@@ -1,0 +1,22 @@
+.navbar {
+    background-color: grey;  
+    font-family: verdana;
+    font-weight: bold
+}
+
+a {
+    font-family: verdana;
+    color: white;
+}
+
+h1 {
+    color: red;
+    font-family: verdana;
+    font-size: 25px;
+}
+
+h2 {
+    color: red;
+    font-family: verdana;
+    font-size: 18px;
+}

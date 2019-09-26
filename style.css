@@ -6,6 +6,11 @@
     padding: 20px;
 }
 
+header {
+    border: 1px solid blue;
+    padding: 20px;
+}
+
 a {
     font-family: verdana;
     color: white;

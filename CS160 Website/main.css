@@ -33,20 +33,6 @@ ul {
   
 /* BODY */
 
-.enter {
-    font-family: Arial, Helvetica, sans-serif;
-    color: white;
-    border: 2px solid #5D5C61;
-    padding: 15px;
-    text-decoration: none;
-}
-
-a:hover {
-    transition: 550ms;
-    color: white;
-    background-color: grey;
-}
-
 h1 {
     color: white;
     font-family: Arial, Helvetica, sans-serif;
@@ -58,28 +44,32 @@ h1 {
 h2 {
     color: white;
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 18px;
-    text-align: center
+    font-size: 25px;
+    letter-spacing: 2px;
+    padding-left: 20px;
 }
 
 /* ASSIGNMENTS */
 
-.assignments {
+iframe {
+    padding-left: 40px;
+}
+
+h3 {
+    color: white;
+    font-size: 20px;
     font-family: Arial, Helvetica, sans-serif;
+    padding-left: 20px;
 }
 
-.assignments h1 {
+h3 a {
+    text-decoration: none;
     color: white;
+    font-size: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    padding-left: 20px;
 }
 
-.assignments h2 {
-    color: white;
-}
-
-.assignments h3 {
-    color: white;
-}
-
-.assignments h4 {
+h4 {
     color: white;
 }

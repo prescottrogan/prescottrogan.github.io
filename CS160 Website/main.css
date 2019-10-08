@@ -65,16 +65,21 @@ h2 {
     padding-left: 80px;
 }
 
-/* ASSIGNMENTS */
-.container {
+/* CONTAINER_01 */
+.container_01 {
     background-color: rgb(199, 199, 199);
     height: 175px;
     border-bottom: 10px solid #333;
 }
 
-.container p {
+.container_01 p {
     padding-top: 30px;
     color: black;
+}
+
+/* CONTAINER_02 */
+.container_02 {
+    border: solid 2px white;
 }
 
 p a {

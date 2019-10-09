@@ -38,7 +38,6 @@ ul {
 /* BODY */
 
 p {
-    font-size: 65px;
     font-weight: 100;
     color: white;
     margin: 0;
@@ -62,7 +61,6 @@ h2 {
     font-size: 25px;
     font-weight: 200;
     letter-spacing: 2px;
-    padding-left: 80px;
 }
 
 /* CONTAINER_01 */
@@ -75,29 +73,30 @@ h2 {
 .container_01 p {
     padding-top: 30px;
     color: black;
+    font-size: 65px;
 }
 
 /* CONTAINER_02 */
-.container_02 {
-    border: solid 2px white;
-}
 
 p a {
     text-decoration: none;
     font-family: Arial, Helvetica, sans-serif;
-    font-size: 20px;
     color: white;
-    padding-left: 50px;
+    font-size: 25px;
+    padding: 50px;
 }
 
 p a:hover {
     color: lightgray;
-    padding-left: 50px;
 }
 
-iframe {
-    padding-left: 40px;
+/* CONTAINER_SCRATCH */
+
+.container_scratch {
+    padding-left: 75px;
 }
+
+
 
 h3 {
     color: white;

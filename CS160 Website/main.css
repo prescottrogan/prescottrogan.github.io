@@ -1,5 +1,5 @@
 body {
-    background-color: #222629;
+    background-color: rgb(54, 54, 54);
     margin: 0px;
     padding: 0px;
 }
@@ -26,16 +26,20 @@ ul {
     text-decoration: none;
     font-family: "Segoe UI","Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";
     font-size: 18px;
-    font-weight: 300;
+    font-weight: 400;
     letter-spacing: 2px;
   }
   
   li a:hover {
-    background-color: #fff;
+    background-color: rgb(233, 233, 233);
     color: #222629;
   }
   
 /* BODY */
+
+.container_main {
+    padding-left: 75px;
+}
 
 p {
     font-weight: 100;
@@ -51,7 +55,6 @@ h1 {
     font-weight: 500;
     font-size: 35px;
     text-align: center;
-    padding-left: 50px;
     letter-spacing: 4px;
 }
 
@@ -65,9 +68,10 @@ h2 {
 
 /* CONTAINER_01 */
 .container_01 {
-    background-color: rgb(199, 199, 199);
+    background-color: rgb(233, 233, 233);
     height: 175px;
-    border-bottom: 10px solid #333;
+    border-top: 5px solid rgb(32, 32, 32);
+    border-bottom: 5px solid rgb(32, 32, 32);
 }
 
 .container_01 p {
@@ -78,25 +82,40 @@ h2 {
 
 /* CONTAINER_02 */
 
-p a {
+.container_02 p a {
     text-decoration: none;
     font-family: Arial, Helvetica, sans-serif;
     color: white;
     font-size: 25px;
-    padding: 50px;
-}
-
-p a:hover {
-    color: lightgray;
+    font-weight: 500;
 }
 
 /* CONTAINER_SCRATCH */
 
-.container_scratch {
-    padding-left: 75px;
+
+.container_scratch ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: rgb(54, 54, 54);
 }
 
-
+  .container_scratch li a {
+    display: block;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 18px;
+    font-weight: 500;
+    letter-spacing: 1px;
+}
+  .container_scratch li a:hover {
+    background-color: rgb(233, 233, 233);
+    color: #222629;
+}
+  
 
 h3 {
     color: white;

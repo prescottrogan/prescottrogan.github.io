@@ -66,29 +66,51 @@ h2 {
     letter-spacing: 2px;
 }
 
-/* CONTAINER_01 */
-.container_01 {
+/* CONTAINER_title */
+.container_title {
     background-color: rgb(233, 233, 233);
     height: 175px;
     border-top: 5px solid rgb(32, 32, 32);
     border-bottom: 5px solid rgb(32, 32, 32);
 }
 
-.container_01 p {
+.container_title p {
     padding-top: 30px;
     color: black;
     font-size: 65px;
 }
 
-/* CONTAINER_02 */
+/* CONTAINER_01 */
 
-.container_02 p a {
+.container_01 p a {
     text-decoration: none;
     font-family: Arial, Helvetica, sans-serif;
     color: white;
     font-size: 25px;
     font-weight: 500;
 }
+
+
+
+
+
+/* container_02 */
+
+.container_02 a {
+    border: 2px solid white;
+    background-color: rgb(54, 54, 54);
+    color: white;
+    padding: 14px 28px;
+    font-size: 16px;
+    cursor: pointer;
+    font-family: Arial, Helvetica, sans-serif;
+    text-decoration: none;
+  }
+
+  .container_02 a:hover {
+    background: white;
+    color: black;
+  }
 
 /* CONTAINER_SCRATCH */
 

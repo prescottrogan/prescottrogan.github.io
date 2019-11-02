@@ -165,7 +165,11 @@ h4 {
 /* Footer */
 
 footer {
-  padding-top: 40px;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  text-align: center;
   border-top: 5px solid rgb(32, 32, 32);
   background-color: rgb(39, 39, 39);
 }

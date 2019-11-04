@@ -1,3 +1,33 @@
 body {
-    background-color: black;
+    background-color: rgb(54,54,54);
+}
+
+
+h1 {
+    font-size: 55px;
+    color: whitesmoke;
+    letter-spacing: 2px;
+    font-family: "Segoe UI","Helvetica Neue",Arial,"Noto Sans",sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol","Noto Color Emoji";;
+    font-weight: 300;
+    letter-spacing: 2px;
+}
+
+p {
+    font-size: 22px;
+    color: rgb(172, 172, 172);
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+p a {
+    color: rgb(192, 192, 192);
+    text-align: center;
+    padding: 25px;
+    background-color: rgb(32, 32, 32);
+    font-size: 35px;
+    transition: 0.3s;
+}
+
+p a:hover {
+    text-decoration: none;
+    background-color: rgb(54,54,54);
 }

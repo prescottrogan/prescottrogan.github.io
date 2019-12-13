@@ -7,25 +7,27 @@ function centerCanvas() {
 function setup() {
   cnv = createCanvas(800, 400);
   centerCanvas();
-  background(32, 32, 32);
+  noFill();
+  stroke(255);
 }
 
 function windowResized() {
   centerCanvas();
 }
 
-function randomColor() {
-  var a = random(0, 255);
-  var b = random(0, 255);
-  var c = random(0, 255);
-  background(a, b, c);
-}
-
 function draw() {
-  var d = random(0, 255);
-  var e = random(0, 255);
-  var f = random(0, 255);
-  fill(d,e,f);
-  noStroke();
-  ellipse(mouseX, mouseY, 25, 25);
+  background(0);
+  fill(60,40,150)
+  for (let i = 0; i < 200; i += 20) {
+    bezier(
+      mouseX - i / 2.0,
+      40 + i,
+      410,
+      20,
+      440,
+      300,
+      240 - i / 16.0,
+      300 + i / 8.0
+    );
+  }
 }

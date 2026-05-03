@@ -740,7 +740,6 @@ async function renderWorkout() {
 // ══════════════════════════════════════════════════════════════════════════
 async function renderInfo() {
   const view = document.getElementById('info-view');
-  editing.info = null; editing.folder = null;
 
   if (currentFolder === null) {
     await renderFolderList(view);
@@ -913,8 +912,8 @@ async function renderFolderContents(view, folderId, title) {
 }
 
 // Folder CRUD
-function openFolder(id)    { currentFolder = id; renderInfo(); }
-function backToFolders()   { currentFolder = null; renderInfo(); }
+function openFolder(id)    { currentFolder = id; editing.info = null; editing.folder = null; renderInfo(); }
+function backToFolders()   { currentFolder = null; editing.info = null; editing.folder = null; renderInfo(); }
 function startNewFolder()  { editing.folder = '__new__'; renderInfo(); }
 function startEditFolder(id) { editing.folder = id; renderInfo(); }
 

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Tracker</title>
+<title>Metric</title>
 <style>
   *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -66,8 +66,9 @@
     background: var(--surface); border: 1px solid var(--border);
     border-radius: 14px; padding: 36px 28px; width: 100%; max-width: 380px;
   }
-  .auth-logo { font-size: 1.75rem; font-weight: 700; letter-spacing: -.02em; margin-bottom: 4px; }
-  .auth-sub  { color: var(--muted); font-size: .9rem; margin-bottom: 24px; }
+  .auth-logo-wrap { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 28px; }
+  .auth-brand { font-size: 1.7rem; font-weight: 800; letter-spacing: -.05em; color: var(--text); }
+  .auth-sub  { color: var(--muted); font-size: .85rem; margin-top: 2px; }
   .auth-input {
     display: block; width: 100%; background: var(--bg);
     border: 1px solid var(--border); border-radius: 8px;
@@ -85,7 +86,8 @@
     border-bottom: 1px solid var(--border);
     padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; z-index: 50;
   }
-  header h1 { font-size: 1.1rem; font-weight: 600; letter-spacing: -.01em; }
+  .logo-mark { display: flex; align-items: center; gap: 8px; }
+  .logo-mark span { font-size: 1.05rem; font-weight: 800; letter-spacing: -.04em; }
   .header-right { display: flex; align-items: center; gap: 10px; }
   #date-display { color: var(--muted); font-size: .78rem; }
   .signout-btn {
@@ -333,8 +335,15 @@
 <!-- ══ AUTH ══════════════════════════════════════════ -->
 <div id="auth-screen" style="display:none">
   <div class="auth-box">
-    <div class="auth-logo">Tracker</div>
-    <div class="auth-sub">Sign in to sync across all your devices</div>
+    <div class="auth-logo-wrap">
+      <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="56" height="56" rx="14" fill="#4ade80"/>
+        <polyline points="8,41 17,27 26,32 38,17 49,11" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <circle cx="49" cy="11" r="3.5" fill="white"/>
+      </svg>
+      <div class="auth-brand">metric</div>
+      <div class="auth-sub">Sign in to sync across all your devices</div>
+    </div>
     <input class="auth-input" type="email"    id="auth-email"    placeholder="Email"               autocomplete="email">
     <input class="auth-input" type="password" id="auth-password" placeholder="Password (6+ chars)" autocomplete="current-password">
     <div class="auth-btns">
@@ -349,7 +358,14 @@
 <div id="app" style="display:none">
 
   <header>
-    <h1>Tracker</h1>
+    <div class="logo-mark">
+      <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="26" height="26" rx="7" fill="#4ade80"/>
+        <polyline points="3,19 8,12 13,15 18,8 23,5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+        <circle cx="23" cy="5" r="2" fill="white"/>
+      </svg>
+      <span>metric</span>
+    </div>
     <div class="header-right">
       <span id="date-display"></span>
       <button class="signout-btn" onclick="signOut()">Sign out</button>

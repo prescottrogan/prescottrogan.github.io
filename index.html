@@ -2,47 +2,73 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Tracker</title>
 <style>
-  * { box-sizing: border-box; margin: 0; padding: 0; }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   :root {
-    --bg: #0f0f0f;
-    --surface: #1a1a1a;
-    --border: #2a2a2a;
+    --bg: #0a0a0a;
+    --surface: #161616;
+    --surface-2: #1f1f1f;
+    --border: #262626;
+    --border-light: #333;
     --accent: #4ade80;
     --accent2: #60a5fa;
     --accent3: #f59e0b;
     --accent4: #a78bfa;
-    --text: #f0f0f0;
-    --muted: #888;
-    --danger: #f87171;
-    --radius: 10px;
+    --text: #f5f5f5;
+    --text-2: #d4d4d4;
+    --muted: #737373;
+    --danger: #ef4444;
+    --r: 10px;
   }
 
+  html, body { height: 100%; }
   body {
     background: var(--bg);
     color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-    min-height: 100vh;
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
     max-width: 640px;
     margin: 0 auto;
-    padding: 0 0 80px;
+    padding: 0 0 88px;
+    min-height: 100vh;
   }
 
+  svg { display: block; }
+  button { font-family: inherit; }
+
+  /* ── Loading bar ─────────────────────────────── */
   #loading-bar {
-    position: fixed;
-    top: 0; left: 0;
-    height: 3px;
-    width: 0%;
+    position: fixed; top: 0; left: 0;
+    height: 2px; width: 0%;
     background: var(--accent);
-    transition: width 0.3s ease, opacity 0.3s ease;
-    z-index: 9999;
-    opacity: 0;
+    transition: width .25s ease, opacity .3s ease;
+    z-index: 9999; opacity: 0;
   }
 
-  /* ── Auth ─────────────────────────────────────── */
+  /* ── Toast ───────────────────────────────────── */
+  #toast {
+    position: fixed;
+    top: 16px; left: 50%;
+    transform: translateX(-50%) translateY(-80px);
+    background: var(--surface-2);
+    border: 1px solid var(--border-light);
+    color: var(--text);
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    z-index: 9000;
+    transition: transform .25s ease;
+    max-width: 90%;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+  #toast.error { border-color: var(--danger); color: var(--danger); }
+  #toast.ok { border-color: var(--accent); }
+
+  /* ── Auth ───────────────────────────────────── */
   #auth-screen {
     min-height: 100vh;
     display: flex;
@@ -58,11 +84,15 @@
     width: 100%;
     max-width: 380px;
   }
-  .auth-logo { font-size: 2rem; font-weight: 800; letter-spacing: -1px; margin-bottom: 4px; }
-  .auth-sub { color: var(--muted); font-size: 0.9rem; margin-bottom: 28px; }
+  .auth-logo {
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -.02em;
+    margin-bottom: 4px;
+  }
+  .auth-sub { color: var(--muted); font-size: .9rem; margin-bottom: 24px; }
   .auth-input {
-    display: block;
-    width: 100%;
+    display: block; width: 100%;
     background: var(--bg);
     border: 1px solid var(--border);
     border-radius: 8px;
@@ -71,18 +101,23 @@
     font-size: 1rem;
     margin-bottom: 10px;
     outline: none;
-    transition: border-color 0.15s;
-    font-family: inherit;
+    transition: border-color .15s;
   }
   .auth-input:focus { border-color: var(--accent); }
   .auth-btns { display: flex; gap: 8px; margin-top: 6px; }
-  #auth-msg { font-size: 0.85rem; margin-top: 12px; line-height: 1.4; min-height: 18px; }
+  #auth-msg {
+    font-size: .85rem;
+    margin-top: 12px;
+    line-height: 1.4;
+    min-height: 18px;
+  }
 
-  /* ── Header ───────────────────────────────────── */
+  /* ── Header ─────────────────────────────────── */
   header {
-    position: sticky;
-    top: 0;
-    background: var(--bg);
+    position: sticky; top: 0;
+    background: rgba(10,10,10,0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
     padding: 14px 20px;
     display: flex;
@@ -90,22 +125,26 @@
     justify-content: space-between;
     z-index: 50;
   }
-  header h1 { font-size: 1.2rem; font-weight: 700; }
+  header h1 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    letter-spacing: -.01em;
+  }
   .header-right { display: flex; align-items: center; gap: 10px; }
-  #date-display { color: var(--muted); font-size: 0.78rem; }
+  #date-display { color: var(--muted); font-size: .78rem; }
   .signout-btn {
     background: transparent;
     border: 1px solid var(--border);
     border-radius: 6px;
     color: var(--muted);
     padding: 5px 10px;
-    font-size: 0.75rem;
+    font-size: .75rem;
     cursor: pointer;
-    transition: border-color 0.15s, color 0.15s;
+    transition: border-color .15s, color .15s;
   }
   .signout-btn:hover { border-color: var(--danger); color: var(--danger); }
 
-  /* ── Tabs ─────────────────────────────────────── */
+  /* ── Bottom Nav ─────────────────────────────── */
   nav {
     position: fixed;
     bottom: 0; left: 0; right: 0;
@@ -113,9 +152,12 @@
     margin: 0 auto;
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    background: var(--surface);
+    background: rgba(22,22,22,0.92);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-top: 1px solid var(--border);
     z-index: 100;
+    padding-bottom: env(safe-area-inset-bottom);
   }
   nav button {
     background: none;
@@ -123,44 +165,64 @@
     color: var(--muted);
     padding: 12px 4px 10px;
     cursor: pointer;
-    font-size: 0.65rem;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
+    font-size: .68rem;
+    font-weight: 500;
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 4px;
-    transition: color 0.15s;
+    transition: color .15s;
   }
-  nav button .icon { font-size: 1.3rem; }
+  nav button svg { width: 22px; height: 22px; stroke-width: 2; }
   nav button.active[data-tab="food"]    { color: var(--accent); }
   nav button.active[data-tab="workout"] { color: var(--accent2); }
   nav button.active[data-tab="info"]    { color: var(--accent3); }
   nav button.active[data-tab="daily"]   { color: var(--accent4); }
 
-  /* ── Sections ─────────────────────────────────── */
+  /* ── Sections ───────────────────────────────── */
   .section { display: none; padding: 16px 20px; }
-  .section.active { display: block; }
+  .section.active { display: block; animation: fadeIn .15s ease; }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
 
-  /* ── Cards ────────────────────────────────────── */
+  /* ── Cards ──────────────────────────────────── */
   .card {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: var(--radius);
+    border-radius: var(--r);
     padding: 16px;
     margin-bottom: 12px;
   }
 
-  /* ── Big stat ─────────────────────────────────── */
-  .stat-big { text-align: center; padding: 20px 16px; }
-  .stat-big .number { font-size: 3rem; font-weight: 800; line-height: 1; }
-  .stat-big .label { color: var(--muted); font-size: 0.85rem; margin-top: 4px; }
-  .goal-bar { height: 6px; background: var(--border); border-radius: 3px; margin-top: 12px; overflow: hidden; }
-  .goal-bar-fill { height: 100%; border-radius: 3px; transition: width 0.3s; }
-  .goal-text { font-size: 0.75rem; color: var(--muted); margin-top: 6px; }
+  /* ── Big stat ───────────────────────────────── */
+  .stat-big { text-align: center; padding: 22px 16px; }
+  .stat-big .number {
+    font-size: 3rem; font-weight: 700;
+    line-height: 1; letter-spacing: -.03em;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-big .label { color: var(--muted); font-size: .85rem; margin-top: 6px; }
+  .goal-bar {
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    margin-top: 14px;
+    overflow: hidden;
+  }
+  .goal-bar-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width .35s ease, background .25s ease;
+  }
+  .goal-text {
+    font-size: .75rem;
+    color: var(--muted);
+    margin-top: 8px;
+  }
 
-  /* ── Forms ────────────────────────────────────── */
+  /* ── Forms ──────────────────────────────────── */
   .form-row { display: flex; gap: 8px; margin-bottom: 10px; }
   .form-row input, .form-row select,
   input[type="text"], input[type="number"],
@@ -170,111 +232,305 @@
     border-radius: 8px;
     color: var(--text);
     padding: 10px 12px;
-    font-size: 0.95rem;
+    font-size: .95rem;
     outline: none;
-    transition: border-color 0.15s;
+    transition: border-color .15s, background .15s;
     font-family: inherit;
+    width: 100%;
   }
-  .form-row input:focus, input[type="text"]:focus, input[type="number"]:focus, textarea:focus { border-color: var(--accent); }
+  input:focus, textarea:focus, select:focus { border-color: var(--accent); }
   .form-row input { flex: 1; min-width: 0; }
   .form-row input.narrow { flex: 0 0 76px; }
   .form-row input.medium { flex: 0 0 96px; }
-  textarea { width: 100%; resize: vertical; min-height: 80px; }
-  input[type="text"], input[type="number"] { width: 100%; margin-bottom: 8px; }
+  textarea { resize: vertical; min-height: 80px; }
+  input[type="text"], input[type="number"] { margin-bottom: 8px; }
 
-  /* ── Buttons ──────────────────────────────────── */
+  /* ── Buttons ────────────────────────────────── */
   .btn {
     border: none;
     border-radius: 8px;
     padding: 10px 16px;
-    font-size: 0.9rem;
+    font-size: .9rem;
     font-weight: 600;
     cursor: pointer;
-    transition: opacity 0.15s, transform 0.1s;
+    transition: opacity .15s, transform .08s, background .15s;
     white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
   }
-  .btn:active { transform: scale(0.97); }
-  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
-  .btn-green  { background: var(--accent);  color: #000; }
-  .btn-blue   { background: var(--accent2); color: #000; }
-  .btn-yellow { background: var(--accent3); color: #000; }
-  .btn-purple { background: var(--accent4); color: #000; }
-  .btn-ghost  { background: transparent; border: 1px solid var(--border); color: var(--muted); padding: 6px 12px; font-size: 0.8rem; }
-  .btn-danger { background: transparent; border: none; color: var(--danger); padding: 4px 8px; font-size: 0.85rem; cursor: pointer; }
+  .btn:active:not(:disabled) { transform: scale(.97); }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+  .btn svg { width: 16px; height: 16px; }
+  .btn-green  { background: var(--accent);  color: #052e16; }
+  .btn-blue   { background: var(--accent2); color: #061e3a; }
+  .btn-yellow { background: var(--accent3); color: #2c1903; }
+  .btn-purple { background: var(--accent4); color: #1d0e3e; }
+  .btn-ghost  {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-2);
+    padding: 8px 12px;
+    font-size: .85rem;
+    font-weight: 500;
+  }
+  .btn-ghost:hover { border-color: var(--border-light); }
   .btn-full   { width: 100%; margin-top: 4px; }
 
-  /* ── Labels ───────────────────────────────────── */
-  .section-title {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+  /* Icon buttons (small action icons) */
+  .icon-btn {
+    background: transparent;
+    border: none;
     color: var(--muted);
-    margin: 14px 0 8px;
+    width: 30px; height: 30px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background .12s, color .12s;
   }
+  .icon-btn svg { width: 16px; height: 16px; stroke-width: 2; }
+  .icon-btn:hover { background: var(--border); color: var(--text); }
+  .icon-btn.danger:hover { color: var(--danger); background: rgba(239,68,68,.1); }
 
-  /* ── Entries ──────────────────────────────────── */
+  /* ── Section title ──────────────────────────── */
+  .section-title {
+    font-size: .72rem;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: var(--muted);
+    margin: 16px 0 8px;
+    font-weight: 600;
+  }
+  .section-title:first-child { margin-top: 0; }
+
+  /* ── Entries ────────────────────────────────── */
   .entry {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 10px 0;
+    padding: 12px 0;
     border-bottom: 1px solid var(--border);
+    gap: 8px;
   }
   .entry:last-child { border-bottom: none; }
-  .entry-name { font-size: 0.95rem; }
-  .entry-cal  { font-weight: 700; font-size: 0.95rem; color: var(--accent); }
-  .entry-meta { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
-  .entry-right { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+  .entry:first-child { padding-top: 4px; }
+  .entry-content { flex: 1; min-width: 0; }
+  .entry-name {
+    font-size: .95rem;
+    font-weight: 500;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .entry-cal {
+    font-weight: 700;
+    font-size: .95rem;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+  }
+  .entry-meta {
+    font-size: .76rem;
+    color: var(--muted);
+    margin-top: 3px;
+  }
+  .entry-right { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
   .workout-entry .entry-cal { color: var(--accent2); }
 
-  /* ── Macros ───────────────────────────────────── */
-  .macros-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-top: 4px; }
-  .macro-box { background: var(--bg); border-radius: 8px; padding: 10px; text-align: center; }
-  .macro-box .val { font-size: 1.1rem; font-weight: 700; }
-  .macro-box .lbl { font-size: 0.7rem; color: var(--muted); }
+  /* Edit-mode entry */
+  .entry-editing {
+    background: var(--surface-2);
+    margin: 4px -8px;
+    padding: 12px;
+    border-radius: 8px;
+    border-bottom: none;
+  }
+  .edit-actions { display: flex; gap: 8px; margin-top: 8px; }
+  .edit-actions .btn { flex: 1; padding: 8px 12px; font-size: .85rem; }
 
-  /* ── Day nav ──────────────────────────────────── */
-  .day-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-  .day-nav-date { font-weight: 600; font-size: 0.95rem; }
-  .day-nav button { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; color: var(--text); padding: 6px 12px; cursor: pointer; font-size: 0.85rem; }
-  .today-btn { font-size: 0.75rem; color: var(--accent); background: none; border: none; cursor: pointer; padding: 2px 6px; }
+  /* ── Macros ─────────────────────────────────── */
+  .macros-row {
+    display: grid;
+    grid-template-columns: repeat(3,1fr);
+    gap: 8px;
+  }
+  .macro-box {
+    background: var(--bg);
+    border-radius: 8px;
+    padding: 12px 8px;
+    text-align: center;
+  }
+  .macro-box .val { font-size: 1.1rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .macro-box .lbl { font-size: .7rem; color: var(--muted); margin-top: 2px; }
 
-  /* ── Goal edit ────────────────────────────────── */
-  .goal-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
-  .goal-row label { font-size: 0.8rem; color: var(--muted); flex: 1; }
-  .goal-row input { width: 80px; margin: 0; }
+  /* ── Day nav ────────────────────────────────── */
+  .day-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    gap: 8px;
+  }
+  .day-nav-center { text-align: center; flex: 1; }
+  .day-nav-date { font-weight: 600; font-size: .95rem; }
+  .day-nav .nav-arrow {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text-2);
+    padding: 8px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color .15s, color .15s;
+  }
+  .day-nav .nav-arrow:hover { border-color: var(--border-light); color: var(--text); }
+  .day-nav .nav-arrow svg { width: 16px; height: 16px; }
+  .today-btn {
+    font-size: .72rem;
+    color: var(--accent);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 4px 8px;
+    margin-left: 4px;
+    font-weight: 500;
+  }
 
-  /* ── Info cards ───────────────────────────────── */
-  .info-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 10px; }
-  .info-card-title { font-weight: 700; font-size: 1rem; margin-bottom: 6px; display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+  /* ── Goal edit ──────────────────────────────── */
+  .goal-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+  }
+  .goal-row label { font-size: .8rem; color: var(--muted); flex: 1; text-align: left; }
+  .goal-row input { width: 90px; margin: 0; }
+
+  /* ── Info cards ─────────────────────────────── */
+  .info-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--r);
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+  .info-card-title {
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 6px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+  }
   .info-card-title span { flex: 1; }
-  .info-card-body { font-size: 0.88rem; color: #ccc; line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
-  .info-card-date { font-size: 0.72rem; color: var(--muted); margin-top: 8px; }
+  .info-card-actions { display: flex; gap: 4px; flex-shrink: 0; }
+  .info-card-body {
+    font-size: .88rem;
+    color: var(--text-2);
+    line-height: 1.5;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .info-card-meta {
+    font-size: .72rem;
+    color: var(--muted);
+    margin-top: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
 
-  /* ── Habits ───────────────────────────────────── */
-  .habit-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+  /* ── Habits ─────────────────────────────────── */
+  .habit-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border);
+  }
   .habit-row:last-child { border-bottom: none; }
-  .habit-check { width: 26px; height: 26px; border-radius: 50%; border: 2px solid var(--border); background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.15s; font-size: 0.9rem; }
-  .habit-check.done { background: var(--accent4); border-color: var(--accent4); }
-  .habit-name { flex: 1; font-size: 0.95rem; }
+  .habit-row:first-child { padding-top: 4px; }
+  .habit-check {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    border: 2px solid var(--border-light);
+    background: transparent;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all .15s;
+  }
+  .habit-check svg { width: 14px; height: 14px; stroke-width: 3; opacity: 0; transition: opacity .15s; }
+  .habit-check.done { background: var(--accent4); border-color: var(--accent4); color: #fff; }
+  .habit-check.done svg { opacity: 1; }
+  .habit-name { flex: 1; font-size: .95rem; font-weight: 500; }
   .habit-name.done { text-decoration: line-through; color: var(--muted); }
 
-  /* ── Misc ─────────────────────────────────────── */
-  .chip { display: inline-block; background: var(--border); border-radius: 4px; padding: 2px 7px; font-size: 0.72rem; color: var(--muted); margin-left: 4px; }
-  .empty { text-align: center; color: var(--muted); padding: 32px 0; font-size: 0.9rem; }
-  .hist-toggle { color: var(--accent2); background: none; border: none; cursor: pointer; font-size: 0.8rem; padding: 0; }
+  /* ── Chip / filter ──────────────────────────── */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    background: var(--border);
+    border-radius: 4px;
+    padding: 2px 8px;
+    font-size: .72rem;
+    color: var(--text-2);
+  }
+  .filter-bar {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 12px;
+    flex-wrap: wrap;
+  }
+  .filter-chip {
+    background: transparent;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--muted);
+    padding: 5px 10px;
+    font-size: .8rem;
+    cursor: pointer;
+    transition: all .12s;
+  }
+  .filter-chip:hover { border-color: var(--border-light); color: var(--text-2); }
+  .filter-chip.active { border-color: var(--accent3); color: var(--accent3); background: rgba(245,158,11,.08); }
+
+  /* ── Misc ───────────────────────────────────── */
+  .empty {
+    text-align: center;
+    color: var(--muted);
+    padding: 32px 0;
+    font-size: .9rem;
+  }
+  .text-link {
+    color: var(--accent2);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: .8rem;
+    padding: 0;
+    margin-left: 6px;
+  }
 </style>
 </head>
 <body>
 
 <div id="loading-bar"></div>
+<div id="toast"></div>
 
 <!-- ══ AUTH ══════════════════════════════════════════ -->
 <div id="auth-screen" style="display:none">
   <div class="auth-box">
     <div class="auth-logo">Tracker</div>
     <div class="auth-sub">Sign in to sync across all your devices</div>
-    <input class="auth-input" type="email"    id="auth-email"    placeholder="Email"           autocomplete="email">
+    <input class="auth-input" type="email"    id="auth-email"    placeholder="Email"               autocomplete="email">
     <input class="auth-input" type="password" id="auth-password" placeholder="Password (6+ chars)" autocomplete="current-password">
     <div class="auth-btns">
       <button class="btn btn-green" style="flex:1" onclick="signIn()">Sign In</button>
@@ -291,7 +547,7 @@
     <h1>Tracker</h1>
     <div class="header-right">
       <span id="date-display"></span>
-      <button class="signout-btn" onclick="signOut()">Sign Out</button>
+      <button class="signout-btn" onclick="signOut()">Sign out</button>
     </div>
   </header>
 
@@ -303,17 +559,17 @@
       <div class="label">calories today</div>
       <div class="goal-bar"><div class="goal-bar-fill" id="cal-bar" style="width:0%;background:var(--accent)"></div></div>
       <div class="goal-text">
-        Goal: <span id="cal-goal-display">2000</span> kcal &nbsp;
-        <button class="hist-toggle" onclick="toggleGoalEdit()">edit</button>
+        Goal: <span id="cal-goal-display">2000</span> kcal
+        <button class="text-link" onclick="toggleGoalEdit()">edit</button>
       </div>
       <div id="cal-goal-edit" style="display:none" class="goal-row">
         <label>Daily calorie goal</label>
-        <input type="number" id="cal-goal-input" placeholder="2000" style="width:90px;margin:0">
-        <button class="btn btn-green" style="padding:8px 12px" onclick="saveCalGoal()">Save</button>
+        <input type="number" id="cal-goal-input" placeholder="2000">
+        <button class="btn btn-green" style="padding:8px 14px" onclick="saveCalGoal()">Save</button>
       </div>
     </div>
 
-    <div class="card" style="padding-top:10px;padding-bottom:10px">
+    <div class="card" style="padding:14px 16px">
       <div class="macros-row">
         <div class="macro-box"><div class="val" id="macro-p" style="color:var(--accent2)">0g</div><div class="lbl">protein</div></div>
         <div class="macro-box"><div class="val" id="macro-c" style="color:var(--accent3)">0g</div><div class="lbl">carbs</div></div>
@@ -322,26 +578,26 @@
     </div>
 
     <div class="day-nav">
-      <button onclick="changeDay('food',-1)">&#8592;</button>
-      <div>
+      <button class="nav-arrow" onclick="changeDay('food',-1)" id="food-prev"></button>
+      <div class="day-nav-center">
         <span class="day-nav-date" id="food-day-label"></span>
         <button class="today-btn" onclick="goToday('food')">Today</button>
       </div>
-      <button onclick="changeDay('food',1)">&#8594;</button>
+      <button class="nav-arrow" onclick="changeDay('food',1)" id="food-next"></button>
     </div>
 
     <div class="card">
-      <div class="section-title" style="margin-top:0">Add Food</div>
+      <div class="section-title">Add Food</div>
       <div class="form-row">
         <input type="text"   id="food-name"    placeholder="What did you eat?" style="flex:2">
-        <input type="number" id="food-cal"     placeholder="kcal" class="narrow" min="0">
+        <input type="number" id="food-cal"     placeholder="kcal" class="narrow" min="0" inputmode="numeric">
       </div>
       <div class="form-row">
-        <input type="number" id="food-protein" placeholder="Protein g" style="flex:1" min="0">
-        <input type="number" id="food-carbs"   placeholder="Carbs g"   style="flex:1" min="0">
-        <input type="number" id="food-fat"     placeholder="Fat g"     style="flex:1" min="0">
+        <input type="number" id="food-protein" placeholder="Protein g" min="0" inputmode="numeric">
+        <input type="number" id="food-carbs"   placeholder="Carbs g"   min="0" inputmode="numeric">
+        <input type="number" id="food-fat"     placeholder="Fat g"     min="0" inputmode="numeric">
       </div>
-      <button id="food-add-btn" class="btn btn-green btn-full" onclick="addFood()">+ Add</button>
+      <button id="food-add-btn" class="btn btn-green btn-full" onclick="addFood()"><span id="food-plus"></span>Add</button>
     </div>
 
     <div class="section-title">Today's Log</div>
@@ -352,38 +608,38 @@
   <!-- ── WORKOUT ────────────────────────────────── -->
   <div id="section-workout" class="section">
 
-    <div class="day-nav" style="margin-top:4px">
-      <button onclick="changeDay('workout',-1)">&#8592;</button>
-      <div>
+    <div class="day-nav">
+      <button class="nav-arrow" onclick="changeDay('workout',-1)" id="workout-prev"></button>
+      <div class="day-nav-center">
         <span class="day-nav-date" id="workout-day-label"></span>
         <button class="today-btn" onclick="goToday('workout')">Today</button>
       </div>
-      <button onclick="changeDay('workout',1)">&#8594;</button>
+      <button class="nav-arrow" onclick="changeDay('workout',1)" id="workout-next"></button>
     </div>
 
-    <div class="card stat-big" style="padding:16px">
+    <div class="card stat-big" style="padding:18px">
       <div class="number" id="workout-total" style="color:var(--accent2);font-size:2.5rem">0</div>
       <div class="label">exercises logged</div>
     </div>
 
     <div class="card">
-      <div class="section-title" style="margin-top:0">Log Exercise</div>
+      <div class="section-title">Log Exercise</div>
       <div class="form-row">
         <input type="text" id="ex-name" placeholder="Exercise (e.g. Bench Press)" style="flex:2">
-        <select id="ex-type" style="flex:1;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:10px 8px;font-size:0.85rem">
+        <select id="ex-type" style="flex:1;padding:10px 8px;font-size:.85rem">
           <option>Weights</option><option>Cardio</option><option>Bodyweight</option><option>Stretching</option><option>Other</option>
         </select>
       </div>
       <div class="form-row">
-        <input type="number" id="ex-sets"     placeholder="Sets"     class="narrow" min="0">
-        <input type="number" id="ex-reps"     placeholder="Reps"     class="narrow" min="0">
-        <input type="number" id="ex-weight"   placeholder="lbs/kg"   class="medium" min="0">
+        <input type="number" id="ex-sets"   placeholder="Sets"   class="narrow" min="0" inputmode="numeric">
+        <input type="number" id="ex-reps"   placeholder="Reps"   class="narrow" min="0" inputmode="numeric">
+        <input type="number" id="ex-weight" placeholder="lbs/kg" class="medium" min="0" inputmode="numeric">
       </div>
       <div class="form-row">
-        <input type="number" id="ex-duration" placeholder="Duration (min)" style="flex:1" min="0">
-        <input type="text"   id="ex-notes"    placeholder="Notes (optional)"  style="flex:2">
+        <input type="number" id="ex-duration" placeholder="Duration (min)" min="0" inputmode="numeric">
+        <input type="text"   id="ex-notes"    placeholder="Notes (optional)" style="flex:2">
       </div>
-      <button id="workout-add-btn" class="btn btn-blue btn-full" onclick="addExercise()">+ Add Exercise</button>
+      <button id="workout-add-btn" class="btn btn-blue btn-full" onclick="addExercise()"><span id="workout-plus"></span>Add Exercise</button>
     </div>
 
     <div class="section-title">Workout Log</div>
@@ -395,17 +651,17 @@
   <div id="section-info" class="section">
 
     <div class="card">
-      <div class="section-title" style="margin-top:0">Save Info</div>
+      <div class="section-title">Save Info</div>
       <input type="text" id="info-title" placeholder="Title (e.g. Doctor's number, Recipe, Goal...)">
       <textarea id="info-body" placeholder="Content..."></textarea>
       <div class="form-row" style="margin-bottom:0;margin-top:8px">
         <input type="text" id="info-tag" placeholder="Tag (optional, e.g. health)" style="flex:1">
-        <button id="info-add-btn" class="btn btn-yellow" onclick="addInfo()">+ Save</button>
+        <button id="info-add-btn" class="btn btn-yellow" onclick="addInfo()"><span id="info-plus"></span>Save</button>
       </div>
     </div>
 
-    <div style="display:flex;gap:8px;margin-bottom:8px;flex-wrap:wrap" id="tag-filters">
-      <button class="btn btn-ghost" onclick="filterInfo('all')" data-filter="all">All</button>
+    <div class="filter-bar" id="tag-filters">
+      <button class="filter-chip active" onclick="filterInfo('all')" data-filter="all">All</button>
     </div>
 
     <div id="info-list"><div class="empty">Nothing saved yet</div></div>
@@ -415,16 +671,16 @@
   <!-- ── DAILY ──────────────────────────────────── -->
   <div id="section-daily" class="section">
 
-    <div class="card stat-big" style="padding:16px">
+    <div class="card stat-big" style="padding:18px">
       <div class="number" id="daily-pct" style="color:var(--accent4);font-size:2.5rem">0%</div>
       <div class="label">habits done today</div>
     </div>
 
     <div class="card">
-      <div class="section-title" style="margin-top:0">Add Habit</div>
+      <div class="section-title">Add Habit</div>
       <div class="form-row">
         <input type="text" id="habit-name" placeholder="New habit (e.g. Drink water, Walk, Read)" style="flex:1">
-        <button id="habit-add-btn" class="btn btn-purple" onclick="addHabit()">+ Add</button>
+        <button id="habit-add-btn" class="btn btn-purple" onclick="addHabit()"><span id="habit-plus"></span>Add</button>
       </div>
     </div>
 
@@ -432,28 +688,38 @@
     <div class="card" id="habit-list"><div class="empty">Add habits to track</div></div>
 
     <div class="card" style="margin-top:12px">
-      <div class="section-title" style="margin-top:0">Quick Note (Today)</div>
+      <div class="section-title">Quick Note (Today)</div>
       <textarea id="daily-note" placeholder="Jot anything down..." style="min-height:100px"></textarea>
       <button class="btn btn-purple btn-full" onclick="saveDailyNote()">Save Note</button>
-      <div id="saved-daily-note" style="margin-top:10px;font-size:0.88rem;color:#ccc;white-space:pre-wrap;word-break:break-word"></div>
     </div>
 
   </div>
 
   <nav>
-    <button class="active" data-tab="food"    onclick="switchTab('food')">   <span class="icon">🥗</span>Food</button>
-    <button              data-tab="workout" onclick="switchTab('workout')"><span class="icon">💪</span>Workout</button>
-    <button              data-tab="info"    onclick="switchTab('info')">   <span class="icon">📋</span>Info</button>
-    <button              data-tab="daily"   onclick="switchTab('daily')">  <span class="icon">✅</span>Daily</button>
+    <button class="active" data-tab="food"    onclick="switchTab('food')"    id="nav-food"></button>
+    <button              data-tab="workout" onclick="switchTab('workout')" id="nav-workout"></button>
+    <button              data-tab="info"    onclick="switchTab('info')"    id="nav-info"></button>
+    <button              data-tab="daily"   onclick="switchTab('daily')"   id="nav-daily"></button>
   </nav>
 
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
+// ══════════════════════════════════════════════════════════════════════════
+// CONFIG & STATE
+// ══════════════════════════════════════════════════════════════════════════
 const SUPABASE_URL = 'https://cemujbavmnyqwhkgwbmu.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_y8WHEa4a7r7XeH-6-mCOiw_LhPq5mPq';
-const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: {
+    persistSession: true,
+    autoRefreshToken: true,
+    detectSessionInUrl: false,
+    storage: window.localStorage,
+    storageKey: 'tracker-auth'
+  }
+});
 
 let user = null;
 let calGoal = 2000;
@@ -461,26 +727,93 @@ let currentDays = { food: 0, workout: 0 };
 let infoFilter = 'all';
 let _infoCache = [];
 
-// ── Auth ───────────────────────────────────────────────────────────────────
+// Edit mode tracking
+let editing = { food: null, workout: null, info: null, habit: null };
 
+// ══════════════════════════════════════════════════════════════════════════
+// ICONS (Lucide-style)
+// ══════════════════════════════════════════════════════════════════════════
+const icon = (path, size = 18) =>
+  `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${path}</svg>`;
+
+const ICONS = {
+  food:    '<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>',
+  workout: '<path d="M14.4 14.4 9.6 9.6"/><path d="M18.657 21.485a2 2 0 1 1-2.829-2.828l-1.767 1.768a2 2 0 1 1-2.829-2.829l6.364-6.364a2 2 0 1 1 2.829 2.829l-1.768 1.767a2 2 0 1 1 2.828 2.829z"/><path d="m21.5 21.5-1.4-1.4"/><path d="M3.9 3.9 2.5 2.5"/><path d="M6.404 12.768a2 2 0 1 1-2.829-2.829l1.768-1.767a2 2 0 1 1-2.828-2.829l2.828-2.828a2 2 0 1 1 2.829 2.828l1.767-1.768a2 2 0 1 1 2.829 2.829z"/>',
+  info:    '<rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 12h6"/><path d="M9 16h6"/>',
+  daily:   '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+  edit:    '<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/>',
+  trash:   '<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>',
+  check:   '<polyline points="20 6 9 17 4 12"/>',
+  x:       '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
+  plus:    '<path d="M5 12h14"/><path d="M12 5v14"/>',
+  arrowL:  '<path d="m15 18-6-6 6-6"/>',
+  arrowR:  '<path d="m9 18 6-6-6-6"/>'
+};
+
+function injectIcons() {
+  document.getElementById('nav-food').innerHTML    = icon(ICONS.food, 22)    + '<span>Food</span>';
+  document.getElementById('nav-workout').innerHTML = icon(ICONS.workout, 22) + '<span>Workout</span>';
+  document.getElementById('nav-info').innerHTML    = icon(ICONS.info, 22)    + '<span>Info</span>';
+  document.getElementById('nav-daily').innerHTML   = icon(ICONS.daily, 22)   + '<span>Daily</span>';
+  document.getElementById('food-prev').innerHTML    = icon(ICONS.arrowL);
+  document.getElementById('food-next').innerHTML    = icon(ICONS.arrowR);
+  document.getElementById('workout-prev').innerHTML = icon(ICONS.arrowL);
+  document.getElementById('workout-next').innerHTML = icon(ICONS.arrowR);
+  document.getElementById('food-plus').innerHTML    = icon(ICONS.plus, 16);
+  document.getElementById('workout-plus').innerHTML = icon(ICONS.plus, 16);
+  document.getElementById('info-plus').innerHTML    = icon(ICONS.plus, 16);
+  document.getElementById('habit-plus').innerHTML   = icon(ICONS.plus, 16);
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// AUTH & SESSION
+// ══════════════════════════════════════════════════════════════════════════
 async function init() {
+  injectIcons();
+
   const { data: { session } } = await db.auth.getSession();
   if (session?.user) {
     user = session.user;
     await showApp();
   } else {
-    document.getElementById('auth-screen').style.display = 'flex';
+    showAuth();
   }
 
-  db.auth.onAuthStateChange(async (_, session) => {
-    user = session?.user ?? null;
-    if (user) {
+  db.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_OUT' || !session) {
+      user = null;
+      showAuth();
+    } else if (event === 'SIGNED_IN' && (!user || user.id !== session.user.id)) {
+      user = session.user;
       await showApp();
-    } else {
-      document.getElementById('app').style.display = 'none';
-      document.getElementById('auth-screen').style.display = 'flex';
+    } else if (event === 'TOKEN_REFRESHED') {
+      user = session.user;
     }
   });
+
+  // Refresh session whenever the tab becomes visible again
+  document.addEventListener('visibilitychange', async () => {
+    if (document.visibilityState !== 'visible' || !user) return;
+    const { data: { session }, error } = await db.auth.getSession();
+    if (error || !session) {
+      toast('Session expired — please sign in.', 'error');
+      user = null;
+      showAuth();
+      return;
+    }
+    // Refresh if expiring within 5 minutes
+    const msLeft = (session.expires_at * 1000) - Date.now();
+    if (msLeft < 5 * 60 * 1000) await db.auth.refreshSession();
+  });
+
+  // Periodic safety refresh every 10 minutes while page is open
+  setInterval(async () => {
+    if (!user) return;
+    const { data: { session } } = await db.auth.getSession();
+    if (session && (session.expires_at * 1000 - Date.now()) < 15 * 60 * 1000) {
+      await db.auth.refreshSession();
+    }
+  }, 10 * 60 * 1000);
 }
 
 async function signIn() {
@@ -515,6 +848,11 @@ function setAuthMsg(msg, isErr = false) {
   el.style.color = isErr ? 'var(--danger)' : 'var(--accent)';
 }
 
+function showAuth() {
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('auth-screen').style.display = 'flex';
+}
+
 async function showApp() {
   document.getElementById('auth-screen').style.display = 'none';
   document.getElementById('app').style.display = 'block';
@@ -525,10 +863,33 @@ async function showApp() {
   renderFood();
 }
 
-// ── Settings ───────────────────────────────────────────────────────────────
+// ══════════════════════════════════════════════════════════════════════════
+// DB WRAPPER — handles auth errors with one retry
+// ══════════════════════════════════════════════════════════════════════════
+async function dbCall(builder) {
+  let result = await builder();
+  if (result.error && /JWT|expired|Invalid|401|403/i.test(result.error.message || '')) {
+    const { data, error } = await db.auth.refreshSession();
+    if (error || !data.session) {
+      toast('Session expired — please sign in.', 'error');
+      showAuth();
+      return result;
+    }
+    result = await builder();
+  }
+  if (result.error) {
+    toast(result.error.message, 'error');
+  }
+  return result;
+}
 
+// ══════════════════════════════════════════════════════════════════════════
+// SETTINGS
+// ══════════════════════════════════════════════════════════════════════════
 async function loadSettings() {
-  const { data } = await db.from('user_settings').select('cal_goal').eq('user_id', user.id).maybeSingle();
+  const { data } = await dbCall(() =>
+    db.from('user_settings').select('cal_goal').eq('user_id', user.id).maybeSingle()
+  );
   calGoal = data?.cal_goal ?? 2000;
 }
 
@@ -536,7 +897,9 @@ async function saveCalGoal() {
   const v = parseInt(document.getElementById('cal-goal-input').value) || 2000;
   calGoal = v;
   document.getElementById('cal-goal-edit').style.display = 'none';
-  await db.from('user_settings').upsert({ user_id: user.id, cal_goal: v }, { onConflict: 'user_id' });
+  await dbCall(() =>
+    db.from('user_settings').upsert({ user_id: user.id, cal_goal: v }, { onConflict: 'user_id' })
+  );
   renderFood();
 }
 
@@ -545,15 +908,16 @@ function toggleGoalEdit() {
   el.style.display = el.style.display === 'none' ? 'flex' : 'none';
 }
 
-// ── Food ───────────────────────────────────────────────────────────────────
-
+// ══════════════════════════════════════════════════════════════════════════
+// FOOD
+// ══════════════════════════════════════════════════════════════════════════
 async function addFood() {
   const name = document.getElementById('food-name').value.trim();
-  if (!name) return flash('food-name', 'Enter food name');
+  if (!name) return flashErr('food-name', 'Enter food name');
+
   const btn = document.getElementById('food-add-btn');
   btnLoad(btn, true);
-
-  const { error } = await db.from('food_entries').insert({
+  const { error } = await dbCall(() => db.from('food_entries').insert({
     user_id:  user.id,
     date:     offsetKey(currentDays.food),
     name,
@@ -562,16 +926,35 @@ async function addFood() {
     carbs:    parseFloat(document.getElementById('food-carbs').value)   || 0,
     fat:      parseFloat(document.getElementById('food-fat').value)     || 0,
     time:     new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
-  });
-
+  }));
   btnLoad(btn, false);
-  if (error) return alert(error.message);
+  if (error) return;
+
   ['food-name','food-cal','food-protein','food-carbs','food-fat'].forEach(id => document.getElementById(id).value = '');
   await renderFood();
 }
 
+function startEditFood(id) { editing.food = id; renderFood(); }
+function cancelEditFood()    { editing.food = null; renderFood(); }
+
+async function saveEditFood(id) {
+  const name = document.getElementById('ef-name-' + id).value.trim();
+  if (!name) return toast('Name is required', 'error');
+  const { error } = await dbCall(() => db.from('food_entries').update({
+    name,
+    calories: parseInt(document.getElementById('ef-cal-' + id).value) || 0,
+    protein:  parseFloat(document.getElementById('ef-p-' + id).value) || 0,
+    carbs:    parseFloat(document.getElementById('ef-c-' + id).value) || 0,
+    fat:      parseFloat(document.getElementById('ef-f-' + id).value) || 0
+  }).eq('id', id).eq('user_id', user.id));
+  if (error) return;
+  editing.food = null;
+  toast('Updated', 'ok');
+  await renderFood();
+}
+
 async function deleteFood(id) {
-  await db.from('food_entries').delete().eq('id', id).eq('user_id', user.id);
+  await dbCall(() => db.from('food_entries').delete().eq('id', id).eq('user_id', user.id));
   await renderFood();
 }
 
@@ -581,9 +964,9 @@ async function renderFood() {
   document.getElementById('cal-goal-display').textContent = calGoal;
   document.getElementById('cal-goal-input').value = calGoal;
 
-  const { data: list } = await db.from('food_entries')
+  const { data: list } = await dbCall(() => db.from('food_entries')
     .select('*').eq('user_id', user.id).eq('date', dayKey)
-    .order('created_at', { ascending: true });
+    .order('created_at', { ascending: true }));
 
   const rows = list || [];
   const tot = rows.reduce((a, e) => {
@@ -601,28 +984,51 @@ async function renderFood() {
 
   const el = document.getElementById('food-list');
   if (!rows.length) { el.innerHTML = '<div class="empty">Nothing logged yet</div>'; return; }
-  el.innerHTML = [...rows].reverse().map(e => `
+
+  el.innerHTML = [...rows].reverse().map(e => {
+    if (editing.food === e.id) {
+      return `
+      <div class="entry-editing">
+        <div class="form-row">
+          <input type="text" id="ef-name-${e.id}" value="${esc(e.name)}" style="flex:2">
+          <input type="number" id="ef-cal-${e.id}" value="${e.calories}" class="narrow" inputmode="numeric">
+        </div>
+        <div class="form-row">
+          <input type="number" id="ef-p-${e.id}" value="${e.protein}" placeholder="P" inputmode="numeric">
+          <input type="number" id="ef-c-${e.id}" value="${e.carbs}" placeholder="C" inputmode="numeric">
+          <input type="number" id="ef-f-${e.id}" value="${e.fat}" placeholder="F" inputmode="numeric">
+        </div>
+        <div class="edit-actions">
+          <button class="btn btn-green" onclick="saveEditFood('${e.id}')">Save</button>
+          <button class="btn btn-ghost" onclick="cancelEditFood()">Cancel</button>
+        </div>
+      </div>`;
+    }
+    return `
     <div class="entry">
-      <div>
+      <div class="entry-content">
         <div class="entry-name">${esc(e.name)}</div>
-        <div class="entry-meta">${e.time || ''}${(e.protein||e.carbs||e.fat) ? ` · P:${e.protein}g C:${e.carbs}g F:${e.fat}g` : ''}</div>
+        <div class="entry-meta">${e.time || ''}${(e.protein||e.carbs||e.fat) ? ` · P ${e.protein}g · C ${e.carbs}g · F ${e.fat}g` : ''}</div>
       </div>
       <div class="entry-right">
-        <span class="entry-cal">${e.calories} kcal</span>
-        <button class="btn-danger" onclick="deleteFood('${e.id}')">✕</button>
+        <span class="entry-cal">${e.calories}</span>
+        <button class="icon-btn" onclick="startEditFood('${e.id}')" aria-label="Edit">${icon(ICONS.edit, 16)}</button>
+        <button class="icon-btn danger" onclick="deleteFood('${e.id}')" aria-label="Delete">${icon(ICONS.trash, 16)}</button>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
-// ── Workout ────────────────────────────────────────────────────────────────
-
+// ══════════════════════════════════════════════════════════════════════════
+// WORKOUT
+// ══════════════════════════════════════════════════════════════════════════
 async function addExercise() {
   const name = document.getElementById('ex-name').value.trim();
-  if (!name) return flash('ex-name', 'Enter exercise name');
+  if (!name) return flashErr('ex-name', 'Enter exercise name');
+
   const btn = document.getElementById('workout-add-btn');
   btnLoad(btn, true);
-
-  const { error } = await db.from('workout_entries').insert({
+  const { error } = await dbCall(() => db.from('workout_entries').insert({
     user_id:  user.id,
     date:     offsetKey(currentDays.workout),
     name,
@@ -633,16 +1039,37 @@ async function addExercise() {
     duration: document.getElementById('ex-duration').value || null,
     notes:    document.getElementById('ex-notes').value.trim() || null,
     time:     new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
-  });
-
+  }));
   btnLoad(btn, false);
-  if (error) return alert(error.message);
+  if (error) return;
+
   ['ex-name','ex-sets','ex-reps','ex-weight','ex-duration','ex-notes'].forEach(id => document.getElementById(id).value = '');
   await renderWorkout();
 }
 
+function startEditWorkout(id) { editing.workout = id; renderWorkout(); }
+function cancelEditWorkout()    { editing.workout = null; renderWorkout(); }
+
+async function saveEditWorkout(id) {
+  const name = document.getElementById('ew-name-' + id).value.trim();
+  if (!name) return toast('Name is required', 'error');
+  const { error } = await dbCall(() => db.from('workout_entries').update({
+    name,
+    type:     document.getElementById('ew-type-' + id).value,
+    sets:     document.getElementById('ew-sets-' + id).value     || null,
+    reps:     document.getElementById('ew-reps-' + id).value     || null,
+    weight:   document.getElementById('ew-weight-' + id).value   || null,
+    duration: document.getElementById('ew-duration-' + id).value || null,
+    notes:    document.getElementById('ew-notes-' + id).value.trim() || null
+  }).eq('id', id).eq('user_id', user.id));
+  if (error) return;
+  editing.workout = null;
+  toast('Updated', 'ok');
+  await renderWorkout();
+}
+
 async function deleteExercise(id) {
-  await db.from('workout_entries').delete().eq('id', id).eq('user_id', user.id);
+  await dbCall(() => db.from('workout_entries').delete().eq('id', id).eq('user_id', user.id));
   await renderWorkout();
 }
 
@@ -650,16 +1077,41 @@ async function renderWorkout() {
   const dayKey = offsetKey(currentDays.workout);
   document.getElementById('workout-day-label').textContent = fmt(dayKey);
 
-  const { data: list } = await db.from('workout_entries')
+  const { data: list } = await dbCall(() => db.from('workout_entries')
     .select('*').eq('user_id', user.id).eq('date', dayKey)
-    .order('created_at', { ascending: true });
+    .order('created_at', { ascending: true }));
 
   const rows = list || [];
   document.getElementById('workout-total').textContent = rows.length;
 
   const el = document.getElementById('workout-list');
   if (!rows.length) { el.innerHTML = '<div class="empty">No exercises logged yet</div>'; return; }
+
   el.innerHTML = [...rows].reverse().map(e => {
+    if (editing.workout === e.id) {
+      return `
+      <div class="entry-editing">
+        <div class="form-row">
+          <input type="text" id="ew-name-${e.id}" value="${esc(e.name)}" style="flex:2">
+          <select id="ew-type-${e.id}" style="flex:1;padding:10px 8px;font-size:.85rem">
+            ${['Weights','Cardio','Bodyweight','Stretching','Other'].map(t => `<option ${t===e.type?'selected':''}>${t}</option>`).join('')}
+          </select>
+        </div>
+        <div class="form-row">
+          <input type="number" id="ew-sets-${e.id}" value="${e.sets || ''}" placeholder="Sets" class="narrow" inputmode="numeric">
+          <input type="number" id="ew-reps-${e.id}" value="${e.reps || ''}" placeholder="Reps" class="narrow" inputmode="numeric">
+          <input type="number" id="ew-weight-${e.id}" value="${e.weight || ''}" placeholder="lbs/kg" class="medium" inputmode="numeric">
+        </div>
+        <div class="form-row">
+          <input type="number" id="ew-duration-${e.id}" value="${e.duration || ''}" placeholder="Duration (min)" inputmode="numeric">
+          <input type="text" id="ew-notes-${e.id}" value="${esc(e.notes || '')}" placeholder="Notes" style="flex:2">
+        </div>
+        <div class="edit-actions">
+          <button class="btn btn-blue" onclick="saveEditWorkout('${e.id}')">Save</button>
+          <button class="btn btn-ghost" onclick="cancelEditWorkout()">Cancel</button>
+        </div>
+      </div>`;
+    }
     let meta = e.type || '';
     if (e.sets)     meta += ` · ${e.sets} sets`;
     if (e.reps)     meta += ` × ${e.reps} reps`;
@@ -667,67 +1119,83 @@ async function renderWorkout() {
     if (e.duration) meta += ` · ${e.duration}min`;
     return `
     <div class="entry">
-      <div>
+      <div class="entry-content">
         <div class="entry-name">${esc(e.name)}</div>
         <div class="entry-meta">${meta}${e.notes ? ` · ${esc(e.notes)}` : ''}</div>
         <div class="entry-meta">${e.time || ''}</div>
       </div>
       <div class="entry-right">
-        <button class="btn-danger" onclick="deleteExercise('${e.id}')">✕</button>
+        <button class="icon-btn" onclick="startEditWorkout('${e.id}')" aria-label="Edit">${icon(ICONS.edit, 16)}</button>
+        <button class="icon-btn danger" onclick="deleteExercise('${e.id}')" aria-label="Delete">${icon(ICONS.trash, 16)}</button>
       </div>
     </div>`;
   }).join('');
 }
 
-// ── Info ───────────────────────────────────────────────────────────────────
-
+// ══════════════════════════════════════════════════════════════════════════
+// INFO
+// ══════════════════════════════════════════════════════════════════════════
 async function addInfo() {
   const title = document.getElementById('info-title').value.trim();
-  if (!title) return flash('info-title', 'Enter a title');
+  if (!title) return flashErr('info-title', 'Enter a title');
+
   const btn = document.getElementById('info-add-btn');
   btnLoad(btn, true);
-
-  const { error } = await db.from('info_entries').insert({
+  const { error } = await dbCall(() => db.from('info_entries').insert({
     user_id: user.id,
     title,
     body: document.getElementById('info-body').value.trim() || null,
     tag:  document.getElementById('info-tag').value.trim().toLowerCase() || null
-  });
-
+  }));
   btnLoad(btn, false);
-  if (error) return alert(error.message);
+  if (error) return;
+
   ['info-title','info-body','info-tag'].forEach(id => document.getElementById(id).value = '');
   await renderInfo();
 }
 
+function startEditInfo(id) { editing.info = id; renderInfo(); }
+function cancelEditInfo()   { editing.info = null; renderInfo(); }
+
+async function saveEditInfo(id) {
+  const title = document.getElementById('ei-title-' + id).value.trim();
+  if (!title) return toast('Title is required', 'error');
+  const { error } = await dbCall(() => db.from('info_entries').update({
+    title,
+    body: document.getElementById('ei-body-' + id).value.trim() || null,
+    tag:  document.getElementById('ei-tag-' + id).value.trim().toLowerCase() || null
+  }).eq('id', id).eq('user_id', user.id));
+  if (error) return;
+  editing.info = null;
+  toast('Updated', 'ok');
+  await renderInfo();
+}
+
 async function deleteInfo(id) {
-  await db.from('info_entries').delete().eq('id', id).eq('user_id', user.id);
+  await dbCall(() => db.from('info_entries').delete().eq('id', id).eq('user_id', user.id));
   await renderInfo();
 }
 
 function filterInfo(tag) {
   infoFilter = tag;
   renderInfoList(_infoCache);
-  document.querySelectorAll('#tag-filters button').forEach(b => {
-    const on = b.dataset.filter === tag;
-    b.style.borderColor = on ? 'var(--accent3)' : '';
-    b.style.color       = on ? 'var(--accent3)' : '';
+  document.querySelectorAll('#tag-filters .filter-chip').forEach(b => {
+    b.classList.toggle('active', b.dataset.filter === tag);
   });
 }
 
 async function renderInfo() {
-  const { data: list } = await db.from('info_entries')
+  const { data: list } = await dbCall(() => db.from('info_entries')
     .select('*').eq('user_id', user.id)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false }));
 
   _infoCache = list || [];
   const tags = [...new Set(_infoCache.map(e => e.tag).filter(Boolean))];
 
   const filterEl = document.getElementById('tag-filters');
-  filterEl.innerHTML = `<button class="btn btn-ghost" onclick="filterInfo('all')" data-filter="all" style="${infoFilter==='all'?'border-color:var(--accent3);color:var(--accent3)':''}">All</button>`;
-  tags.forEach(t => {
-    filterEl.innerHTML += `<button class="btn btn-ghost" onclick="filterInfo('${esc(t)}')" data-filter="${esc(t)}" style="${infoFilter===t?'border-color:var(--accent3);color:var(--accent3)':''}">${esc(t)}</button>`;
-  });
+  filterEl.innerHTML =
+    `<button class="filter-chip ${infoFilter==='all'?'active':''}" onclick="filterInfo('all')" data-filter="all">All</button>` +
+    tags.map(t => `<button class="filter-chip ${infoFilter===t?'active':''}" onclick="filterInfo('${esc(t)}')" data-filter="${esc(t)}">${esc(t)}</button>`).join('');
 
   renderInfoList(_infoCache);
 }
@@ -736,98 +1204,152 @@ function renderInfoList(list) {
   const filtered = infoFilter === 'all' ? list : list.filter(e => e.tag === infoFilter);
   const el = document.getElementById('info-list');
   if (!filtered.length) { el.innerHTML = '<div class="empty">Nothing saved yet</div>'; return; }
-  el.innerHTML = filtered.map(e => `
+
+  el.innerHTML = filtered.map(e => {
+    if (editing.info === e.id) {
+      return `
+      <div class="info-card" style="background:var(--surface-2)">
+        <input type="text" id="ei-title-${e.id}" value="${esc(e.title)}" style="margin-bottom:8px;font-weight:600">
+        <textarea id="ei-body-${e.id}" style="margin-bottom:8px">${esc(e.body || '')}</textarea>
+        <input type="text" id="ei-tag-${e.id}" value="${esc(e.tag || '')}" placeholder="Tag" style="margin-bottom:8px">
+        <div class="edit-actions">
+          <button class="btn btn-yellow" onclick="saveEditInfo('${e.id}')">Save</button>
+          <button class="btn btn-ghost" onclick="cancelEditInfo()">Cancel</button>
+        </div>
+      </div>`;
+    }
+    return `
     <div class="info-card">
       <div class="info-card-title">
         <span>${esc(e.title)}</span>
-        <button class="btn-danger" onclick="deleteInfo('${e.id}')">✕</button>
+        <div class="info-card-actions">
+          <button class="icon-btn" onclick="startEditInfo('${e.id}')" aria-label="Edit">${icon(ICONS.edit, 16)}</button>
+          <button class="icon-btn danger" onclick="deleteInfo('${e.id}')" aria-label="Delete">${icon(ICONS.trash, 16)}</button>
+        </div>
       </div>
       ${e.body ? `<div class="info-card-body">${esc(e.body)}</div>` : ''}
-      <div class="info-card-date">
-        ${new Date(e.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}
+      <div class="info-card-meta">
+        <span>${new Date(e.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</span>
         ${e.tag ? `<span class="chip">${esc(e.tag)}</span>` : ''}
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
-// ── Daily ──────────────────────────────────────────────────────────────────
-
+// ══════════════════════════════════════════════════════════════════════════
+// DAILY
+// ══════════════════════════════════════════════════════════════════════════
 async function addHabit() {
   const name = document.getElementById('habit-name').value.trim();
-  if (!name) return flash('habit-name', 'Enter habit name');
+  if (!name) return flashErr('habit-name', 'Enter habit name');
+
   const btn = document.getElementById('habit-add-btn');
   btnLoad(btn, true);
-  const { error } = await db.from('habits').insert({ user_id: user.id, name });
+  const { error } = await dbCall(() => db.from('habits').insert({ user_id: user.id, name }));
   btnLoad(btn, false);
-  if (error) return alert(error.message);
+  if (error) return;
+
   document.getElementById('habit-name').value = '';
+  await renderDaily();
+}
+
+function startEditHabit(id) { editing.habit = id; renderDaily(); }
+function cancelEditHabit()   { editing.habit = null; renderDaily(); }
+
+async function saveEditHabit(id) {
+  const name = document.getElementById('eh-name-' + id).value.trim();
+  if (!name) return toast('Name is required', 'error');
+  const { error } = await dbCall(() => db.from('habits').update({ name }).eq('id', id).eq('user_id', user.id));
+  if (error) return;
+  editing.habit = null;
+  toast('Updated', 'ok');
   await renderDaily();
 }
 
 async function toggleHabit(habitId) {
   const dateKey = todayKey();
-  const { data } = await db.from('habit_completions')
+  const { data } = await dbCall(() => db.from('habit_completions')
     .select('id').eq('user_id', user.id).eq('habit_id', habitId).eq('date', dateKey)
-    .maybeSingle();
+    .maybeSingle());
 
-  if (data) await db.from('habit_completions').delete().eq('id', data.id);
-  else      await db.from('habit_completions').insert({ user_id: user.id, habit_id: habitId, date: dateKey });
-
+  if (data) {
+    await dbCall(() => db.from('habit_completions').delete().eq('id', data.id));
+  } else {
+    await dbCall(() => db.from('habit_completions').insert({ user_id: user.id, habit_id: habitId, date: dateKey }));
+  }
   await renderDaily();
 }
 
 async function deleteHabit(id) {
-  await db.from('habits').delete().eq('id', id).eq('user_id', user.id);
+  await dbCall(() => db.from('habits').delete().eq('id', id).eq('user_id', user.id));
   await renderDaily();
 }
 
 async function saveDailyNote() {
   const text = document.getElementById('daily-note').value.trim();
-  await db.from('daily_notes').upsert(
+  await dbCall(() => db.from('daily_notes').upsert(
     { user_id: user.id, date: todayKey(), note: text },
     { onConflict: 'user_id,date' }
-  );
-  document.getElementById('saved-daily-note').textContent = text;
+  ));
+  toast('Saved', 'ok');
 }
 
 async function renderDaily() {
   const dateKey = todayKey();
 
-  const [{ data: habits }, { data: completions }, { data: noteRow }] = await Promise.all([
-    db.from('habits').select('*').eq('user_id', user.id).order('created_at'),
-    db.from('habit_completions').select('habit_id').eq('user_id', user.id).eq('date', dateKey),
-    db.from('daily_notes').select('note').eq('user_id', user.id).eq('date', dateKey).maybeSingle()
+  const [habitRes, compRes, noteRes] = await Promise.all([
+    dbCall(() => db.from('habits').select('*').eq('user_id', user.id).order('created_at')),
+    dbCall(() => db.from('habit_completions').select('habit_id').eq('user_id', user.id).eq('date', dateKey)),
+    dbCall(() => db.from('daily_notes').select('note').eq('user_id', user.id).eq('date', dateKey).maybeSingle())
   ]);
 
-  const doneIds = new Set((completions || []).map(c => c.habit_id));
-  const h = habits || [];
-  const pct = h.length ? Math.round((doneIds.size / h.length) * 100) : 0;
+  const habits = habitRes.data || [];
+  const completions = compRes.data || [];
+  const noteRow = noteRes.data;
+
+  const doneIds = new Set(completions.map(c => c.habit_id));
+  const pct = habits.length ? Math.round((doneIds.size / habits.length) * 100) : 0;
   document.getElementById('daily-pct').textContent = pct + '%';
 
   const el = document.getElementById('habit-list');
-  if (!h.length) { el.innerHTML = '<div class="empty">Add habits to track</div>'; }
-  else {
-    el.innerHTML = h.map(habit => {
+  if (!habits.length) {
+    el.innerHTML = '<div class="empty">Add habits to track</div>';
+  } else {
+    el.innerHTML = habits.map(habit => {
+      if (editing.habit === habit.id) {
+        return `
+        <div class="entry-editing">
+          <input type="text" id="eh-name-${habit.id}" value="${esc(habit.name)}" style="margin-bottom:8px">
+          <div class="edit-actions">
+            <button class="btn btn-purple" onclick="saveEditHabit('${habit.id}')">Save</button>
+            <button class="btn btn-ghost" onclick="cancelEditHabit()">Cancel</button>
+          </div>
+        </div>`;
+      }
       const done = doneIds.has(habit.id);
       return `
       <div class="habit-row">
-        <button class="habit-check ${done ? 'done' : ''}" onclick="toggleHabit('${habit.id}')">${done ? '✓' : ''}</button>
+        <button class="habit-check ${done ? 'done' : ''}" onclick="toggleHabit('${habit.id}')" aria-label="Toggle">
+          ${icon(ICONS.check, 14)}
+        </button>
         <span class="habit-name ${done ? 'done' : ''}">${esc(habit.name)}</span>
-        <button class="btn-danger" onclick="deleteHabit('${habit.id}')">✕</button>
+        <button class="icon-btn" onclick="startEditHabit('${habit.id}')" aria-label="Edit">${icon(ICONS.edit, 16)}</button>
+        <button class="icon-btn danger" onclick="deleteHabit('${habit.id}')" aria-label="Delete">${icon(ICONS.trash, 16)}</button>
       </div>`;
     }).join('');
   }
 
   const note = noteRow?.note || '';
-  if (note) {
-    document.getElementById('daily-note').value = note;
-    document.getElementById('saved-daily-note').textContent = note;
-  }
+  document.getElementById('daily-note').value = note;
 }
 
-// ── Navigation ─────────────────────────────────────────────────────────────
-
+// ══════════════════════════════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════════════════════════════
 function switchTab(tab) {
+  // Cancel any open edits when switching tabs
+  editing = { food: null, workout: null, info: null, habit: null };
+
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
   document.getElementById('section-' + tab).classList.add('active');
@@ -848,8 +1370,9 @@ function goToday(section) {
   if (section === 'food') renderFood(); else renderWorkout();
 }
 
-// ── Utils ──────────────────────────────────────────────────────────────────
-
+// ══════════════════════════════════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════════════════════════════════
 const todayKey  = () => new Date().toISOString().split('T')[0];
 const offsetKey = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().split('T')[0]; };
 const fmt = (key) => {
@@ -860,9 +1383,9 @@ const fmt = (key) => {
 };
 
 function esc(s) {
-  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
-function flash(id, placeholder) {
+function flashErr(id, placeholder) {
   const el = document.getElementById(id);
   el.style.borderColor = 'var(--danger)';
   el.placeholder = placeholder;
@@ -872,12 +1395,21 @@ function setLoading(on) {
   const bar = document.getElementById('loading-bar');
   bar.style.opacity = '1';
   bar.style.width   = on ? '70%' : '100%';
-  if (!on) setTimeout(() => { bar.style.width = '0%'; bar.style.opacity = '0'; }, 400);
+  if (!on) setTimeout(() => { bar.style.width = '0%'; bar.style.opacity = '0'; }, 350);
 }
 function btnLoad(btn, on) {
   if (!btn) return;
-  if (on)  { btn._orig = btn.textContent; btn.textContent = '...'; btn.disabled = true; }
-  else     { btn.textContent = btn._orig || btn.textContent; btn.disabled = false; }
+  if (on)  { btn._orig = btn.innerHTML; btn.innerHTML = '...'; btn.disabled = true; }
+  else     { btn.innerHTML = btn._orig || btn.innerHTML; btn.disabled = false; }
+}
+
+let _toastTimer;
+function toast(msg, type = '') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'show ' + type;
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => { el.className = type; }, 2200);
 }
 
 init();

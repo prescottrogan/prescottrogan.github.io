@@ -35,11 +35,9 @@
     padding: 0 0 88px;
     min-height: 100vh;
   }
-
   svg { display: block; }
   button { font-family: inherit; }
 
-  /* ── Loading bar ─────────────────────────────── */
   #loading-bar {
     position: fixed; top: 0; left: 0;
     height: 2px; width: 0%;
@@ -47,131 +45,68 @@
     transition: width .25s ease, opacity .3s ease;
     z-index: 9999; opacity: 0;
   }
-
-  /* ── Toast ───────────────────────────────────── */
   #toast {
-    position: fixed;
-    top: 16px; left: 50%;
+    position: fixed; top: 16px; left: 50%;
     transform: translateX(-50%) translateY(-80px);
-    background: var(--surface-2);
-    border: 1px solid var(--border-light);
-    color: var(--text);
-    padding: 10px 16px;
-    border-radius: 8px;
-    font-size: 0.85rem;
-    z-index: 9000;
-    transition: transform .25s ease;
-    max-width: 90%;
-    box-shadow: 0 4px 16px rgba(0,0,0,0.4);
+    background: var(--surface-2); border: 1px solid var(--border-light);
+    color: var(--text); padding: 10px 16px; border-radius: 8px;
+    font-size: .85rem; z-index: 9000; transition: transform .25s ease;
+    max-width: 90%; box-shadow: 0 4px 16px rgba(0,0,0,.4);
   }
   #toast.show { transform: translateX(-50%) translateY(0); }
   #toast.error { border-color: var(--danger); color: var(--danger); }
-  #toast.ok { border-color: var(--accent); }
+  #toast.ok    { border-color: var(--accent); }
 
-  /* ── Auth ───────────────────────────────────── */
+  /* ── Auth ──────────────────────────────────────── */
   #auth-screen {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 24px;
+    min-height: 100vh; display: flex;
+    align-items: center; justify-content: center; padding: 24px;
   }
   .auth-box {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 36px 28px;
-    width: 100%;
-    max-width: 380px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 36px 28px; width: 100%; max-width: 380px;
   }
-  .auth-logo {
-    font-size: 1.75rem;
-    font-weight: 700;
-    letter-spacing: -.02em;
-    margin-bottom: 4px;
-  }
-  .auth-sub { color: var(--muted); font-size: .9rem; margin-bottom: 24px; }
+  .auth-logo { font-size: 1.75rem; font-weight: 700; letter-spacing: -.02em; margin-bottom: 4px; }
+  .auth-sub  { color: var(--muted); font-size: .9rem; margin-bottom: 24px; }
   .auth-input {
-    display: block; width: 100%;
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    padding: 12px 14px;
-    font-size: 1rem;
-    margin-bottom: 10px;
-    outline: none;
-    transition: border-color .15s;
+    display: block; width: 100%; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 8px;
+    color: var(--text); padding: 12px 14px; font-size: 1rem;
+    margin-bottom: 10px; outline: none; transition: border-color .15s; font-family: inherit;
   }
   .auth-input:focus { border-color: var(--accent); }
   .auth-btns { display: flex; gap: 8px; margin-top: 6px; }
-  #auth-msg {
-    font-size: .85rem;
-    margin-top: 12px;
-    line-height: 1.4;
-    min-height: 18px;
-  }
+  #auth-msg  { font-size: .85rem; margin-top: 12px; line-height: 1.4; min-height: 18px; }
 
-  /* ── Header ─────────────────────────────────── */
+  /* ── Header ────────────────────────────────────── */
   header {
     position: sticky; top: 0;
-    background: rgba(10,10,10,0.85);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: rgba(10,10,10,.88); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
-    padding: 14px 20px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    z-index: 50;
+    padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; z-index: 50;
   }
-  header h1 {
-    font-size: 1.1rem;
-    font-weight: 600;
-    letter-spacing: -.01em;
-  }
+  header h1 { font-size: 1.1rem; font-weight: 600; letter-spacing: -.01em; }
   .header-right { display: flex; align-items: center; gap: 10px; }
   #date-display { color: var(--muted); font-size: .78rem; }
   .signout-btn {
-    background: transparent;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    color: var(--muted);
-    padding: 5px 10px;
-    font-size: .75rem;
-    cursor: pointer;
+    background: transparent; border: 1px solid var(--border); border-radius: 6px;
+    color: var(--muted); padding: 5px 10px; font-size: .75rem; cursor: pointer;
     transition: border-color .15s, color .15s;
   }
   .signout-btn:hover { border-color: var(--danger); color: var(--danger); }
 
-  /* ── Bottom Nav ─────────────────────────────── */
+  /* ── Nav ───────────────────────────────────────── */
   nav {
-    position: fixed;
-    bottom: 0; left: 0; right: 0;
-    max-width: 640px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    background: rgba(22,22,22,0.92);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-    border-top: 1px solid var(--border);
-    z-index: 100;
+    position: fixed; bottom: 0; left: 0; right: 0; max-width: 640px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    background: rgba(22,22,22,.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border); z-index: 100;
     padding-bottom: env(safe-area-inset-bottom);
   }
   nav button {
-    background: none;
-    border: none;
-    color: var(--muted);
-    padding: 12px 4px 10px;
-    cursor: pointer;
-    font-size: .68rem;
-    font-weight: 500;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    transition: color .15s;
+    background: none; border: none; color: var(--muted);
+    padding: 12px 4px 10px; cursor: pointer; font-size: .68rem; font-weight: 500;
+    display: flex; flex-direction: column; align-items: center; gap: 4px; transition: color .15s;
   }
   nav button svg { width: 22px; height: 22px; stroke-width: 2; }
   nav button.active[data-tab="food"]    { color: var(--accent); }
@@ -179,64 +114,32 @@
   nav button.active[data-tab="info"]    { color: var(--accent3); }
   nav button.active[data-tab="daily"]   { color: var(--accent4); }
 
-  /* ── Sections ───────────────────────────────── */
+  /* ── Sections ──────────────────────────────────── */
   .section { display: none; padding: 16px 20px; }
   .section.active { display: block; animation: fadeIn .15s ease; }
-  @keyframes fadeIn {
-    from { opacity: 0; transform: translateY(4px); }
-    to { opacity: 1; transform: translateY(0); }
-  }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(4px); } to { opacity:1; transform:none; } }
 
-  /* ── Cards ──────────────────────────────────── */
+  /* ── Cards ─────────────────────────────────────── */
   .card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--r);
-    padding: 16px;
-    margin-bottom: 12px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r); padding: 16px; margin-bottom: 12px;
   }
 
-  /* ── Big stat ───────────────────────────────── */
+  /* ── Stat ──────────────────────────────────────── */
   .stat-big { text-align: center; padding: 22px 16px; }
-  .stat-big .number {
-    font-size: 3rem; font-weight: 700;
-    line-height: 1; letter-spacing: -.03em;
-    font-variant-numeric: tabular-nums;
-  }
-  .stat-big .label { color: var(--muted); font-size: .85rem; margin-top: 6px; }
-  .goal-bar {
-    height: 6px;
-    background: var(--border);
-    border-radius: 3px;
-    margin-top: 14px;
-    overflow: hidden;
-  }
-  .goal-bar-fill {
-    height: 100%;
-    border-radius: 3px;
-    transition: width .35s ease, background .25s ease;
-  }
-  .goal-text {
-    font-size: .75rem;
-    color: var(--muted);
-    margin-top: 8px;
-  }
+  .stat-big .number { font-size: 3rem; font-weight: 700; line-height: 1; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
+  .stat-big .label  { color: var(--muted); font-size: .85rem; margin-top: 6px; }
+  .goal-bar      { height: 6px; background: var(--border); border-radius: 3px; margin-top: 14px; overflow: hidden; }
+  .goal-bar-fill { height: 100%; border-radius: 3px; transition: width .35s ease, background .25s ease; }
+  .goal-text     { font-size: .75rem; color: var(--muted); margin-top: 8px; }
 
-  /* ── Forms ──────────────────────────────────── */
+  /* ── Forms ─────────────────────────────────────── */
   .form-row { display: flex; gap: 8px; margin-bottom: 10px; }
   .form-row input, .form-row select,
-  input[type="text"], input[type="number"],
-  textarea, select {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    padding: 10px 12px;
-    font-size: .95rem;
-    outline: none;
-    transition: border-color .15s, background .15s;
-    font-family: inherit;
-    width: 100%;
+  input[type="text"], input[type="number"], textarea, select {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+    color: var(--text); padding: 10px 12px; font-size: .95rem; outline: none;
+    transition: border-color .15s; font-family: inherit; width: 100%;
   }
   input:focus, textarea:focus, select:focus { border-color: var(--accent); }
   .form-row input { flex: 1; min-width: 0; }
@@ -245,20 +148,11 @@
   textarea { resize: vertical; min-height: 80px; }
   input[type="text"], input[type="number"] { margin-bottom: 8px; }
 
-  /* ── Buttons ────────────────────────────────── */
+  /* ── Buttons ───────────────────────────────────── */
   .btn {
-    border: none;
-    border-radius: 8px;
-    padding: 10px 16px;
-    font-size: .9rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: opacity .15s, transform .08s, background .15s;
-    white-space: nowrap;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
+    border: none; border-radius: 8px; padding: 10px 16px; font-size: .9rem; font-weight: 600;
+    cursor: pointer; transition: opacity .15s, transform .08s; white-space: nowrap;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
   }
   .btn:active:not(:disabled) { transform: scale(.97); }
   .btn:disabled { opacity: .5; cursor: not-allowed; }
@@ -267,257 +161,168 @@
   .btn-blue   { background: var(--accent2); color: #061e3a; }
   .btn-yellow { background: var(--accent3); color: #2c1903; }
   .btn-purple { background: var(--accent4); color: #1d0e3e; }
-  .btn-ghost  {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text-2);
-    padding: 8px 12px;
-    font-size: .85rem;
-    font-weight: 500;
-  }
+  .btn-ghost  { background: transparent; border: 1px solid var(--border); color: var(--text-2); padding: 8px 12px; font-size: .85rem; font-weight: 500; }
   .btn-ghost:hover { border-color: var(--border-light); }
-  .btn-full   { width: 100%; margin-top: 4px; }
+  .btn-full { width: 100%; margin-top: 4px; }
 
-  /* Icon buttons (small action icons) */
   .icon-btn {
-    background: transparent;
-    border: none;
-    color: var(--muted);
-    width: 30px; height: 30px;
-    border-radius: 6px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
+    background: transparent; border: none; color: var(--muted);
+    width: 30px; height: 30px; border-radius: 6px; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center;
     transition: background .12s, color .12s;
   }
   .icon-btn svg { width: 16px; height: 16px; stroke-width: 2; }
   .icon-btn:hover { background: var(--border); color: var(--text); }
   .icon-btn.danger:hover { color: var(--danger); background: rgba(239,68,68,.1); }
 
-  /* ── Section title ──────────────────────────── */
+  /* ── Section title ─────────────────────────────── */
   .section-title {
-    font-size: .72rem;
-    text-transform: uppercase;
-    letter-spacing: .08em;
-    color: var(--muted);
-    margin: 16px 0 8px;
-    font-weight: 600;
+    font-size: .72rem; text-transform: uppercase; letter-spacing: .08em;
+    color: var(--muted); margin: 16px 0 8px; font-weight: 600;
   }
   .section-title:first-child { margin-top: 0; }
 
-  /* ── Entries ────────────────────────────────── */
+  /* ── Entries ───────────────────────────────────── */
   .entry {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--border);
-    gap: 8px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 0; border-bottom: 1px solid var(--border); gap: 8px;
   }
-  .entry:last-child { border-bottom: none; }
+  .entry:last-child  { border-bottom: none; }
   .entry:first-child { padding-top: 4px; }
   .entry-content { flex: 1; min-width: 0; }
-  .entry-name {
-    font-size: .95rem;
-    font-weight: 500;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .entry-cal {
-    font-weight: 700;
-    font-size: .95rem;
-    color: var(--accent);
-    font-variant-numeric: tabular-nums;
-  }
-  .entry-meta {
-    font-size: .76rem;
-    color: var(--muted);
-    margin-top: 3px;
-  }
+  .entry-name { font-size: .95rem; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .entry-cal  { font-weight: 700; font-size: .95rem; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .entry-meta { font-size: .76rem; color: var(--muted); margin-top: 3px; }
   .entry-right { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
   .workout-entry .entry-cal { color: var(--accent2); }
-
-  /* Edit-mode entry */
   .entry-editing {
-    background: var(--surface-2);
-    margin: 4px -8px;
-    padding: 12px;
-    border-radius: 8px;
-    border-bottom: none;
+    background: var(--surface-2); margin: 4px -8px; padding: 12px;
+    border-radius: 8px; border-bottom: none;
   }
   .edit-actions { display: flex; gap: 8px; margin-top: 8px; }
   .edit-actions .btn { flex: 1; padding: 8px 12px; font-size: .85rem; }
 
-  /* ── Macros ─────────────────────────────────── */
-  .macros-row {
-    display: grid;
-    grid-template-columns: repeat(3,1fr);
-    gap: 8px;
-  }
-  .macro-box {
-    background: var(--bg);
-    border-radius: 8px;
-    padding: 12px 8px;
-    text-align: center;
-  }
+  /* ── Macros ────────────────────────────────────── */
+  .macros-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
+  .macro-box  { background: var(--bg); border-radius: 8px; padding: 12px 8px; text-align: center; }
   .macro-box .val { font-size: 1.1rem; font-weight: 700; font-variant-numeric: tabular-nums; }
   .macro-box .lbl { font-size: .7rem; color: var(--muted); margin-top: 2px; }
 
-  /* ── Day nav ────────────────────────────────── */
-  .day-nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
-    gap: 8px;
-  }
+  /* ── Day nav ───────────────────────────────────── */
+  .day-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; gap: 8px; }
   .day-nav-center { text-align: center; flex: 1; }
-  .day-nav-date { font-weight: 600; font-size: .95rem; }
+  .day-nav-date   { font-weight: 600; font-size: .95rem; }
   .day-nav .nav-arrow {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text-2);
-    padding: 8px;
-    cursor: pointer;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    transition: border-color .15s, color .15s;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
+    color: var(--text-2); padding: 8px; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center; transition: border-color .15s;
   }
-  .day-nav .nav-arrow:hover { border-color: var(--border-light); color: var(--text); }
   .day-nav .nav-arrow svg { width: 16px; height: 16px; }
   .today-btn {
-    font-size: .72rem;
-    color: var(--accent);
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 4px 8px;
-    margin-left: 4px;
-    font-weight: 500;
+    font-size: .72rem; color: var(--accent); background: none; border: none;
+    cursor: pointer; padding: 4px 8px; margin-left: 4px; font-weight: 500;
   }
-
-  /* ── Goal edit ──────────────────────────────── */
-  .goal-row {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    margin-top: 10px;
-  }
+  .goal-row { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
   .goal-row label { font-size: .8rem; color: var(--muted); flex: 1; text-align: left; }
   .goal-row input { width: 90px; margin: 0; }
 
-  /* ── Info cards ─────────────────────────────── */
+  /* ── Info / Folders ────────────────────────────── */
+  .folder-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+  .folder-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--r);
+    padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer;
+    transition: border-color .15s;
+  }
+  .folder-card:hover { border-color: var(--border-light); }
+  .folder-icon {
+    width: 36px; height: 36px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .folder-icon svg { width: 18px; height: 18px; }
+  .folder-info { flex: 1; min-width: 0; }
+  .folder-name  { font-size: .95rem; font-weight: 600; }
+  .folder-count { font-size: .76rem; color: var(--muted); margin-top: 2px; }
+  .folder-actions { display: flex; gap: 4px; }
+  .folder-chevron { color: var(--muted); flex-shrink: 0; }
+
+  .folder-header {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+  }
+  .folder-back {
+    background: transparent; border: 1px solid var(--border); border-radius: 8px;
+    color: var(--text-2); padding: 8px; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .folder-back svg { width: 16px; height: 16px; }
+  .folder-title { font-size: 1.1rem; font-weight: 700; flex: 1; }
+
   .info-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--r);
-    padding: 14px 16px;
-    margin-bottom: 10px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r); padding: 14px 16px; margin-bottom: 10px;
   }
   .info-card-title {
-    font-weight: 600;
-    font-size: 1rem;
-    margin-bottom: 6px;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-    gap: 8px;
+    font-weight: 600; font-size: 1rem; margin-bottom: 6px;
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;
   }
   .info-card-title span { flex: 1; }
   .info-card-actions { display: flex; gap: 4px; flex-shrink: 0; }
-  .info-card-body {
-    font-size: .88rem;
-    color: var(--text-2);
-    line-height: 1.5;
-    white-space: pre-wrap;
-    word-break: break-word;
-  }
-  .info-card-meta {
-    font-size: .72rem;
-    color: var(--muted);
-    margin-top: 8px;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
+  .info-card-body { font-size: .88rem; color: var(--text-2); line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
+  .info-card-meta { font-size: .72rem; color: var(--muted); margin-top: 8px; }
 
-  /* ── Habits ─────────────────────────────────── */
+  .add-folder-row { display: flex; gap: 8px; margin-bottom: 16px; }
+
+  /* ── Habits/Tasks ──────────────────────────────── */
+  .type-toggle {
+    display: flex; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 3px; gap: 3px; margin-bottom: 10px;
+  }
+  .type-btn {
+    flex: 1; background: transparent; border: none; border-radius: 6px;
+    color: var(--muted); padding: 7px 12px; font-size: .85rem; font-weight: 600;
+    cursor: pointer; transition: background .15s, color .15s;
+  }
+  .type-btn.active { background: var(--surface-2); color: var(--text); }
+
   .habit-row {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 0; border-bottom: 1px solid var(--border);
   }
-  .habit-row:last-child { border-bottom: none; }
+  .habit-row:last-child  { border-bottom: none; }
   .habit-row:first-child { padding-top: 4px; }
+  .habit-row.done-row .habit-name { text-decoration: line-through; color: var(--muted); }
+
   .habit-check {
-    width: 26px; height: 26px;
-    border-radius: 50%;
-    border: 2px solid var(--border-light);
-    background: transparent;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    transition: all .15s;
+    width: 26px; height: 26px; border: 2px solid var(--border-light); background: transparent;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: all .15s;
   }
+  .habit-check.round  { border-radius: 50%; }
+  .habit-check.square { border-radius: 5px; }
   .habit-check svg { width: 14px; height: 14px; stroke-width: 3; opacity: 0; transition: opacity .15s; }
-  .habit-check.done { background: var(--accent4); border-color: var(--accent4); color: #fff; }
+  .habit-check.done { color: #fff; }
+  .habit-check.round.done  { background: var(--accent4); border-color: var(--accent4); }
+  .habit-check.square.done { background: var(--accent3); border-color: var(--accent3); }
   .habit-check.done svg { opacity: 1; }
+
   .habit-name { flex: 1; font-size: .95rem; font-weight: 500; }
-  .habit-name.done { text-decoration: line-through; color: var(--muted); }
+  .habit-badge {
+    font-size: .65rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+    padding: 2px 6px; border-radius: 4px; flex-shrink: 0;
+  }
+  .badge-habit { background: rgba(167,139,250,.12); color: var(--accent4); }
+  .badge-task  { background: rgba(245,158,11,.12);  color: var(--accent3); }
 
-  /* ── Chip / filter ──────────────────────────── */
-  .chip {
-    display: inline-flex;
-    align-items: center;
-    background: var(--border);
-    border-radius: 4px;
-    padding: 2px 8px;
-    font-size: .72rem;
-    color: var(--text-2);
+  .list-divider {
+    font-size: .68rem; text-transform: uppercase; letter-spacing: .08em;
+    color: var(--muted); font-weight: 600; padding: 8px 0 4px;
+    border-bottom: 1px solid var(--border); margin-bottom: 0;
   }
-  .filter-bar {
-    display: flex;
-    gap: 6px;
-    margin-bottom: 12px;
-    flex-wrap: wrap;
-  }
-  .filter-chip {
-    background: transparent;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    color: var(--muted);
-    padding: 5px 10px;
-    font-size: .8rem;
-    cursor: pointer;
-    transition: all .12s;
-  }
-  .filter-chip:hover { border-color: var(--border-light); color: var(--text-2); }
-  .filter-chip.active { border-color: var(--accent3); color: var(--accent3); background: rgba(245,158,11,.08); }
+  .list-divider:not(:first-child) { margin-top: 4px; }
 
-  /* ── Misc ───────────────────────────────────── */
-  .empty {
-    text-align: center;
-    color: var(--muted);
-    padding: 32px 0;
-    font-size: .9rem;
-  }
-  .text-link {
-    color: var(--accent2);
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: .8rem;
-    padding: 0;
-    margin-left: 6px;
-  }
+  /* ── Misc ──────────────────────────────────────── */
+  .chip { display: inline-flex; align-items: center; background: var(--border); border-radius: 4px; padding: 2px 8px; font-size: .72rem; color: var(--text-2); }
+  .empty { text-align: center; color: var(--muted); padding: 32px 0; font-size: .9rem; }
+  .text-link { color: var(--accent2); background: none; border: none; cursor: pointer; font-size: .8rem; padding: 0; margin-left: 6px; }
 </style>
 </head>
 <body>
@@ -551,9 +356,8 @@
     </div>
   </header>
 
-  <!-- ── FOOD ──────────────────────────────────── -->
+  <!-- ── FOOD ──────────────────────────────────────── -->
   <div id="section-food" class="section active">
-
     <div class="card stat-big">
       <div class="number" id="cal-total" style="color:var(--accent)">0</div>
       <div class="label">calories today</div>
@@ -568,7 +372,6 @@
         <button class="btn btn-green" style="padding:8px 14px" onclick="saveCalGoal()">Save</button>
       </div>
     </div>
-
     <div class="card" style="padding:14px 16px">
       <div class="macros-row">
         <div class="macro-box"><div class="val" id="macro-p" style="color:var(--accent2)">0g</div><div class="lbl">protein</div></div>
@@ -576,7 +379,6 @@
         <div class="macro-box"><div class="val" id="macro-f" style="color:var(--danger)">0g</div><div class="lbl">fat</div></div>
       </div>
     </div>
-
     <div class="day-nav">
       <button class="nav-arrow" onclick="changeDay('food',-1)" id="food-prev"></button>
       <div class="day-nav-center">
@@ -585,7 +387,6 @@
       </div>
       <button class="nav-arrow" onclick="changeDay('food',1)" id="food-next"></button>
     </div>
-
     <div class="card">
       <div class="section-title">Add Food</div>
       <div class="form-row">
@@ -599,15 +400,12 @@
       </div>
       <button id="food-add-btn" class="btn btn-green btn-full" onclick="addFood()"><span id="food-plus"></span>Add</button>
     </div>
-
     <div class="section-title">Today's Log</div>
     <div class="card" id="food-list"><div class="empty">Nothing logged yet</div></div>
-
   </div>
 
-  <!-- ── WORKOUT ────────────────────────────────── -->
+  <!-- ── WORKOUT ────────────────────────────────────── -->
   <div id="section-workout" class="section">
-
     <div class="day-nav">
       <button class="nav-arrow" onclick="changeDay('workout',-1)" id="workout-prev"></button>
       <div class="day-nav-center">
@@ -616,12 +414,10 @@
       </div>
       <button class="nav-arrow" onclick="changeDay('workout',1)" id="workout-next"></button>
     </div>
-
     <div class="card stat-big" style="padding:18px">
       <div class="number" id="workout-total" style="color:var(--accent2);font-size:2.5rem">0</div>
       <div class="label">exercises logged</div>
     </div>
-
     <div class="card">
       <div class="section-title">Log Exercise</div>
       <div class="form-row">
@@ -641,58 +437,33 @@
       </div>
       <button id="workout-add-btn" class="btn btn-blue btn-full" onclick="addExercise()"><span id="workout-plus"></span>Add Exercise</button>
     </div>
-
     <div class="section-title">Workout Log</div>
     <div class="card workout-entry" id="workout-list"><div class="empty">No exercises logged yet</div></div>
-
   </div>
 
-  <!-- ── INFO ──────────────────────────────────── -->
+  <!-- ── INFO ──────────────────────────────────────── -->
   <div id="section-info" class="section">
-
-    <div class="card">
-      <div class="section-title">Save Info</div>
-      <input type="text" id="info-title" placeholder="Title (e.g. Doctor's number, Recipe, Goal...)">
-      <textarea id="info-body" placeholder="Content..."></textarea>
-      <div class="form-row" style="margin-bottom:0;margin-top:8px">
-        <input type="text" id="info-tag" placeholder="Tag (optional, e.g. health)" style="flex:1">
-        <button id="info-add-btn" class="btn btn-yellow" onclick="addInfo()"><span id="info-plus"></span>Save</button>
-      </div>
-    </div>
-
-    <div class="filter-bar" id="tag-filters">
-      <button class="filter-chip active" onclick="filterInfo('all')" data-filter="all">All</button>
-    </div>
-
-    <div id="info-list"><div class="empty">Nothing saved yet</div></div>
-
+    <div id="info-view"></div>
   </div>
 
-  <!-- ── DAILY ──────────────────────────────────── -->
+  <!-- ── DAILY ─────────────────────────────────────── -->
   <div id="section-daily" class="section">
-
     <div class="card stat-big" style="padding:18px">
       <div class="number" id="daily-pct" style="color:var(--accent4);font-size:2.5rem">0%</div>
-      <div class="label">habits done today</div>
+      <div class="label" id="daily-label">done today</div>
     </div>
-
     <div class="card">
-      <div class="section-title">Add Habit</div>
+      <div class="section-title">Add</div>
+      <div class="type-toggle">
+        <button class="type-btn active" id="type-habit-btn" onclick="setAddType('habit')">Habit (recurring)</button>
+        <button class="type-btn"        id="type-task-btn"  onclick="setAddType('task')">Task (one-time)</button>
+      </div>
       <div class="form-row">
-        <input type="text" id="habit-name" placeholder="New habit (e.g. Drink water, Walk, Read)" style="flex:1">
-        <button id="habit-add-btn" class="btn btn-purple" onclick="addHabit()"><span id="habit-plus"></span>Add</button>
+        <input type="text" id="habit-name" placeholder="Name..." style="flex:1">
+        <button id="habit-add-btn" class="btn btn-purple" onclick="addItem()"><span id="habit-plus"></span>Add</button>
       </div>
     </div>
-
-    <div class="section-title">Today's Habits</div>
-    <div class="card" id="habit-list"><div class="empty">Add habits to track</div></div>
-
-    <div class="card" style="margin-top:12px">
-      <div class="section-title">Quick Note (Today)</div>
-      <textarea id="daily-note" placeholder="Jot anything down..." style="min-height:100px"></textarea>
-      <button class="btn btn-purple btn-full" onclick="saveDailyNote()">Save Note</button>
-    </div>
-
+    <div id="daily-list"></div>
   </div>
 
   <nav>
@@ -701,118 +472,88 @@
     <button              data-tab="info"    onclick="switchTab('info')"    id="nav-info"></button>
     <button              data-tab="daily"   onclick="switchTab('daily')"   id="nav-daily"></button>
   </nav>
-
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
-// ══════════════════════════════════════════════════════════════════════════
-// CONFIG & STATE
-// ══════════════════════════════════════════════════════════════════════════
 const SUPABASE_URL = 'https://cemujbavmnyqwhkgwbmu.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_y8WHEa4a7r7XeH-6-mCOiw_LhPq5mPq';
 const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-    detectSessionInUrl: false,
-    storage: window.localStorage,
-    storageKey: 'tracker-auth'
-  }
+  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false, storage: window.localStorage, storageKey: 'tracker-auth' }
 });
 
 let user = null;
 let calGoal = 2000;
 let currentDays = { food: 0, workout: 0 };
-let infoFilter = 'all';
+let editing = { food: null, workout: null, info: null, habit: null, folder: null };
+
+// Info state
+let currentFolder = null;  // null=folder list, '__all__'=all items, uuid=folder contents
+let _folderCache = [];
 let _infoCache = [];
 
-// Edit mode tracking
-let editing = { food: null, workout: null, info: null, habit: null };
+// Daily state
+let addType = 'habit'; // 'habit' | 'task'
 
-// ══════════════════════════════════════════════════════════════════════════
-// ICONS (Lucide-style)
-// ══════════════════════════════════════════════════════════════════════════
+// ── Icons ──────────────────────────────────────────────────────────────────
 const icon = (path, size = 18) =>
   `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${path}</svg>`;
 
-const ICONS = {
+const IC = {
   food:    '<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>',
   workout: '<path d="M14.4 14.4 9.6 9.6"/><path d="M18.657 21.485a2 2 0 1 1-2.829-2.828l-1.767 1.768a2 2 0 1 1-2.829-2.829l6.364-6.364a2 2 0 1 1 2.829 2.829l-1.768 1.767a2 2 0 1 1 2.828 2.829z"/><path d="m21.5 21.5-1.4-1.4"/><path d="M3.9 3.9 2.5 2.5"/><path d="M6.404 12.768a2 2 0 1 1-2.829-2.829l1.768-1.767a2 2 0 1 1-2.828-2.829l2.828-2.828a2 2 0 1 1 2.829 2.828l1.767-1.768a2 2 0 1 1 2.829 2.829z"/>',
-  info:    '<rect width="8" height="4" x="8" y="2" rx="1" ry="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 12h6"/><path d="M9 16h6"/>',
+  info:    '<rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 12h6"/><path d="M9 16h6"/>',
   daily:   '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
   edit:    '<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/>',
   trash:   '<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>',
   check:   '<polyline points="20 6 9 17 4 12"/>',
-  x:       '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
   plus:    '<path d="M5 12h14"/><path d="M12 5v14"/>',
   arrowL:  '<path d="m15 18-6-6 6-6"/>',
-  arrowR:  '<path d="m9 18 6-6-6-6"/>'
+  arrowR:  '<path d="m9 18 6-6-6-6"/>',
+  folder:  '<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>',
+  chevronR:'<path d="m9 18 6-6-6-6"/>',
+  grid:    '<rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/>'
 };
 
+const FOLDER_COLORS = ['#60a5fa','#4ade80','#f59e0b','#a78bfa','#f87171','#34d399','#fb923c','#e879f9'];
+
 function injectIcons() {
-  document.getElementById('nav-food').innerHTML    = icon(ICONS.food, 22)    + '<span>Food</span>';
-  document.getElementById('nav-workout').innerHTML = icon(ICONS.workout, 22) + '<span>Workout</span>';
-  document.getElementById('nav-info').innerHTML    = icon(ICONS.info, 22)    + '<span>Info</span>';
-  document.getElementById('nav-daily').innerHTML   = icon(ICONS.daily, 22)   + '<span>Daily</span>';
-  document.getElementById('food-prev').innerHTML    = icon(ICONS.arrowL);
-  document.getElementById('food-next').innerHTML    = icon(ICONS.arrowR);
-  document.getElementById('workout-prev').innerHTML = icon(ICONS.arrowL);
-  document.getElementById('workout-next').innerHTML = icon(ICONS.arrowR);
-  document.getElementById('food-plus').innerHTML    = icon(ICONS.plus, 16);
-  document.getElementById('workout-plus').innerHTML = icon(ICONS.plus, 16);
-  document.getElementById('info-plus').innerHTML    = icon(ICONS.plus, 16);
-  document.getElementById('habit-plus').innerHTML   = icon(ICONS.plus, 16);
+  document.getElementById('nav-food').innerHTML    = icon(IC.food, 22)    + '<span>Food</span>';
+  document.getElementById('nav-workout').innerHTML = icon(IC.workout, 22) + '<span>Workout</span>';
+  document.getElementById('nav-info').innerHTML    = icon(IC.info, 22)    + '<span>Info</span>';
+  document.getElementById('nav-daily').innerHTML   = icon(IC.daily, 22)   + '<span>Daily</span>';
+  document.getElementById('food-prev').innerHTML    = icon(IC.arrowL);
+  document.getElementById('food-next').innerHTML    = icon(IC.arrowR);
+  document.getElementById('workout-prev').innerHTML = icon(IC.arrowL);
+  document.getElementById('workout-next').innerHTML = icon(IC.arrowR);
+  document.getElementById('food-plus').innerHTML    = icon(IC.plus, 16);
+  document.getElementById('workout-plus').innerHTML = icon(IC.plus, 16);
+  document.getElementById('habit-plus').innerHTML   = icon(IC.plus, 16);
 }
 
-// ══════════════════════════════════════════════════════════════════════════
-// AUTH & SESSION
-// ══════════════════════════════════════════════════════════════════════════
+// ── Auth ───────────────────────────────────────────────────────────────────
 async function init() {
   injectIcons();
-
   const { data: { session } } = await db.auth.getSession();
-  if (session?.user) {
-    user = session.user;
-    await showApp();
-  } else {
-    showAuth();
-  }
+  if (session?.user) { user = session.user; await showApp(); } else showAuth();
 
   db.auth.onAuthStateChange(async (event, session) => {
-    if (event === 'SIGNED_OUT' || !session) {
-      user = null;
-      showAuth();
-    } else if (event === 'SIGNED_IN' && (!user || user.id !== session.user.id)) {
-      user = session.user;
-      await showApp();
-    } else if (event === 'TOKEN_REFRESHED') {
-      user = session.user;
-    }
+    if (event === 'SIGNED_OUT' || !session) { user = null; showAuth(); }
+    else if (event === 'SIGNED_IN' && (!user || user.id !== session.user.id)) { user = session.user; await showApp(); }
+    else if (event === 'TOKEN_REFRESHED') { user = session.user; }
   });
 
-  // Refresh session whenever the tab becomes visible again
   document.addEventListener('visibilitychange', async () => {
     if (document.visibilityState !== 'visible' || !user) return;
     const { data: { session }, error } = await db.auth.getSession();
-    if (error || !session) {
-      toast('Session expired — please sign in.', 'error');
-      user = null;
-      showAuth();
-      return;
-    }
-    // Refresh if expiring within 5 minutes
-    const msLeft = (session.expires_at * 1000) - Date.now();
-    if (msLeft < 5 * 60 * 1000) await db.auth.refreshSession();
+    if (error || !session) { toast('Session expired — please sign in.', 'error'); user = null; showAuth(); return; }
+    if ((session.expires_at * 1000) - Date.now() < 5 * 60 * 1000) await db.auth.refreshSession();
   });
 
-  // Periodic safety refresh every 10 minutes while page is open
   setInterval(async () => {
     if (!user) return;
     const { data: { session } } = await db.auth.getSession();
-    if (session && (session.expires_at * 1000 - Date.now()) < 15 * 60 * 1000) {
-      await db.auth.refreshSession();
-    }
+    if (session && (session.expires_at * 1000 - Date.now()) < 15 * 60 * 1000) await db.auth.refreshSession();
   }, 10 * 60 * 1000);
 }
 
@@ -825,350 +566,420 @@ async function signIn() {
   setLoading(false);
   if (error) setAuthMsg(error.message, true);
 }
-
 async function signUp() {
   const email = document.getElementById('auth-email').value.trim();
   const pass  = document.getElementById('auth-password').value;
-  if (!email || !pass) return setAuthMsg('Enter your email and password.', true);
-  if (pass.length < 6) return setAuthMsg('Password must be at least 6 characters.', true);
+  if (!email || !pass) return setAuthMsg('Enter email and password.', true);
+  if (pass.length < 6) return setAuthMsg('Password must be 6+ characters.', true);
   setLoading(true);
   const { error } = await db.auth.signUp({ email, password: pass });
   setLoading(false);
   if (error) setAuthMsg(error.message, true);
-  else setAuthMsg('Account created! Check your email to confirm, then sign in.');
+  else setAuthMsg('Account created! Check email to confirm, then sign in.');
 }
-
-async function signOut() {
-  await db.auth.signOut();
-}
-
-function setAuthMsg(msg, isErr = false) {
-  const el = document.getElementById('auth-msg');
-  el.textContent = msg;
-  el.style.color = isErr ? 'var(--danger)' : 'var(--accent)';
-}
-
-function showAuth() {
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('auth-screen').style.display = 'flex';
-}
-
+async function signOut() { await db.auth.signOut(); }
+function setAuthMsg(m, e=false) { const el = document.getElementById('auth-msg'); el.textContent = m; el.style.color = e ? 'var(--danger)' : 'var(--accent)'; }
+function showAuth() { document.getElementById('app').style.display = 'none'; document.getElementById('auth-screen').style.display = 'flex'; }
 async function showApp() {
   document.getElementById('auth-screen').style.display = 'none';
   document.getElementById('app').style.display = 'block';
-  document.getElementById('date-display').textContent = new Date().toLocaleDateString('en-US', {
-    weekday: 'short', month: 'short', day: 'numeric'
-  });
+  document.getElementById('date-display').textContent = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
   await loadSettings();
   renderFood();
 }
 
-// ══════════════════════════════════════════════════════════════════════════
-// DB WRAPPER — handles auth errors with one retry
-// ══════════════════════════════════════════════════════════════════════════
+// ── DB wrapper ─────────────────────────────────────────────────────────────
 async function dbCall(builder) {
-  let result = await builder();
-  if (result.error && /JWT|expired|Invalid|401|403/i.test(result.error.message || '')) {
+  let r = await builder();
+  if (r.error && /JWT|expired|Invalid|401|403/i.test(r.error.message || '')) {
     const { data, error } = await db.auth.refreshSession();
-    if (error || !data.session) {
-      toast('Session expired — please sign in.', 'error');
-      showAuth();
-      return result;
-    }
-    result = await builder();
+    if (error || !data.session) { toast('Session expired — sign in again.', 'error'); showAuth(); return r; }
+    r = await builder();
   }
-  if (result.error) {
-    toast(result.error.message, 'error');
-  }
-  return result;
+  if (r.error) toast(r.error.message, 'error');
+  return r;
 }
 
-// ══════════════════════════════════════════════════════════════════════════
-// SETTINGS
-// ══════════════════════════════════════════════════════════════════════════
+// ── Settings ───────────────────────────────────────────────────────────────
 async function loadSettings() {
-  const { data } = await dbCall(() =>
-    db.from('user_settings').select('cal_goal').eq('user_id', user.id).maybeSingle()
-  );
+  const { data } = await dbCall(() => db.from('user_settings').select('cal_goal').eq('user_id', user.id).maybeSingle());
   calGoal = data?.cal_goal ?? 2000;
 }
-
 async function saveCalGoal() {
   const v = parseInt(document.getElementById('cal-goal-input').value) || 2000;
   calGoal = v;
   document.getElementById('cal-goal-edit').style.display = 'none';
-  await dbCall(() =>
-    db.from('user_settings').upsert({ user_id: user.id, cal_goal: v }, { onConflict: 'user_id' })
-  );
+  await dbCall(() => db.from('user_settings').upsert({ user_id: user.id, cal_goal: v }, { onConflict: 'user_id' }));
   renderFood();
 }
+function toggleGoalEdit() { const el = document.getElementById('cal-goal-edit'); el.style.display = el.style.display === 'none' ? 'flex' : 'none'; }
 
-function toggleGoalEdit() {
-  const el = document.getElementById('cal-goal-edit');
-  el.style.display = el.style.display === 'none' ? 'flex' : 'none';
-}
-
-// ══════════════════════════════════════════════════════════════════════════
-// FOOD
-// ══════════════════════════════════════════════════════════════════════════
+// ── Food ───────────────────────────────────────────────────────────────────
 async function addFood() {
   const name = document.getElementById('food-name').value.trim();
   if (!name) return flashErr('food-name', 'Enter food name');
-
-  const btn = document.getElementById('food-add-btn');
-  btnLoad(btn, true);
+  const btn = document.getElementById('food-add-btn'); btnLoad(btn, true);
   const { error } = await dbCall(() => db.from('food_entries').insert({
-    user_id:  user.id,
-    date:     offsetKey(currentDays.food),
-    name,
-    calories: parseInt(document.getElementById('food-cal').value)      || 0,
-    protein:  parseFloat(document.getElementById('food-protein').value) || 0,
-    carbs:    parseFloat(document.getElementById('food-carbs').value)   || 0,
-    fat:      parseFloat(document.getElementById('food-fat').value)     || 0,
-    time:     new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+    user_id: user.id, date: offsetKey(currentDays.food), name,
+    calories: parseInt(document.getElementById('food-cal').value) || 0,
+    protein: parseFloat(document.getElementById('food-protein').value) || 0,
+    carbs:   parseFloat(document.getElementById('food-carbs').value)   || 0,
+    fat:     parseFloat(document.getElementById('food-fat').value)     || 0,
+    time: new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
   }));
-  btnLoad(btn, false);
-  if (error) return;
-
+  btnLoad(btn, false); if (error) return;
   ['food-name','food-cal','food-protein','food-carbs','food-fat'].forEach(id => document.getElementById(id).value = '');
   await renderFood();
 }
-
 function startEditFood(id) { editing.food = id; renderFood(); }
-function cancelEditFood()    { editing.food = null; renderFood(); }
-
+function cancelEditFood()   { editing.food = null; renderFood(); }
 async function saveEditFood(id) {
-  const name = document.getElementById('ef-name-' + id).value.trim();
-  if (!name) return toast('Name is required', 'error');
+  const name = document.getElementById('ef-name-'+id).value.trim();
+  if (!name) return toast('Name required', 'error');
   const { error } = await dbCall(() => db.from('food_entries').update({
-    name,
-    calories: parseInt(document.getElementById('ef-cal-' + id).value) || 0,
-    protein:  parseFloat(document.getElementById('ef-p-' + id).value) || 0,
-    carbs:    parseFloat(document.getElementById('ef-c-' + id).value) || 0,
-    fat:      parseFloat(document.getElementById('ef-f-' + id).value) || 0
-  }).eq('id', id).eq('user_id', user.id));
-  if (error) return;
-  editing.food = null;
-  toast('Updated', 'ok');
-  await renderFood();
+    name, calories: parseInt(document.getElementById('ef-cal-'+id).value)||0,
+    protein: parseFloat(document.getElementById('ef-p-'+id).value)||0,
+    carbs:   parseFloat(document.getElementById('ef-c-'+id).value)||0,
+    fat:     parseFloat(document.getElementById('ef-f-'+id).value)||0
+  }).eq('id',id).eq('user_id',user.id));
+  if (error) return; editing.food = null; toast('Updated','ok'); await renderFood();
 }
-
-async function deleteFood(id) {
-  await dbCall(() => db.from('food_entries').delete().eq('id', id).eq('user_id', user.id));
-  await renderFood();
-}
+async function deleteFood(id) { await dbCall(() => db.from('food_entries').delete().eq('id',id).eq('user_id',user.id)); await renderFood(); }
 
 async function renderFood() {
   const dayKey = offsetKey(currentDays.food);
   document.getElementById('food-day-label').textContent = fmt(dayKey);
   document.getElementById('cal-goal-display').textContent = calGoal;
   document.getElementById('cal-goal-input').value = calGoal;
-
-  const { data: list } = await dbCall(() => db.from('food_entries')
-    .select('*').eq('user_id', user.id).eq('date', dayKey)
-    .order('created_at', { ascending: true }));
-
+  const { data: list } = await dbCall(() => db.from('food_entries').select('*').eq('user_id',user.id).eq('date',dayKey).order('created_at',{ascending:true}));
   const rows = list || [];
-  const tot = rows.reduce((a, e) => {
-    a.cal += e.calories; a.p += +e.protein; a.c += +e.carbs; a.f += +e.fat; return a;
-  }, { cal: 0, p: 0, c: 0, f: 0 });
-
+  const tot = rows.reduce((a,e) => { a.cal+=e.calories; a.p+=+e.protein; a.c+=+e.carbs; a.f+=+e.fat; return a; }, {cal:0,p:0,c:0,f:0});
   document.getElementById('cal-total').textContent = tot.cal;
-  document.getElementById('macro-p').textContent = tot.p.toFixed(0) + 'g';
-  document.getElementById('macro-c').textContent = tot.c.toFixed(0) + 'g';
-  document.getElementById('macro-f').textContent = tot.f.toFixed(0) + 'g';
-
-  const pct = Math.min(100, Math.round((tot.cal / calGoal) * 100));
-  document.getElementById('cal-bar').style.width = pct + '%';
-  document.getElementById('cal-bar').style.background = pct > 110 ? 'var(--danger)' : 'var(--accent)';
-
+  document.getElementById('macro-p').textContent = tot.p.toFixed(0)+'g';
+  document.getElementById('macro-c').textContent = tot.c.toFixed(0)+'g';
+  document.getElementById('macro-f').textContent = tot.f.toFixed(0)+'g';
+  const pct = Math.min(100, Math.round((tot.cal/calGoal)*100));
+  document.getElementById('cal-bar').style.width = pct+'%';
+  document.getElementById('cal-bar').style.background = pct>110 ? 'var(--danger)' : 'var(--accent)';
   const el = document.getElementById('food-list');
   if (!rows.length) { el.innerHTML = '<div class="empty">Nothing logged yet</div>'; return; }
-
   el.innerHTML = [...rows].reverse().map(e => {
-    if (editing.food === e.id) {
-      return `
+    if (editing.food === e.id) return `
       <div class="entry-editing">
-        <div class="form-row">
-          <input type="text" id="ef-name-${e.id}" value="${esc(e.name)}" style="flex:2">
-          <input type="number" id="ef-cal-${e.id}" value="${e.calories}" class="narrow" inputmode="numeric">
-        </div>
-        <div class="form-row">
-          <input type="number" id="ef-p-${e.id}" value="${e.protein}" placeholder="P" inputmode="numeric">
-          <input type="number" id="ef-c-${e.id}" value="${e.carbs}" placeholder="C" inputmode="numeric">
-          <input type="number" id="ef-f-${e.id}" value="${e.fat}" placeholder="F" inputmode="numeric">
-        </div>
-        <div class="edit-actions">
-          <button class="btn btn-green" onclick="saveEditFood('${e.id}')">Save</button>
-          <button class="btn btn-ghost" onclick="cancelEditFood()">Cancel</button>
-        </div>
+        <div class="form-row"><input type="text" id="ef-name-${e.id}" value="${esc(e.name)}" style="flex:2"><input type="number" id="ef-cal-${e.id}" value="${e.calories}" class="narrow" inputmode="numeric"></div>
+        <div class="form-row"><input type="number" id="ef-p-${e.id}" value="${e.protein}" placeholder="P" inputmode="numeric"><input type="number" id="ef-c-${e.id}" value="${e.carbs}" placeholder="C" inputmode="numeric"><input type="number" id="ef-f-${e.id}" value="${e.fat}" placeholder="F" inputmode="numeric"></div>
+        <div class="edit-actions"><button class="btn btn-green" onclick="saveEditFood('${e.id}')">Save</button><button class="btn btn-ghost" onclick="cancelEditFood()">Cancel</button></div>
       </div>`;
-    }
-    return `
-    <div class="entry">
-      <div class="entry-content">
-        <div class="entry-name">${esc(e.name)}</div>
-        <div class="entry-meta">${e.time || ''}${(e.protein||e.carbs||e.fat) ? ` · P ${e.protein}g · C ${e.carbs}g · F ${e.fat}g` : ''}</div>
-      </div>
-      <div class="entry-right">
-        <span class="entry-cal">${e.calories}</span>
-        <button class="icon-btn" onclick="startEditFood('${e.id}')" aria-label="Edit">${icon(ICONS.edit, 16)}</button>
-        <button class="icon-btn danger" onclick="deleteFood('${e.id}')" aria-label="Delete">${icon(ICONS.trash, 16)}</button>
-      </div>
-    </div>`;
+    return `<div class="entry"><div class="entry-content"><div class="entry-name">${esc(e.name)}</div><div class="entry-meta">${e.time||''}${(e.protein||e.carbs||e.fat)?` · P ${e.protein}g · C ${e.carbs}g · F ${e.fat}g`:''}</div></div><div class="entry-right"><span class="entry-cal">${e.calories}</span><button class="icon-btn" onclick="startEditFood('${e.id}')">${icon(IC.edit,16)}</button><button class="icon-btn danger" onclick="deleteFood('${e.id}')">${icon(IC.trash,16)}</button></div></div>`;
   }).join('');
 }
 
-// ══════════════════════════════════════════════════════════════════════════
-// WORKOUT
-// ══════════════════════════════════════════════════════════════════════════
+// ── Workout ────────────────────────────────────────────────────────────────
 async function addExercise() {
   const name = document.getElementById('ex-name').value.trim();
   if (!name) return flashErr('ex-name', 'Enter exercise name');
-
-  const btn = document.getElementById('workout-add-btn');
-  btnLoad(btn, true);
+  const btn = document.getElementById('workout-add-btn'); btnLoad(btn, true);
   const { error } = await dbCall(() => db.from('workout_entries').insert({
-    user_id:  user.id,
-    date:     offsetKey(currentDays.workout),
-    name,
-    type:     document.getElementById('ex-type').value,
-    sets:     document.getElementById('ex-sets').value     || null,
-    reps:     document.getElementById('ex-reps').value     || null,
-    weight:   document.getElementById('ex-weight').value   || null,
-    duration: document.getElementById('ex-duration').value || null,
-    notes:    document.getElementById('ex-notes').value.trim() || null,
-    time:     new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+    user_id: user.id, date: offsetKey(currentDays.workout), name,
+    type: document.getElementById('ex-type').value,
+    sets: document.getElementById('ex-sets').value||null,
+    reps: document.getElementById('ex-reps').value||null,
+    weight: document.getElementById('ex-weight').value||null,
+    duration: document.getElementById('ex-duration').value||null,
+    notes: document.getElementById('ex-notes').value.trim()||null,
+    time: new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})
   }));
-  btnLoad(btn, false);
-  if (error) return;
-
-  ['ex-name','ex-sets','ex-reps','ex-weight','ex-duration','ex-notes'].forEach(id => document.getElementById(id).value = '');
+  btnLoad(btn, false); if (error) return;
+  ['ex-name','ex-sets','ex-reps','ex-weight','ex-duration','ex-notes'].forEach(id => document.getElementById(id).value='');
   await renderWorkout();
 }
-
-function startEditWorkout(id) { editing.workout = id; renderWorkout(); }
-function cancelEditWorkout()    { editing.workout = null; renderWorkout(); }
-
+function startEditWorkout(id) { editing.workout=id; renderWorkout(); }
+function cancelEditWorkout()   { editing.workout=null; renderWorkout(); }
 async function saveEditWorkout(id) {
-  const name = document.getElementById('ew-name-' + id).value.trim();
-  if (!name) return toast('Name is required', 'error');
+  const name = document.getElementById('ew-name-'+id).value.trim();
+  if (!name) return toast('Name required','error');
   const { error } = await dbCall(() => db.from('workout_entries').update({
-    name,
-    type:     document.getElementById('ew-type-' + id).value,
-    sets:     document.getElementById('ew-sets-' + id).value     || null,
-    reps:     document.getElementById('ew-reps-' + id).value     || null,
-    weight:   document.getElementById('ew-weight-' + id).value   || null,
-    duration: document.getElementById('ew-duration-' + id).value || null,
-    notes:    document.getElementById('ew-notes-' + id).value.trim() || null
-  }).eq('id', id).eq('user_id', user.id));
-  if (error) return;
-  editing.workout = null;
-  toast('Updated', 'ok');
-  await renderWorkout();
+    name, type: document.getElementById('ew-type-'+id).value,
+    sets: document.getElementById('ew-sets-'+id).value||null,
+    reps: document.getElementById('ew-reps-'+id).value||null,
+    weight: document.getElementById('ew-weight-'+id).value||null,
+    duration: document.getElementById('ew-duration-'+id).value||null,
+    notes: document.getElementById('ew-notes-'+id).value.trim()||null
+  }).eq('id',id).eq('user_id',user.id));
+  if (error) return; editing.workout=null; toast('Updated','ok'); await renderWorkout();
 }
-
-async function deleteExercise(id) {
-  await dbCall(() => db.from('workout_entries').delete().eq('id', id).eq('user_id', user.id));
-  await renderWorkout();
-}
+async function deleteExercise(id) { await dbCall(() => db.from('workout_entries').delete().eq('id',id).eq('user_id',user.id)); await renderWorkout(); }
 
 async function renderWorkout() {
   const dayKey = offsetKey(currentDays.workout);
   document.getElementById('workout-day-label').textContent = fmt(dayKey);
-
-  const { data: list } = await dbCall(() => db.from('workout_entries')
-    .select('*').eq('user_id', user.id).eq('date', dayKey)
-    .order('created_at', { ascending: true }));
-
-  const rows = list || [];
+  const { data: list } = await dbCall(() => db.from('workout_entries').select('*').eq('user_id',user.id).eq('date',dayKey).order('created_at',{ascending:true}));
+  const rows = list||[];
   document.getElementById('workout-total').textContent = rows.length;
-
   const el = document.getElementById('workout-list');
-  if (!rows.length) { el.innerHTML = '<div class="empty">No exercises logged yet</div>'; return; }
-
+  if (!rows.length) { el.innerHTML='<div class="empty">No exercises logged yet</div>'; return; }
   el.innerHTML = [...rows].reverse().map(e => {
-    if (editing.workout === e.id) {
-      return `
+    if (editing.workout===e.id) return `
       <div class="entry-editing">
-        <div class="form-row">
-          <input type="text" id="ew-name-${e.id}" value="${esc(e.name)}" style="flex:2">
-          <select id="ew-type-${e.id}" style="flex:1;padding:10px 8px;font-size:.85rem">
-            ${['Weights','Cardio','Bodyweight','Stretching','Other'].map(t => `<option ${t===e.type?'selected':''}>${t}</option>`).join('')}
-          </select>
-        </div>
-        <div class="form-row">
-          <input type="number" id="ew-sets-${e.id}" value="${e.sets || ''}" placeholder="Sets" class="narrow" inputmode="numeric">
-          <input type="number" id="ew-reps-${e.id}" value="${e.reps || ''}" placeholder="Reps" class="narrow" inputmode="numeric">
-          <input type="number" id="ew-weight-${e.id}" value="${e.weight || ''}" placeholder="lbs/kg" class="medium" inputmode="numeric">
-        </div>
-        <div class="form-row">
-          <input type="number" id="ew-duration-${e.id}" value="${e.duration || ''}" placeholder="Duration (min)" inputmode="numeric">
-          <input type="text" id="ew-notes-${e.id}" value="${esc(e.notes || '')}" placeholder="Notes" style="flex:2">
-        </div>
-        <div class="edit-actions">
-          <button class="btn btn-blue" onclick="saveEditWorkout('${e.id}')">Save</button>
-          <button class="btn btn-ghost" onclick="cancelEditWorkout()">Cancel</button>
-        </div>
+        <div class="form-row"><input type="text" id="ew-name-${e.id}" value="${esc(e.name)}" style="flex:2"><select id="ew-type-${e.id}" style="flex:1;padding:10px 8px;font-size:.85rem">${['Weights','Cardio','Bodyweight','Stretching','Other'].map(t=>`<option ${t===e.type?'selected':''}>${t}</option>`).join('')}</select></div>
+        <div class="form-row"><input type="number" id="ew-sets-${e.id}" value="${e.sets||''}" placeholder="Sets" class="narrow" inputmode="numeric"><input type="number" id="ew-reps-${e.id}" value="${e.reps||''}" placeholder="Reps" class="narrow" inputmode="numeric"><input type="number" id="ew-weight-${e.id}" value="${e.weight||''}" placeholder="lbs/kg" class="medium" inputmode="numeric"></div>
+        <div class="form-row"><input type="number" id="ew-duration-${e.id}" value="${e.duration||''}" placeholder="Duration (min)" inputmode="numeric"><input type="text" id="ew-notes-${e.id}" value="${esc(e.notes||'')}" placeholder="Notes" style="flex:2"></div>
+        <div class="edit-actions"><button class="btn btn-blue" onclick="saveEditWorkout('${e.id}')">Save</button><button class="btn btn-ghost" onclick="cancelEditWorkout()">Cancel</button></div>
       </div>`;
-    }
-    let meta = e.type || '';
-    if (e.sets)     meta += ` · ${e.sets} sets`;
-    if (e.reps)     meta += ` × ${e.reps} reps`;
-    if (e.weight)   meta += ` @ ${e.weight}`;
-    if (e.duration) meta += ` · ${e.duration}min`;
-    return `
-    <div class="entry">
-      <div class="entry-content">
-        <div class="entry-name">${esc(e.name)}</div>
-        <div class="entry-meta">${meta}${e.notes ? ` · ${esc(e.notes)}` : ''}</div>
-        <div class="entry-meta">${e.time || ''}</div>
-      </div>
-      <div class="entry-right">
-        <button class="icon-btn" onclick="startEditWorkout('${e.id}')" aria-label="Edit">${icon(ICONS.edit, 16)}</button>
-        <button class="icon-btn danger" onclick="deleteExercise('${e.id}')" aria-label="Delete">${icon(ICONS.trash, 16)}</button>
-      </div>
-    </div>`;
+    let meta = e.type||'';
+    if (e.sets)     meta+=` · ${e.sets} sets`;
+    if (e.reps)     meta+=` × ${e.reps} reps`;
+    if (e.weight)   meta+=` @ ${e.weight}`;
+    if (e.duration) meta+=` · ${e.duration}min`;
+    return `<div class="entry"><div class="entry-content"><div class="entry-name">${esc(e.name)}</div><div class="entry-meta">${meta}${e.notes?` · ${esc(e.notes)}`:''}</div><div class="entry-meta">${e.time||''}</div></div><div class="entry-right"><button class="icon-btn" onclick="startEditWorkout('${e.id}')">${icon(IC.edit,16)}</button><button class="icon-btn danger" onclick="deleteExercise('${e.id}')">${icon(IC.trash,16)}</button></div></div>`;
   }).join('');
 }
 
 // ══════════════════════════════════════════════════════════════════════════
-// INFO
+// INFO — FOLDERS
 // ══════════════════════════════════════════════════════════════════════════
-async function addInfo() {
-  const title = document.getElementById('info-title').value.trim();
-  if (!title) return flashErr('info-title', 'Enter a title');
+async function renderInfo() {
+  const view = document.getElementById('info-view');
+  editing.info = null; editing.folder = null;
 
-  const btn = document.getElementById('info-add-btn');
-  btnLoad(btn, true);
+  if (currentFolder === null) {
+    await renderFolderList(view);
+  } else if (currentFolder === '__all__') {
+    await renderFolderContents(view, null, 'All Notes');
+  } else {
+    const folder = _folderCache.find(f => f.id === currentFolder);
+    await renderFolderContents(view, currentFolder, folder?.name || 'Folder');
+  }
+}
+
+async function renderFolderList(view) {
+  const [foldersRes, itemsRes] = await Promise.all([
+    dbCall(() => db.from('info_folders').select('*').eq('user_id', user.id).order('created_at')),
+    dbCall(() => db.from('info_entries').select('id, folder_id').eq('user_id', user.id))
+  ]);
+  _folderCache = foldersRes.data || [];
+  const allItems = itemsRes.data || [];
+
+  // Count items per folder
+  const counts = {};
+  let uncatCount = 0;
+  allItems.forEach(item => {
+    if (item.folder_id) counts[item.folder_id] = (counts[item.folder_id] || 0) + 1;
+    else uncatCount++;
+  });
+
+  let html = '';
+
+  // Add folder row
+  if (editing.folder === '__new__') {
+    html += `<div class="card" style="margin-bottom:12px">
+      <div class="section-title">New Folder</div>
+      <div class="form-row">
+        <input type="text" id="new-folder-name" placeholder="Folder name..." style="flex:1">
+        <button class="btn btn-yellow" onclick="saveNewFolder()">Create</button>
+      </div>
+    </div>`;
+  } else {
+    html += `<div class="add-folder-row">
+      <button class="btn btn-yellow btn-full" onclick="startNewFolder()">${icon(IC.plus,16)}New Folder</button>
+    </div>`;
+  }
+
+  // All notes card
+  html += `<div class="folder-list">
+    <div class="folder-card" onclick="openFolder('__all__')">
+      <div class="folder-icon" style="background:rgba(255,255,255,.06)">${icon(IC.grid, 18)}</div>
+      <div class="folder-info"><div class="folder-name">All Notes</div><div class="folder-count">${allItems.length} item${allItems.length!==1?'s':''}</div></div>
+      <div class="folder-chevron">${icon(IC.chevronR, 16)}</div>
+    </div>`;
+
+  // Folder cards
+  _folderCache.forEach((f, i) => {
+    const color = FOLDER_COLORS[i % FOLDER_COLORS.length];
+    const count = counts[f.id] || 0;
+    if (editing.folder === f.id) {
+      html += `<div class="info-card" style="margin-bottom:0">
+        <div class="form-row" style="margin-bottom:8px">
+          <input type="text" id="ef-folder-${f.id}" value="${esc(f.name)}" style="flex:1">
+        </div>
+        <div class="edit-actions">
+          <button class="btn btn-yellow" onclick="saveEditFolder('${f.id}')">Save</button>
+          <button class="btn btn-ghost"  onclick="renderInfo()">Cancel</button>
+        </div>
+      </div>`;
+    } else {
+      html += `<div class="folder-card" onclick="openFolder('${f.id}')">
+        <div class="folder-icon" style="background:${color}22;color:${color}">${icon(IC.folder, 18)}</div>
+        <div class="folder-info"><div class="folder-name">${esc(f.name)}</div><div class="folder-count">${count} item${count!==1?'s':''}</div></div>
+        <div class="folder-actions">
+          <button class="icon-btn" onclick="event.stopPropagation();startEditFolder('${f.id}')">${icon(IC.edit,16)}</button>
+          <button class="icon-btn danger" onclick="event.stopPropagation();deleteFolder('${f.id}')">${icon(IC.trash,16)}</button>
+        </div>
+        <div class="folder-chevron">${icon(IC.chevronR, 16)}</div>
+      </div>`;
+    }
+  });
+
+  // Uncategorized
+  if (uncatCount > 0) {
+    html += `<div class="folder-card" onclick="openFolder('__uncat__')">
+      <div class="folder-icon" style="background:rgba(255,255,255,.06);color:var(--muted)">${icon(IC.folder, 18)}</div>
+      <div class="folder-info"><div class="folder-name" style="color:var(--muted)">No Folder</div><div class="folder-count">${uncatCount} item${uncatCount!==1?'s':''}</div></div>
+      <div class="folder-chevron">${icon(IC.chevronR, 16)}</div>
+    </div>`;
+  }
+
+  html += '</div>';
+  view.innerHTML = html;
+}
+
+async function renderFolderContents(view, folderId, title) {
+  const isUncat = currentFolder === '__uncat__';
+  const isAll   = currentFolder === '__all__';
+
+  let query = db.from('info_entries').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
+  if (isAll)   { /* no filter */ }
+  else if (isUncat) { query = query.is('folder_id', null); }
+  else              { query = query.eq('folder_id', folderId); }
+
+  const { data: list } = await dbCall(() => query);
+  _infoCache = list || [];
+
+  const color = folderId ? (FOLDER_COLORS[_folderCache.findIndex(f=>f.id===folderId) % FOLDER_COLORS.length]) : null;
+
+  let html = `<div class="folder-header">
+    <button class="folder-back" onclick="backToFolders()">${icon(IC.arrowL, 16)}</button>
+    ${color ? `<div style="width:28px;height:28px;border-radius:6px;background:${color}22;color:${color};display:flex;align-items:center;justify-content:center">${icon(IC.folder,15)}</div>` : ''}
+    <div class="folder-title">${esc(title)}</div>
+  </div>`;
+
+  // Add note form
+  html += `<div class="card">
+    <div class="section-title">Add Note</div>
+    <input type="text" id="info-title" placeholder="Title...">
+    <textarea id="info-body" placeholder="Content..."></textarea>`;
+
+  if (isAll || isUncat) {
+    html += `<div class="form-row" style="margin-bottom:0;margin-top:4px">
+      <select id="info-folder-sel" style="flex:1;padding:10px 8px;font-size:.9rem">
+        <option value="">No folder</option>
+        ${_folderCache.map(f=>`<option value="${f.id}">${esc(f.name)}</option>`).join('')}
+      </select>
+      <button id="info-add-btn" class="btn btn-yellow" onclick="addInfo()">${icon(IC.plus,16)}Save</button>
+    </div>`;
+  } else {
+    html += `<button id="info-add-btn" class="btn btn-yellow btn-full" style="margin-top:8px" onclick="addInfo()">${icon(IC.plus,16)}Save</button>`;
+  }
+  html += `</div>`;
+
+  if (!_infoCache.length) {
+    html += '<div class="empty">Nothing here yet</div>';
+  } else {
+    html += _infoCache.map(e => {
+      if (editing.info === e.id) {
+        const folderSel = `<select id="ei-folder-${e.id}" style="width:100%;margin-bottom:8px;padding:10px 12px;font-size:.9rem">
+          <option value="">No folder</option>
+          ${_folderCache.map(f=>`<option value="${f.id}" ${f.id===e.folder_id?'selected':''}>${esc(f.name)}</option>`).join('')}
+        </select>`;
+        return `<div class="info-card" style="background:var(--surface-2)">
+          <input type="text" id="ei-title-${e.id}" value="${esc(e.title)}" style="margin-bottom:8px">
+          <textarea id="ei-body-${e.id}" style="margin-bottom:8px">${esc(e.body||'')}</textarea>
+          ${folderSel}
+          <div class="edit-actions">
+            <button class="btn btn-yellow" onclick="saveEditInfo('${e.id}')">Save</button>
+            <button class="btn btn-ghost"  onclick="cancelEditInfo()">Cancel</button>
+          </div>
+        </div>`;
+      }
+      const folderName = _folderCache.find(f=>f.id===e.folder_id)?.name;
+      return `<div class="info-card">
+        <div class="info-card-title">
+          <span>${esc(e.title)}</span>
+          <div class="info-card-actions">
+            <button class="icon-btn" onclick="startEditInfo('${e.id}')">${icon(IC.edit,16)}</button>
+            <button class="icon-btn danger" onclick="deleteInfo('${e.id}')">${icon(IC.trash,16)}</button>
+          </div>
+        </div>
+        ${e.body ? `<div class="info-card-body">${esc(e.body)}</div>` : ''}
+        <div class="info-card-meta">
+          ${new Date(e.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}
+          ${folderName ? `<span class="chip">${esc(folderName)}</span>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  view.innerHTML = html;
+}
+
+// Folder CRUD
+function openFolder(id)    { currentFolder = id; renderInfo(); }
+function backToFolders()   { currentFolder = null; renderInfo(); }
+function startNewFolder()  { editing.folder = '__new__'; renderInfo(); }
+function startEditFolder(id) { editing.folder = id; renderInfo(); }
+
+async function saveNewFolder() {
+  const name = document.getElementById('new-folder-name')?.value.trim();
+  if (!name) return;
+  const { error } = await dbCall(() => db.from('info_folders').insert({ user_id: user.id, name }));
+  if (error) return;
+  editing.folder = null;
+  toast('Folder created', 'ok');
+  await renderInfo();
+}
+async function saveEditFolder(id) {
+  const name = document.getElementById('ef-folder-'+id)?.value.trim();
+  if (!name) return;
+  const { error } = await dbCall(() => db.from('info_folders').update({ name }).eq('id', id).eq('user_id', user.id));
+  if (error) return;
+  editing.folder = null;
+  toast('Renamed', 'ok');
+  await renderInfo();
+}
+async function deleteFolder(id) {
+  await dbCall(() => db.from('info_folders').delete().eq('id', id).eq('user_id', user.id));
+  toast('Folder deleted — notes moved to No Folder', 'ok');
+  await renderInfo();
+}
+
+// Info CRUD
+async function addInfo() {
+  const title = document.getElementById('info-title')?.value.trim();
+  if (!title) { const el = document.getElementById('info-title'); if(el){el.style.borderColor='var(--danger)';setTimeout(()=>el.style.borderColor='',1500);} return; }
+  const btn = document.getElementById('info-add-btn'); btnLoad(btn, true);
+
+  let folderId = null;
+  if (currentFolder && currentFolder !== '__all__' && currentFolder !== '__uncat__') {
+    folderId = currentFolder;
+  } else {
+    const sel = document.getElementById('info-folder-sel');
+    folderId = sel?.value || null;
+  }
+
   const { error } = await dbCall(() => db.from('info_entries').insert({
     user_id: user.id,
     title,
-    body: document.getElementById('info-body').value.trim() || null,
-    tag:  document.getElementById('info-tag').value.trim().toLowerCase() || null
+    body: document.getElementById('info-body')?.value.trim() || null,
+    folder_id: folderId || null
   }));
-  btnLoad(btn, false);
-  if (error) return;
-
-  ['info-title','info-body','info-tag'].forEach(id => document.getElementById(id).value = '');
+  btnLoad(btn, false); if (error) return;
+  toast('Saved', 'ok');
   await renderInfo();
 }
 
 function startEditInfo(id) { editing.info = id; renderInfo(); }
-function cancelEditInfo()   { editing.info = null; renderInfo(); }
+function cancelEditInfo()  { editing.info = null; renderInfo(); }
 
 async function saveEditInfo(id) {
-  const title = document.getElementById('ei-title-' + id).value.trim();
-  if (!title) return toast('Title is required', 'error');
+  const title = document.getElementById('ei-title-'+id)?.value.trim();
+  if (!title) return toast('Title required', 'error');
+  const sel = document.getElementById('ei-folder-'+id);
   const { error } = await dbCall(() => db.from('info_entries').update({
     title,
-    body: document.getElementById('ei-body-' + id).value.trim() || null,
-    tag:  document.getElementById('ei-tag-' + id).value.trim().toLowerCase() || null
+    body: document.getElementById('ei-body-'+id)?.value.trim() || null,
+    folder_id: sel?.value || null
   }).eq('id', id).eq('user_id', user.id));
-  if (error) return;
-  editing.info = null;
-  toast('Updated', 'ok');
-  await renderInfo();
+  if (error) return; editing.info = null; toast('Updated', 'ok'); await renderInfo();
 }
 
 async function deleteInfo(id) {
@@ -1176,241 +987,171 @@ async function deleteInfo(id) {
   await renderInfo();
 }
 
-function filterInfo(tag) {
-  infoFilter = tag;
-  renderInfoList(_infoCache);
-  document.querySelectorAll('#tag-filters .filter-chip').forEach(b => {
-    b.classList.toggle('active', b.dataset.filter === tag);
-  });
-}
-
-async function renderInfo() {
-  const { data: list } = await dbCall(() => db.from('info_entries')
-    .select('*').eq('user_id', user.id)
-    .order('created_at', { ascending: false }));
-
-  _infoCache = list || [];
-  const tags = [...new Set(_infoCache.map(e => e.tag).filter(Boolean))];
-
-  const filterEl = document.getElementById('tag-filters');
-  filterEl.innerHTML =
-    `<button class="filter-chip ${infoFilter==='all'?'active':''}" onclick="filterInfo('all')" data-filter="all">All</button>` +
-    tags.map(t => `<button class="filter-chip ${infoFilter===t?'active':''}" onclick="filterInfo('${esc(t)}')" data-filter="${esc(t)}">${esc(t)}</button>`).join('');
-
-  renderInfoList(_infoCache);
-}
-
-function renderInfoList(list) {
-  const filtered = infoFilter === 'all' ? list : list.filter(e => e.tag === infoFilter);
-  const el = document.getElementById('info-list');
-  if (!filtered.length) { el.innerHTML = '<div class="empty">Nothing saved yet</div>'; return; }
-
-  el.innerHTML = filtered.map(e => {
-    if (editing.info === e.id) {
-      return `
-      <div class="info-card" style="background:var(--surface-2)">
-        <input type="text" id="ei-title-${e.id}" value="${esc(e.title)}" style="margin-bottom:8px;font-weight:600">
-        <textarea id="ei-body-${e.id}" style="margin-bottom:8px">${esc(e.body || '')}</textarea>
-        <input type="text" id="ei-tag-${e.id}" value="${esc(e.tag || '')}" placeholder="Tag" style="margin-bottom:8px">
-        <div class="edit-actions">
-          <button class="btn btn-yellow" onclick="saveEditInfo('${e.id}')">Save</button>
-          <button class="btn btn-ghost" onclick="cancelEditInfo()">Cancel</button>
-        </div>
-      </div>`;
-    }
-    return `
-    <div class="info-card">
-      <div class="info-card-title">
-        <span>${esc(e.title)}</span>
-        <div class="info-card-actions">
-          <button class="icon-btn" onclick="startEditInfo('${e.id}')" aria-label="Edit">${icon(ICONS.edit, 16)}</button>
-          <button class="icon-btn danger" onclick="deleteInfo('${e.id}')" aria-label="Delete">${icon(ICONS.trash, 16)}</button>
-        </div>
-      </div>
-      ${e.body ? `<div class="info-card-body">${esc(e.body)}</div>` : ''}
-      <div class="info-card-meta">
-        <span>${new Date(e.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}</span>
-        ${e.tag ? `<span class="chip">${esc(e.tag)}</span>` : ''}
-      </div>
-    </div>`;
-  }).join('');
-}
-
 // ══════════════════════════════════════════════════════════════════════════
-// DAILY
+// DAILY — HABITS + TASKS
 // ══════════════════════════════════════════════════════════════════════════
-async function addHabit() {
+function setAddType(type) {
+  addType = type;
+  document.getElementById('type-habit-btn').classList.toggle('active', type === 'habit');
+  document.getElementById('type-task-btn').classList.toggle('active',  type === 'task');
+  document.getElementById('habit-name').placeholder = type === 'habit'
+    ? 'Habit name (e.g. Drink water, Exercise...)'
+    : 'Task name (e.g. Call dentist, Buy groceries...)';
+}
+
+async function addItem() {
   const name = document.getElementById('habit-name').value.trim();
-  if (!name) return flashErr('habit-name', 'Enter habit name');
-
-  const btn = document.getElementById('habit-add-btn');
-  btnLoad(btn, true);
-  const { error } = await dbCall(() => db.from('habits').insert({ user_id: user.id, name }));
-  btnLoad(btn, false);
-  if (error) return;
-
+  if (!name) return flashErr('habit-name', 'Enter a name');
+  const btn = document.getElementById('habit-add-btn'); btnLoad(btn, true);
+  const { error } = await dbCall(() => db.from('habits').insert({
+    user_id: user.id, name, recurring: addType === 'habit', completed: false
+  }));
+  btnLoad(btn, false); if (error) return;
   document.getElementById('habit-name').value = '';
   await renderDaily();
 }
 
 function startEditHabit(id) { editing.habit = id; renderDaily(); }
-function cancelEditHabit()   { editing.habit = null; renderDaily(); }
-
+function cancelEditHabit()  { editing.habit = null; renderDaily(); }
 async function saveEditHabit(id) {
-  const name = document.getElementById('eh-name-' + id).value.trim();
-  if (!name) return toast('Name is required', 'error');
-  const { error } = await dbCall(() => db.from('habits').update({ name }).eq('id', id).eq('user_id', user.id));
-  if (error) return;
-  editing.habit = null;
-  toast('Updated', 'ok');
-  await renderDaily();
+  const name = document.getElementById('eh-name-'+id)?.value.trim();
+  if (!name) return toast('Name required','error');
+  const { error } = await dbCall(() => db.from('habits').update({ name }).eq('id',id).eq('user_id',user.id));
+  if (error) return; editing.habit = null; toast('Updated','ok'); await renderDaily();
 }
 
-async function toggleHabit(habitId) {
-  const dateKey = todayKey();
-  const { data } = await dbCall(() => db.from('habit_completions')
-    .select('id').eq('user_id', user.id).eq('habit_id', habitId).eq('date', dateKey)
-    .maybeSingle());
-
-  if (data) {
-    await dbCall(() => db.from('habit_completions').delete().eq('id', data.id));
+async function toggleItem(id, isRecurring) {
+  if (isRecurring) {
+    const dateKey = todayKey();
+    const { data } = await dbCall(() => db.from('habit_completions').select('id').eq('user_id',user.id).eq('habit_id',id).eq('date',dateKey).maybeSingle());
+    if (data) await dbCall(() => db.from('habit_completions').delete().eq('id',data.id));
+    else      await dbCall(() => db.from('habit_completions').insert({user_id:user.id,habit_id:id,date:dateKey}));
   } else {
-    await dbCall(() => db.from('habit_completions').insert({ user_id: user.id, habit_id: habitId, date: dateKey }));
+    // get current completed state
+    const { data } = await dbCall(() => db.from('habits').select('completed').eq('id',id).single());
+    await dbCall(() => db.from('habits').update({ completed: !data?.completed }).eq('id',id).eq('user_id',user.id));
   }
   await renderDaily();
 }
 
-async function deleteHabit(id) {
-  await dbCall(() => db.from('habits').delete().eq('id', id).eq('user_id', user.id));
+async function deleteItem(id) {
+  await dbCall(() => db.from('habits').delete().eq('id',id).eq('user_id',user.id));
   await renderDaily();
-}
-
-async function saveDailyNote() {
-  const text = document.getElementById('daily-note').value.trim();
-  await dbCall(() => db.from('daily_notes').upsert(
-    { user_id: user.id, date: todayKey(), note: text },
-    { onConflict: 'user_id,date' }
-  ));
-  toast('Saved', 'ok');
 }
 
 async function renderDaily() {
   const dateKey = todayKey();
-
-  const [habitRes, compRes, noteRes] = await Promise.all([
-    dbCall(() => db.from('habits').select('*').eq('user_id', user.id).order('created_at')),
-    dbCall(() => db.from('habit_completions').select('habit_id').eq('user_id', user.id).eq('date', dateKey)),
-    dbCall(() => db.from('daily_notes').select('note').eq('user_id', user.id).eq('date', dateKey).maybeSingle())
+  const [itemsRes, compRes] = await Promise.all([
+    dbCall(() => db.from('habits').select('*').eq('user_id',user.id).order('created_at')),
+    dbCall(() => db.from('habit_completions').select('habit_id').eq('user_id',user.id).eq('date',dateKey))
   ]);
 
-  const habits = habitRes.data || [];
-  const completions = compRes.data || [];
-  const noteRow = noteRes.data;
+  const all   = itemsRes.data || [];
+  const doneHabitIds = new Set((compRes.data||[]).map(c=>c.habit_id));
 
-  const doneIds = new Set(completions.map(c => c.habit_id));
-  const pct = habits.length ? Math.round((doneIds.size / habits.length) * 100) : 0;
-  document.getElementById('daily-pct').textContent = pct + '%';
+  const habits  = all.filter(h =>  h.recurring);
+  const tasks   = all.filter(h => !h.recurring);
 
-  const el = document.getElementById('habit-list');
-  if (!habits.length) {
-    el.innerHTML = '<div class="empty">Add habits to track</div>';
-  } else {
-    el.innerHTML = habits.map(habit => {
-      if (editing.habit === habit.id) {
-        return `
-        <div class="entry-editing">
-          <input type="text" id="eh-name-${habit.id}" value="${esc(habit.name)}" style="margin-bottom:8px">
-          <div class="edit-actions">
-            <button class="btn btn-purple" onclick="saveEditHabit('${habit.id}')">Save</button>
-            <button class="btn btn-ghost" onclick="cancelEditHabit()">Cancel</button>
-          </div>
-        </div>`;
-      }
-      const done = doneIds.has(habit.id);
-      return `
-      <div class="habit-row">
-        <button class="habit-check ${done ? 'done' : ''}" onclick="toggleHabit('${habit.id}')" aria-label="Toggle">
-          ${icon(ICONS.check, 14)}
-        </button>
-        <span class="habit-name ${done ? 'done' : ''}">${esc(habit.name)}</span>
-        <button class="icon-btn" onclick="startEditHabit('${habit.id}')" aria-label="Edit">${icon(ICONS.edit, 16)}</button>
-        <button class="icon-btn danger" onclick="deleteHabit('${habit.id}')" aria-label="Delete">${icon(ICONS.trash, 16)}</button>
-      </div>`;
-    }).join('');
+  const doneCnt = habits.filter(h=>doneHabitIds.has(h.id)).length + tasks.filter(t=>t.completed).length;
+  const pct = all.length ? Math.round((doneCnt / all.length)*100) : 0;
+  document.getElementById('daily-pct').textContent = pct+'%';
+  document.getElementById('daily-label').textContent = `${doneCnt} of ${all.length} done`;
+
+  if (!all.length) {
+    document.getElementById('daily-list').innerHTML = '<div class="card"><div class="empty">Add habits or tasks above</div></div>';
+    return;
   }
 
-  const note = noteRow?.note || '';
-  document.getElementById('daily-note').value = note;
+  function renderRow(item, isDone) {
+    if (editing.habit === item.id) {
+      return `<div class="entry-editing">
+        <input type="text" id="eh-name-${item.id}" value="${esc(item.name)}" style="margin-bottom:8px">
+        <div class="edit-actions">
+          <button class="btn btn-purple" onclick="saveEditHabit('${item.id}')">Save</button>
+          <button class="btn btn-ghost"  onclick="cancelEditHabit()">Cancel</button>
+        </div>
+      </div>`;
+    }
+    const shape  = item.recurring ? 'round'  : 'square';
+    const badge  = item.recurring
+      ? `<span class="habit-badge badge-habit">Habit</span>`
+      : `<span class="habit-badge badge-task">Task</span>`;
+    return `<div class="habit-row ${isDone?'done-row':''}">
+      <button class="habit-check ${shape} ${isDone?'done':''}" onclick="toggleItem('${item.id}',${item.recurring})">${icon(IC.check,14)}</button>
+      <span class="habit-name">${esc(item.name)}</span>
+      ${badge}
+      <button class="icon-btn" onclick="startEditHabit('${item.id}')">${icon(IC.edit,16)}</button>
+      <button class="icon-btn danger" onclick="deleteItem('${item.id}')">${icon(IC.trash,16)}</button>
+    </div>`;
+  }
+
+  let html = '';
+
+  // Incomplete habits
+  const incompleteHabits = habits.filter(h => !doneHabitIds.has(h.id));
+  const completedHabits  = habits.filter(h =>  doneHabitIds.has(h.id));
+  const incompleteTasks  = tasks.filter(t => !t.completed);
+  const completedTasks   = tasks.filter(t =>  t.completed);
+
+  const hasHabits = habits.length > 0;
+  const hasTasks  = tasks.length  > 0;
+
+  // Open card
+  if (incompleteHabits.length || incompleteTasks.length) {
+    html += '<div class="card">';
+    if (hasHabits && hasTasks && incompleteHabits.length) {
+      html += `<div class="list-divider">Habits</div>`;
+    }
+    incompleteHabits.forEach(h => { html += renderRow(h, false); });
+    if (hasHabits && hasTasks && incompleteTasks.length) {
+      html += `<div class="list-divider" style="margin-top:8px">Tasks</div>`;
+    }
+    incompleteTasks.forEach(t => { html += renderRow(t, false); });
+    html += '</div>';
+  }
+
+  // Done card
+  const doneItems = [...completedHabits, ...completedTasks];
+  if (doneItems.length) {
+    html += '<div class="card" style="opacity:.65">';
+    html += `<div class="list-divider" style="margin-bottom:4px">Done</div>`;
+    completedHabits.forEach(h => { html += renderRow(h, true); });
+    completedTasks.forEach(t  => { html += renderRow(t, true); });
+    html += '</div>';
+  }
+
+  document.getElementById('daily-list').innerHTML = html;
 }
 
-// ══════════════════════════════════════════════════════════════════════════
-// NAVIGATION
-// ══════════════════════════════════════════════════════════════════════════
+// ── Navigation ─────────────────────────────────────────────────────────────
 function switchTab(tab) {
-  // Cancel any open edits when switching tabs
-  editing = { food: null, workout: null, info: null, habit: null };
-
+  editing = { food: null, workout: null, info: null, habit: null, folder: null };
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-  document.getElementById('section-' + tab).classList.add('active');
+  document.getElementById('section-'+tab).classList.add('active');
   document.querySelector(`nav button[data-tab="${tab}"]`).classList.add('active');
-  if (tab === 'food')    renderFood();
-  if (tab === 'workout') renderWorkout();
-  if (tab === 'info')    renderInfo();
-  if (tab === 'daily')   renderDaily();
+  if (tab==='food')    renderFood();
+  if (tab==='workout') renderWorkout();
+  if (tab==='info')    renderInfo();
+  if (tab==='daily')   renderDaily();
 }
+function changeDay(s,d) { currentDays[s]+=d; if(currentDays[s]>0)currentDays[s]=0; if(s==='food')renderFood();else renderWorkout(); }
+function goToday(s)     { currentDays[s]=0; if(s==='food')renderFood();else renderWorkout(); }
 
-function changeDay(section, dir) {
-  currentDays[section] += dir;
-  if (currentDays[section] > 0) currentDays[section] = 0;
-  if (section === 'food') renderFood(); else renderWorkout();
-}
-function goToday(section) {
-  currentDays[section] = 0;
-  if (section === 'food') renderFood(); else renderWorkout();
-}
-
-// ══════════════════════════════════════════════════════════════════════════
-// UTILS
-// ══════════════════════════════════════════════════════════════════════════
+// ── Utils ──────────────────────────────────────────────────────────────────
 const todayKey  = () => new Date().toISOString().split('T')[0];
-const offsetKey = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().split('T')[0]; };
-const fmt = (key) => {
-  if (key === todayKey())    return 'Today';
-  if (key === offsetKey(-1)) return 'Yesterday';
-  const [y, m, d] = key.split('-');
-  return new Date(+y, +m - 1, +d).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+const offsetKey = n => { const d=new Date(); d.setDate(d.getDate()+n); return d.toISOString().split('T')[0]; };
+const fmt = key => {
+  if (key===todayKey())    return 'Today';
+  if (key===offsetKey(-1)) return 'Yesterday';
+  const [y,m,d]=key.split('-');
+  return new Date(+y,+m-1,+d).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
 };
-
-function esc(s) {
-  return String(s == null ? '' : s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-function flashErr(id, placeholder) {
-  const el = document.getElementById(id);
-  el.style.borderColor = 'var(--danger)';
-  el.placeholder = placeholder;
-  setTimeout(() => { el.style.borderColor = ''; }, 1500);
-}
-function setLoading(on) {
-  const bar = document.getElementById('loading-bar');
-  bar.style.opacity = '1';
-  bar.style.width   = on ? '70%' : '100%';
-  if (!on) setTimeout(() => { bar.style.width = '0%'; bar.style.opacity = '0'; }, 350);
-}
-function btnLoad(btn, on) {
-  if (!btn) return;
-  if (on)  { btn._orig = btn.innerHTML; btn.innerHTML = '...'; btn.disabled = true; }
-  else     { btn.innerHTML = btn._orig || btn.innerHTML; btn.disabled = false; }
-}
-
-let _toastTimer;
-function toast(msg, type = '') {
-  const el = document.getElementById('toast');
-  el.textContent = msg;
-  el.className = 'show ' + type;
-  clearTimeout(_toastTimer);
-  _toastTimer = setTimeout(() => { el.className = type; }, 2200);
-}
+function esc(s) { return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function flashErr(id, ph) { const el=document.getElementById(id); el.style.borderColor='var(--danger)'; el.placeholder=ph; setTimeout(()=>el.style.borderColor='',1500); }
+function setLoading(on) { const b=document.getElementById('loading-bar'); b.style.opacity='1'; b.style.width=on?'70%':'100%'; if(!on)setTimeout(()=>{b.style.width='0%';b.style.opacity='0';},350); }
+function btnLoad(btn,on) { if(!btn)return; if(on){btn._orig=btn.innerHTML;btn.innerHTML='...';btn.disabled=true;}else{btn.innerHTML=btn._orig||btn.innerHTML;btn.disabled=false;} }
+let _tt; function toast(msg,type=''){const el=document.getElementById('toast');el.textContent=msg;el.className='show '+type;clearTimeout(_tt);_tt=setTimeout(()=>el.className=type,2200);}
 
 init();
 </script>

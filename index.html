@@ -1614,9 +1614,8 @@ async function renderSummary() {
 function mascotSVG(score, size) {
   size = size || 72;
   const s = score;
-  // Body: muted dark when sad, vibrant medium green when happy
-  const body    = s>=90?'#4CAF50':s>=65?'#66BB6A':s>=40?'#7DC87F':s>=20?'#4A7A55':s>=8?'#3A5E42':'#2B4432';
-  const outline = s>=40?'#2D5A1A':'#1A3A20';
+  const body    = '#66BB6A';
+  const outline = '#2D5A1A';
   const bl      = s>=65?0.88:s>=40?0.5:0; // blush opacity
   // Small cute mouth (not wide — kawaii style)
   const mouth = s>=90?'M13,24 Q20,30 27,24'
@@ -1682,11 +1681,11 @@ function mascotMsg(score) {
 
 function updateMascot() {
   const { cals, habitDone, habitTotal, wkSessions } = _mascot;
-  let score = 0, n = 0;
-  if (calGoal>0 && cals>0)          { score+=Math.min(100,(cals/calGoal)*100); n++; }
-  if (habitTotal>0)                  { score+=(habitDone/habitTotal)*100; n++; }
-  if (workoutGoal>0 && wkSessions>0) { score+=Math.min(100,(wkSessions/workoutGoal)*100); n++; }
-  const s = n ? Math.round(score/n) : 0;
+  const calPct = calGoal > 0 ? (cals / calGoal) * 100 : 0;
+  const calS   = calPct <= 100 ? calPct : Math.max(0, 100 - (calPct - 100) * 2);
+  const habS   = habitTotal > 0 ? (habitDone / habitTotal) * 100 : 0;
+  const wkS    = workoutGoal > 0 ? Math.min(100, (wkSessions / workoutGoal) * 100) : 0;
+  const s      = Math.round((calS + habS + wkS) / 3);
   const cls = s>=90?'mascot-celebrate':s>=55?'mascot-bounce':'mascot-idle';
   const face = document.getElementById('mascot-face');
   const msg  = document.getElementById('mascot-msg');

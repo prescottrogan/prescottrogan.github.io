@@ -41,6 +41,7 @@
   }
 
   html, body { height: 100%; }
+  html { overflow-y: scroll; } /* always show scrollbar track — prevents layout shift on tab switch */
   body {
     background: var(--bg);
     color: var(--text);
@@ -423,7 +424,10 @@
   .smry-mac-val { font-size: 1.15rem; font-weight: 700; line-height: 1; }
   .smry-mac-lbl { font-size: .7rem; color: var(--muted); margin-top: 3px; }
   .week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 8px; }
-  .week-day-col { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .week-day-col { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; overflow: hidden; }
+  .task-due { font-size: .72rem; font-weight: 600; color: var(--accent3); margin-top: 2px; }
+  .task-due.overdue { color: var(--danger); }
+  #task-due-row { display: none; margin-bottom: 10px; }
   .week-day-lbl { font-size: .62rem; font-weight: 600; color: var(--muted); }
   .wk-today { color: var(--accent5) !important; }
   .week-cal-wrap { width: 100%; height: 42px; background: var(--border); border-radius: 3px; display: flex; align-items: flex-end; overflow: hidden; }
@@ -608,6 +612,14 @@
 
   <!-- ── DAILY ─────────────────────────────────────── -->
   <div id="section-daily" class="section">
+    <div class="day-nav">
+      <button class="nav-arrow" onclick="changeDay('daily',-1)" id="daily-prev"></button>
+      <div class="day-nav-center">
+        <span class="day-nav-date" id="daily-day-label"></span>
+        <button class="today-btn" id="daily-today-btn" onclick="goToday('daily')">Today</button>
+      </div>
+      <button class="nav-arrow" onclick="changeDay('daily',1)" id="daily-next"></button>
+    </div>
     <div class="card stat-big" style="padding:18px">
       <div class="number" id="daily-pct" style="color:var(--accent4);font-size:2.5rem">0%</div>
       <div class="label" id="daily-label">done today</div>
@@ -621,6 +633,9 @@
       <div class="form-row">
         <input type="text" id="habit-name" placeholder="Name..." style="flex:1">
         <button id="habit-add-btn" class="btn btn-purple" onclick="addItem()"><span id="habit-plus"></span>Add</button>
+      </div>
+      <div id="task-due-row">
+        <input type="date" id="task-due" placeholder="Due date (optional)">
       </div>
     </div>
     <div id="daily-list"></div>
@@ -660,7 +675,7 @@ const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
 
 let user = null;
 let calGoal = 2000;
-let currentDays = { food: 0, workout: 0 };
+let currentDays = { food: 0, workout: 0, daily: 0 };
 let editing = { food: null, workout: null, info: null, habit: null, folder: null };
 
 // Info state
@@ -727,6 +742,8 @@ function injectIcons() {
   document.getElementById('food-next').innerHTML    = icon(IC.arrowR);
   document.getElementById('workout-prev').innerHTML = icon(IC.arrowL);
   document.getElementById('workout-next').innerHTML = icon(IC.arrowR);
+  document.getElementById('daily-prev').innerHTML   = icon(IC.arrowL);
+  document.getElementById('daily-next').innerHTML   = icon(IC.arrowR);
   document.getElementById('food-plus').innerHTML        = icon(IC.plus, 16);
   document.getElementById('food-search-icon').innerHTML = icon(IC.search, 18);
   document.getElementById('workout-plus').innerHTML     = icon(IC.plus, 16);
@@ -1389,32 +1406,54 @@ function setAddType(type) {
   document.getElementById('habit-name').placeholder = type === 'habit'
     ? 'Habit name (e.g. Drink water, Exercise...)'
     : 'Task name (e.g. Call dentist, Buy groceries...)';
+  document.getElementById('task-due-row').style.display = type === 'task' ? 'block' : 'none';
+}
+
+function parseTaskName(raw) {
+  const m = (raw || '').match(/^(.*?)\s*\[(\d{4}-\d{2}-\d{2})\]$/);
+  return m ? { name: m[1].trim(), due: m[2] } : { name: raw || '', due: null };
+}
+
+function formatDue(dateStr) {
+  const today = todayKey();
+  if (dateStr === today)        return 'today';
+  if (dateStr === offsetKey(1)) return 'tomorrow';
+  if (dateStr === offsetKey(-1)) return 'yesterday';
+  const [y,m,d] = dateStr.split('-');
+  return new Date(+y,+m-1,+d).toLocaleDateString('en-US',{month:'short',day:'numeric'});
 }
 
 async function addItem() {
   const name = document.getElementById('habit-name').value.trim();
   if (!name) return flashErr('habit-name', 'Enter a name');
   const btn = document.getElementById('habit-add-btn'); btnLoad(btn, true);
+  const due = addType === 'task' ? (document.getElementById('task-due').value || '') : '';
+  const storedName = due ? `${name} [${due}]` : name;
   const { error } = await dbCall(() => db.from('habits').insert({
-    user_id: user.id, name, recurring: addType === 'habit', completed: false
+    user_id: user.id, name: storedName, recurring: addType === 'habit', completed: false
   }));
   btnLoad(btn, false); if (error) return;
   document.getElementById('habit-name').value = '';
+  document.getElementById('task-due').value = '';
   await renderDaily();
 }
 
 function startEditHabit(id) { editing.habit = id; renderDaily(); }
 function cancelEditHabit()  { editing.habit = null; renderDaily(); }
-async function saveEditHabit(id) {
-  const name = document.getElementById('eh-name-'+id)?.value.trim();
+async function saveEditHabit(id, isRecurring) {
+  let name = document.getElementById('eh-name-'+id)?.value.trim();
   if (!name) return toast('Name required','error');
+  if (!isRecurring) {
+    const due = document.getElementById('eh-due-'+id)?.value;
+    if (due) name = `${name} [${due}]`;
+  }
   const { error } = await dbCall(() => db.from('habits').update({ name }).eq('id',id).eq('user_id',user.id));
   if (error) return; editing.habit = null; toast('Updated','ok'); await renderDaily();
 }
 
 async function toggleItem(id, isRecurring) {
   if (isRecurring) {
-    const dateKey = todayKey();
+    const dateKey = offsetKey(currentDays.daily);
     const { data } = await dbCall(() => db.from('habit_completions').select('id').eq('user_id',user.id).eq('habit_id',id).eq('date',dateKey).maybeSingle());
     if (data) await dbCall(() => db.from('habit_completions').delete().eq('id',data.id));
     else      await dbCall(() => db.from('habit_completions').insert({user_id:user.id,habit_id:id,date:dateKey}));
@@ -1432,7 +1471,11 @@ async function deleteItem(id) {
 }
 
 async function renderDaily() {
-  const dateKey = todayKey();
+  const dateKey  = offsetKey(currentDays.daily);
+  const dayLabel = fmt(dateKey);
+  document.getElementById('daily-day-label').textContent = dayLabel;
+  document.getElementById('daily-today-btn').style.display = currentDays.daily === 0 ? 'none' : '';
+
   const [itemsRes, compRes] = await Promise.all([
     dbCall(() => db.from('habits').select('*').eq('user_id',user.id).order('created_at')),
     dbCall(() => db.from('habit_completions').select('habit_id').eq('user_id',user.id).eq('date',dateKey))
@@ -1447,7 +1490,8 @@ async function renderDaily() {
   const doneCnt = habits.filter(h=>doneHabitIds.has(h.id)).length + tasks.filter(t=>t.completed).length;
   const pct = all.length ? Math.round((doneCnt / all.length)*100) : 0;
   document.getElementById('daily-pct').textContent = pct+'%';
-  document.getElementById('daily-label').textContent = `${doneCnt} of ${all.length} done`;
+  const dayWord = currentDays.daily === 0 ? 'today' : dayLabel === 'Yesterday' ? 'yesterday' : `on ${dayLabel}`;
+  document.getElementById('daily-label').textContent = `${doneCnt} of ${all.length} done ${dayWord}`;
   _mascot.habitDone = doneCnt;
   _mascot.habitTotal = all.length;
   updateMascot();
@@ -1458,22 +1502,33 @@ async function renderDaily() {
   }
 
   function renderRow(item, isDone) {
+    const parsed = item.recurring ? { name: item.name, due: null } : parseTaskName(item.name);
     if (editing.habit === item.id) {
+      const dueField = item.recurring ? '' : `<input type="date" id="eh-due-${item.id}" value="${parsed.due||''}">`;
       return `<div class="entry-editing">
-        <input type="text" id="eh-name-${item.id}" value="${esc(item.name)}" style="margin-bottom:8px">
+        <input type="text" id="eh-name-${item.id}" value="${esc(parsed.name)}" style="margin-bottom:8px">
+        ${dueField}
         <div class="edit-actions">
-          <button class="btn btn-purple" onclick="saveEditHabit('${item.id}')">Save</button>
+          <button class="btn btn-purple" onclick="saveEditHabit('${item.id}',${item.recurring})">Save</button>
           <button class="btn btn-ghost"  onclick="cancelEditHabit()">Cancel</button>
         </div>
       </div>`;
     }
-    const shape  = item.recurring ? 'round'  : 'square';
-    const badge  = item.recurring
+    const shape = item.recurring ? 'round' : 'square';
+    const badge = item.recurring
       ? `<span class="habit-badge badge-habit">Habit</span>`
       : `<span class="habit-badge badge-task">Task</span>`;
+    let dueHtml = '';
+    if (parsed.due) {
+      const isOverdue = !isDone && parsed.due < todayKey();
+      dueHtml = `<div class="task-due${isOverdue?' overdue':''}">due ${formatDue(parsed.due)}</div>`;
+    }
     return `<div class="habit-row ${isDone?'done-row':''}">
       <button class="habit-check ${shape} ${isDone?'done':''}" onclick="toggleItem('${item.id}',${item.recurring})">${icon(IC.check,14)}</button>
-      <span class="habit-name">${esc(item.name)}</span>
+      <div style="flex:1;min-width:0">
+        <div class="habit-name">${esc(parsed.name)}</div>
+        ${dueHtml}
+      </div>
       ${badge}
       <button class="icon-btn" onclick="startEditHabit('${item.id}')">${icon(IC.edit,16)}</button>
       <button class="icon-btn danger" onclick="deleteItem('${item.id}')">${icon(IC.trash,16)}</button>
@@ -1817,8 +1872,14 @@ function switchTab(tab) {
   if (tab==='daily')   renderDaily();
   if (tab==='summary') setSummaryPeriod(summaryPeriod);
 }
-function changeDay(s,d) { currentDays[s]+=d; if(currentDays[s]>0)currentDays[s]=0; if(s==='food')renderFood();else renderWorkout(); }
-function goToday(s)     { currentDays[s]=0; if(s==='food')renderFood();else renderWorkout(); }
+function changeDay(s,d) {
+  currentDays[s]+=d; if(currentDays[s]>0)currentDays[s]=0;
+  if(s==='food')renderFood(); else if(s==='workout')renderWorkout(); else if(s==='daily')renderDaily();
+}
+function goToday(s) {
+  currentDays[s]=0;
+  if(s==='food')renderFood(); else if(s==='workout')renderWorkout(); else if(s==='daily')renderDaily();
+}
 
 // ── Utils ──────────────────────────────────────────────────────────────────
 const localDateStr = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;

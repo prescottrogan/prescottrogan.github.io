@@ -437,11 +437,36 @@
   .task-due { font-size: .72rem; font-weight: 600; color: var(--accent3); margin-top: 2px; }
   .task-due.overdue { color: var(--danger); }
   .task-add-row { display: flex; gap: 8px; align-items: center; }
-  .task-add-row input[type="text"] { flex: 1; min-width: 0; }
-  .cal-wrap { position: relative; flex-shrink: 0; width: 40px; height: 40px; display: none; }
-  .cal-btn { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: var(--card); border: 1.5px solid var(--border); border-radius: 10px; cursor: pointer; color: var(--muted); transition: border-color .15s, color .15s, background .15s; pointer-events: none; }
+  .task-add-row input[type="text"] { flex: 1; min-width: 0; width: auto; height: 42px; box-sizing: border-box; }
+  .task-add-row .btn { height: 42px; flex-shrink: 0; }
+  .cal-wrap { position: relative; flex-shrink: 0; width: 42px; height: 42px; display: none; }
+  .cal-btn { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: var(--card); border: 1.5px solid var(--border); border-radius: 10px; cursor: pointer; color: var(--muted); transition: border-color .15s, color .15s, background .15s; pointer-events: none; }
   .cal-btn:hover, .cal-btn.active { border-color: var(--accent4); color: var(--accent4); background: rgba(74,222,128,.09); }
-  .cal-wrap input[type="date"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; border: none; background: none; }
+  .cal-wrap input[type="date"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; border: none; background: none; padding: 0; }
+  /* Onboarding */
+  #onboard-screen { position: fixed; inset: 0; z-index: 200; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: flex-start; overflow-y: auto; padding: 32px 20px 60px; }
+  .onboard-box { width: 100%; max-width: 400px; }
+  .onboard-step { display: none; flex-direction: column; align-items: center; gap: 18px; }
+  .onboard-step.active { display: flex; }
+  .onboard-title { font-size: 1.5rem; font-weight: 800; letter-spacing: -.04em; color: var(--text); text-align: center; }
+  .onboard-sub { font-size: .88rem; color: var(--muted); text-align: center; line-height: 1.55; }
+  .onboard-field { width: 100%; }
+  .onboard-field label { display: block; font-size: .78rem; font-weight: 600; color: var(--muted); margin-bottom: 6px; letter-spacing: .02em; text-transform: uppercase; }
+  .onboard-habit-row { display: flex; gap: 8px; width: 100%; }
+  .onboard-habit-row input { flex: 1; }
+  .onboard-habit-list { width: 100%; display: flex; flex-direction: column; gap: 8px; min-height: 8px; }
+  .onboard-habit-item { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; }
+  .onboard-habit-item span { flex: 1; font-weight: 500; font-size: .92rem; }
+  /* Reset modal */
+  #reset-modal { display: none; position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,.55); backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 20px; }
+  #reset-modal.open { display: flex; }
+  .reset-box { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 24px; width: 100%; max-width: 400px; max-height: 88vh; overflow-y: auto; }
+  .reset-box h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 4px; }
+  .reset-sub { font-size: .82rem; color: var(--muted); margin-bottom: 18px; line-height: 1.5; }
+  .core-habit-locked { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 9px 14px; margin-bottom: 6px; }
+  .core-habit-locked span { flex: 1; font-size: .88rem; color: var(--muted); }
+  /* Core badge in daily list */
+  .core-badge { display: inline-flex; align-items: center; gap: 3px; font-size: .67rem; font-weight: 700; color: var(--accent3); background: rgba(251,191,36,.12); border: 1px solid rgba(251,191,36,.3); border-radius: 6px; padding: 2px 7px; flex-shrink: 0; }
   .week-day-lbl { font-size: .62rem; font-weight: 600; color: var(--muted); }
   .wk-today { color: var(--accent5) !important; }
   .week-cal-wrap { width: 100%; height: 42px; background: var(--border); border-radius: 3px; display: flex; align-items: flex-end; overflow: hidden; }
@@ -473,6 +498,37 @@
 <div id="toast"></div>
 
 <!-- ══ AUTH ══════════════════════════════════════════ -->
+<div id="onboard-screen" style="display:none">
+  <div class="onboard-box">
+    <div class="onboard-step active" id="ob-step-1">
+      <div style="font-size:64px;margin:4px 0 0">🐸</div>
+      <div class="onboard-title">Welcome to Froggy</div>
+      <div class="onboard-sub">Set your daily goals. These lock in — use <strong>Reset Goals</strong> in the summary later if you need to update them.</div>
+      <div class="onboard-field">
+        <label>Daily calorie goal (kcal)</label>
+        <input type="number" id="ob-cal" placeholder="2000" min="500" max="9999">
+      </div>
+      <div class="onboard-field">
+        <label>Workout sessions per week</label>
+        <input type="number" id="ob-wk" placeholder="3" min="1" max="7">
+      </div>
+      <button class="btn btn-green btn-full" onclick="goOnboardStep2()">Next →</button>
+    </div>
+    <div class="onboard-step" id="ob-step-2">
+      <div style="font-size:64px;margin:4px 0 0">⚔️</div>
+      <div class="onboard-title">Your Daily System</div>
+      <div class="onboard-sub">Add the habits you <em>must</em> complete every day. These are your core quests — skip them and your frog suffers.</div>
+      <div class="onboard-habit-row">
+        <input type="text" id="ob-habit-input" placeholder="e.g. Drink 2L water" onkeydown="if(event.key==='Enter')addOnboardHabit()">
+        <button class="btn btn-green" onclick="addOnboardHabit()">Add</button>
+      </div>
+      <div class="onboard-habit-list" id="ob-habit-list"></div>
+      <button class="btn btn-green btn-full" id="ob-submit-btn" onclick="submitOnboarding()">Start my journey →</button>
+      <button class="btn btn-ghost btn-full" onclick="goOnboardStep1()" style="margin-top:-6px">← Back</button>
+    </div>
+  </div>
+</div>
+
 <div id="auth-screen" style="display:none">
   <div class="auth-box">
     <div class="auth-logo-wrap">
@@ -669,6 +725,35 @@
       <button class="smry-period-btn" id="sp-year"  onclick="setSummaryPeriod('year')">Year</button>
     </div>
     <div id="summary-view"></div>
+    <div style="padding: 0 0 8px">
+      <button class="btn btn-ghost btn-full" onclick="showResetModal()" style="font-size:.82rem;color:var(--muted)">Reset Goals &amp; Habits</button>
+    </div>
+  </div>
+
+  <div id="reset-modal">
+    <div class="reset-box">
+      <h3>Reset Goals &amp; Habits</h3>
+      <div class="reset-sub">Update your goals or add new core habits. All existing data and history is kept.</div>
+      <div class="onboard-field" style="margin-bottom:12px">
+        <label>Daily calorie goal (kcal)</label>
+        <input type="number" id="rm-cal" placeholder="2000">
+      </div>
+      <div class="onboard-field" style="margin-bottom:18px">
+        <label>Workout sessions per week</label>
+        <input type="number" id="rm-wk" placeholder="3" min="1" max="7">
+      </div>
+      <div class="section-title" style="margin-bottom:10px">Locked core habits</div>
+      <div id="rm-core-locked"></div>
+      <div class="onboard-habit-row" style="margin-top:12px">
+        <input type="text" id="rm-habit-input" placeholder="Add new core habit..." onkeydown="if(event.key==='Enter')addResetHabit()">
+        <button class="btn btn-green" onclick="addResetHabit()">Add</button>
+      </div>
+      <div class="onboard-habit-list" id="rm-new-habits" style="margin-top:10px"></div>
+      <div style="display:flex;gap:8px;margin-top:20px">
+        <button class="btn btn-green" style="flex:1" onclick="submitReset()">Save</button>
+        <button class="btn btn-ghost" style="flex:1" onclick="hideResetModal()">Cancel</button>
+      </div>
+    </div>
   </div>
 
   <nav>
@@ -729,7 +814,8 @@ const IC = {
   moon:    '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',
   search:  '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
   summary: '<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>',
-  clock:   '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>'
+  clock:   '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+  lock:    '<rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>'
 };
 
 const FOLDER_COLORS = ['#60a5fa','#4ade80','#f59e0b','#a78bfa','#f87171','#34d399','#fb923c','#e879f9'];
@@ -821,9 +907,20 @@ function setAuthMsg(m, e=false) { const el = document.getElementById('auth-msg')
 function showAuth() { document.getElementById('app').style.display = 'none'; document.getElementById('auth-screen').style.display = 'flex'; }
 async function showApp() {
   document.getElementById('auth-screen').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
   document.getElementById('date-display').textContent = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
   await loadSettings();
+  injectIcons();
+  if (!user?.user_metadata?.setup_complete) {
+    document.getElementById('app').style.display = 'none';
+    document.getElementById('onboard-screen').style.display = 'flex';
+  } else {
+    document.getElementById('onboard-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    await renderAll();
+  }
+}
+async function renderAll() {
+  await Promise.all([renderFood(), renderWorkout(), renderDaily(), renderInfo()]);
   setSummaryPeriod('day');
 }
 
@@ -837,6 +934,121 @@ async function dbCall(builder) {
   }
   if (r.error) toast(r.error.message, 'error');
   return r;
+}
+
+// ── Onboarding ─────────────────────────────────────────────────────────────
+let _obHabits = [];
+let _rmHabits = [];
+
+function getCoreHabitIds() { return user?.user_metadata?.core_habit_ids || []; }
+
+async function refreshUser() {
+  const { data } = await db.auth.getUser();
+  if (data?.user) user = data.user;
+}
+
+function goOnboardStep1() {
+  document.getElementById('ob-step-1').classList.add('active');
+  document.getElementById('ob-step-2').classList.remove('active');
+}
+
+function goOnboardStep2() {
+  const cal = parseInt(document.getElementById('ob-cal').value) || 0;
+  const wk  = parseInt(document.getElementById('ob-wk').value)  || 0;
+  if (cal < 500)       return flashErr('ob-cal', 'Enter a valid calorie goal (min 500)');
+  if (wk < 1 || wk > 7) return flashErr('ob-wk', 'Enter 1–7 sessions per week');
+  document.getElementById('ob-step-1').classList.remove('active');
+  document.getElementById('ob-step-2').classList.add('active');
+}
+
+function addOnboardHabit() {
+  const inp = document.getElementById('ob-habit-input');
+  const name = inp.value.trim();
+  if (!name) return;
+  _obHabits.push(name);
+  inp.value = '';
+  renderObHabits();
+}
+function removeOnboardHabit(i) { _obHabits.splice(i, 1); renderObHabits(); }
+function renderObHabits() {
+  document.getElementById('ob-habit-list').innerHTML = _obHabits.map((h, i) =>
+    `<div class="onboard-habit-item"><span>${esc(h)}</span><button class="icon-btn danger" onclick="removeOnboardHabit(${i})">${icon(IC.trash,14)}</button></div>`
+  ).join('');
+}
+
+async function submitOnboarding() {
+  const cal = parseInt(document.getElementById('ob-cal').value) || 2000;
+  const wk  = parseInt(document.getElementById('ob-wk').value)  || 3;
+  const btn = document.getElementById('ob-submit-btn');
+  btnLoad(btn, true);
+  calGoal = cal; workoutGoal = wk;
+  await dbCall(() => db.from('user_settings').upsert({ user_id: user.id, cal_goal: cal, workout_goal: wk }, { onConflict: 'user_id' }));
+  const coreIds = [];
+  for (const name of _obHabits) {
+    const { data } = await dbCall(() => db.from('habits').insert({ user_id: user.id, name, recurring: true, completed: false }).select('id').single());
+    if (data?.id) coreIds.push(data.id);
+  }
+  const prev = getCoreHabitIds();
+  await db.auth.updateUser({ data: { ...user.user_metadata, setup_complete: true, core_habit_ids: [...new Set([...prev, ...coreIds])] } });
+  await refreshUser();
+  btnLoad(btn, false);
+  document.getElementById('onboard-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  await renderAll();
+}
+
+// ── Reset modal ─────────────────────────────────────────────────────────────
+async function showResetModal() {
+  document.getElementById('rm-cal').value = calGoal;
+  document.getElementById('rm-wk').value  = workoutGoal;
+  _rmHabits = [];
+  renderRmNewHabits();
+  const coreIds = getCoreHabitIds();
+  if (coreIds.length) {
+    const { data } = await dbCall(() => db.from('habits').select('id,name').in('id', coreIds));
+    document.getElementById('rm-core-locked').innerHTML = (data || []).map(h =>
+      `<div class="core-habit-locked">${icon(IC.lock,13)}<span>${esc(h.name)}</span></div>`
+    ).join('') || '<div style="color:var(--muted);font-size:.85rem;padding:4px 0">No core habits yet.</div>';
+  } else {
+    document.getElementById('rm-core-locked').innerHTML = '<div style="color:var(--muted);font-size:.85rem;padding:4px 0">No core habits yet.</div>';
+  }
+  document.getElementById('reset-modal').classList.add('open');
+}
+function hideResetModal() { document.getElementById('reset-modal').classList.remove('open'); }
+
+function addResetHabit() {
+  const inp = document.getElementById('rm-habit-input');
+  const name = inp.value.trim();
+  if (!name) return;
+  _rmHabits.push(name);
+  inp.value = '';
+  renderRmNewHabits();
+}
+function removeRmHabit(i) { _rmHabits.splice(i, 1); renderRmNewHabits(); }
+function renderRmNewHabits() {
+  document.getElementById('rm-new-habits').innerHTML = _rmHabits.map((h, i) =>
+    `<div class="onboard-habit-item"><span>${esc(h)}</span><button class="icon-btn danger" onclick="removeRmHabit(${i})">${icon(IC.trash,14)}</button></div>`
+  ).join('');
+}
+
+async function submitReset() {
+  const cal = parseInt(document.getElementById('rm-cal').value) || calGoal;
+  const wk  = Math.max(1, Math.min(7, parseInt(document.getElementById('rm-wk').value) || workoutGoal));
+  calGoal = cal; workoutGoal = wk;
+  await dbCall(() => db.from('user_settings').upsert({ user_id: user.id, cal_goal: cal, workout_goal: wk }, { onConflict: 'user_id' }));
+  const newCoreIds = [];
+  for (const name of _rmHabits) {
+    const { data } = await dbCall(() => db.from('habits').insert({ user_id: user.id, name, recurring: true, completed: false }).select('id').single());
+    if (data?.id) newCoreIds.push(data.id);
+  }
+  if (newCoreIds.length) {
+    const prev = getCoreHabitIds();
+    await db.auth.updateUser({ data: { ...user.user_metadata, core_habit_ids: [...new Set([...prev, ...newCoreIds])] } });
+    await refreshUser();
+  }
+  hideResetModal();
+  await renderAll();
+  toast('Goals updated!', 'ok');
 }
 
 // ── Settings ───────────────────────────────────────────────────────────────
@@ -1545,10 +1757,13 @@ async function renderDaily() {
         </div>
       </div>`;
     }
+    const isCore = item.recurring && getCoreHabitIds().includes(item.id);
     const shape = item.recurring ? 'round' : 'square';
-    const badge = item.recurring
-      ? `<span class="habit-badge badge-habit">Habit</span>`
-      : `<span class="habit-badge badge-task">Task</span>`;
+    const badge = isCore
+      ? `<span class="core-badge">${icon(IC.lock,11)} Core</span>`
+      : item.recurring
+        ? `<span class="habit-badge badge-habit">Habit</span>`
+        : `<span class="habit-badge badge-task">Task</span>`;
     let dueHtml = '';
     if (parsed.due) {
       const isOverdue = !isDone && parsed.due < todayKey();
@@ -1561,8 +1776,8 @@ async function renderDaily() {
         ${dueHtml}
       </div>
       ${badge}
-      <button class="icon-btn" onclick="startEditHabit('${item.id}')">${icon(IC.edit,16)}</button>
-      <button class="icon-btn danger" onclick="deleteItem('${item.id}')">${icon(IC.trash,16)}</button>
+      ${isCore ? '' : `<button class="icon-btn" onclick="startEditHabit('${item.id}')">${icon(IC.edit,16)}</button>`}
+      ${isCore ? '' : `<button class="icon-btn danger" onclick="deleteItem('${item.id}')">${icon(IC.trash,16)}</button>`}
     </div>`;
   }
 
@@ -1896,7 +2111,7 @@ function switchTab(tab) {
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
   document.getElementById('section-'+tab).classList.add('active');
-  document.querySelector(`nav button[data-tab="${tab}"]`).classList.add('active');
+  document.querySelector(`nav button[data-tab="${tab}"]`)?.classList.add('active');
   if (tab==='food')    renderFood();
   if (tab==='workout') renderWorkout();
   if (tab==='info')    renderInfo();

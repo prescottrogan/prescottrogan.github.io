@@ -771,7 +771,6 @@ function onFoodInput() {
 }
 
 async function searchFoodUSDA(query) {
-  // Cancel any previous in-flight request
   if (_foodSearchController) _foodSearchController.abort();
   _foodSearchController = new AbortController();
 
@@ -779,29 +778,29 @@ async function searchFoodUSDA(query) {
   dd.innerHTML = '<div class="fd-item fd-msg">Searching…</div>';
   dd.style.display = 'block';
   try {
-    const r = await fetch(
-      `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(query)}&pageSize=3&api_key=${USDA_KEY}`,
-      { signal: _foodSearchController.signal }
-    );
-    if (!r.ok) throw new Error(`HTTP ${r.status}`);
-    const json = await r.json();
-    _foodSearchResults = json.foods || [];
-    if (!_foodSearchResults.length) {
+    // Try curated USDA datasets first (no branded duplicates), fall back to all
+    let foods = [];
+    for (const dt of ['Foundation,SR%20Legacy', null]) {
+      const url = `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(query)}&pageSize=3${dt ? '&dataType=' + dt : ''}&api_key=${USDA_KEY}`;
+      const r = await fetch(url, { signal: _foodSearchController.signal });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const json = await r.json();
+      foods = json.foods || [];
+      if (foods.length) break;
+    }
+    _foodSearchResults = foods;
+    if (!foods.length) {
       dd.innerHTML = '<div class="fd-item fd-msg">No results — enter calories manually</div>';
       return;
     }
-    dd.innerHTML = _foodSearchResults.map((f, i) => {
-      // Some entries report energy as kJ (1062) instead of kcal (1008)
+    dd.innerHTML = foods.map((f, i) => {
       const kcal = f.foodNutrients.find(n => n.nutrientId === 1008)?.value;
       const kj   = f.foodNutrients.find(n => n.nutrientId === 1062)?.value;
       const cal  = Math.round(kcal ?? (kj ? kj / 4.184 : 0));
-      const name = f.description.split(',')[0].trim();
-      const sub  = f.description.includes(',')
-        ? f.description.slice(f.description.indexOf(',') + 1).trim().toLowerCase()
-        : '';
-      const subTrunc = sub.length > 42 ? sub.slice(0, 42) + '…' : sub;
+      // Show the full description so entries are distinguishable
+      const desc = f.description.length > 60 ? f.description.slice(0, 60) + '…' : f.description;
       return `<div class="fd-item" onclick="selectFood(${i})">
-        <span class="fd-name">${esc(name)}${subTrunc ? `<span style="font-weight:400;color:var(--muted)"> · ${esc(subTrunc)}</span>` : ''}</span>
+        <span class="fd-name">${esc(desc)}</span>
         <span class="fd-meta">${cal} kcal / 100g</span>
       </div>`;
     }).join('');

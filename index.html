@@ -25,7 +25,7 @@
     --danger: #ef4444;
     --header-bg: rgba(247,247,248,.92);
     --nav-bg: rgba(255,255,255,.95);
-    --r: 10px;
+    --r: 14px;
   }
   [data-theme="dark"] {
     --bg: #0a0a0a;
@@ -129,10 +129,15 @@
   }
   nav button {
     background: none; border: none; color: var(--muted);
-    padding: 12px 4px 10px; cursor: pointer; font-size: .68rem; font-weight: 500;
-    display: flex; flex-direction: column; align-items: center; gap: 4px; transition: color .15s;
+    padding: 10px 4px 8px; cursor: pointer; font-size: .66rem; font-weight: 600;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    transition: color .15s; position: relative;
   }
   nav button svg { width: 22px; height: 22px; stroke-width: 2; }
+  nav button.active::after {
+    content: ''; position: absolute; bottom: 6px; width: 16px; height: 3px;
+    border-radius: 2px; background: currentColor; opacity: .6;
+  }
   nav button.active[data-tab="food"]    { color: var(--accent); }
   nav button.active[data-tab="workout"] { color: var(--accent2); }
   nav button.active[data-tab="info"]    { color: var(--accent3); }
@@ -148,15 +153,17 @@
   .card {
     background: var(--surface); border: 1px solid var(--border);
     border-radius: var(--r); padding: 16px; margin-bottom: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.05);
   }
+  [data-theme="dark"] .card { box-shadow: none; }
 
   /* ── Stat ──────────────────────────────────────── */
-  .stat-big { text-align: center; padding: 22px 16px; }
-  .stat-big .number { font-size: 3rem; font-weight: 700; line-height: 1; letter-spacing: -.03em; font-variant-numeric: tabular-nums; }
-  .stat-big .label  { color: var(--muted); font-size: .85rem; margin-top: 6px; }
-  .goal-bar      { height: 6px; background: var(--border); border-radius: 3px; margin-top: 14px; overflow: hidden; }
-  .goal-bar-fill { height: 100%; border-radius: 3px; transition: width .35s ease, background .25s ease; }
-  .goal-text     { font-size: .75rem; color: var(--muted); margin-top: 8px; }
+  .stat-big { text-align: center; padding: 26px 16px; }
+  .stat-big .number { font-size: 3.8rem; font-weight: 800; line-height: 1; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+  .stat-big .label  { color: var(--muted); font-size: .82rem; margin-top: 8px; font-weight: 500; }
+  .goal-bar      { height: 8px; background: var(--border); border-radius: 4px; margin-top: 16px; overflow: hidden; }
+  .goal-bar-fill { height: 100%; border-radius: 4px; transition: width .4s cubic-bezier(.4,0,.2,1), background .25s ease; }
+  .goal-text     { font-size: .76rem; color: var(--muted); margin-top: 10px; }
 
   /* ── Forms ─────────────────────────────────────── */
   .form-row { display: flex; gap: 8px; margin-bottom: 10px; }
@@ -229,24 +236,31 @@
 
   /* ── Macros ────────────────────────────────────── */
   .macros-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
-  .macro-box  { background: var(--bg); border-radius: 8px; padding: 12px 8px; text-align: center; }
-  .macro-box .val { font-size: 1.1rem; font-weight: 700; font-variant-numeric: tabular-nums; }
-  .macro-box .lbl { font-size: .7rem; color: var(--muted); margin-top: 2px; }
+  .macro-box  { background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 8px; text-align: center; }
+  .macro-box .val { font-size: 1.2rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .macro-box .lbl { font-size: .7rem; color: var(--muted); margin-top: 3px; font-weight: 500; }
 
   /* ── Day nav ───────────────────────────────────── */
-  .day-nav { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; gap: 8px; }
-  .day-nav-center { text-align: center; flex: 1; }
-  .day-nav-date   { font-weight: 600; font-size: .95rem; }
-  .day-nav .nav-arrow {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 8px;
-    color: var(--text-2); padding: 8px; cursor: pointer;
-    display: inline-flex; align-items: center; justify-content: center; transition: border-color .15s;
+  .day-nav { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 8px; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
+  [data-theme="dark"] .day-nav { box-shadow: none; }
+  .day-nav-center { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .day-nav-date   { font-weight: 700; font-size: 1rem; }
+  .nav-arrow {
+    background: var(--surface-2); border: none; border-radius: 10px;
+    color: var(--text); cursor: pointer; flex-shrink: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 42px; height: 42px; transition: background .12s, transform .08s;
   }
-  .day-nav .nav-arrow svg { width: 16px; height: 16px; }
+  .nav-arrow:hover { background: var(--border); }
+  .nav-arrow:active { transform: scale(.88); }
+  .nav-arrow svg { width: 18px; height: 18px; }
   .today-btn {
-    font-size: .72rem; color: var(--accent); background: none; border: none;
-    cursor: pointer; padding: 4px 8px; margin-left: 4px; font-weight: 500;
+    font-size: .7rem; color: var(--accent); font-weight: 700;
+    background: rgba(74,222,128,.15); border: none;
+    cursor: pointer; padding: 3px 10px; border-radius: 20px;
+    transition: background .12s;
   }
+  .today-btn:hover { background: rgba(74,222,128,.25); }
   .goal-row { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
   .goal-row label { font-size: .8rem; color: var(--muted); flex: 1; text-align: left; }
   .goal-row input { width: 90px; margin: 0; }
@@ -436,9 +450,17 @@
 
   <!-- ── FOOD ──────────────────────────────────────── -->
   <div id="section-food" class="section active">
+    <div class="day-nav">
+      <button class="nav-arrow" onclick="changeDay('food',-1)" id="food-prev"></button>
+      <div class="day-nav-center">
+        <span class="day-nav-date" id="food-day-label"></span>
+        <button class="today-btn" id="food-today-btn" onclick="goToday('food')">Today</button>
+      </div>
+      <button class="nav-arrow" onclick="changeDay('food',1)" id="food-next"></button>
+    </div>
     <div class="card stat-big">
       <div class="number" id="cal-total" style="color:var(--accent)">0</div>
-      <div class="label">calories today</div>
+      <div class="label" id="cal-day-label">calories today</div>
       <div class="goal-bar"><div class="goal-bar-fill" id="cal-bar" style="width:0%;background:var(--accent)"></div></div>
       <div class="goal-text">
         Goal: <span id="cal-goal-display">2000</span> kcal
@@ -456,14 +478,6 @@
         <div class="macro-box"><div class="val" id="macro-c" style="color:var(--accent3)">0g</div><div class="lbl">carbs</div></div>
         <div class="macro-box"><div class="val" id="macro-f" style="color:var(--danger)">0g</div><div class="lbl">fat</div></div>
       </div>
-    </div>
-    <div class="day-nav">
-      <button class="nav-arrow" onclick="changeDay('food',-1)" id="food-prev"></button>
-      <div class="day-nav-center">
-        <span class="day-nav-date" id="food-day-label"></span>
-        <button class="today-btn" onclick="goToday('food')">Today</button>
-      </div>
-      <button class="nav-arrow" onclick="changeDay('food',1)" id="food-next"></button>
     </div>
     <div class="card">
       <div class="section-title">Add Food</div>
@@ -484,7 +498,7 @@
       </div>
       <button id="food-add-btn" class="btn btn-green btn-full" onclick="addFood()"><span id="food-plus"></span>Add</button>
     </div>
-    <div class="section-title">Today's Log</div>
+    <div class="section-title" id="food-log-title">Today's Log</div>
     <div class="card" id="food-list"><div class="empty">Nothing logged yet</div></div>
   </div>
 
@@ -494,7 +508,7 @@
       <button class="nav-arrow" onclick="changeDay('workout',-1)" id="workout-prev"></button>
       <div class="day-nav-center">
         <span class="day-nav-date" id="workout-day-label"></span>
-        <button class="today-btn" onclick="goToday('workout')">Today</button>
+        <button class="today-btn" id="workout-today-btn" onclick="goToday('workout')">Today</button>
       </div>
       <button class="nav-arrow" onclick="changeDay('workout',1)" id="workout-next"></button>
     </div>
@@ -531,7 +545,7 @@
       </div>
       <button id="workout-add-btn" class="btn btn-blue btn-full" onclick="addExercise()"><span id="workout-plus"></span>Add Exercise</button>
     </div>
-    <div class="section-title">Workout Log</div>
+    <div class="section-title" id="workout-log-title">Workout Log</div>
     <div class="card workout-entry" id="workout-list"><div class="empty">No exercises logged yet</div></div>
   </div>
 
@@ -879,7 +893,12 @@ async function deleteFood(id) { await dbCall(() => db.from('food_entries').delet
 
 async function renderFood() {
   const dayKey = offsetKey(currentDays.food);
-  document.getElementById('food-day-label').textContent = fmt(dayKey);
+  const dayLabel = fmt(dayKey);
+  document.getElementById('food-day-label').textContent = dayLabel;
+  const dayLabelShort = dayLabel === 'Today' || dayLabel === 'Yesterday' ? dayLabel.toLowerCase() : dayLabel;
+  document.getElementById('cal-day-label').textContent = 'calories · ' + dayLabelShort;
+  document.getElementById('food-log-title').textContent = dayLabel === 'Today' ? "Today's Log" : dayLabel === 'Yesterday' ? "Yesterday's Log" : `Log — ${dayLabel}`;
+  document.getElementById('food-today-btn').style.display = currentDays.food === 0 ? 'none' : '';
   document.getElementById('cal-goal-display').textContent = calGoal;
   document.getElementById('cal-goal-input').value = calGoal;
   const { data: list } = await dbCall(() => db.from('food_entries').select('*').eq('user_id',user.id).eq('date',dayKey).order('created_at',{ascending:true}));
@@ -945,7 +964,10 @@ async function renderWorkout() {
   const dayKey  = offsetKey(currentDays.workout);
   const wkStart = weekStartKey();
   const wkEnd   = todayKey();
-  document.getElementById('workout-day-label').textContent = fmt(dayKey);
+  const dayLabel = fmt(dayKey);
+  document.getElementById('workout-day-label').textContent = dayLabel;
+  document.getElementById('workout-log-title').textContent = dayLabel === 'Today' ? 'Workout Log' : dayLabel === 'Yesterday' ? "Yesterday's Workout" : `Workout — ${dayLabel}`;
+  document.getElementById('workout-today-btn').style.display = currentDays.workout === 0 ? 'none' : '';
   const [dayRes, weekRes] = await Promise.all([
     dbCall(() => db.from('workout_entries').select('*').eq('user_id',user.id).eq('date',dayKey).order('created_at',{ascending:true})),
     dbCall(() => db.from('workout_entries').select('date').eq('user_id',user.id).gte('date',wkStart).lte('date',wkEnd))
@@ -986,6 +1008,8 @@ async function renderInfo() {
     await renderFolderList(view);
   } else if (currentFolder === '__all__') {
     await renderFolderContents(view, null, 'All Notes');
+  } else if (currentFolder === '__uncat__') {
+    await renderFolderContents(view, null, 'No Folder');
   } else {
     const folder = _folderCache.find(f => f.id === currentFolder);
     await renderFolderContents(view, currentFolder, folder?.name || 'Folder');

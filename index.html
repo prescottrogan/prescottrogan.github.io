@@ -1,313 +1,328 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Prescott Honey Farms</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
-:root{--bg:#0d0b07;--surf:#181410;--card:#1e1a0f;--brd:#2a2418;--gold:#F5A623;--gold2:#c47d0e;--gd:#4a3200;--grn:#3d9970;--grnd:#0f3322;--red:#c0392b;--redd:#3d0f0a;--org:#e07b39;--orgd:#3d1f0a;--blu:#3b82f6;--blud:#1e3a5f;--txt:#f0e8d8;--tdim:#a8906a;--mut:#6b5840;--r:10px;}
+:root{--bg:#0d0b07;--surf:#181410;--card:#1e1a0f;--brd:#2a2418;--gold:#F5A623;--gold2:#c47d0e;--gd:#3d2800;--grn:#3d9970;--grnd:#0f3322;--red:#c0392b;--redd:#3d0f0a;--org:#e07b39;--orgd:#3d1f0a;--blu:#3b82f6;--blud:#1e3a5f;--txt:#f0e8d8;--tdim:#a8906a;--mut:#6b5840;--r:10px;--shadow:0 2px 16px rgba(0,0,0,.4);}
+[data-theme="light"]{--bg:#f7f4ee;--surf:#ffffff;--card:#ffffff;--brd:#e0d8c8;--gold:#b8770a;--gold2:#8b5e08;--gd:#fff3d6;--grn:#2a7a52;--grnd:#e6f4ed;--red:#a8291f;--redd:#fde8e6;--org:#c05c1f;--orgd:#fdeede;--blu:#1d4ed8;--blud:#dbeafe;--txt:#2a2010;--tdim:#5a4a30;--mut:#9a8a70;--r:10px;--shadow:0 2px 16px rgba(0,0,0,.12);}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;}
+body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;min-height:100vh;transition:background .2s,color .2s;}
 button,input,select,textarea{font-family:inherit;}
 a{color:var(--gold);text-decoration:none;}
 a:hover{text-decoration:underline;}
+input,select,textarea{background:var(--bg);border:1px solid var(--brd);border-radius:8px;color:var(--txt);padding:9px 12px;font-size:.9rem;outline:none;transition:border-color .15s;width:100%;}
+input:focus,select:focus,textarea:focus{border-color:var(--gold);}
+textarea{min-height:75px;resize:vertical;}
+select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23a8906a' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;}
 
 /* LOGIN */
-#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(ellipse at top,#221a08 0%,#0d0b07 70%);}
-.lbox{background:var(--surf);border:1px solid var(--brd);border-radius:16px;padding:40px 32px;width:100%;max-width:420px;}
-.llogo{text-align:center;margin-bottom:28px;}
-.llogo-hex{margin:0 auto 12px;}
-.llogo-name{font-size:1.9rem;font-weight:900;letter-spacing:3px;color:var(--gold);line-height:1;}
-.llogo-sub{font-size:.8rem;letter-spacing:4px;color:var(--gold);opacity:.8;margin-top:4px;}
-.llogo-line{display:flex;align-items:center;gap:8px;margin:8px 0;}
-.llogo-line::before,.llogo-line::after{content:'';flex:1;height:1px;background:var(--gold);opacity:.4;}
-.demo-lbl{font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--mut);margin-bottom:8px;}
-.demo-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:18px;}
-.dbtn{background:var(--card);border:1px solid var(--brd);border-radius:8px;padding:10px 6px;font-size:.78rem;font-weight:600;color:var(--tdim);cursor:pointer;transition:all .15s;}
-.dbtn:hover,.dbtn.sel{border-color:var(--gold);color:var(--gold);}
-.div{display:flex;align-items:center;gap:10px;margin:14px 0;color:var(--mut);font-size:.75rem;}
-.div::before,.div::after{content:'';flex:1;height:1px;background:var(--brd);}
-.linput{display:block;width:100%;background:var(--bg);border:1px solid var(--brd);border-radius:8px;color:var(--txt);padding:11px 14px;font-size:.95rem;outline:none;margin-bottom:10px;transition:border-color .15s;}
-.linput:focus{border-color:var(--gold);}
-.lbtn{width:100%;background:var(--gold);color:#000;border:none;border-radius:8px;padding:13px;font-size:1rem;font-weight:700;cursor:pointer;}
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:var(--bg);}
+.lbox{background:var(--surf);border:1px solid var(--brd);border-radius:16px;padding:44px 36px;width:100%;max-width:420px;box-shadow:var(--shadow);}
+.llogo{text-align:center;margin-bottom:30px;}
+.llogo-hex{display:block;margin:0 auto 14px;}
+.lname{font-size:2rem;font-weight:900;letter-spacing:4px;color:var(--gold);}
+.lsub{font-size:.72rem;letter-spacing:5px;color:var(--gold);opacity:.75;margin-top:4px;}
+.lline{border:none;border-top:1px solid var(--brd);margin:20px 0;}
+.demo-lbl{font-size:.68rem;text-transform:uppercase;letter-spacing:1.2px;color:var(--mut);margin-bottom:8px;}
+.demo-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px;}
+.dbtn{background:var(--card);border:1px solid var(--brd);border-radius:8px;padding:11px 6px;font-size:.8rem;font-weight:600;color:var(--tdim);cursor:pointer;transition:all .15s;}
+.dbtn:hover,.dbtn.sel{border-color:var(--gold);color:var(--gold);background:var(--gd);}
+.ldiv{display:flex;align-items:center;gap:10px;margin:16px 0;color:var(--mut);font-size:.75rem;}
+.ldiv::before,.ldiv::after{content:'';flex:1;height:1px;background:var(--brd);}
+.lbtn{width:100%;background:var(--gold);color:#000;border:none;border-radius:8px;padding:13px;font-size:1rem;font-weight:700;cursor:pointer;margin-top:4px;}
 .lbtn:hover{background:var(--gold2);}
 #lmsg{font-size:.82rem;margin-top:10px;min-height:18px;color:var(--red);}
 
-/* APP */
-#app{display:none;min-height:100vh;padding-bottom:68px;}
-header{position:sticky;top:0;z-index:100;background:var(--surf);border-bottom:1px solid var(--brd);padding:10px 18px;display:flex;align-items:center;justify-content:space-between;}
-.hlogo{display:flex;align-items:center;gap:10px;}
-.hlogo-txt{line-height:1;}
-.hlogo-main{font-size:1rem;font-weight:900;letter-spacing:2px;color:var(--gold);}
-.hlogo-sub{font-size:.6rem;letter-spacing:3px;color:var(--gold);opacity:.7;}
-.hright{display:flex;align-items:center;gap:8px;}
-.uchip{background:var(--card);border:1px solid var(--brd);border-radius:20px;padding:5px 12px;font-size:.75rem;display:flex;align-items:center;gap:6px;}
-.rdot{width:7px;height:7px;border-radius:50%;}
-.soBtn{background:transparent;border:1px solid var(--brd);border-radius:6px;color:var(--mut);padding:5px 10px;font-size:.72rem;cursor:pointer;transition:all .15s;}
+/* APP SHELL */
+#app{display:none;}
+header{background:var(--surf);border-bottom:1px solid var(--brd);padding:0 24px;display:flex;align-items:center;gap:0;height:58px;position:sticky;top:0;z-index:200;box-shadow:var(--shadow);}
+.hlogo{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;margin-right:32px;}
+.hlogo-txt .hname{font-size:.95rem;font-weight:900;letter-spacing:2.5px;color:var(--gold);}
+.hlogo-txt .hsub{font-size:.55rem;letter-spacing:4px;color:var(--gold);opacity:.7;}
+.topnav{display:flex;align-items:center;gap:2px;flex:1;}
+.tnav-btn{background:none;border:none;color:var(--mut);padding:10px 14px;font-size:.82rem;font-weight:600;letter-spacing:.3px;cursor:pointer;border-radius:8px;display:flex;align-items:center;gap:6px;transition:all .15s;white-space:nowrap;}
+.tnav-btn svg{opacity:.7;}
+.tnav-btn:hover{color:var(--txt);background:var(--card);}
+.tnav-btn.active{color:var(--gold);background:var(--gd);}
+.tnav-btn.active svg{opacity:1;}
+.hright{display:flex;align-items:center;gap:8px;margin-left:auto;}
+.uchip{background:var(--card);border:1px solid var(--brd);border-radius:20px;padding:5px 13px;font-size:.76rem;display:flex;align-items:center;gap:7px;white-space:nowrap;}
+.rdot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
+.hbtn{background:var(--card);border:1px solid var(--brd);border-radius:8px;padding:7px 10px;color:var(--tdim);cursor:pointer;display:flex;align-items:center;transition:all .15s;}
+.hbtn:hover{border-color:var(--gold);color:var(--gold);}
+.soBtn{background:transparent;border:1px solid var(--brd);border-radius:8px;color:var(--mut);padding:7px 12px;font-size:.76rem;font-weight:600;cursor:pointer;transition:all .15s;white-space:nowrap;}
 .soBtn:hover{border-color:var(--red);color:var(--red);}
-
-/* NAV */
-nav{position:fixed;bottom:0;left:0;right:0;background:var(--surf);border-top:1px solid var(--brd);display:flex;z-index:100;}
-nav button{flex:1;background:none;border:none;color:var(--mut);padding:10px 4px 8px;font-size:.58rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;transition:color .15s;}
-nav button.active{color:var(--gold);}
+nav.bottomnav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--surf);border-top:1px solid var(--brd);z-index:200;}
+nav.bottomnav button{flex:1;background:none;border:none;color:var(--mut);padding:10px 4px 8px;font-size:.58rem;font-weight:700;letter-spacing:.4px;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;transition:color .15s;}
+nav.bottomnav button.active{color:var(--gold);}
 
 /* VIEWS */
-.view{display:none;padding:16px 18px;}
+.view{display:none;padding:24px 28px;max-width:1400px;margin:0 auto;}
 .view.active{display:block;}
 
 /* BUTTONS */
-.btn{border:none;border-radius:8px;padding:9px 15px;font-size:.85rem;font-weight:600;cursor:pointer;transition:opacity .15s;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;}
+.btn{border:none;border-radius:8px;padding:9px 16px;font-size:.85rem;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;gap:6px;transition:opacity .15s;white-space:nowrap;}
 .btn:active{opacity:.8;}
 .btn-gold{background:var(--gold);color:#000;}
-.btn-ghost{background:transparent;border:1px solid var(--brd);color:var(--tdim);padding:7px 12px;font-size:.8rem;}
+.btn-gold:hover{background:var(--gold2);}
+.btn-ghost{background:transparent;border:1px solid var(--brd);color:var(--tdim);}
 .btn-ghost:hover{border-color:var(--gold);color:var(--gold);}
-.btn-sm{padding:6px 11px;font-size:.76rem;}
-.btn-red{background:var(--red);color:#fff;}
+.btn-red{background:var(--redd);border:1px solid var(--red);color:var(--red);}
+.btn-red:hover{background:var(--red);color:#fff;}
+.btn-sm{padding:6px 12px;font-size:.78rem;}
 
 /* STATS */
-.sgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;}
-.scard{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:15px;}
-.scard.ca{border-color:var(--gd);}
-.scard.cd{border-color:var(--redd);}
-.scard.cw{border-color:var(--orgd);}
-.scard.cg{border-color:var(--grnd);}
-.snum{font-size:2.1rem;font-weight:800;line-height:1;}
-.slbl{font-size:.68rem;text-transform:uppercase;letter-spacing:.8px;color:var(--tdim);margin-top:4px;}
-.ssub{font-size:.75rem;color:var(--mut);margin-top:2px;}
+.sgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+.scard{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:20px;transition:border-color .2s;}
+.scard.sc-gold{border-color:var(--gd);}
+.scard.sc-red{border-color:var(--redd);}
+.scard.sc-org{border-color:var(--orgd);}
+.scard.sc-grn{border-color:var(--grnd);}
+.scard.sc-blu{border-color:var(--blud);}
+.snum{font-size:2.2rem;font-weight:800;line-height:1;}
+.slbl{font-size:.68rem;text-transform:uppercase;letter-spacing:.8px;color:var(--tdim);margin-top:5px;}
+.ssub{font-size:.75rem;color:var(--mut);margin-top:3px;}
+
+/* WELCOME */
+.wbanner{background:var(--card);border:1px solid var(--gd);border-radius:var(--r);padding:20px 24px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;}
+.wgreet{font-size:1.1rem;font-weight:700;color:var(--gold);}
+.wsub{font-size:.82rem;color:var(--tdim);margin-top:3px;}
 
 /* ALERTS */
-.alert{border-radius:var(--r);padding:12px 15px;margin-bottom:12px;font-size:.85rem;display:flex;gap:10px;align-items:flex-start;}
+.alert{border-radius:var(--r);padding:13px 16px;margin-bottom:16px;font-size:.85rem;display:flex;gap:10px;align-items:flex-start;}
 .alert-r{background:var(--redd);border:1px solid var(--red);}
 .alert-o{background:var(--orgd);border:1px solid var(--org);}
 .alert-b{background:var(--blud);border:1px solid var(--blu);}
 
-/* CARDS */
-.card{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:15px;margin-bottom:10px;}
+/* SECTION HEADERS */
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
+.st{font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--mut);}
 
-/* APIARY CARDS */
-.agrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;}
-.acard{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:15px;cursor:pointer;transition:border-color .15s;}
-.acard:hover{border-color:var(--gd);}
-.acard.sg{border-left:3px solid var(--grn);}
-.acard.sa{border-left:3px solid var(--org);}
-.acard.sc{border-left:3px solid var(--red);}
-.acard-hd{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
-.acard-name{font-size:.98rem;font-weight:700;}
-.acard-loc{font-size:.75rem;color:var(--tdim);margin-top:2px;}
-.acard-meta{display:flex;gap:14px;margin-bottom:10px;}
-.amn{font-size:1.3rem;font-weight:700;color:var(--gold);}
-.aml{font-size:.62rem;text-transform:uppercase;letter-spacing:.5px;color:var(--mut);}
-.acard-bot{font-size:.78rem;padding-top:8px;border-top:1px solid var(--brd);display:flex;justify-content:space-between;align-items:center;}
-.wtags{display:flex;gap:4px;flex-wrap:wrap;margin-top:7px;}
-.wtag{background:var(--brd);border-radius:20px;padding:2px 8px;font-size:.68rem;color:var(--tdim);}
+/* APIARY GRID */
+.agrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;}
+.acard{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:20px;cursor:pointer;transition:all .2s;box-shadow:var(--shadow);}
+.acard:hover{transform:translateY(-2px);border-color:var(--gold);box-shadow:0 6px 24px rgba(0,0,0,.3);}
+.acard.sg{border-left:4px solid var(--grn);}
+.acard.sa{border-left:4px solid var(--org);}
+.acard.sc{border-left:4px solid var(--red);}
+.acard-hd{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;gap:10px;}
+.acard-name{font-size:1.02rem;font-weight:700;line-height:1.3;}
+.acard-loc{font-size:.76rem;color:var(--tdim);margin-top:3px;}
+.acard-stats{display:flex;gap:20px;margin-bottom:14px;padding-bottom:14px;border-bottom:1px solid var(--brd);}
+.astat .asn{font-size:1.5rem;font-weight:800;color:var(--gold);line-height:1;}
+.astat .asl{font-size:.62rem;text-transform:uppercase;letter-spacing:.5px;color:var(--mut);margin-top:2px;}
+.acard-insp{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-size:.8rem;}
+.acard-workers{display:flex;gap:6px;flex-wrap:wrap;align-items:center;justify-content:space-between;}
+.wtag{background:var(--brd);border-radius:20px;padding:3px 10px;font-size:.7rem;color:var(--tdim);}
+.logbtn{background:var(--gd);border:1px solid var(--gold);border-radius:7px;color:var(--gold);padding:6px 13px;font-size:.76rem;font-weight:600;cursor:pointer;flex-shrink:0;transition:all .15s;}
+.logbtn:hover{background:var(--gold);color:#000;}
 
 /* BADGES */
-.badge{padding:2px 8px;border-radius:20px;font-size:.68rem;font-weight:700;}
+.badge{padding:3px 9px;border-radius:20px;font-size:.7rem;font-weight:700;letter-spacing:.3px;}
 .bg{background:var(--grnd);color:var(--grn);}
 .ba{background:var(--orgd);color:var(--org);}
 .bc{background:var(--redd);color:var(--red);}
 .bt{background:var(--brd);color:var(--tdim);}
 .bp{background:var(--blud);color:var(--blu);}
-.bdn{background:var(--grnd);color:var(--grn);}
 .bown{background:#2d1b4e;color:#c4b5fd;}
-.bmgr{background:#1e3a5f;color:#93c5fd;}
-.bemp{background:#0f3322;color:#6ee7b7;}
-
-/* DAY BADGES */
-.dbadge{padding:3px 9px;border-radius:20px;font-size:.7rem;font-weight:700;}
+.bmgr{background:var(--blud);color:var(--blu);}
+.bemp{background:var(--grnd);color:var(--grn);}
+.dbadge{padding:3px 10px;border-radius:20px;font-size:.72rem;font-weight:700;}
 .db-g{background:var(--grnd);color:var(--grn);}
 .db-w{background:var(--orgd);color:var(--org);}
 .db-r{background:var(--redd);color:var(--red);}
 
 /* FILTERS */
-.fbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
-.fbtn{background:var(--card);border:1px solid var(--brd);border-radius:20px;padding:5px 13px;font-size:.76rem;font-weight:600;color:var(--tdim);cursor:pointer;transition:all .15s;}
+.fbar{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px;}
+.fbtn{background:var(--card);border:1px solid var(--brd);border-radius:20px;padding:6px 14px;font-size:.77rem;font-weight:600;color:var(--tdim);cursor:pointer;transition:all .15s;}
 .fbtn.active,.fbtn:hover{border-color:var(--gold);color:var(--gold);}
-.srch{width:100%;background:var(--card);border:1px solid var(--brd);border-radius:8px;color:var(--txt);padding:9px 12px;font-size:.88rem;outline:none;margin-bottom:12px;transition:border-color .15s;}
+.srch{background:var(--card);border:1px solid var(--brd);border-radius:8px;color:var(--txt);padding:9px 14px;font-size:.88rem;outline:none;width:100%;margin-bottom:14px;}
 .srch:focus{border-color:var(--gold);}
 
-/* TASK CARDS */
-.tcard{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:13px;margin-bottom:8px;display:flex;gap:11px;align-items:flex-start;}
-.tcard.ph{border-left:3px solid var(--red);}
-.tcard.pm{border-left:3px solid var(--org);}
-.tcard.pl{border-left:3px solid var(--brd);}
-.tlbl{font-size:.62rem;font-weight:800;letter-spacing:.6px;padding:2px 6px;border-radius:3px;border:1px solid currentColor;flex-shrink:0;margin-top:3px;}
-.tl-ins{color:#60a5fa;}
-.tl-tr{color:#f87171;}
-.tl-ma{color:#a78bfa;}
-.tl-su{color:var(--gold);}
-.tl-qu{color:#fbbf24;}
-.tl-mv{color:#34d399;}
-.tl-fe{color:#6ee7b7;}
-.tl-wa{color:#93c5fd;}
-.tl-ot{color:var(--tdim);}
-.tbody{flex:1;min-width:0;}
-.ttitle{font-size:.9rem;font-weight:600;margin-bottom:3px;}
-.tmeta{font-size:.73rem;color:var(--tdim);}
-.tfoot{display:flex;align-items:center;gap:6px;margin-top:7px;flex-wrap:wrap;}
-.tdone-btn{background:var(--grnd);border:1px solid var(--grn);border-radius:6px;color:var(--grn);padding:4px 10px;font-size:.72rem;font-weight:700;cursor:pointer;transition:all .15s;}
-.tdone-btn:hover{background:var(--grn);color:#000;}
-.tdone .ttitle{text-decoration:line-through;opacity:.5;}
-
-/* INSPECT ITEM */
-.iitem{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:13px;margin-bottom:8px;display:flex;align-items:center;gap:11px;}
-.iitem.io{border-left:3px solid var(--red);}
-.iitem.iw{border-left:3px solid var(--org);}
-.iitem.ig{border-left:3px solid var(--grn);}
+/* INSPECT ITEMS */
+.iitem{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:14px 16px;margin-bottom:10px;display:flex;align-items:center;gap:12px;}
+.iitem.io{border-left:4px solid var(--red);}
+.iitem.iw{border-left:4px solid var(--org);}
+.iitem.ig{border-left:4px solid var(--grn);}
 .iinfo{flex:1;}
-.iname{font-size:.9rem;font-weight:600;}
-.imeta{font-size:.75rem;color:var(--tdim);margin-top:2px;}
-.ibtn{background:var(--gd);border:1px solid var(--gold);border-radius:7px;color:var(--gold);padding:6px 12px;font-size:.76rem;font-weight:600;cursor:pointer;flex-shrink:0;}
+.iname{font-size:.92rem;font-weight:600;}
+.imeta{font-size:.76rem;color:var(--tdim);margin-top:3px;}
+.ibtn{background:var(--gd);border:1px solid var(--gold);border-radius:7px;color:var(--gold);padding:6px 13px;font-size:.76rem;font-weight:600;cursor:pointer;flex-shrink:0;}
 .ibtn:hover{background:var(--gold);color:#000;}
 
+/* TASK CARDS */
+.tcard{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:15px 16px;margin-bottom:10px;display:flex;gap:12px;transition:border-color .15s;}
+.tcard:hover{border-color:var(--brd);}
+.tcard.ph{border-left:4px solid var(--red);}
+.tcard.pm{border-left:4px solid var(--org);}
+.tcard.pl{border-left:4px solid var(--brd);}
+.tcard.tdone{opacity:.55;}
+.tlbl{font-size:.6rem;font-weight:800;letter-spacing:.7px;padding:2px 7px;border-radius:4px;border:1px solid currentColor;flex-shrink:0;margin-top:3px;white-space:nowrap;}
+.tl-ins{color:#60a5fa;}.tl-tr{color:#f87171;}.tl-ma{color:#a78bfa;}.tl-su{color:var(--gold);}
+.tl-qu{color:#fbbf24;}.tl-mv{color:#34d399;}.tl-fe{color:#6ee7b7;}.tl-wa{color:#93c5fd;}.tl-ot{color:var(--tdim);}
+.tbody{flex:1;min-width:0;}
+.ttitle{font-size:.9rem;font-weight:600;margin-bottom:4px;}
+.tmeta{font-size:.75rem;color:var(--tdim);}
+.tfoot{display:flex;align-items:center;gap:7px;margin-top:9px;flex-wrap:wrap;}
+.tdone-btn{background:var(--grnd);border:1px solid var(--grn);border-radius:6px;color:var(--grn);padding:4px 11px;font-size:.73rem;font-weight:700;cursor:pointer;}
+.tdone-btn:hover{background:var(--grn);color:#000;}
+
 /* TEAM */
-.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;}
-.teamcard{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:15px;}
-.tavatar{width:42px;height:42px;border-radius:50%;background:var(--gd);display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:800;color:var(--gold);margin-bottom:10px;}
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;}
+.teamcard{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:20px;cursor:pointer;transition:all .2s;}
+.teamcard:hover{border-color:var(--gold);transform:translateY(-1px);}
+.tavatar{width:46px;height:46px;border-radius:50%;background:var(--gd);display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:800;color:var(--gold);margin-bottom:12px;}
 .tname{font-size:.97rem;font-weight:700;}
-.temail{font-size:.75rem;color:var(--tdim);margin:2px 0 8px;}
+.temail{font-size:.76rem;color:var(--tdim);margin:3px 0 10px;}
 
 /* REPORTS */
-.rgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;}
-.rcard{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:15px;}
-.rtitle{font-size:.68rem;text-transform:uppercase;letter-spacing:.8px;color:var(--mut);margin-bottom:10px;}
-.brow{display:flex;align-items:center;gap:8px;font-size:.76rem;margin-bottom:6px;}
-.blbl{width:90px;color:var(--tdim);font-size:.7rem;flex-shrink:0;}
+.rgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px;}
+.rcard{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:18px;}
+.rtitle{font-size:.66rem;text-transform:uppercase;letter-spacing:.8px;color:var(--mut);margin-bottom:10px;}
+.brow{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+.blbl{width:100px;color:var(--tdim);font-size:.72rem;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .btrack{flex:1;background:var(--brd);border-radius:3px;height:14px;overflow:hidden;}
 .bfill{height:100%;border-radius:3px;}
-.bval{width:32px;text-align:right;font-weight:600;font-size:.75rem;flex-shrink:0;}
+.bval{width:32px;text-align:right;font-weight:700;font-size:.75rem;flex-shrink:0;}
+.cring{display:flex;align-items:center;gap:18px;padding:8px 0;}
+.cpct{font-size:1.9rem;font-weight:800;}
+.clbl{font-size:.75rem;color:var(--tdim);line-height:1.5;}
+
+/* MAP */
+#apiary-map{height:480px;border-radius:var(--r);border:1px solid var(--brd);margin-top:12px;}
+.map-toggle{display:flex;gap:7px;margin-bottom:12px;}
+.mtbtn{background:var(--card);border:1px solid var(--brd);border-radius:8px;padding:7px 18px;font-size:.8rem;font-weight:600;color:var(--tdim);cursor:pointer;transition:all .15s;}
+.mtbtn.active{border-color:var(--gold);color:var(--gold);}
 
 /* MODAL */
-.mover{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:none;align-items:flex-end;justify-content:center;}
+.mover{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:300;display:none;align-items:center;justify-content:center;padding:20px;}
 .mover.open{display:flex;}
-.modal{background:var(--surf);border:1px solid var(--brd);border-radius:16px 16px 0 0;padding:22px 18px;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;position:relative;}
-.mhandle{width:36px;height:4px;background:var(--brd);border-radius:2px;margin:0 auto 16px;}
-.mtitle{font-size:1.05rem;font-weight:700;margin-bottom:14px;}
-.mclose{position:absolute;right:18px;top:18px;background:none;border:none;color:var(--mut);font-size:1.1rem;cursor:pointer;}
-.fg{margin-bottom:13px;}
-.fl{font-size:.75rem;color:var(--tdim);margin-bottom:5px;display:block;}
-.fi{width:100%;background:var(--bg);border:1px solid var(--brd);border-radius:8px;color:var(--txt);padding:9px 12px;font-size:.9rem;outline:none;transition:border-color .15s;}
-.fi:focus{border-color:var(--gold);}
-textarea.fi{min-height:75px;resize:vertical;}
-.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.gmlink{font-size:.78rem;margin-top:5px;display:none;}
-.gmlink a{color:var(--gold);}
+.modal{background:var(--surf);border:1px solid var(--brd);border-radius:14px;padding:28px 24px;width:100%;max-width:520px;max-height:92vh;overflow-y:auto;position:relative;box-shadow:var(--shadow);}
+.mclose{position:absolute;right:16px;top:16px;background:none;border:none;color:var(--mut);font-size:1.1rem;cursor:pointer;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+.mclose:hover{background:var(--brd);color:var(--txt);}
+.mtitle{font-size:1.05rem;font-weight:700;margin-bottom:18px;padding-right:30px;}
+.fg{margin-bottom:14px;}
+.fl{font-size:.76rem;color:var(--tdim);margin-bottom:5px;display:block;font-weight:500;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.gmlink{font-size:.76rem;margin-top:5px;display:none;}
 .gmlink.show{display:block;}
 
 /* DETAIL */
-.drow{display:flex;justify-content:space-between;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--brd);font-size:.85rem;}
+.drow{display:flex;justify-content:space-between;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--brd);font-size:.85rem;}
 .drow:last-child{border-bottom:none;}
 .dk{color:var(--tdim);}
 .dv{font-weight:600;text-align:right;max-width:60%;}
-.hist-item{padding:9px 0;border-bottom:1px solid var(--brd);}
+.hist-item{padding:10px 0;border-bottom:1px solid var(--brd);}
 .hist-item:last-child{border-bottom:none;}
 .hdate{font-size:.85rem;font-weight:600;}
-.hinsp{font-size:.75rem;color:var(--tdim);}
-.hnotes{font-size:.78rem;color:var(--mut);margin-top:2px;}
-.hcond{padding:1px 7px;border-radius:10px;font-size:.68rem;font-weight:700;margin-left:6px;}
-.cg{background:var(--grnd);color:var(--grn);}
-.cf{background:var(--orgd);color:var(--org);}
-.cp{background:var(--redd);color:var(--red);}
+.hinsp{font-size:.76rem;color:var(--tdim);margin-top:2px;}
+.hnotes{font-size:.78rem;color:var(--mut);margin-top:3px;}
+.hcond{padding:2px 7px;border-radius:10px;font-size:.68rem;font-weight:700;margin-left:7px;}
+.cond-g{background:var(--grnd);color:var(--grn);}
+.cond-f{background:var(--orgd);color:var(--org);}
+.cond-p{background:var(--redd);color:var(--red);}
 
 /* DROP POINTS */
-.dprow{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--brd);font-size:.82rem;}
+.dprow{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--brd);font-size:.82rem;}
 .dprow:last-child{border-bottom:none;}
 .dpname{font-weight:600;flex:1;}
-.dphives{color:var(--tdim);font-size:.75rem;}
-.dplink{font-size:.72rem;}
+.dpmeta{font-size:.73rem;color:var(--tdim);}
 
-/* MAP */
-#apiary-map{height:450px;border-radius:var(--r);border:1px solid var(--brd);margin-top:10px;}
-.map-toggle{display:flex;gap:6px;margin-bottom:10px;}
-.mtbtn{background:var(--card);border:1px solid var(--brd);border-radius:8px;padding:7px 16px;font-size:.8rem;font-weight:600;color:var(--tdim);cursor:pointer;}
-.mtbtn.active{border-color:var(--gold);color:var(--gold);}
-
-/* SECTION HEADER */
-.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
-.st{font-size:.68rem;text-transform:uppercase;letter-spacing:1px;color:var(--mut);font-weight:700;}
-
-/* WELCOME */
-.wbanner{background:linear-gradient(135deg,#221a08,#0f1208);border:1px solid var(--gd);border-radius:var(--r);padding:16px;margin-bottom:14px;}
-.wgreet{font-size:1.05rem;font-weight:700;color:var(--gold);}
-.wsub{font-size:.8rem;color:var(--tdim);margin-top:3px;}
+/* CHECKBOX LIST */
+.chk-list{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:6px;}
+.chk-item{display:flex;align-items:center;gap:7px;font-size:.82rem;cursor:pointer;padding:6px 8px;border-radius:6px;transition:background .15s;}
+.chk-item:hover{background:var(--brd);}
+.chk-item input[type=checkbox]{width:auto;margin:0;accent-color:var(--gold);}
 
 /* EMPTY */
-.empty{text-align:center;padding:36px 20px;color:var(--mut);font-size:.85rem;}
+.empty{text-align:center;padding:40px 20px;color:var(--mut);font-size:.85rem;}
 
-/* COMPLIANCE RING */
-.cring{display:flex;align-items:center;gap:16px;padding:10px 0;}
-.cpct{font-size:1.8rem;font-weight:800;}
-.clbl{font-size:.73rem;color:var(--tdim);}
-
-@media(max-width:480px){
-  .sgrid,.rgrid{grid-template-columns:repeat(2,1fr);}
-  .agrid,.tgrid{grid-template-columns:1fr;}
+@media(max-width:900px){
+  .topnav{display:none;}
+  .hlogo-txt .hsub{display:none;}
+  nav.bottomnav{display:flex;}
+  .view{padding:16px 16px 80px;}
+  .sgrid{grid-template-columns:repeat(2,1fr);}
+  .rgrid{grid-template-columns:repeat(2,1fr);}
+  .agrid{grid-template-columns:1fr;}
+  .tgrid{grid-template-columns:1fr;}
   .frow{grid-template-columns:1fr;}
+  .chk-list{grid-template-columns:1fr;}
 }
+@media(max-width:480px){.sgrid{grid-template-columns:repeat(2,1fr);}.rgrid{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
-
-<!-- LOGIN -->
-<div id="login-screen">
+<div id="login-screen" style="display:none;">
   <div class="lbox">
     <div class="llogo">
-      <svg class="llogo-hex" width="56" height="60" viewBox="0 0 56 60" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <polygon points="28,3 52,16 52,44 28,57 4,44 4,16" stroke="#F5A623" stroke-width="2.5" fill="none"/>
-        <polygon points="28,11 44,20 44,38 28,47 12,38 12,20" stroke="#F5A623" stroke-width="1" fill="none" opacity="0.3"/>
-        <path d="M28 57 C27 60 26 63 28 66 C30 63 29 60 28 57Z" fill="#F5A623"/>
+      <svg class="llogo-hex" width="60" height="64" viewBox="0 0 60 64" fill="none">
+        <polygon points="30,3 55,17 55,47 30,61 5,47 5,17" stroke="#F5A623" stroke-width="2.5" fill="none"/>
+        <polygon points="30,12 46,21 46,39 30,48 14,39 14,21" stroke="#F5A623" stroke-width="1" fill="none" opacity=".25"/>
+        <path d="M30 61 C29 65 28 68 30 71 C32 68 31 65 30 61Z" fill="#F5A623"/>
       </svg>
-      <div class="llogo-line"></div>
-      <div class="llogo-name">PRESCOTT</div>
-      <div class="llogo-sub">HONEY &nbsp; FARMS</div>
+      <div class="lname">PRESCOTT</div>
+      <div class="lsub">HONEY &nbsp; FARMS</div>
     </div>
+    <hr class="lline">
     <div class="demo-lbl">Quick demo login</div>
     <div class="demo-btns">
       <button class="dbtn" onclick="quickLogin('owner',this)">Owner</button>
       <button class="dbtn" onclick="quickLogin('manager',this)">Manager</button>
       <button class="dbtn" onclick="quickLogin('employee',this)">Field Worker</button>
     </div>
-    <div class="div">or sign in manually</div>
-    <input class="linput" type="email" id="le" placeholder="Email">
-    <input class="linput" type="password" id="lp" placeholder="Password">
+    <div class="ldiv">or enter credentials</div>
+    <div class="fg"><input type="email" id="le" placeholder="Email address"></div>
+    <div class="fg"><input type="password" id="lp" placeholder="Password"></div>
     <button class="lbtn" onclick="doLogin()">Sign In</button>
     <div id="lmsg"></div>
   </div>
 </div>
 
-<!-- APP -->
 <div id="app">
   <header>
-    <div class="hlogo">
-      <svg width="28" height="30" viewBox="0 0 56 60" fill="none"><polygon points="28,3 52,16 52,44 28,57 4,44 4,16" stroke="#F5A623" stroke-width="2.5" fill="none"/><path d="M28 57 C27 60 26 62 28 64 C30 62 29 60 28 57Z" fill="#F5A623"/></svg>
-      <div class="hlogo-txt"><div class="hlogo-main">PRESCOTT</div><div class="hlogo-sub">HONEY FARMS</div></div>
-    </div>
+    <a class="hlogo" href="#">
+      <svg width="26" height="28" viewBox="0 0 60 64" fill="none"><polygon points="30,3 55,17 55,47 30,61 5,47 5,17" stroke="#F5A623" stroke-width="3" fill="none"/><path d="M30 61 C29 65 28 67 30 69 C32 67 31 65 30 61Z" fill="#F5A623"/></svg>
+      <div class="hlogo-txt"><div class="hname">PRESCOTT</div><div class="hsub">HONEY FARMS</div></div>
+    </a>
+    <nav class="topnav" id="topnav">
+      <button class="tnav-btn active" data-v="dashboard" onclick="switchView('dashboard')">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>Dashboard</button>
+      <button class="tnav-btn" data-v="apiaries" onclick="switchView('apiaries')">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1C5.24 1 3 3.24 3 6c0 3.75 5 9 5 9s5-5.25 5-9c0-2.76-2.24-5-5-5zm0 6.5A1.5 1.5 0 1 1 8 4a1.5 1.5 0 0 1 0 3.5z"/></svg>Apiaries</button>
+      <button class="tnav-btn" data-v="tasks" onclick="switchView('tasks')">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 4h12M2 8h8M2 12h5"/><circle cx="13.5" cy="11.5" r="2"/><path d="M12.5 11.5l.7.7 1.5-1.5"/></svg>Tasks</button>
+      <button class="tnav-btn" data-v="team" onclick="switchView('team')" id="nav-team">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="5.5" cy="4.5" r="2"/><path d="M1 14c0-2.76 2.01-5 4.5-5S10 11.24 10 14" stroke-linecap="round"/><circle cx="12" cy="5" r="1.75"/><path d="M12 10c2 0 3.5 1.5 3.5 3.5" stroke-linecap="round"/></svg>Team</button>
+      <button class="tnav-btn" data-v="reports" onclick="switchView('reports')" id="nav-reports">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="9" width="2.5" height="6" rx="1"/><rect x="5" y="5" width="2.5" height="10" rx="1"/><rect x="9" y="2" width="2.5" height="13" rx="1"/><rect x="13" y="6" width="2.5" height="9" rx="1"/></svg>Reports</button>
+    </nav>
     <div class="hright">
+      <button class="hbtn" onclick="toggleTheme()" id="theme-btn" title="Toggle theme">
+        <svg id="theme-icon" width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="8" r="3"/><path d="M8 1v1.5M8 13.5V15M1 8h1.5M13.5 8H15M3.2 3.2l1.1 1.1M11.7 11.7l1.1 1.1M3.2 12.8l1.1-1.1M11.7 4.3l1.1-1.1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+      </button>
       <div class="uchip"><div class="rdot" id="rdot"></div><span id="uchip-name"></span></div>
       <button class="soBtn" onclick="signOut()">Sign Out</button>
     </div>
   </header>
 
-  <!-- DASHBOARD -->
   <div id="view-dashboard" class="view active">
-    <div class="wbanner"><div class="wgreet" id="wgreet"></div><div class="wsub" id="wsub"></div></div>
+    <div class="wbanner"><div><div class="wgreet" id="wgreet"></div><div class="wsub" id="wsub"></div></div></div>
     <div id="dalerts"></div>
     <div class="sgrid" id="dstats"></div>
     <div class="sh"><div class="st">Priority Inspections</div><button class="btn btn-ghost btn-sm" onclick="switchView('tasks')">View All</button></div>
     <div id="dprio"></div>
-    <div class="sh" style="margin-top:12px;"><div class="st" id="dtask-lbl">Tasks Due Today</div><button class="btn btn-ghost btn-sm" onclick="switchView('tasks')">View All</button></div>
+    <div class="sh" style="margin-top:20px;"><div class="st" id="dtask-lbl">Tasks Due Today</div><button class="btn btn-ghost btn-sm" onclick="switchView('tasks')">View All</button></div>
     <div id="dtasks"></div>
   </div>
 
-  <!-- APIARIES -->
   <div id="view-apiaries" class="view">
-    <div class="sh">
-      <div class="st">Apiaries</div>
-      <button class="btn btn-gold btn-sm" id="add-ap-btn" onclick="openModal('madd-apiary')">+ Add Apiary</button>
-    </div>
+    <div class="sh"><div class="st">All Apiaries</div><button class="btn btn-gold btn-sm" id="add-ap-btn" onclick="openAddApiary()">+ Add Apiary</button></div>
     <div class="fbar" id="afbar">
-      <button class="fbtn active" data-af="all" onclick="setAF('all',this)">All</button>
+      <button class="fbtn active" data-af="all" onclick="setAF('all',this)">All States</button>
       <button class="fbtn" data-af="OR" onclick="setAF('OR',this)">Oregon</button>
       <button class="fbtn" data-af="CA" onclick="setAF('CA',this)">California</button>
       <button class="fbtn" data-af="good" onclick="setAF('good',this)">Good</button>
@@ -315,20 +330,13 @@ textarea.fi{min-height:75px;resize:vertical;}
       <button class="fbtn" data-af="critical" onclick="setAF('critical',this)">Critical</button>
     </div>
     <input class="srch" type="text" id="asrch" placeholder="Search by name, city or county..." oninput="renderApiaries()">
-    <div class="map-toggle">
-      <button class="mtbtn active" id="mt-grid" onclick="setMapToggle('grid')">Grid View</button>
-      <button class="mtbtn" id="mt-map" onclick="setMapToggle('map')">Map View</button>
-    </div>
+    <div class="map-toggle"><button class="mtbtn active" id="mt-grid" onclick="setMapToggle('grid')">Grid View</button><button class="mtbtn" id="mt-map" onclick="setMapToggle('map')">Map View</button></div>
     <div id="apiary-grid"></div>
     <div id="apiary-map" style="display:none;"></div>
   </div>
 
-  <!-- TASKS -->
   <div id="view-tasks" class="view">
-    <div class="sh">
-      <div class="st">Task Board</div>
-      <button class="btn btn-gold btn-sm" id="add-task-btn" onclick="openAddTask()">+ New Task</button>
-    </div>
+    <div class="sh"><div class="st">Task Board</div><button class="btn btn-gold btn-sm" id="add-task-btn" onclick="openAddTask(null)">+ New Task</button></div>
     <div class="fbar">
       <button class="fbtn active" data-tf="all" onclick="setTF('all',this)">All</button>
       <button class="fbtn" data-tf="mine" onclick="setTF('mine',this)">Mine</button>
@@ -340,171 +348,47 @@ textarea.fi{min-height:75px;resize:vertical;}
     <div id="task-list"></div>
   </div>
 
-  <!-- TEAM -->
   <div id="view-team" class="view">
-    <div class="sh"><div class="st">Field Team</div><button class="btn btn-gold btn-sm" id="add-emp-btn" onclick="openModal('madd-employee')">+ Add Member</button></div>
+    <div class="sh"><div class="st">Field Team</div><button class="btn btn-gold btn-sm" id="add-emp-btn" onclick="openAddEmployee()">+ Add Member</button></div>
     <div class="tgrid" id="team-grid"></div>
   </div>
 
-  <!-- REPORTS -->
   <div id="view-reports" class="view">
-    <div class="st" style="margin-bottom:12px;">Operations Report</div>
+    <div class="st" style="margin-bottom:16px;">Operations Overview</div>
     <div class="rgrid" id="rstats"></div>
-    <div class="card" style="margin-bottom:12px;">
-      <div class="rtitle">Days Since Inspection — Top 10 Most Overdue</div>
-      <div id="rchart"></div>
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px;">
+      <div class="rcard" style="grid-column:1;"><div class="rtitle">Days Since Inspection — Most Overdue Apiaries</div><div id="rchart"></div></div>
+      <div class="rcard"><div class="rtitle">14-Day Compliance</div><div class="cring"><svg width="80" height="80" viewBox="0 0 80 80"><circle cx="40" cy="40" r="32" fill="none" stroke="var(--brd)" stroke-width="9"/><circle id="cring-c" cx="40" cy="40" r="32" fill="none" stroke="var(--gold)" stroke-width="9" stroke-dasharray="201" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)"/></svg><div><div class="cpct" id="cpct">—</div><div class="clbl">of apiaries<br>on schedule</div></div></div></div>
     </div>
-    <div class="rgrid">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
       <div class="rcard"><div class="rtitle">Hives by State</div><div id="rstate"></div></div>
       <div class="rcard"><div class="rtitle">Status Breakdown</div><div id="rstatus"></div></div>
     </div>
-    <div class="card" style="margin-top:4px;">
-      <div class="rtitle">14-Day Inspection Compliance</div>
-      <div class="cring"><svg width="80" height="80" viewBox="0 0 80 80"><circle cx="40" cy="40" r="32" fill="none" stroke="#2a2418" stroke-width="8"/><circle cx="40" cy="40" r="32" fill="none" stroke="#F5A623" stroke-width="8" stroke-dasharray="201" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)" id="cring-c"/></svg>
-      <div><div class="cpct" id="cpct">—</div><div class="clbl">apiaries inspected<br>within 14 days</div></div></div>
-    </div>
   </div>
 
-  <nav>
-    <button class="active" data-v="dashboard" onclick="switchView('dashboard')">
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor"><rect x="1" y="1" width="7" height="7" rx="1.5"/><rect x="10" y="1" width="7" height="7" rx="1.5"/><rect x="1" y="10" width="7" height="7" rx="1.5"/><rect x="10" y="10" width="7" height="7" rx="1.5"/></svg>
-      Home
-    </button>
-    <button data-v="apiaries" onclick="switchView('apiaries')">
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor"><path d="M9 1C6.24 1 4 3.24 4 6c0 4.25 5 11 5 11s5-6.75 5-11c0-2.76-2.24-5-5-5zm0 6.75A1.75 1.75 0 1 1 9 4.25a1.75 1.75 0 0 1 0 3.5z"/></svg>
-      Apiaries
-    </button>
-    <button data-v="tasks" onclick="switchView('tasks')">
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 5h12M3 9h8M3 13h5" stroke-linecap="round"/><circle cx="15" cy="13" r="2.5"/><path d="M13.8 13l.8.8 1.6-1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      Tasks
-    </button>
-    <button data-v="team" onclick="switchView('team')" id="nav-team">
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6.5" cy="5.5" r="2.5"/><path d="M1 16c0-3.04 2.46-5.5 5.5-5.5S12 12.96 12 16" stroke-linecap="round"/><circle cx="13" cy="6" r="2"/><path d="M13 12c2.21 0 4 1.79 4 4" stroke-linecap="round"/></svg>
-      Team
-    </button>
-    <button data-v="reports" onclick="switchView('reports')" id="nav-reports">
-      <svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor"><rect x="1" y="10" width="3" height="7" rx="1"/><rect x="6" y="6" width="3" height="11" rx="1"/><rect x="11" y="3" width="3" height="14" rx="1"/><rect x="14" y="7" width="3" height="10" rx="1"/></svg>
-      Reports
-    </button>
+  <nav class="bottomnav" id="bottomnav">
+    <button class="active" data-v="dashboard" onclick="switchView('dashboard')"><svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>Home</button>
+    <button data-v="apiaries" onclick="switchView('apiaries')"><svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1C5.24 1 3 3.24 3 6c0 3.75 5 9 5 9s5-5.25 5-9c0-2.76-2.24-5-5-5zm0 6.5A1.5 1.5 0 1 1 8 4a1.5 1.5 0 0 1 0 3.5z"/></svg>Apiaries</button>
+    <button data-v="tasks" onclick="switchView('tasks')"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 4h12M2 8h8M2 12h5"/><circle cx="13.5" cy="11.5" r="2"/><path d="M12.5 11.5l.7.7 1.5-1.5"/></svg>Tasks</button>
+    <button data-v="team" onclick="switchView('team')" id="bnav-team"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="5.5" cy="4.5" r="2"/><path d="M1 14c0-2.76 2.01-5 4.5-5S10 11.24 10 14" stroke-linecap="round"/><circle cx="12" cy="5" r="1.75"/><path d="M12 10c2 0 3.5 1.5 3.5 3.5" stroke-linecap="round"/></svg>Team</button>
+    <button data-v="reports" onclick="switchView('reports')" id="bnav-reports"><svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="9" width="2.5" height="6" rx="1"/><rect x="5" y="5" width="2.5" height="10" rx="1"/><rect x="9" y="2" width="2.5" height="13" rx="1"/><rect x="13" y="6" width="2.5" height="9" rx="1"/></svg>Reports</button>
   </nav>
 </div>
 
 <!-- MODALS -->
-<!-- Apiary Detail -->
-<div class="mover" id="mdetail">
-  <div class="modal"><div class="mhandle"></div><button class="mclose" onclick="closeModal('mdetail')">&#10005;</button>
-  <div class="mtitle" id="md-title"></div><div id="md-body"></div></div>
-</div>
-
-<!-- Log Inspection -->
-<div class="mover" id="mlog-insp">
-  <div class="modal"><div class="mhandle"></div><button class="mclose" onclick="closeModal('mlog-insp')">&#10005;</button>
-  <div class="mtitle">Log Inspection</div>
-  <input type="hidden" id="li-aid">
-  <div class="fg"><div class="fl">Apiary</div><div id="li-aname" style="font-weight:700;padding:6px 0;"></div></div>
-  <div class="frow">
-    <div class="fg"><div class="fl">Date</div><input class="fi" type="date" id="li-date"></div>
-    <div class="fg"><div class="fl">Condition</div><select class="fi" id="li-cond"><option value="good">Good</option><option value="fair">Fair</option><option value="poor">Poor</option></select></div>
-  </div>
-  <div class="frow">
-    <div class="fg"><div class="fl">Active Colonies</div><input class="fi" type="number" id="li-col" placeholder="e.g. 500"></div>
-    <div class="fg"><div class="fl">Treatment Applied</div><select class="fi" id="li-treat"><option value="none">None</option><option value="oxalic">Oxalic Acid</option><option value="apivar">Apivar</option><option value="miteaway">Mite Away</option><option value="hopguard">HopGuard</option><option value="other">Other</option></select></div>
-  </div>
-  <div class="fg"><div class="fl">Notes</div><textarea class="fi" id="li-notes" placeholder="Observations, concerns, follow-up needed..."></textarea></div>
-  <button class="btn btn-gold" style="width:100%;" onclick="submitInsp()">Save Inspection</button>
-  </div>
-</div>
-
-<!-- Add / Edit Apiary -->
-<div class="mover" id="madd-apiary">
-  <div class="modal"><div class="mhandle"></div><button class="mclose" onclick="closeModal('madd-apiary')">&#10005;</button>
-  <div class="mtitle" id="aform-title">Add New Apiary</div>
-  <input type="hidden" id="af-id">
-  <div class="fg"><div class="fl">Apiary Name</div><input class="fi" type="text" id="af-name" placeholder="e.g. Rogue Valley South"></div>
-  <div class="frow">
-    <div class="fg"><div class="fl">State</div><select class="fi" id="af-state"><option value="OR">Oregon (OR)</option><option value="CA">California (CA)</option></select></div>
-    <div class="fg"><div class="fl">County</div><input class="fi" type="text" id="af-county" placeholder="e.g. Jackson County"></div>
-  </div>
-  <div class="frow">
-    <div class="fg"><div class="fl">City</div><input class="fi" type="text" id="af-city" placeholder="e.g. Medford"></div>
-    <div class="fg"><div class="fl">Total Hives</div><input class="fi" type="number" id="af-hives" placeholder="e.g. 500"></div>
-  </div>
-  <div class="frow">
-    <div class="fg"><div class="fl">Latitude</div><input class="fi" type="text" id="af-lat" placeholder="e.g. 42.326" oninput="updGMLink('af')"></div>
-    <div class="fg"><div class="fl">Longitude</div><input class="fi" type="text" id="af-lng" placeholder="e.g. -122.875" oninput="updGMLink('af')"></div>
-  </div>
-  <div class="gmlink" id="af-gmlink"><a id="af-gma" href="#" target="_blank" rel="noopener">Open in Google Maps</a></div>
-  <div class="fg"><div class="fl">Notes / Contract Info</div><textarea class="fi" id="af-notes" placeholder="Pollination contracts, crop types, access info..."></textarea></div>
-  <button class="btn btn-gold" style="width:100%;" onclick="submitApiary()">Save Apiary</button>
-  </div>
-</div>
-
-<!-- Add Task -->
-<div class="mover" id="madd-task">
-  <div class="modal"><div class="mhandle"></div><button class="mclose" onclick="closeModal('madd-task')">&#10005;</button>
-  <div class="mtitle">Add Task</div>
-  <div class="fg"><div class="fl">Task Type</div>
-    <select class="fi" id="ta-type">
-      <option value="inspection">Inspection</option><option value="treatment">Varroa Treatment</option>
-      <option value="equipment">Equipment / Maintenance</option><option value="supering">Add / Pull Honey Supers</option>
-      <option value="queen">Queen Check / Replace</option><option value="transport">Transport Hives</option>
-      <option value="feeding">Feeding / Supplements</option><option value="water">Water Source Check</option>
-      <option value="other">Other</option>
-    </select>
-  </div>
-  <div class="fg"><div class="fl">Description</div><input class="fi" type="text" id="ta-desc" placeholder="Brief description"></div>
-  <div class="frow">
-    <div class="fg"><div class="fl">Apiary</div><select class="fi" id="ta-ap"></select></div>
-    <div class="fg"><div class="fl">Assign To</div><select class="fi" id="ta-assignee"></select></div>
-  </div>
-  <div class="frow">
-    <div class="fg"><div class="fl">Due Date</div><input class="fi" type="date" id="ta-due"></div>
-    <div class="fg"><div class="fl">Priority</div><select class="fi" id="ta-pri"><option value="high">High</option><option value="medium" selected>Medium</option><option value="low">Low</option></select></div>
-  </div>
-  <div class="fg"><div class="fl">Notes</div><textarea class="fi" id="ta-notes" placeholder="Additional details..." style="min-height:60px;"></textarea></div>
-  <button class="btn btn-gold" style="width:100%;" onclick="submitTask()">Add Task</button>
-  </div>
-</div>
-
-<!-- Add Employee -->
-<div class="mover" id="madd-employee">
-  <div class="modal"><div class="mhandle"></div><button class="mclose" onclick="closeModal('madd-employee')">&#10005;</button>
-  <div class="mtitle">Add Team Member</div>
-  <div class="fg"><div class="fl">Full Name</div><input class="fi" type="text" id="ne-name" placeholder="Full name"></div>
-  <div class="fg"><div class="fl">Email</div><input class="fi" type="email" id="ne-email" placeholder="name@prescotthoney.com"></div>
-  <div class="frow">
-    <div class="fg"><div class="fl">Role</div><select class="fi" id="ne-role"><option value="manager">Manager</option><option value="employee">Field Worker</option></select></div>
-    <div class="fg"><div class="fl">Phone</div><input class="fi" type="tel" id="ne-phone" placeholder="(555) 000-0000"></div>
-  </div>
-  <button class="btn btn-gold" style="width:100%;" onclick="submitEmployee()">Add Member</button>
-  </div>
-</div>
-
-<!-- Add Drop Point -->
-<div class="mover" id="madd-dp">
-  <div class="modal"><div class="mhandle"></div><button class="mclose" onclick="closeModal('madd-dp')">&#10005;</button>
-  <div class="mtitle">Add Drop Point</div>
-  <input type="hidden" id="dp-aid">
-  <div class="fg"><div class="fl">Drop Point Name</div><input class="fi" type="text" id="dp-name" placeholder="e.g. North Clover Field"></div>
-  <div class="frow">
-    <div class="fg"><div class="fl">Latitude</div><input class="fi" type="text" id="dp-lat" placeholder="e.g. 44.948" oninput="updGMLink('dp')"></div>
-    <div class="fg"><div class="fl">Longitude</div><input class="fi" type="text" id="dp-lng" placeholder="e.g. -122.869" oninput="updGMLink('dp')"></div>
-  </div>
-  <div class="gmlink" id="dp-gmlink"><a id="dp-gma" href="#" target="_blank" rel="noopener">Open in Google Maps</a></div>
-  <div class="fg"><div class="fl">Hives at this point</div><input class="fi" type="number" id="dp-hives" placeholder="e.g. 120"></div>
-  <div class="fg"><div class="fl">Notes</div><input class="fi" type="text" id="dp-notes" placeholder="Access info, landmarks..."></div>
-  <button class="btn btn-gold" style="width:100%;" onclick="submitDP()">Add Drop Point</button>
-  </div>
-</div>
+<div class="mover" id="mdetail"><div class="modal"><button class="mclose" onclick="closeModal('mdetail')">&#10005;</button><div class="mtitle" id="md-title"></div><div id="md-body"></div></div></div>
+<div class="mover" id="mlog-insp"><div class="modal"><button class="mclose" onclick="closeModal('mlog-insp')">&#10005;</button><div class="mtitle">Log Inspection</div><input type="hidden" id="li-aid"><div class="fg"><div class="fl">Apiary</div><div id="li-aname" style="font-weight:700;padding:6px 0;font-size:.92rem;"></div></div><div class="frow"><div class="fg"><div class="fl">Date</div><input type="date" id="li-date"></div><div class="fg"><div class="fl">Condition</div><select id="li-cond"><option value="good">Good</option><option value="fair">Fair</option><option value="poor">Poor</option></select></div></div><div class="frow"><div class="fg"><div class="fl">Active Colonies</div><input type="number" id="li-col" placeholder="e.g. 500"></div><div class="fg"><div class="fl">Treatment Applied</div><select id="li-treat"><option value="none">None</option><option value="oxalic">Oxalic Acid</option><option value="apivar">Apivar</option><option value="miteaway">Mite Away</option><option value="hopguard">HopGuard</option><option value="other">Other</option></select></div></div><div class="fg"><div class="fl">Notes</div><textarea id="li-notes" placeholder="Observations, concerns, follow-up needed..."></textarea></div><button class="btn btn-gold" style="width:100%;" onclick="submitInsp()">Save Inspection</button></div></div>
+<div class="mover" id="madd-apiary"><div class="modal"><button class="mclose" onclick="closeModal('madd-apiary')">&#10005;</button><div class="mtitle" id="af-title">Add Apiary</div><input type="hidden" id="af-id"><div class="fg"><div class="fl">Apiary Name</div><input type="text" id="af-name" placeholder="e.g. Rogue Valley South"></div><div class="frow"><div class="fg"><div class="fl">State</div><select id="af-state"><option value="OR">Oregon (OR)</option><option value="CA">California (CA)</option></select></div><div class="fg"><div class="fl">County</div><input type="text" id="af-county" placeholder="e.g. Jackson County"></div></div><div class="frow"><div class="fg"><div class="fl">City</div><input type="text" id="af-city" placeholder="e.g. Medford"></div><div class="fg"><div class="fl">Total Hives</div><input type="number" id="af-hives" placeholder="e.g. 500"></div></div><div class="frow"><div class="fg"><div class="fl">Latitude</div><input type="text" id="af-lat" placeholder="e.g. 42.326" oninput="updGM('af')"></div><div class="fg"><div class="fl">Longitude</div><input type="text" id="af-lng" placeholder="e.g. -122.875" oninput="updGM('af')"></div></div><div class="gmlink" id="af-gmlink"><a id="af-gma" href="#" target="_blank" rel="noopener">Open in Google Maps</a></div><div class="fg"><div class="fl">Notes / Contract Info</div><textarea id="af-notes" placeholder="Pollination contracts, crop types, access notes..."></textarea></div><div class="fg"><div class="fl">Assigned Workers</div><div class="chk-list" id="af-workers"></div></div><button class="btn btn-gold" style="width:100%;margin-top:4px;" onclick="submitApiary()">Save Apiary</button></div></div>
+<div class="mover" id="madd-task"><div class="modal"><button class="mclose" onclick="closeModal('madd-task')">&#10005;</button><div class="mtitle">Add Task</div><div class="fg"><div class="fl">Task Type</div><select id="ta-type"><option value="inspection">Inspection</option><option value="treatment">Varroa Treatment</option><option value="equipment">Equipment / Maintenance</option><option value="supering">Add / Pull Honey Supers</option><option value="queen">Queen Check / Replace</option><option value="transport">Transport Hives</option><option value="feeding">Feeding / Supplements</option><option value="water">Water Source Check</option><option value="other">Other</option></select></div><div class="fg"><div class="fl">Description</div><input type="text" id="ta-desc" placeholder="Brief description"></div><div class="frow"><div class="fg"><div class="fl">Apiary</div><select id="ta-ap"></select></div><div class="fg"><div class="fl">Assign To</div><select id="ta-assignee"></select></div></div><div class="frow"><div class="fg"><div class="fl">Due Date</div><input type="date" id="ta-due"></div><div class="fg"><div class="fl">Priority</div><select id="ta-pri"><option value="high">High</option><option value="medium" selected>Medium</option><option value="low">Low</option></select></div></div><div class="fg"><div class="fl">Notes</div><textarea id="ta-notes" placeholder="Additional details..." style="min-height:60px;"></textarea></div><button class="btn btn-gold" style="width:100%;" onclick="submitTask()">Add Task</button></div></div>
+<div class="mover" id="madd-employee"><div class="modal"><button class="mclose" onclick="closeModal('madd-employee')">&#10005;</button><div class="mtitle" id="ef-title">Add Team Member</div><input type="hidden" id="ef-id"><div class="fg"><div class="fl">Full Name</div><input type="text" id="ef-name" placeholder="Full name"></div><div class="fg"><div class="fl">Email</div><input type="email" id="ef-email" placeholder="name@prescotthoney.com"></div><div class="frow"><div class="fg"><div class="fl">Role</div><select id="ef-role"><option value="manager">Manager</option><option value="employee">Field Worker</option></select></div><div class="fg"><div class="fl">Phone</div><input type="tel" id="ef-phone" placeholder="(555) 000-0000"></div></div><div class="fg"><div class="fl">Login Password</div><input type="text" id="ef-pass" placeholder="Leave blank to keep current"></div><button class="btn btn-gold" style="width:100%;margin-top:4px;" onclick="submitEmployee()">Save</button><div id="ef-del-wrap" style="margin-top:10px;display:none;"><button class="btn btn-red" style="width:100%;" onclick="deleteEmployee()">Remove Team Member</button></div></div></div>
+<div class="mover" id="madd-dp"><div class="modal"><button class="mclose" onclick="closeModal('madd-dp')">&#10005;</button><div class="mtitle">Add Drop Point</div><input type="hidden" id="dp-aid"><div class="fg"><div class="fl">Name</div><input type="text" id="dp-name" placeholder="e.g. North Clover Field"></div><div class="frow"><div class="fg"><div class="fl">Latitude</div><input type="text" id="dp-lat" placeholder="e.g. 44.948" oninput="updGM('dp')"></div><div class="fg"><div class="fl">Longitude</div><input type="text" id="dp-lng" placeholder="e.g. -122.869" oninput="updGM('dp')"></div></div><div class="gmlink" id="dp-gmlink"><a id="dp-gma" href="#" target="_blank" rel="noopener">Open in Google Maps</a></div><div class="fg"><div class="fl">Hives</div><input type="number" id="dp-hives" placeholder="e.g. 120"></div><div class="fg"><div class="fl">Notes</div><input type="text" id="dp-notes" placeholder="Access info, landmarks..."></div><button class="btn btn-gold" style="width:100%;" onclick="submitDP()">Add Drop Point</button></div></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-// ── DATA ──────────────────────────────────────────────────────
 const TODAY='2026-05-03';
 const td=new Date(TODAY);
 const ago=n=>{const d=new Date(td);d.setDate(d.getDate()-n);return d.toISOString().split('T')[0];};
 const ahead=n=>{const d=new Date(td);d.setDate(d.getDate()+n);return d.toISOString().split('T')[0];};
-
 const USERS=[
   {id:'u0',name:'Prescott Rogan',email:'owner@prescotthoney.com',password:'demo',role:'owner'},
   {id:'u1',name:'Jake Morrison',email:'jake@prescotthoney.com',password:'demo',role:'manager'},
@@ -516,36 +400,20 @@ const USERS=[
   {id:'u7',name:'Dave Thompson',email:'dave@prescotthoney.com',password:'demo',role:'employee'},
   {id:'u8',name:'Ana Gutierrez',email:'ana@prescotthoney.com',password:'demo',role:'employee'},
 ];
-
 const SEED_AP=[
-  {id:'a01',name:'Willamette Valley East',state:'OR',county:'Marion County',city:'Salem',lat:44.942,lng:-122.876,hives:620,assignedTo:['u3','u4'],notes:'Clover and wildflower. Pollination contract with Bauman Farms.',
-   dropPoints:[{id:'dp01a',name:'North Clover Field',lat:44.948,lng:-122.869,hives:120,notes:'Near creek'},
-               {id:'dp01b',name:'South Berry Farm',lat:44.937,lng:-122.883,hives:110,notes:'Berry farm row 4'},
-               {id:'dp01c',name:'East Pasture',lat:44.945,lng:-122.861,hives:130,notes:'Open pasture'},
-               {id:'dp01d',name:'River Bottom',lat:44.940,lng:-122.891,hives:100,notes:'Flood risk spring'},
-               {id:'dp01e',name:'Highway Yard',lat:44.952,lng:-122.874,hives:160,notes:'Main staging yard'}]},
+  {id:'a01',name:'Willamette Valley East',state:'OR',county:'Marion County',city:'Salem',lat:44.942,lng:-122.876,hives:620,assignedTo:['u3','u4'],notes:'Clover and wildflower. Pollination contract with Bauman Farms.',dropPoints:[{id:'dp01a',name:'North Clover Field',lat:44.948,lng:-122.869,hives:120,notes:'Near creek'},{id:'dp01b',name:'South Berry Farm',lat:44.937,lng:-122.883,hives:110,notes:'Berry farm row 4'},{id:'dp01c',name:'East Pasture',lat:44.945,lng:-122.861,hives:130,notes:'Open pasture'},{id:'dp01d',name:'River Bottom',lat:44.940,lng:-122.891,hives:100,notes:'Flood risk in spring'},{id:'dp01e',name:'Highway Yard',lat:44.952,lng:-122.874,hives:160,notes:'Main staging yard'}]},
   {id:'a02',name:'Cascade Foothills',state:'OR',county:'Linn County',city:'Albany',lat:44.635,lng:-123.105,hives:450,assignedTo:['u3'],notes:'Berry farm pollination. Varroa pressure — monitor closely.',dropPoints:[]},
   {id:'a03',name:'Rogue Valley South',state:'OR',county:'Jackson County',city:'Medford',lat:42.326,lng:-122.875,hives:520,assignedTo:['u4'],notes:'Pear and apple orchard contracts. Strong colonies.',dropPoints:[]},
   {id:'a04',name:'Klamath Basin',state:'OR',county:'Klamath County',city:'Klamath Falls',lat:42.225,lng:-121.782,hives:480,assignedTo:['u5'],notes:'High elevation. Winter losses — extra monitoring required.',dropPoints:[]},
-  {id:'a05',name:'High Desert Basin',state:'OR',county:'Deschutes County',city:'Bend',lat:44.058,lng:-121.315,hives:510,assignedTo:['u3','u5'],notes:'Sagebrush honey production. Peak flow July-August.',dropPoints:[]},
+  {id:'a05',name:'High Desert Basin',state:'OR',county:'Deschutes County',city:'Bend',lat:44.058,lng:-121.315,hives:510,assignedTo:['u3','u5'],notes:'Sagebrush honey production. Peak flow July–August.',dropPoints:[]},
   {id:'a06',name:'Umpqua River Valley',state:'OR',county:'Douglas County',city:'Roseburg',lat:43.216,lng:-123.368,hives:490,assignedTo:['u4'],notes:'Mixed wildflower. Good spring buildup.',dropPoints:[]},
   {id:'a07',name:'Columbia Gorge',state:'OR',county:'Hood River County',city:'Hood River',lat:45.707,lng:-121.522,hives:540,assignedTo:['u6'],notes:'Apple and pear orchards. Wind exposure management needed.',dropPoints:[]},
   {id:'a08',name:'Tualatin Valley',state:'OR',county:'Washington County',city:'Hillsboro',lat:45.522,lng:-122.989,hives:420,assignedTo:['u6'],notes:'Nursery and farm pollination. Close to Portland metro.',dropPoints:[]},
   {id:'a09',name:'Eastern Oregon Plateau',state:'OR',county:'Umatilla County',city:'Pendleton',lat:45.672,lng:-118.788,hives:530,assignedTo:['u7'],notes:'Wheat field borders. Strong late-summer foraging.',dropPoints:[]},
   {id:'a10',name:'Josephine Creek',state:'OR',county:'Josephine County',city:'Grants Pass',lat:42.439,lng:-123.329,hives:440,assignedTo:['u7'],notes:'Remote site. Access road challenges for inspections.',dropPoints:[]},
-  {id:'a11',name:'Sacramento Delta',state:'CA',county:'Yolo County',city:'Woodland',lat:38.678,lng:-121.773,hives:600,assignedTo:['u3','u8'],notes:'Almond pollination Feb-Mar. Premium contracts. Move in Jan.',
-   dropPoints:[{id:'dp11a',name:'Almond Block A',lat:38.682,lng:-121.778,hives:100,notes:'Row 1-10'},
-               {id:'dp11b',name:'Almond Block B',lat:38.675,lng:-121.769,hives:100,notes:'Row 11-20'},
-               {id:'dp11c',name:'Almond Block C',lat:38.671,lng:-121.782,hives:100,notes:'Row 21-30'},
-               {id:'dp11d',name:'North Field',lat:38.685,lng:-121.774,hives:100,notes:'North section'},
-               {id:'dp11e',name:'South Field',lat:38.673,lng:-121.765,hives:100,notes:'South section'},
-               {id:'dp11f',name:'Creek Side',lat:38.669,lng:-121.773,hives:100,notes:'Near canal'}]},
+  {id:'a11',name:'Sacramento Delta',state:'CA',county:'Yolo County',city:'Woodland',lat:38.678,lng:-121.773,hives:600,assignedTo:['u3','u8'],notes:'Almond pollination Feb–Mar. Premium contracts. Move in Jan.',dropPoints:[{id:'dp11a',name:'Almond Block A',lat:38.682,lng:-121.778,hives:100,notes:'Row 1-10'},{id:'dp11b',name:'Almond Block B',lat:38.675,lng:-121.769,hives:100,notes:'Row 11-20'},{id:'dp11c',name:'Almond Block C',lat:38.671,lng:-121.782,hives:100,notes:'Row 21-30'},{id:'dp11d',name:'North Field',lat:38.685,lng:-121.774,hives:100,notes:'North section'},{id:'dp11e',name:'South Field',lat:38.673,lng:-121.765,hives:100,notes:'South section'},{id:'dp11f',name:'Creek Side',lat:38.669,lng:-121.773,hives:100,notes:'Near canal'}]},
   {id:'a12',name:'San Joaquin North',state:'CA',county:'San Joaquin County',city:'Stockton',lat:37.944,lng:-121.291,hives:580,assignedTo:['u4'],notes:'Almond and cherry contracts. High-value location.',dropPoints:[]},
-  {id:'a13',name:'Stanislaus Almonds',state:'CA',county:'Stanislaus County',city:'Modesto',lat:37.639,lng:-120.997,hives:620,assignedTo:['u5'],notes:'Core almond site. Colonies must be 8+ frames for contract.',
-   dropPoints:[{id:'dp13a',name:'West Block',lat:37.643,lng:-121.003,hives:160,notes:'Contract block W'},
-               {id:'dp13b',name:'East Block',lat:37.636,lng:-120.990,hives:155,notes:'Contract block E'},
-               {id:'dp13c',name:'North Section',lat:37.641,lng:-120.996,hives:150,notes:'Row 1-15'},
-               {id:'dp13d',name:'South Section',lat:37.635,lng:-121.005,hives:155,notes:'Row 16-30'}]},
+  {id:'a13',name:'Stanislaus Almonds',state:'CA',county:'Stanislaus County',city:'Modesto',lat:37.639,lng:-120.997,hives:620,assignedTo:['u5'],notes:'Core almond site. Colonies must be 8+ frames for contract.',dropPoints:[{id:'dp13a',name:'West Block',lat:37.643,lng:-121.003,hives:160,notes:'Contract block W'},{id:'dp13b',name:'East Block',lat:37.636,lng:-120.990,hives:155,notes:'Contract block E'},{id:'dp13c',name:'North Section',lat:37.641,lng:-120.996,hives:150,notes:'Row 1-15'},{id:'dp13d',name:'South Section',lat:37.635,lng:-121.005,hives:155,notes:'Row 16-30'}]},
   {id:'a14',name:'Fresno Orchards',state:'CA',county:'Fresno County',city:'Fresno',lat:36.746,lng:-119.772,hives:560,assignedTo:['u5','u6'],notes:'Stone fruit and citrus. Year-round high activity.',dropPoints:[]},
   {id:'a15',name:'Bakersfield South',state:'CA',county:'Kern County',city:'Bakersfield',lat:35.373,lng:-119.019,hives:490,assignedTo:['u6'],notes:'Cotton and citrus. Water access critical in summer.',dropPoints:[]},
   {id:'a16',name:'Shasta Valley',state:'CA',county:'Shasta County',city:'Redding',lat:40.587,lng:-122.392,hives:470,assignedTo:['u7'],notes:'Wildflower honey production. Strong natural forage.',dropPoints:[]},
@@ -554,19 +422,13 @@ const SEED_AP=[
   {id:'a19',name:'Salinas Valley',state:'CA',county:'Monterey County',city:'Salinas',lat:36.677,lng:-121.655,hives:480,assignedTo:['u8'],notes:'Vegetable crop pollination. Coastal fog management.',dropPoints:[]},
   {id:'a20',name:'Visalia Citrus',state:'CA',county:'Tulare County',city:'Visalia',lat:36.330,lng:-119.292,hives:540,assignedTo:['u4'],notes:'Citrus and vineyard. Strong spring buildup every year.',dropPoints:[]},
 ];
-
 const LAST_D={a01:5,a02:16,a03:3,a04:21,a05:8,a06:1,a07:18,a08:6,a09:11,a10:14,a11:2,a12:7,a13:13,a14:4,a15:9,a16:1,a17:17,a18:5,a19:10,a20:3};
-
 const SEED_INSPS=Object.entries(LAST_D).map(([aid,d])=>{
-  const ap=SEED_AP.find(a=>a.id===aid);
-  const emp=USERS.find(u=>u.id===(ap?.assignedTo?.[0]));
+  const ap=SEED_AP.find(a=>a.id===aid),emp=USERS.find(u=>u.id===ap?.assignedTo?.[0]);
   const cond=d>18?'poor':d>13?'fair':'good';
   const treats={a04:'oxalic',a02:'apivar',a13:'miteaway'};
-  return{id:`i${aid}`,apiaryId:aid,date:ago(d),inspector:emp?.name||'Staff',inspectorId:ap?.assignedTo?.[0]||'u3',
-    condition:cond,colonies:ap?.hives||0,treatment:treats[aid]||'none',
-    notes:cond==='poor'?'Multiple dead-outs observed. Immediate follow-up required.':cond==='fair'?'Some colonies reduced. Monitor closely.':'Colonies strong. Good brood pattern.'};
+  return{id:`i${aid}`,apiaryId:aid,date:ago(d),inspector:emp?.name||'Staff',inspectorId:ap?.assignedTo?.[0]||'u3',condition:cond,colonies:ap?.hives||0,treatment:treats[aid]||'none',notes:cond==='poor'?'Multiple dead-outs observed. Immediate follow-up required.':cond==='fair'?'Some colonies reduced. Monitor closely.':'Colonies strong. Good brood pattern.'};
 });
-
 const SEED_TASKS=[
   {id:'t01',type:'inspection',desc:'Inspect Cascade Foothills — OVERDUE',apiaryId:'a02',assignedTo:'u3',dueDate:ago(2),priority:'high',status:'open',notes:'16 days since last inspection'},
   {id:'t02',type:'treatment',desc:'Oxalic acid treatment — Klamath Basin',apiaryId:'a04',assignedTo:'u5',dueDate:TODAY,priority:'high',status:'open',notes:'Critical — 21 days overdue. Heavy mite load expected.'},
@@ -576,35 +438,21 @@ const SEED_TASKS=[
   {id:'t06',type:'water',desc:'Repair water feeders — Eastern Oregon',apiaryId:'a09',assignedTo:'u7',dueDate:ahead(2),priority:'medium',status:'open',notes:'Two feeder stations reported broken'},
   {id:'t07',type:'inspection',desc:'Inspect Stanislaus Almonds',apiaryId:'a13',assignedTo:'u5',dueDate:ahead(1),priority:'high',status:'open',notes:'Due tomorrow — almond client requires 8+ frame colonies'},
   {id:'t08',type:'equipment',desc:'Deliver new frames — Merced Grasslands',apiaryId:'a18',assignedTo:'u8',dueDate:ahead(2),priority:'medium',status:'open',notes:'200 new frames ready for delivery'},
-  {id:'t09',type:'transport',desc:'Move hives to almonds — Butte to Modesto',apiaryId:'a17',assignedTo:'u7',dueDate:ahead(2),priority:'medium',status:'open',notes:'35 hives for late almond contract'},
+  {id:'t09',type:'transport',desc:'Move hives — Butte to Modesto',apiaryId:'a17',assignedTo:'u7',dueDate:ahead(2),priority:'medium',status:'open',notes:'35 hives for late almond contract'},
   {id:'t10',type:'inspection',desc:'Inspect Butte County — OVERDUE',apiaryId:'a17',assignedTo:'u7',dueDate:ago(3),priority:'high',status:'open',notes:'17 days overdue'},
   {id:'t11',type:'feeding',desc:'Emergency feeding — Klamath Basin',apiaryId:'a04',assignedTo:'u5',dueDate:TODAY,priority:'high',status:'in-progress',notes:'Low stores. Sugar syrup + pollen sub.'},
   {id:'t12',type:'inspection',desc:'Inspect Columbia Gorge — OVERDUE',apiaryId:'a07',assignedTo:'u6',dueDate:ago(4),priority:'high',status:'open',notes:'18 days since last inspection'},
-  {id:'t13',type:'water',desc:'Check water sources — CA apiaries',apiaryId:'a11',assignedTo:'u8',dueDate:TODAY,priority:'medium',status:'open',notes:'Hot stretch forecast — verify all stations full'},
+  {id:'t13',type:'water',desc:'Check water sources — CA apiaries',apiaryId:'a11',assignedTo:'u8',dueDate:TODAY,priority:'medium',status:'open',notes:'Hot stretch forecast'},
   {id:'t14',type:'equipment',desc:'Replace aging hive bodies — Rogue Valley',apiaryId:'a03',assignedTo:'u4',dueDate:ahead(5),priority:'low',status:'open',notes:'~40 boxes flagged for replacement'},
   {id:'t15',type:'supering',desc:'Pull honey supers — Shasta Valley',apiaryId:'a16',assignedTo:'u7',dueDate:ahead(3),priority:'medium',status:'done',notes:'Harvest complete — 68 supers pulled'},
   {id:'t16',type:'inspection',desc:'Inspect Salinas Valley',apiaryId:'a19',assignedTo:'u8',dueDate:ahead(4),priority:'medium',status:'done',notes:'All colonies strong. Excellent brood pattern.'},
 ];
-
-// ── STATE ─────────────────────────────────────────────────────
-const S={user:null,apiaries:[],inspections:[],tasks:[],employees:[...USERS],af:'all',tf:'all',mapMode:false,leafMap:null};
-
-// ── INIT ──────────────────────────────────────────────────────
-function init(){
-  loadData();
-  const sess=JSON.parse(localStorage.getItem('phf_sess')||'null');
-  if(sess){S.user=sess;showApp();}
-  else document.getElementById('login-screen').style.display='flex';
-  document.getElementById('li-date').value=TODAY;
-  document.getElementById('ta-due').value=TODAY;
-  document.querySelectorAll('.mover').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
-}
-
+const S={user:null,apiaries:[],inspections:[],tasks:[],employees:[],af:'all',tf:'all',mapMode:false,leafMap:null};
 function loadData(){
   S.apiaries=JSON.parse(localStorage.getItem('phf_ap'))||JSON.parse(JSON.stringify(SEED_AP));
   S.inspections=JSON.parse(localStorage.getItem('phf_ins'))||JSON.parse(JSON.stringify(SEED_INSPS));
   S.tasks=JSON.parse(localStorage.getItem('phf_tasks'))||JSON.parse(JSON.stringify(SEED_TASKS));
-  S.employees=JSON.parse(localStorage.getItem('phf_emp'))||[...USERS];
+  S.employees=JSON.parse(localStorage.getItem('phf_emp'))||JSON.parse(JSON.stringify(USERS));
 }
 function save(){
   localStorage.setItem('phf_ap',JSON.stringify(S.apiaries));
@@ -612,99 +460,99 @@ function save(){
   localStorage.setItem('phf_tasks',JSON.stringify(S.tasks));
   localStorage.setItem('phf_emp',JSON.stringify(S.employees));
 }
-
-// ── AUTH ──────────────────────────────────────────────────────
-function quickLogin(role,btn){
-  document.querySelectorAll('.dbtn').forEach(b=>b.classList.remove('sel'));
-  btn.classList.add('sel');
-  const map={owner:'owner@prescotthoney.com',manager:'jake@prescotthoney.com',employee:'tom@prescotthoney.com'};
-  document.getElementById('le').value=map[role];
-  document.getElementById('lp').value='demo';
+function init(){
+  loadData();
+  const theme=localStorage.getItem('phf_theme')||'dark';
+  document.documentElement.setAttribute('data-theme',theme);
+  updateThemeIcon(theme);
+  const sess=JSON.parse(localStorage.getItem('phf_sess')||'null');
+  if(sess&&S.employees.find(e=>e.id===sess.id)){S.user=sess;showApp();}
+  else{document.getElementById('login-screen').style.display='flex';}
+  document.getElementById('li-date').value=TODAY;
+  document.getElementById('ta-due').value=TODAY;
+  document.querySelectorAll('.mover').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
 }
+function toggleTheme(){
+  const cur=document.documentElement.getAttribute('data-theme');
+  const next=cur==='dark'?'light':'dark';
+  document.documentElement.setAttribute('data-theme',next);
+  localStorage.setItem('phf_theme',next);
+  updateThemeIcon(next);
+  if(S.leafMap){
+    S.leafMap.eachLayer(l=>{if(l._url)S.leafMap.removeLayer(l);});
+    const tileUrl=next==='dark'?'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png':'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+    L.tileLayer(tileUrl,{attribution:'&copy; OpenStreetMap &copy; CARTO',maxZoom:19}).addTo(S.leafMap);
+  }
+}
+function updateThemeIcon(theme){
+  const el=document.getElementById('theme-icon');
+  if(!el)return;
+  el.innerHTML=theme==='dark'
+    ?'<circle cx="8" cy="8" r="3"/><path d="M8 1v1.5M8 13.5V15M1 8h1.5M13.5 8H15M3.2 3.2l1.1 1.1M11.7 11.7l1.1 1.1M3.2 12.8l1.1-1.1M11.7 4.3l1.1-1.1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" fill="none"/>'
+    :'<path d="M13 9.5A6 6 0 0 1 6.5 3a6 6 0 1 0 6.5 6.5z"/>';
+}
+function quickLogin(role,btn){document.querySelectorAll('.dbtn').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');const m={owner:'owner@prescotthoney.com',manager:'jake@prescotthoney.com',employee:'tom@prescotthoney.com'};document.getElementById('le').value=m[role];document.getElementById('lp').value='demo';}
 function doLogin(){
-  const email=document.getElementById('le').value.trim().toLowerCase();
-  const pass=document.getElementById('lp').value;
-  const user=USERS.find(u=>u.email===email&&u.password===pass);
-  if(!user){document.getElementById('lmsg').textContent='Invalid credentials. Use "demo" as password.';return;}
+  const email=document.getElementById('le').value.trim().toLowerCase(),pass=document.getElementById('lp').value;
+  const user=S.employees.find(u=>u.email===email&&u.password===pass)||USERS.find(u=>u.email===email&&u.password===pass);
+  if(!user){document.getElementById('lmsg').textContent='Invalid credentials. Try password: demo';return;}
   S.user=user;localStorage.setItem('phf_sess',JSON.stringify(user));showApp();
 }
-function signOut(){
-  S.user=null;localStorage.removeItem('phf_sess');
-  document.getElementById('app').style.display='none';
-  document.getElementById('login-screen').style.display='flex';
-  document.getElementById('le').value='';document.getElementById('lp').value='';
-  document.getElementById('lmsg').textContent='';
-}
+function signOut(){S.user=null;localStorage.removeItem('phf_sess');document.getElementById('app').style.display='none';document.getElementById('login-screen').style.display='flex';document.getElementById('le').value='';document.getElementById('lp').value='';document.getElementById('lmsg').textContent='';}
 function showApp(){
-  document.getElementById('login-screen').style.display='none';
-  document.getElementById('app').style.display='block';
+  document.getElementById('login-screen').style.display='none';document.getElementById('app').style.display='block';
   const dc={owner:'#F5A623',manager:'#3b82f6',employee:'#3d9970'};
   document.getElementById('rdot').style.background=dc[S.user.role]||'#ccc';
   document.getElementById('uchip-name').textContent=S.user.name.split(' ')[0]+' · '+S.user.role;
-  const om=['owner','manager'].includes(S.user.role);
+  const om=isOM();
   ['add-ap-btn','add-task-btn','add-emp-btn'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display=om?'':'none';});
-  if(!om){document.getElementById('nav-team').style.display='none';document.getElementById('nav-reports').style.display='none';}
+  if(!om){['nav-team','nav-reports','bnav-team','bnav-reports'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display='none';});}
   switchView('dashboard');
 }
-
-// ── NAV ───────────────────────────────────────────────────────
-function switchView(v){
-  document.querySelectorAll('.view').forEach(s=>s.classList.remove('active'));
-  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
-  const el=document.getElementById('view-'+v);if(el)el.classList.add('active');
-  const nb=document.querySelector(`nav button[data-v="${v}"]`);if(nb)nb.classList.add('active');
-  ({dashboard:renderDash,apiaries:renderApiaries,tasks:renderTasks,team:renderTeam,reports:renderReports}[v]||(() => {}))();
-}
-
-// ── HELPERS ───────────────────────────────────────────────────
+const isOM=()=>['owner','manager'].includes(S.user?.role);
 const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-const fmtD=s=>{if(!s)return '—';const d=new Date(s+'T12:00:00');return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});};
+const fmtD=s=>{if(!s)return'—';const d=new Date(s+'T12:00:00');return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});};
 const diffD=s=>s?Math.floor((new Date(s)-new Date(TODAY))/86400000):9999;
-const relD=s=>{const d=diffD(s);if(d===0)return 'Today';if(d===1)return 'Tomorrow';if(d===-1)return 'Yesterday';return d<0?Math.abs(d)+'d overdue':'In '+d+'d';};
+const relD=s=>{const d=diffD(s);if(d===0)return'Today';if(d===1)return'Tomorrow';if(d===-1)return'Yesterday';return d<0?Math.abs(d)+'d overdue':'In '+d+'d';};
 const getEmp=id=>S.employees.find(e=>e.id===id);
 const getAP=id=>S.apiaries.find(a=>a.id===id);
 const lastInsp=id=>[...S.inspections].filter(i=>i.apiaryId===id).sort((a,b)=>b.date.localeCompare(a.date))[0]||null;
 const daysSince=id=>{const l=lastInsp(id);return l?Math.floor((new Date(TODAY)-new Date(l.date))/86400000):999;};
 const apStatus=id=>{const d=daysSince(id);return d>17?'critical':d>12?'attention':'good';};
 const nextDue=id=>{const l=lastInsp(id);if(!l)return null;const d=new Date(l.date);d.setDate(d.getDate()+14);return d.toISOString().split('T')[0];};
-const myAPs=()=>['owner','manager'].includes(S.user?.role)?S.apiaries:S.apiaries.filter(a=>(a.assignedTo||[]).includes(S.user?.id));
-const tlbl=(type)=>({inspection:'INSPECT',treatment:'TREAT',equipment:'MAINT',supering:'SUPERS',queen:'QUEEN',transport:'MOVE',feeding:'FEED',water:'WATER',other:'OTHER'}[type]||'OTHER');
-const tcls=(type)=>({inspection:'tl-ins',treatment:'tl-tr',equipment:'tl-ma',supering:'tl-su',queen:'tl-qu',transport:'tl-mv',feeding:'tl-fe',water:'tl-wa',other:'tl-ot'}[type]||'tl-ot');
-
-// ── DASHBOARD ─────────────────────────────────────────────────
+const myAPs=()=>isOM()?S.apiaries:S.apiaries.filter(a=>(a.assignedTo||[]).includes(S.user?.id));
+const tlbl=t=>({inspection:'INSPECT',treatment:'TREAT',equipment:'MAINT',supering:'SUPERS',queen:'QUEEN',transport:'MOVE',feeding:'FEED',water:'WATER',other:'OTHER'}[t]||'OTHER');
+const tcls=t=>({inspection:'tl-ins',treatment:'tl-tr',equipment:'tl-ma',supering:'tl-su',queen:'tl-qu',transport:'tl-mv',feeding:'tl-fe',water:'tl-wa',other:'tl-ot'}[t]||'tl-ot');
+function switchView(v){
+  document.querySelectorAll('.view').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tnav-btn,[data-v]').forEach(b=>{if(b.dataset.v===v)b.classList.add('active');else b.classList.remove('active');});
+  const el=document.getElementById('view-'+v);if(el)el.classList.add('active');
+  ({dashboard:renderDash,apiaries:renderApiaries,tasks:renderTasks,team:renderTeam,reports:renderReports}[v]||(() => {}))();
+}
 function renderDash(){
-  const u=S.user,om=['owner','manager'].includes(u.role),aps=myAPs();
+  const u=S.user,om=isOM(),aps=myAPs();
   const over=aps.filter(a=>daysSince(a.id)>14);
-  const todTasks=S.tasks.filter(t=>t.status!=='done'&&t.dueDate<=TODAY&&(om||t.assignedTo===u.id));
+  const todT=S.tasks.filter(t=>t.status!=='done'&&t.dueDate<=TODAY&&(om||t.assignedTo===u.id));
   const hr=new Date().getHours();
   document.getElementById('wgreet').textContent=(hr<12?'Good morning':hr<17?'Good afternoon':'Good evening')+', '+u.name.split(' ')[0]+'!';
-  document.getElementById('wsub').textContent=om?`${over.length} apiar${over.length!==1?'ies':'y'} overdue for inspection  ·  ${todTasks.length} tasks due today`:
-    `${over.length} of your apiaries need inspection  ·  ${todTasks.length} tasks due today`;
+  document.getElementById('wsub').textContent=om?`${over.length} apiar${over.length!==1?'ies':'y'} overdue for inspection  ·  ${todT.length} tasks due today`:`${over.length} of your apiaries need inspection  ·  ${todT.length} tasks due today`;
   const crit=aps.filter(a=>daysSince(a.id)>17);
-  document.getElementById('dalerts').innerHTML=crit.length?`<div class="alert alert-r"><strong>${crit.length} apiar${crit.length!==1?'ies':'y'} critically overdue (17+ days):</strong> ${crit.map(a=>esc(a.name)).join(', ')}</div>`:
-    over.length?`<div class="alert alert-o"><strong>${over.length} apiar${over.length!==1?'ies':'y'} overdue</strong> for their 14-day inspection cycle.</div>`:'';
+  document.getElementById('dalerts').innerHTML=crit.length?`<div class="alert alert-r"><strong>${crit.length} apiar${crit.length!==1?'ies':'y'} critically overdue (17+ days):</strong> ${crit.map(a=>esc(a.name)).join(', ')}</div>`:over.length?`<div class="alert alert-o"><strong>${over.length} apiar${over.length!==1?'ies':'y'} overdue</strong> for their 14-day inspection cycle.</div>`:'';
   const tot=aps.reduce((s,a)=>s+a.hives,0);
   document.getElementById('dstats').innerHTML=om?`
-    <div class="scard ca"><div class="snum" style="color:var(--gold)">${tot.toLocaleString()}</div><div class="slbl">Total Hives</div><div class="ssub">${aps.length} apiaries</div></div>
-    <div class="scard ${over.length?'cd':'cg'}"><div class="snum" style="color:${over.length?'var(--red)':'var(--grn)'}">${over.length}</div><div class="slbl">Overdue Inspections</div><div class="ssub">14-day cycle</div></div>
-    <div class="scard ${todTasks.length?'cw':'cg'}"><div class="snum" style="color:${todTasks.length?'var(--org)':'var(--grn)'}">${todTasks.length}</div><div class="slbl">Tasks Due Today</div><div class="ssub">${S.tasks.filter(t=>t.status==='done').length} completed total</div></div>
-    <div class="scard"><div class="snum" style="color:var(--blu)">${S.employees.filter(e=>e.role!=='owner').length}</div><div class="slbl">Team Members</div><div class="ssub">OR &amp; CA regions</div></div>`:`
-    <div class="scard ca"><div class="snum" style="color:var(--gold)">${tot.toLocaleString()}</div><div class="slbl">My Hives</div><div class="ssub">${aps.length} apiaries</div></div>
-    <div class="scard ${over.length?'cd':'cg'}"><div class="snum" style="color:${over.length?'var(--red)':'var(--grn)'}">${over.length}</div><div class="slbl">Need Inspection</div><div class="ssub">my apiaries</div></div>
-    <div class="scard ${todTasks.length?'cw':'cg'}"><div class="snum" style="color:${todTasks.length?'var(--org)':'var(--grn)'}">${todTasks.length}</div><div class="slbl">My Tasks Today</div></div>
-    <div class="scard cg"><div class="snum" style="color:var(--grn)">${S.tasks.filter(t=>t.assignedTo===u.id&&t.status==='done').length}</div><div class="slbl">Completed</div></div>`;
-  const prio=aps.map(a=>({...a,ds:daysSince(a.id)})).filter(a=>a.ds>=10).sort((a,b)=>b.ds-a.ds).slice(0,5);
-  document.getElementById('dprio').innerHTML=prio.length?prio.map(a=>{
-    const st=apStatus(a.id);const cls=st==='critical'?'io':st==='attention'?'iw':'ig';
-    const dc=st==='critical'?'db-r':st==='attention'?'db-w':'db-g';
-    const li=lastInsp(a.id);
-    return `<div class="iitem ${cls}"><div class="iinfo"><div class="iname">${esc(a.name)}</div><div class="imeta">${a.city}, ${a.state} · ${a.hives.toLocaleString()} hives · Last: ${fmtD(li?.date)}</div></div><span class="dbadge ${dc}">${a.ds}d</span><button class="ibtn" onclick="openInsp('${a.id}')">Log</button></div>`;
-  }).join(''):`<div class="alert alert-b">All apiaries are current on inspections.</div>`;
+    <div class="scard sc-gold"><div class="snum" style="color:var(--gold)">${tot.toLocaleString()}</div><div class="slbl">Total Hives</div><div class="ssub">${aps.length} apiaries</div></div>
+    <div class="scard ${over.length?'sc-red':'sc-grn'}"><div class="snum" style="color:${over.length?'var(--red)':'var(--grn)'}">${over.length}</div><div class="slbl">Overdue Inspections</div><div class="ssub">14-day cycle</div></div>
+    <div class="scard ${todT.length?'sc-org':'sc-grn'}"><div class="snum" style="color:${todT.length?'var(--org)':'var(--grn)'}">${todT.length}</div><div class="slbl">Tasks Due Today</div><div class="ssub">${S.tasks.filter(t=>t.status==='done').length} completed total</div></div>
+    <div class="scard sc-blu"><div class="snum" style="color:var(--blu)">${S.employees.filter(e=>e.role!=='owner').length}</div><div class="slbl">Team Members</div><div class="ssub">OR &amp; CA regions</div></div>`:
+    `<div class="scard sc-gold"><div class="snum" style="color:var(--gold)">${tot.toLocaleString()}</div><div class="slbl">My Hives</div><div class="ssub">${aps.length} assigned</div></div>
+    <div class="scard ${over.length?'sc-red':'sc-grn'}"><div class="snum" style="color:${over.length?'var(--red)':'var(--grn)'}">${over.length}</div><div class="slbl">Need Inspection</div></div>
+    <div class="scard ${todT.length?'sc-org':'sc-grn'}"><div class="snum" style="color:${todT.length?'var(--org)':'var(--grn)'}">${todT.length}</div><div class="slbl">My Tasks Today</div></div>
+    <div class="scard sc-grn"><div class="snum" style="color:var(--grn)">${S.tasks.filter(t=>t.assignedTo===u.id&&t.status==='done').length}</div><div class="slbl">Completed</div></div>`;
+  const prio=aps.map(a=>({...a,ds:daysSince(a.id)})).filter(a=>a.ds>=10).sort((a,b)=>b.ds-a.ds).slice(0,6);
+  document.getElementById('dprio').innerHTML=prio.length?prio.map(a=>{const st=apStatus(a.id);const cls=st==='critical'?'io':st==='attention'?'iw':'ig';const dc=st==='critical'?'db-r':st==='attention'?'db-w':'db-g';const li=lastInsp(a.id);return`<div class="iitem ${cls}"><div class="iinfo"><div class="iname">${esc(a.name)}</div><div class="imeta">${a.city}, ${a.state} · ${a.hives.toLocaleString()} hives · Last: ${fmtD(li?.date)}</div></div><span class="dbadge ${dc}">${a.ds}d</span><button class="ibtn" onclick="openInsp('${a.id}')">Log</button></div>`;}).join(''):`<div class="alert alert-b">All apiaries are current on inspections.</div>`;
   document.getElementById('dtask-lbl').textContent=om?'Tasks Due Today':'My Tasks Today';
-  document.getElementById('dtasks').innerHTML=todTasks.length?todTasks.slice(0,6).map(t=>tCard(t,false)).join(''):`<div class="empty">No tasks due today.</div>`;
+  document.getElementById('dtasks').innerHTML=todT.length?todT.slice(0,6).map(t=>tCard(t,false)).join(''):`<div class="empty">No tasks due today.</div>`;
 }
-
-// ── APIARIES ──────────────────────────────────────────────────
 let _af='all';
 function setAF(f,btn){_af=f;document.querySelectorAll('#afbar .fbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderApiaries();}
 function setMapToggle(mode){
@@ -716,272 +564,256 @@ function setMapToggle(mode){
   if(S.mapMode)initMap();
 }
 function renderApiaries(){
-  const srch=(document.getElementById('asrch')?.value||'').toLowerCase();
+  const q=(document.getElementById('asrch')?.value||'').toLowerCase();
   let list=myAPs();
   if(_af==='OR')list=list.filter(a=>a.state==='OR');
   else if(_af==='CA')list=list.filter(a=>a.state==='CA');
   else if(['good','attention','critical'].includes(_af))list=list.filter(a=>apStatus(a.id)===_af);
-  if(srch)list=list.filter(a=>[a.name,a.city,a.county].some(s=>s.toLowerCase().includes(srch)));
+  if(q)list=list.filter(a=>[a.name,a.city,a.county].some(s=>s.toLowerCase().includes(q)));
   const el=document.getElementById('apiary-grid');
   if(!list.length){el.innerHTML='<div class="empty">No apiaries match your filter.</div>';return;}
   el.innerHTML=list.map(a=>{
     const ds=daysSince(a.id),st=apStatus(a.id),li=lastInsp(a.id),nd=nextDue(a.id);
     const dc=st==='critical'?'db-r':st==='attention'?'db-w':'db-g';
     const bc=st==='critical'?'bc':st==='attention'?'ba':'bg';
-    const workers=(a.assignedTo||[]).map(id=>{const e=getEmp(id);return e?`<span class="wtag">${esc(e.name.split(' ')[0])}</span>`:''}).join('');
-    return `<div class="acard s${st[0]}" onclick="openAPDetail('${a.id}')">
-      <div class="acard-hd"><div><div class="acard-name">${esc(a.name)}</div><div class="acard-loc">${esc(a.city)}, ${a.state} · ${esc(a.county)}</div></div><span class="badge ${bc}">${st}</span></div>
-      <div class="acard-meta"><div><div class="amn">${a.hives.toLocaleString()}</div><div class="aml">Hives</div></div>
-        <div style="flex:1;padding-left:14px;"><div style="font-size:.78rem;color:var(--tdim);">Last inspected</div><div style="font-size:.85rem;font-weight:600;">${li?fmtD(li.date):'Never'}</div><div style="font-size:.72rem;color:var(--mut);">Next: ${nd?fmtD(nd):'N/A'}${(a.dropPoints||[]).length?' · '+(a.dropPoints.length)+' drop pts':''}</div></div>
+    const ws=(a.assignedTo||[]).map(id=>{const e=getEmp(id);return e?`<span class="wtag">${esc(e.name.split(' ')[0])}</span>`:''}).join('');
+    const dps=(a.dropPoints||[]).length;
+    return`<div class="acard s${st[0]}" onclick="openAPDetail('${a.id}')">
+      <div class="acard-hd"><div><div class="acard-name">${esc(a.name)}</div><div class="acard-loc">${esc(a.city)}, ${esc(a.county)}, ${a.state}</div></div><span class="badge ${bc}">${st}</span></div>
+      <div class="acard-stats">
+        <div class="astat"><div class="asn">${a.hives.toLocaleString()}</div><div class="asl">Total Hives</div></div>
+        ${dps?`<div class="astat"><div class="asn">${dps}</div><div class="asl">Drop Points</div></div>`:''}
+        <div class="astat"><div class="asn" style="font-size:1rem;">${li?fmtD(li.date):'Never'}</div><div class="asl">Last Inspected</div></div>
       </div>
-      <div class="acard-bot"><span style="color:var(--tdim);">${ds<99?ds+'d since inspection':'Never inspected'}</span>
-        <div style="display:flex;gap:5px;align-items:center;"><span class="dbadge ${dc}">${ds<99?ds+'d':'—'}</span><button class="ibtn btn-sm" onclick="event.stopPropagation();openInsp('${a.id}')">+ Log</button></div>
+      <div class="acard-insp">
+        <span style="color:var(--tdim);">Next due: <strong style="color:${st!=='good'?'var(--red)':'var(--txt)'}">${nd?fmtD(nd):'N/A'}</strong></span>
+        <span class="dbadge ${dc}">${ds<999?ds+'d ago':'Never'}</span>
       </div>
-      <div class="wtags">${workers}</div></div>`;
+      <div class="acard-workers">${ws?`<div style="display:flex;gap:6px;flex-wrap:wrap;">${ws}</div>`:'<span style="font-size:.73rem;color:var(--mut);">Unassigned</span>'}
+        <button class="logbtn" onclick="event.stopPropagation();openInsp('${a.id}')">+ Log</button>
+      </div></div>`;
   }).join('');
 }
-
-// ── MAP ───────────────────────────────────────────────────────
 function initMap(){
-  if(S.leafMap){updateMapMarkers();return;}
-  const m=L.map('apiary-map').setView([40.5,-121.5],6);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; OpenStreetMap &copy; CARTO',maxZoom:19}).addTo(m);
-  S.leafMap=m;
-  updateMapMarkers();
-  setTimeout(()=>m.invalidateSize(),150);
-}
-function updateMapMarkers(){
-  if(!S.leafMap)return;
-  S.leafMap.eachLayer(l=>{if(l instanceof L.CircleMarker||l instanceof L.Marker)S.leafMap.removeLayer(l);});
+  const theme=document.documentElement.getAttribute('data-theme');
+  const tileUrl=theme==='dark'?'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png':'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
+  if(!S.leafMap){
+    S.leafMap=L.map('apiary-map').setView([40.5,-121.5],6);
+    L.tileLayer(tileUrl,{attribution:'&copy; OpenStreetMap &copy; CARTO',maxZoom:19}).addTo(S.leafMap);
+  }
+  S.leafMap.eachLayer(l=>{if(l instanceof L.CircleMarker)S.leafMap.removeLayer(l);});
   S.apiaries.forEach(a=>{
-    if(!a.lat||!a.lng)return;
-    const st=apStatus(a.id),colors={'good':'#3d9970','attention':'#e07b39','critical':'#c0392b'};
-    const m=L.circleMarker([a.lat,a.lng],{radius:10,fillColor:colors[st],color:'#fff',weight:2,fillOpacity:.9}).addTo(S.leafMap);
-    const ds=daysSince(a.id);
-    m.bindPopup(`<strong>${a.name}</strong><br>${a.city}, ${a.state}<br>${a.hives.toLocaleString()} hives<br>Last inspected: ${ds<99?ds+'d ago':'Never'}<br><a href="https://www.google.com/maps?q=${a.lat},${a.lng}" target="_blank">Open in Google Maps</a>`);
+    if(!a.lat||!a.lng||Math.abs(a.lat)<0.1)return;
+    const st=apStatus(a.id),c={good:'#3d9970',attention:'#e07b39',critical:'#c0392b'}[st];
+    const m=L.circleMarker([a.lat,a.lng],{radius:11,fillColor:c,color:'#fff',weight:2,fillOpacity:.9}).addTo(S.leafMap);
+    m.bindPopup(`<strong>${a.name}</strong><br>${a.city}, ${a.state} · ${a.hives.toLocaleString()} hives<br>Last: ${daysSince(a.id)<999?daysSince(a.id)+'d ago':'Never'}<br><a href="https://www.google.com/maps?q=${a.lat},${a.lng}" target="_blank">Open in Google Maps</a>`);
     m.on('click',()=>openAPDetail(a.id));
-    (a.dropPoints||[]).forEach(dp=>{
-      if(!dp.lat||!dp.lng)return;
-      L.circleMarker([dp.lat,dp.lng],{radius:5,fillColor:'#F5A623',color:'#000',weight:1,fillOpacity:.8}).addTo(S.leafMap)
-        .bindPopup(`<strong>${dp.name}</strong><br>${a.name}<br>${dp.hives} hives<br><a href="https://www.google.com/maps?q=${dp.lat},${dp.lng}" target="_blank">Google Maps</a>`);
-    });
+    (a.dropPoints||[]).forEach(dp=>{if(!dp.lat||!dp.lng)return;L.circleMarker([dp.lat,dp.lng],{radius:5,fillColor:'#F5A623',color:'#000',weight:1,fillOpacity:.85}).addTo(S.leafMap).bindPopup(`<strong>${esc(dp.name)}</strong><br>${esc(a.name)}<br>${dp.hives} hives<br><a href="https://www.google.com/maps?q=${dp.lat},${dp.lng}" target="_blank">Google Maps</a>`);});
   });
+  setTimeout(()=>S.leafMap.invalidateSize(),100);
 }
-
-// ── APIARY DETAIL ─────────────────────────────────────────────
 function openAPDetail(id){
   const a=getAP(id);if(!a)return;
   const ds=daysSince(a.id),st=apStatus(a.id),nd=nextDue(a.id),li=lastInsp(a.id);
-  const om=['owner','manager'].includes(S.user.role);
+  const om=isOM();
   const insps=[...S.inspections].filter(i=>i.apiaryId===id).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
   const otasks=S.tasks.filter(t=>t.apiaryId===id&&t.status!=='done');
-  const bc=st==='critical'?'bc':st==='attention'?'ba':'bg';
   const dps=a.dropPoints||[];
+  const bc=st==='critical'?'bc':st==='attention'?'ba':'bg';
+  const hasCoords=a.lat&&a.lng&&Math.abs(a.lat)>0.01;
   document.getElementById('md-title').textContent=a.name;
   document.getElementById('md-body').innerHTML=`
-    <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:13px;">
+    <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:16px;">
       <span class="badge ${bc}">${st.toUpperCase()}</span>
       <span class="badge bt">${a.state==='OR'?'Oregon':'California'}</span>
       <span class="badge bt">${a.hives.toLocaleString()} hives</span>
-      ${dps.length?`<span class="badge bt">${dps.length} drop points</span>`:''}
+      ${dps.length?`<span class="badge bt">${dps.length} drop pts</span>`:''}
     </div>
-    <div class="card" style="margin-bottom:10px;">
+    <div class="card" style="margin-bottom:14px;padding:4px 0;">
       <div class="drow"><span class="dk">Location</span><span class="dv">${esc(a.city)}, ${esc(a.county)}, ${a.state}</span></div>
-      <div class="drow"><span class="dk">Coordinates</span><span class="dv"><a href="https://www.google.com/maps?q=${a.lat},${a.lng}" target="_blank" rel="noopener">${a.lat}, ${a.lng}</a></span></div>
+      ${hasCoords?`<div class="drow"><span class="dk">Coordinates</span><span class="dv"><a href="https://www.google.com/maps?q=${a.lat},${a.lng}" target="_blank" rel="noopener">${a.lat}, ${a.lng} ↗</a></span></div>`:''}
       <div class="drow"><span class="dk">Total Hives</span><span class="dv" style="color:var(--gold)">${a.hives.toLocaleString()}</span></div>
-      <div class="drow"><span class="dk">Last Inspection</span><span class="dv">${li?fmtD(li.date)+' ('+ds+'d ago)':'Never'}</span></div>
+      <div class="drow"><span class="dk">Last Inspection</span><span class="dv">${li?fmtD(li.date)+' ('+ds+'d ago)':'Never inspected'}</span></div>
       <div class="drow"><span class="dk">Next Due</span><span class="dv" style="color:${st!=='good'?'var(--red)':'var(--grn)'}">${nd?fmtD(nd):'N/A'}${ds>14?' — OVERDUE':''}</span></div>
-      <div class="drow" style="border:none;"><span class="dk">Assigned Workers</span><span class="dv">${(a.assignedTo||[]).map(id=>getEmp(id)?.name||'?').join(', ')||'None'}</span></div>
+      <div class="drow" style="border:none;"><span class="dk">Assigned Workers</span><span class="dv">${(a.assignedTo||[]).map(id=>getEmp(id)?.name||'?').join(', ')||'Unassigned'}</span></div>
     </div>
-    ${a.notes?`<div class="card" style="font-size:.82rem;color:var(--tdim);margin-bottom:10px;">${esc(a.notes)}</div>`:''}
-    ${dps.length?`<div class="st" style="margin-bottom:8px;">Drop Points (${dps.length})</div>
-    <div class="card" style="margin-bottom:10px;">${dps.map(dp=>`
-      <div class="dprow">
-        <div><div class="dpname">${esc(dp.name)}</div><div class="dphives">${dp.hives} hives${dp.notes?' · '+esc(dp.notes):''}</div></div>
-        <a class="dplink" href="https://www.google.com/maps?q=${dp.lat},${dp.lng}" target="_blank" rel="noopener">Maps</a>
-      </div>`).join('')}
-    </div>`:''}
-    ${otasks.length?`<div class="st" style="margin-bottom:8px;">Open Tasks (${otasks.length})</div>${otasks.map(t=>`<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--brd);font-size:.82rem;"><span class="tlbl ${tcls(t.type)}">${tlbl(t.type)}</span><span style="flex:1;">${esc(t.desc)}</span><span style="color:${diffD(t.dueDate)<0?'var(--red)':'var(--tdim)'};font-size:.73rem;">${relD(t.dueDate)}</span></div>`).join('')}`:''}
-    <div class="st" style="margin:12px 0 8px;">Inspection History</div>
-    <div class="card" style="margin-bottom:12px;">${insps.length?insps.map(i=>`<div class="hist-item"><div style="display:flex;align-items:center;"><span class="hdate">${fmtD(i.date)}</span><span class="hcond c${i.condition[0]}">${i.condition.toUpperCase()}</span></div><div class="hinsp">Inspector: ${esc(i.inspector)}${i.treatment!=='none'?' · Treatment: '+i.treatment:''}</div>${i.notes?`<div class="hnotes">${esc(i.notes)}</div>`:''}</div>`).join(''):`<div class="empty" style="padding:12px 0;">No inspections logged yet.</div>`}</div>
+    ${a.notes?`<div class="card" style="font-size:.82rem;color:var(--tdim);margin-bottom:14px;padding:12px;">${esc(a.notes)}</div>`:''}
+    ${dps.length?`<div class="st" style="margin-bottom:10px;">Drop Points (${dps.length})</div><div class="card" style="margin-bottom:14px;padding:4px 0;">${dps.map(dp=>`<div class="dprow"><div><div class="dpname">${esc(dp.name)}</div><div class="dpmeta">${dp.hives} hives${dp.notes?' · '+esc(dp.notes):''}</div></div>${dp.lat&&dp.lng?`<a style="font-size:.75rem;flex-shrink:0;" href="https://www.google.com/maps?q=${dp.lat},${dp.lng}" target="_blank" rel="noopener">Maps ↗</a>`:''}</div>`).join('')}</div>`:''}
+    ${otasks.length?`<div class="st" style="margin-bottom:10px;">Open Tasks (${otasks.length})</div><div class="card" style="margin-bottom:14px;padding:4px 0;">${otasks.map(t=>`<div class="drow" style="padding:8px 12px;gap:8px;"><span class="tlbl ${tcls(t.type)}">${tlbl(t.type)}</span><span style="flex:1;font-size:.82rem;">${esc(t.desc)}</span><span style="font-size:.73rem;color:${diffD(t.dueDate)<0?'var(--red)':'var(--tdim)'}">${relD(t.dueDate)}</span></div>`).join('')}</div>`:''}
+    <div class="st" style="margin-bottom:10px;">Inspection History</div>
+    <div class="card" style="margin-bottom:16px;padding:4px 0;">${insps.length?insps.map(i=>`<div class="hist-item" style="padding:10px 12px;"><div style="display:flex;align-items:center;"><span class="hdate">${fmtD(i.date)}</span><span class="hcond cond-${i.condition[0]}">${i.condition.toUpperCase()}</span></div><div class="hinsp">Inspector: ${esc(i.inspector)}${i.treatment!=='none'?' · Treatment: '+i.treatment:''}</div>${i.notes?`<div class="hnotes">${esc(i.notes)}</div>`:''}</div>`).join(''):`<div class="empty" style="padding:16px 0;">No inspections logged yet.</div>`}</div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
-      <button class="btn btn-gold" style="flex:1;" onclick="closeModal('mdetail');openInsp('${id}')">Log Inspection</button>
+      <button class="btn btn-gold" onclick="closeModal('mdetail');openInsp('${id}')">Log Inspection</button>
       ${om?`<button class="btn btn-ghost" onclick="closeModal('mdetail');openEditAP('${id}')">Edit Apiary</button>`:''}
-      ${om?`<button class="btn btn-ghost" onclick="closeModal('mdetail');openAddDPFor('${id}')">+ Drop Point</button>`:''}
+      ${om?`<button class="btn btn-ghost" onclick="closeModal('mdetail');openAddDP('${id}')">+ Drop Point</button>`:''}
+      ${om?`<button class="btn btn-ghost" onclick="closeModal('mdetail');openAddTask('${id}')">+ Task</button>`:''}
     </div>`;
   openModal('mdetail');
 }
-
-// ── EDIT APIARY ───────────────────────────────────────────────
+function openAddApiary(){document.getElementById('af-title').textContent='Add Apiary';document.getElementById('af-id').value='';document.getElementById('af-name').value='';document.getElementById('af-state').value='OR';document.getElementById('af-county').value='';document.getElementById('af-city').value='';document.getElementById('af-hives').value='';document.getElementById('af-lat').value='';document.getElementById('af-lng').value='';document.getElementById('af-notes').value='';document.getElementById('af-gmlink').classList.remove('show');populateWorkerChks('');openModal('madd-apiary');}
 function openEditAP(id){
   const a=getAP(id);if(!a)return;
-  document.getElementById('aform-title').textContent='Edit Apiary';
+  document.getElementById('af-title').textContent='Edit Apiary';
   document.getElementById('af-id').value=id;
   document.getElementById('af-name').value=a.name;
   document.getElementById('af-state').value=a.state;
-  document.getElementById('af-county').value=a.county;
-  document.getElementById('af-city').value=a.city;
-  document.getElementById('af-hives').value=a.hives;
-  document.getElementById('af-lat').value=a.lat;
-  document.getElementById('af-lng').value=a.lng;
+  document.getElementById('af-county').value=a.county||'';
+  document.getElementById('af-city').value=a.city||'';
+  document.getElementById('af-hives').value=a.hives||'';
+  document.getElementById('af-lat').value=a.lat||'';
+  document.getElementById('af-lng').value=a.lng||'';
   document.getElementById('af-notes').value=a.notes||'';
-  updGMLink('af');
+  updGM('af');
+  populateWorkerChks(id);
   openModal('madd-apiary');
+}
+function populateWorkerChks(apiaryId){
+  const a=apiaryId?getAP(apiaryId):null;
+  const assigned=a?.assignedTo||[];
+  const workers=S.employees.filter(e=>e.role!=='owner');
+  document.getElementById('af-workers').innerHTML=workers.map(e=>`<label class="chk-item"><input type="checkbox" value="${e.id}" ${assigned.includes(e.id)?'checked':''}><span>${esc(e.name)}</span></label>`).join('');
 }
 function submitApiary(){
   const id=document.getElementById('af-id').value;
   const name=document.getElementById('af-name').value.trim();
   if(!name){alert('Please enter an apiary name.');return;}
-  const data={name,state:document.getElementById('af-state').value,county:document.getElementById('af-county').value.trim(),
-    city:document.getElementById('af-city').value.trim(),hives:parseInt(document.getElementById('af-hives').value)||0,
-    lat:parseFloat(document.getElementById('af-lat').value)||0,lng:parseFloat(document.getElementById('af-lng').value)||0,
-    notes:document.getElementById('af-notes').value.trim()};
-  if(id){Object.assign(getAP(id),data);}
-  else{S.apiaries.push({id:'a'+Date.now(),...data,assignedTo:[],dropPoints:[]});}
-  save();closeModal('madd-apiary');
-  document.getElementById('af-id').value='';
-  document.getElementById('aform-title').textContent='Add New Apiary';
-  renderApiaries();if(S.leafMap)updateMapMarkers();
+  const checked=Array.from(document.querySelectorAll('#af-workers input:checked')).map(i=>i.value);
+  const lat=parseFloat(document.getElementById('af-lat').value)||0;
+  const lng=parseFloat(document.getElementById('af-lng').value)||0;
+  const data={name,state:document.getElementById('af-state').value,county:document.getElementById('af-county').value.trim(),city:document.getElementById('af-city').value.trim(),hives:parseInt(document.getElementById('af-hives').value)||0,lat,lng,notes:document.getElementById('af-notes').value.trim(),assignedTo:checked};
+  if(id){const ex=getAP(id);if(ex){Object.assign(ex,data);}}
+  else{S.apiaries.push({id:'a'+Date.now(),...data,dropPoints:[]});}
+  save();closeModal('madd-apiary');renderApiaries();if(S.leafMap)initMap();
 }
-
-// ── DROP POINTS ───────────────────────────────────────────────
-function openAddDPFor(aid){
-  document.getElementById('dp-aid').value=aid;
-  document.getElementById('dp-name').value='';
-  document.getElementById('dp-lat').value='';
-  document.getElementById('dp-lng').value='';
-  document.getElementById('dp-hives').value='';
-  document.getElementById('dp-notes').value='';
-  document.getElementById('dp-gmlink').classList.remove('show');
-  openModal('madd-dp');
-}
-function submitDP(){
-  const aid=document.getElementById('dp-aid').value;
-  const name=document.getElementById('dp-name').value.trim();
-  if(!name){alert('Please enter a drop point name.');return;}
-  const a=getAP(aid);if(!a)return;
-  if(!a.dropPoints)a.dropPoints=[];
-  a.dropPoints.push({id:'dp'+Date.now(),name,lat:parseFloat(document.getElementById('dp-lat').value)||0,lng:parseFloat(document.getElementById('dp-lng').value)||0,hives:parseInt(document.getElementById('dp-hives').value)||0,notes:document.getElementById('dp-notes').value.trim()});
-  save();closeModal('madd-dp');
-  if(S.leafMap)updateMapMarkers();
-  openAPDetail(aid);
-}
-
-// ── GOOGLE MAPS LINK ──────────────────────────────────────────
-function updGMLink(pfx){
+function updGM(pfx){
   const lat=document.getElementById(pfx+'-lat')?.value;
   const lng=document.getElementById(pfx+'-lng')?.value;
-  const linkEl=document.getElementById(pfx+'-gmlink');
-  const anchor=document.getElementById(pfx+'-gma');
-  if(linkEl&&anchor&&lat&&lng&&!isNaN(lat)&&!isNaN(lng)){
-    anchor.href=`https://www.google.com/maps?q=${lat},${lng}`;
-    linkEl.classList.add('show');
-  } else if(linkEl){linkEl.classList.remove('show');}
+  const link=document.getElementById(pfx+'-gmlink');
+  const anch=document.getElementById(pfx+'-gma');
+  if(link&&anch&&lat&&lng&&!isNaN(parseFloat(lat))&&!isNaN(parseFloat(lng))&&Math.abs(parseFloat(lat))>0.01){
+    anch.href=`https://www.google.com/maps?q=${lat},${lng}`;link.classList.add('show');
+  }else if(link){link.classList.remove('show');}
 }
-
-// ── INSPECTION MODAL ──────────────────────────────────────────
-function openInsp(aid){
-  const a=getAP(aid);if(!a)return;
-  document.getElementById('li-aid').value=aid;
-  document.getElementById('li-aname').textContent=a.name+' — '+a.city+', '+a.state;
-  document.getElementById('li-date').value=TODAY;
-  document.getElementById('li-col').value=a.hives;
-  document.getElementById('li-cond').value='good';
-  document.getElementById('li-treat').value='none';
-  document.getElementById('li-notes').value='';
-  openModal('mlog-insp');
-}
+function openInsp(aid){const a=getAP(aid);if(!a)return;document.getElementById('li-aid').value=aid;document.getElementById('li-aname').textContent=a.name+' — '+a.city+', '+a.state;document.getElementById('li-date').value=TODAY;document.getElementById('li-col').value=a.hives;document.getElementById('li-cond').value='good';document.getElementById('li-treat').value='none';document.getElementById('li-notes').value='';openModal('mlog-insp');}
 function submitInsp(){
-  const aid=document.getElementById('li-aid').value;
-  const date=document.getElementById('li-date').value;
+  const aid=document.getElementById('li-aid').value,date=document.getElementById('li-date').value;
   if(!date){alert('Please select a date.');return;}
-  S.inspections.push({id:'i'+Date.now(),apiaryId:aid,date,inspector:S.user.name,inspectorId:S.user.id,
-    condition:document.getElementById('li-cond').value,colonies:parseInt(document.getElementById('li-col').value)||0,
-    treatment:document.getElementById('li-treat').value,notes:document.getElementById('li-notes').value.trim()});
+  S.inspections.push({id:'i'+Date.now(),apiaryId:aid,date,inspector:S.user.name,inspectorId:S.user.id,condition:document.getElementById('li-cond').value,colonies:parseInt(document.getElementById('li-col').value)||0,treatment:document.getElementById('li-treat').value,notes:document.getElementById('li-notes').value.trim()});
   save();closeModal('mlog-insp');
   const av=document.querySelector('.view.active')?.id?.replace('view-','');
   if(av==='dashboard')renderDash();else if(av==='apiaries')renderApiaries();
 }
-
-// ── TASKS ─────────────────────────────────────────────────────
+function openAddDP(aid){document.getElementById('dp-aid').value=aid;['dp-name','dp-lat','dp-lng','dp-notes'].forEach(id=>document.getElementById(id).value='');document.getElementById('dp-hives').value='';document.getElementById('dp-gmlink').classList.remove('show');openModal('madd-dp');}
+function submitDP(){
+  const aid=document.getElementById('dp-aid').value,name=document.getElementById('dp-name').value.trim();
+  if(!name){alert('Enter a drop point name.');return;}
+  const a=getAP(aid);if(!a)return;
+  if(!a.dropPoints)a.dropPoints=[];
+  a.dropPoints.push({id:'dp'+Date.now(),name,lat:parseFloat(document.getElementById('dp-lat').value)||0,lng:parseFloat(document.getElementById('dp-lng').value)||0,hives:parseInt(document.getElementById('dp-hives').value)||0,notes:document.getElementById('dp-notes').value.trim()});
+  save();closeModal('madd-dp');if(S.leafMap)initMap();openAPDetail(aid);
+}
 let _tf='all';
 function setTF(f,btn){_tf=f;document.querySelectorAll('[data-tf]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderTasks();}
 function renderTasks(){
-  const u=S.user,om=['owner','manager'].includes(u.role);
-  let list=om?S.tasks:S.tasks.filter(t=>t.assignedTo===u.id);
+  const u=S.user,om=isOM();
+  let list=om?[...S.tasks]:S.tasks.filter(t=>t.assignedTo===u.id);
   if(_tf==='mine')list=list.filter(t=>t.assignedTo===u.id);
   if(_tf==='today')list=list.filter(t=>t.dueDate===TODAY&&t.status!=='done');
   if(_tf==='overdue')list=list.filter(t=>t.dueDate<TODAY&&t.status!=='done');
   if(_tf==='open')list=list.filter(t=>t.status!=='done');
   if(_tf==='done')list=list.filter(t=>t.status==='done');
   list.sort((a,b)=>{if(a.status==='done'&&b.status!=='done')return 1;if(b.status==='done'&&a.status!=='done')return -1;return a.dueDate.localeCompare(b.dueDate);});
-  const el=document.getElementById('task-list');
-  el.innerHTML=list.length?list.map(t=>tCard(t,true)).join(''):`<div class="empty">No tasks here.</div>`;
+  document.getElementById('task-list').innerHTML=list.length?list.map(t=>tCard(t,true)).join(''):`<div class="empty">No tasks in this category.</div>`;
 }
 function tCard(t,showBtn){
   const ap=getAP(t.apiaryId),asn=getEmp(t.assignedTo);
-  const ov=t.status!=='done'&&t.dueDate<TODAY,is=t.dueDate===TODAY,dn=t.status==='done';
-  const dc=ov?'color:var(--red)':is?'color:var(--org)':'color:var(--tdim)';
-  const can=t.assignedTo===S.user.id||['owner','manager'].includes(S.user.role);
-  return `<div class="tcard p${t.priority[0]} ${dn?'tdone':''}">
+  const ov=t.status!=='done'&&t.dueDate<TODAY,dn=t.status==='done';
+  const dc=ov?'var(--red)':t.dueDate===TODAY?'var(--org)':'var(--tdim)';
+  const can=t.assignedTo===S.user.id||isOM();
+  return`<div class="tcard p${t.priority[0]} ${dn?'tdone':''}">
     <span class="tlbl ${tcls(t.type)}">${tlbl(t.type)}</span>
     <div class="tbody">
       <div class="ttitle">${esc(t.desc)}</div>
       <div class="tmeta">${ap?esc(ap.name)+' · '+ap.city+', '+ap.state:''}</div>
       <div class="tfoot">
-        <span class="badge ${dn?'bdn':t.status==='in-progress'?'bp':'bt'}">${dn?'Done':t.status==='in-progress'?'In Progress':'To Do'}</span>
+        <span class="badge ${dn?'bg':t.status==='in-progress'?'bp':'bt'}">${dn?'Done':t.status==='in-progress'?'In Progress':'To Do'}</span>
         <span class="badge ${t.priority==='high'?'bc':t.priority==='medium'?'ba':'bt'}">${t.priority}</span>
-        <span style="font-size:.73rem;${dc}">${relD(t.dueDate)}</span>
-        ${asn?`<span style="font-size:.72rem;color:var(--mut);">${esc(asn.name.split(' ')[0])}</span>`:''}
+        <span style="font-size:.73rem;color:${dc};">${relD(t.dueDate)}</span>
+        ${asn?`<span style="font-size:.73rem;color:var(--mut);">${esc(asn.name.split(' ')[0])}</span>`:''}
         ${showBtn&&can&&!dn?`<button class="tdone-btn" onclick="doneTask('${t.id}')">Mark Done</button>`:''}
       </div>
-      ${t.notes?`<div style="font-size:.72rem;color:var(--mut);margin-top:3px;">${esc(t.notes)}</div>`:''}
+      ${t.notes?`<div style="font-size:.73rem;color:var(--mut);margin-top:4px;">${esc(t.notes)}</div>`:''}
     </div></div>`;
 }
-function doneTask(id){const t=S.tasks.find(t=>t.id===id);if(t){t.status='done';save();}const av=document.querySelector('.view.active')?.id?.replace('view-','');if(av==='tasks')renderTasks();if(av==='dashboard')renderDash();}
-function openAddTask(){
+function doneTask(id){const t=S.tasks.find(x=>x.id===id);if(t){t.status='done';save();}const av=document.querySelector('.view.active')?.id?.replace('view-','');if(av==='tasks')renderTasks();if(av==='dashboard')renderDash();}
+function openAddTask(preApiaryId){
   document.getElementById('ta-ap').innerHTML='<option value="">— Select Apiary —</option>'+S.apiaries.map(a=>`<option value="${a.id}">${esc(a.name)} (${a.state})</option>`).join('');
   document.getElementById('ta-assignee').innerHTML='<option value="">— Unassigned —</option>'+S.employees.filter(e=>e.role!=='owner').map(e=>`<option value="${e.id}">${esc(e.name)}</option>`).join('');
   document.getElementById('ta-due').value=TODAY;
+  document.getElementById('ta-desc').value='';document.getElementById('ta-notes').value='';
+  if(preApiaryId)document.getElementById('ta-ap').value=preApiaryId;
   openModal('madd-task');
 }
 function submitTask(){
-  const desc=document.getElementById('ta-desc').value.trim();
-  if(!desc){alert('Please enter a task description.');return;}
+  const desc=document.getElementById('ta-desc').value.trim();if(!desc){alert('Enter a task description.');return;}
   S.tasks.push({id:'t'+Date.now(),type:document.getElementById('ta-type').value,desc,apiaryId:document.getElementById('ta-ap').value,assignedTo:document.getElementById('ta-assignee').value,dueDate:document.getElementById('ta-due').value,priority:document.getElementById('ta-pri').value,status:'open',notes:document.getElementById('ta-notes').value.trim()});
   save();closeModal('madd-task');renderTasks();
 }
-
-// ── TEAM ──────────────────────────────────────────────────────
 function renderTeam(){
   const workers=S.employees.filter(e=>e.role!=='owner');
   document.getElementById('team-grid').innerHTML=workers.map(e=>{
     const aps=S.apiaries.filter(a=>(a.assignedTo||[]).includes(e.id));
     const open=S.tasks.filter(t=>t.assignedTo===e.id&&t.status!=='done').length;
     const done=S.tasks.filter(t=>t.assignedTo===e.id&&t.status==='done').length;
-    const init=e.name.split(' ').map(n=>n[0]).join('');
-    return `<div class="teamcard">
+    return`<div class="teamcard" onclick="openEditEmployee('${e.id}')">
       <div style="display:flex;justify-content:space-between;align-items:flex-start;">
-        <div class="tavatar">${init}</div><span class="badge b${e.role==='manager'?'mgr':'emp'}">${e.role}</span>
+        <div class="tavatar">${e.name.split(' ').map(n=>n[0]).join('')}</div>
+        <span class="badge b${e.role==='manager'?'mgr':'emp'}">${e.role}</span>
       </div>
       <div class="tname">${esc(e.name)}</div><div class="temail">${esc(e.email)}</div>
       <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
-        <span style="font-size:.72rem;background:var(--brd);padding:2px 8px;border-radius:10px;color:var(--tdim);">${aps.length} apiar${aps.length!==1?'ies':'y'}</span>
-        <span style="font-size:.72rem;background:var(--orgd);padding:2px 8px;border-radius:10px;color:var(--org);">${open} open</span>
-        <span style="font-size:.72rem;background:var(--grnd);padding:2px 8px;border-radius:10px;color:var(--grn);">${done} done</span>
+        <span style="font-size:.72rem;background:var(--brd);padding:2px 9px;border-radius:10px;color:var(--tdim);">${aps.length} apiar${aps.length!==1?'ies':'y'}</span>
+        <span style="font-size:.72rem;background:var(--orgd);padding:2px 9px;border-radius:10px;color:var(--org);">${open} open</span>
+        <span style="font-size:.72rem;background:var(--grnd);padding:2px 9px;border-radius:10px;color:var(--grn);">${done} done</span>
       </div>
-      <div style="font-size:.75rem;color:var(--tdim);">${aps.length?aps.map(a=>`${esc(a.name)} (${a.state})`).join('<br>'):'No apiaries assigned'}</div>
+      <div style="font-size:.76rem;color:var(--tdim);line-height:1.6;">${aps.length?aps.map(a=>`${esc(a.name)} (${a.state})`).join('<br>'):'No apiaries assigned'}</div>
     </div>`;
   }).join('');
 }
+function openAddEmployee(){document.getElementById('ef-title').textContent='Add Team Member';document.getElementById('ef-id').value='';['ef-name','ef-email','ef-phone','ef-pass'].forEach(id=>document.getElementById(id).value='');document.getElementById('ef-role').value='employee';document.getElementById('ef-del-wrap').style.display='none';openModal('madd-employee');}
+function openEditEmployee(id){
+  const e=getEmp(id);if(!e)return;
+  const isOwner=S.user.role==='owner';
+  if(!isOwner){alert('Only the owner can edit team members.');return;}
+  document.getElementById('ef-title').textContent='Edit Team Member';
+  document.getElementById('ef-id').value=id;
+  document.getElementById('ef-name').value=e.name;
+  document.getElementById('ef-email').value=e.email;
+  document.getElementById('ef-phone').value=e.phone||'';
+  document.getElementById('ef-pass').value='';
+  document.getElementById('ef-role').value=e.role;
+  document.getElementById('ef-del-wrap').style.display='block';
+  openModal('madd-employee');
+}
 function submitEmployee(){
-  const name=document.getElementById('ne-name').value.trim(),email=document.getElementById('ne-email').value.trim().toLowerCase();
+  const id=document.getElementById('ef-id').value;
+  const name=document.getElementById('ef-name').value.trim(),email=document.getElementById('ef-email').value.trim().toLowerCase();
   if(!name||!email){alert('Please fill in name and email.');return;}
-  S.employees.push({id:'u'+Date.now(),name,email,role:document.getElementById('ne-role').value,phone:document.getElementById('ne-phone').value.trim(),password:'demo'});
+  const pass=document.getElementById('ef-pass').value||undefined;
+  if(id){
+    const e=getEmp(id);if(e){e.name=name;e.email=email;e.role=document.getElementById('ef-role').value;e.phone=document.getElementById('ef-phone').value.trim();if(pass)e.password=pass;}
+  }else{
+    S.employees.push({id:'u'+Date.now(),name,email,role:document.getElementById('ef-role').value,phone:document.getElementById('ef-phone').value.trim(),password:pass||'demo'});
+  }
   save();closeModal('madd-employee');renderTeam();
 }
-
-// ── REPORTS ───────────────────────────────────────────────────
+function deleteEmployee(){
+  const id=document.getElementById('ef-id').value;
+  if(!id||!confirm('Remove this team member?'))return;
+  S.employees=S.employees.filter(e=>e.id!==id);
+  S.apiaries.forEach(a=>{if(a.assignedTo)a.assignedTo=a.assignedTo.filter(x=>x!==id);});
+  save();closeModal('madd-employee');renderTeam();
+}
 function renderReports(){
   const aps=S.apiaries,tot=aps.reduce((s,a)=>s+a.hives,0);
   const orH=aps.filter(a=>a.state==='OR').reduce((s,a)=>s+a.hives,0);
@@ -992,42 +824,21 @@ function renderReports(){
   const open=S.tasks.filter(t=>t.status!=='done').length;
   const w7=S.inspections.filter(i=>{const d=diffD(i.date);return d>=-7&&d<=0;}).length;
   document.getElementById('rstats').innerHTML=`
-    <div class="rcard"><div class="rtitle">Total Fleet</div><div style="font-size:2rem;font-weight:800;color:var(--gold)">${tot.toLocaleString()}</div><div style="font-size:.76rem;color:var(--tdim);">hives across ${aps.length} apiaries</div></div>
-    <div class="rcard"><div class="rtitle">Compliance Rate</div><div style="font-size:2rem;font-weight:800;color:${pct>70?'var(--grn)':'var(--red)'}">${pct}%</div><div style="font-size:.76rem;color:var(--tdim);">${onTime} / ${aps.length} on schedule</div></div>
-    <div class="rcard"><div class="rtitle">Inspections This Week</div><div style="font-size:2rem;font-weight:800;color:var(--blu)">${w7}</div><div style="font-size:.76rem;color:var(--tdim);">across all locations</div></div>
-    <div class="rcard"><div class="rtitle">Task Completion</div><div style="font-size:2rem;font-weight:800;color:var(--grn)">${done}</div><div style="font-size:.76rem;color:var(--tdim);">${open} open remaining</div></div>`;
+    <div class="scard sc-gold"><div class="snum" style="color:var(--gold)">${tot.toLocaleString()}</div><div class="slbl">Total Hives</div><div class="ssub">${aps.length} apiaries</div></div>
+    <div class="scard ${pct>70?'sc-grn':'sc-red'}"><div class="snum" style="color:${pct>70?'var(--grn)':'var(--red)'}">${pct}%</div><div class="slbl">Compliance Rate</div><div class="ssub">${onTime}/${aps.length} on schedule</div></div>
+    <div class="scard sc-blu"><div class="snum" style="color:var(--blu)">${w7}</div><div class="slbl">Inspections This Week</div></div>
+    <div class="scard ${done>open?'sc-grn':'sc-org'}"><div class="snum" style="color:var(--grn)">${done}</div><div class="slbl">Tasks Completed</div><div class="ssub">${open} open</div></div>`;
   const worst=[...aps].map(a=>({...a,ds:daysSince(a.id)})).sort((a,b)=>b.ds-a.ds).slice(0,10);
-  document.getElementById('rchart').innerHTML=worst.map(a=>{
-    const p=Math.min(100,Math.round((a.ds/21)*100));
-    const c=a.ds>17?'var(--red)':a.ds>12?'var(--org)':'var(--grn)';
-    return `<div class="brow"><div class="blbl" title="${a.name}">${a.name.split(' ').slice(0,2).join(' ')}</div><div class="btrack"><div class="bfill" style="width:${p}%;background:${c};"></div></div><div class="bval" style="color:${c}">${a.ds}d</div></div>`;
-  }).join('');
-  document.getElementById('rstate').innerHTML=`
-    <div style="display:flex;justify-content:space-between;font-size:.82rem;margin-bottom:6px;"><span>Oregon</span><strong>${orH.toLocaleString()}</strong></div>
-    <div style="height:10px;background:var(--brd);border-radius:4px;margin-bottom:8px;overflow:hidden;"><div style="height:100%;width:${Math.round(orH/tot*100)}%;background:var(--grn);"></div></div>
-    <div style="display:flex;justify-content:space-between;font-size:.82rem;margin-bottom:6px;"><span>California</span><strong>${caH.toLocaleString()}</strong></div>
-    <div style="height:10px;background:var(--brd);border-radius:4px;overflow:hidden;"><div style="height:100%;width:${Math.round(caH/tot*100)}%;background:var(--gold);"></div></div>`;
+  document.getElementById('rchart').innerHTML=worst.map(a=>{const p=Math.min(100,Math.round(a.ds/21*100));const c=a.ds>17?'var(--red)':a.ds>12?'var(--org)':'var(--grn)';return`<div class="brow"><div class="blbl" title="${esc(a.name)}">${esc(a.name.split(' ').slice(0,2).join(' '))}</div><div class="btrack"><div class="bfill" style="width:${p}%;background:${c};"></div></div><div class="bval" style="color:${c}">${a.ds}d</div></div>`;}).join('');
+  document.getElementById('rstate').innerHTML=`<div style="font-size:.82rem;margin-bottom:5px;display:flex;justify-content:space-between;"><span>Oregon</span><strong>${orH.toLocaleString()}</strong></div><div style="height:10px;background:var(--brd);border-radius:4px;margin-bottom:10px;overflow:hidden;"><div style="height:100%;width:${Math.round(orH/tot*100)}%;background:var(--grn);border-radius:4px;"></div></div><div style="font-size:.82rem;margin-bottom:5px;display:flex;justify-content:space-between;"><span>California</span><strong>${caH.toLocaleString()}</strong></div><div style="height:10px;background:var(--brd);border-radius:4px;overflow:hidden;"><div style="height:100%;width:${Math.round(caH/tot*100)}%;background:var(--gold);border-radius:4px;"></div></div>`;
   const g=aps.filter(a=>apStatus(a.id)==='good').length,at=aps.filter(a=>apStatus(a.id)==='attention').length,cr=aps.filter(a=>apStatus(a.id)==='critical').length;
-  document.getElementById('rstatus').innerHTML=`
-    <div style="font-size:.8rem;margin-bottom:5px;display:flex;justify-content:space-between;"><span>Good (&le;12d)</span><strong style="color:var(--grn)">${g}</strong></div>
-    <div style="font-size:.8rem;margin-bottom:5px;display:flex;justify-content:space-between;"><span>Attention (13-17d)</span><strong style="color:var(--org)">${at}</strong></div>
-    <div style="font-size:.8rem;margin-bottom:12px;display:flex;justify-content:space-between;"><span>Critical (17d+)</span><strong style="color:var(--red)">${cr}</strong></div>
-    <div style="height:8px;background:var(--brd);border-radius:4px;display:flex;overflow:hidden;">
-      <div style="width:${Math.round(g/aps.length*100)}%;background:var(--grn);"></div>
-      <div style="width:${Math.round(at/aps.length*100)}%;background:var(--org);"></div>
-      <div style="width:${Math.round(cr/aps.length*100)}%;background:var(--red);"></div>
-    </div>`;
+  document.getElementById('rstatus').innerHTML=`<div style="font-size:.8rem;display:flex;justify-content:space-between;margin-bottom:5px;"><span>Good (&le;12d)</span><strong style="color:var(--grn)">${g}</strong></div><div style="font-size:.8rem;display:flex;justify-content:space-between;margin-bottom:5px;"><span>Attention (13–17d)</span><strong style="color:var(--org)">${at}</strong></div><div style="font-size:.8rem;display:flex;justify-content:space-between;margin-bottom:12px;"><span>Critical (17d+)</span><strong style="color:var(--red)">${cr}</strong></div><div style="height:8px;background:var(--brd);border-radius:4px;display:flex;overflow:hidden;"><div style="width:${Math.round(g/aps.length*100)}%;background:var(--grn);"></div><div style="width:${Math.round(at/aps.length*100)}%;background:var(--org);"></div><div style="width:${Math.round(cr/aps.length*100)}%;background:var(--red);"></div></div>`;
   const circ=2*Math.PI*32,off=circ-(pct/100)*circ;
-  const rc=document.getElementById('cring-c');
-  rc.style.strokeDashoffset=off;rc.style.stroke=pct>70?'var(--grn)':pct>50?'var(--org)':'var(--red)';
-  document.getElementById('cpct').textContent=pct+'%';
-  document.getElementById('cpct').style.color=pct>70?'var(--grn)':pct>50?'var(--org)':'var(--red)';
+  const rc=document.getElementById('cring-c');rc.style.strokeDashoffset=off;rc.style.stroke=pct>70?'var(--grn)':pct>50?'var(--org)':'var(--red)';
+  document.getElementById('cpct').textContent=pct+'%';document.getElementById('cpct').style.color=pct>70?'var(--grn)':pct>50?'var(--org)':'var(--red)';
 }
-
-// ── MODAL UTILS ───────────────────────────────────────────────
 function openModal(id){document.getElementById(id).classList.add('open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');}
-
 init();
 </script>
 </body>

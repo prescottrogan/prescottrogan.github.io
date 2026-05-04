@@ -438,8 +438,10 @@
   .task-due.overdue { color: var(--danger); }
   .task-add-row { display: flex; gap: 8px; align-items: center; }
   .task-add-row input[type="text"] { flex: 1; min-width: 0; }
-  .cal-btn { flex-shrink: 0; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: var(--card); border: 1.5px solid var(--border); border-radius: 10px; cursor: pointer; color: var(--muted); transition: border-color .15s, color .15s, background .15s; }
+  .cal-wrap { position: relative; flex-shrink: 0; width: 40px; height: 40px; display: none; }
+  .cal-btn { width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: var(--card); border: 1.5px solid var(--border); border-radius: 10px; cursor: pointer; color: var(--muted); transition: border-color .15s, color .15s, background .15s; pointer-events: none; }
   .cal-btn:hover, .cal-btn.active { border-color: var(--accent4); color: var(--accent4); background: rgba(74,222,128,.09); }
+  .cal-wrap input[type="date"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; border: none; background: none; }
   .week-day-lbl { font-size: .62rem; font-weight: 600; color: var(--muted); }
   .wk-today { color: var(--accent5) !important; }
   .week-cal-wrap { width: 100%; height: 42px; background: var(--border); border-radius: 3px; display: flex; align-items: flex-end; overflow: hidden; }
@@ -642,10 +644,12 @@
         <button class="type-btn active" id="type-habit-btn" onclick="setAddType('habit')">Habit (recurring)</button>
         <button class="type-btn"        id="type-task-btn"  onclick="setAddType('task')">Task (one-time)</button>
       </div>
-      <div class="task-add-row" style="position:relative">
+      <div class="task-add-row">
         <input type="text" id="habit-name" placeholder="Name...">
-        <button id="task-cal-btn" class="cal-btn" style="display:none" onclick="toggleDuePicker()" title="Set due date"><span id="cal-icon"></span></button>
-        <input type="date" id="task-due" style="position:absolute;opacity:0;pointer-events:none;width:0;height:0;bottom:0;left:0" onchange="onDueDatePicked(this.value)">
+        <div class="cal-wrap" id="task-cal-wrap">
+          <button class="cal-btn" id="task-cal-btn"><span id="cal-icon"></span></button>
+          <input type="date" id="task-due" onchange="onDueDatePicked(this.value)">
+        </div>
         <button id="habit-add-btn" class="btn btn-purple" onclick="addItem()"><span id="habit-plus"></span>Add</button>
       </div>
     </div>
@@ -1411,10 +1415,6 @@ async function deleteInfo(id) {
 // ══════════════════════════════════════════════════════════════════════════
 // DAILY — HABITS + TASKS
 // ══════════════════════════════════════════════════════════════════════════
-function toggleDuePicker() {
-  const inp = document.getElementById('task-due');
-  try { inp.showPicker(); } catch(_) {}
-}
 function onDueDatePicked(val) {
   const btn = document.getElementById('task-cal-btn');
   if (val) {
@@ -1434,9 +1434,8 @@ function setAddType(type) {
     ? 'Habit name (e.g. Drink water, Exercise...)'
     : 'Task name (e.g. Call dentist, Buy groceries...)';
   const showDue = type === 'task';
-  document.getElementById('task-cal-btn').style.display = showDue ? 'flex' : 'none';
+  document.getElementById('task-cal-wrap').style.display = showDue ? 'block' : 'none';
   document.getElementById('task-cal-btn').classList.remove('active');
-  document.getElementById('task-cal-btn').title = 'Set due date';
   document.getElementById('task-due').value = '';
 }
 
@@ -1467,7 +1466,6 @@ async function addItem() {
   document.getElementById('habit-name').value = '';
   document.getElementById('task-due').value = '';
   document.getElementById('task-cal-btn').classList.remove('active');
-  document.getElementById('task-cal-btn').title = 'Set due date';
   await renderDaily();
 }
 

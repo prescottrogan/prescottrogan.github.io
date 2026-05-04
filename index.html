@@ -177,6 +177,10 @@
   .form-row input { flex: 1; min-width: 0; }
   .form-row input.narrow { flex: 0 0 76px; }
   .form-row input.medium { flex: 0 0 96px; }
+  .wk-type-row { display:flex; gap:6px; margin-bottom:10px; overflow-x:auto; padding-bottom:2px; scrollbar-width:none; }
+  .wk-type-row::-webkit-scrollbar { display:none; }
+  .wk-type-btn { flex-shrink:0; padding:7px 13px; border-radius:20px; border:1.5px solid var(--border); background:var(--bg); color:var(--muted); font-size:.82rem; font-weight:600; cursor:pointer; transition:all .15s; }
+  .wk-type-btn.active { background:var(--blue); color:#fff; border-color:var(--blue); }
   textarea { resize: vertical; min-height: 80px; }
   input[type="text"], input[type="number"] { margin-bottom: 8px; }
 
@@ -548,20 +552,19 @@
     </div>
     <div class="card">
       <div class="section-title">Log Exercise</div>
+      <div class="wk-type-row">
+        <button class="wk-type-btn active" data-type="Weights"    onclick="selectWkType(this,'ex-type','ex-details')">Weights</button>
+        <button class="wk-type-btn"        data-type="Cardio"     onclick="selectWkType(this,'ex-type','ex-details')">Cardio</button>
+        <button class="wk-type-btn"        data-type="Bodyweight" onclick="selectWkType(this,'ex-type','ex-details')">Bodyweight</button>
+        <button class="wk-type-btn"        data-type="Stretching" onclick="selectWkType(this,'ex-type','ex-details')">Stretching</button>
+        <button class="wk-type-btn"        data-type="Other"      onclick="selectWkType(this,'ex-type','ex-details')">Other</button>
+      </div>
+      <input type="hidden" id="ex-type" value="Weights">
       <div class="form-row">
-        <input type="text" id="ex-name" placeholder="Exercise (e.g. Bench Press)" style="flex:2">
-        <select id="ex-type" style="flex:1;padding:10px 8px;font-size:.85rem">
-          <option>Weights</option><option>Cardio</option><option>Bodyweight</option><option>Stretching</option><option>Other</option>
-        </select>
+        <input type="text" id="ex-name" placeholder="Exercise name (e.g. Bench Press)">
       </div>
       <div class="form-row">
-        <input type="number" id="ex-sets"   placeholder="Sets"   class="narrow" min="0" inputmode="numeric">
-        <input type="number" id="ex-reps"   placeholder="Reps"   class="narrow" min="0" inputmode="numeric">
-        <input type="number" id="ex-weight" placeholder="lbs/kg" class="medium" min="0" inputmode="numeric">
-      </div>
-      <div class="form-row">
-        <input type="number" id="ex-duration" placeholder="Duration (min)" min="0" inputmode="numeric">
-        <input type="text"   id="ex-notes"    placeholder="Notes (optional)" style="flex:2">
+        <input type="text" id="ex-details" placeholder="3×10 @ 135 lbs">
       </div>
       <button id="workout-add-btn" class="btn btn-blue btn-full" onclick="addExercise()"><span id="workout-plus"></span>Add Exercise</button>
     </div>
@@ -955,22 +958,53 @@ async function renderFood() {
 }
 
 // ── Workout ────────────────────────────────────────────────────────────────
+const WK_PLACEHOLDERS = {Weights:'3×10 @ 135 lbs', Cardio:'30 min · 3 miles', Bodyweight:'3×15', Stretching:'20 min', Other:'Details (optional)'};
+
+function selectWkType(btn, typeId, detailsId) {
+  btn.closest('.wk-type-row').querySelectorAll('.wk-type-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById(typeId).value = btn.dataset.type;
+  document.getElementById(detailsId).placeholder = WK_PLACEHOLDERS[btn.dataset.type] || 'Details (optional)';
+}
+
+function parseDetails(str) {
+  const out = { sets:null, reps:null, weight:null, duration:null, notes:null };
+  let s = str.trim();
+  const sxr = s.match(/(\d+)\s*[x×X]\s*(\d+)/);
+  if (sxr) { out.sets = sxr[1]; out.reps = sxr[2]; s = s.replace(sxr[0], ''); }
+  const wt = s.match(/@\s*(\d+\.?\d*)\s*(lbs?|kg)?/i);
+  if (wt)  { out.weight = wt[1]; s = s.replace(wt[0], ''); }
+  const dur = s.match(/(\d+)\s*min/i);
+  if (dur) { out.duration = dur[1]; s = s.replace(dur[0], ''); }
+  const leftover = s.replace(/[·\-,\s]+/g, ' ').trim();
+  if (leftover) out.notes = leftover;
+  return out;
+}
+
+function buildDetails(e) {
+  const parts = [];
+  if (e.sets && e.reps) parts.push(`${e.sets}×${e.reps}`);
+  else if (e.reps) parts.push(`${e.reps} reps`);
+  if (e.weight)   parts.push(`@ ${e.weight}`);
+  if (e.duration) parts.push(`${e.duration} min`);
+  if (e.notes)    parts.push(e.notes);
+  return parts.join(' · ');
+}
+
 async function addExercise() {
   const name = document.getElementById('ex-name').value.trim();
   if (!name) return flashErr('ex-name', 'Enter exercise name');
   const btn = document.getElementById('workout-add-btn'); btnLoad(btn, true);
+  const { sets, reps, weight, duration, notes } = parseDetails(document.getElementById('ex-details').value);
   const { error } = await dbCall(() => db.from('workout_entries').insert({
     user_id: user.id, date: offsetKey(currentDays.workout), name,
     type: document.getElementById('ex-type').value,
-    sets: document.getElementById('ex-sets').value||null,
-    reps: document.getElementById('ex-reps').value||null,
-    weight: document.getElementById('ex-weight').value||null,
-    duration: document.getElementById('ex-duration').value||null,
-    notes: document.getElementById('ex-notes').value.trim()||null,
+    sets, reps, weight, duration, notes,
     time: new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})
   }));
   btnLoad(btn, false); if (error) return;
-  ['ex-name','ex-sets','ex-reps','ex-weight','ex-duration','ex-notes'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('ex-name').value = '';
+  document.getElementById('ex-details').value = '';
   await renderWorkout();
 }
 function startEditWorkout(id) { editing.workout=id; renderWorkout(); }
@@ -978,13 +1012,10 @@ function cancelEditWorkout()   { editing.workout=null; renderWorkout(); }
 async function saveEditWorkout(id) {
   const name = document.getElementById('ew-name-'+id).value.trim();
   if (!name) return toast('Name required','error');
+  const { sets, reps, weight, duration, notes } = parseDetails(document.getElementById('ew-details-'+id).value);
   const { error } = await dbCall(() => db.from('workout_entries').update({
     name, type: document.getElementById('ew-type-'+id).value,
-    sets: document.getElementById('ew-sets-'+id).value||null,
-    reps: document.getElementById('ew-reps-'+id).value||null,
-    weight: document.getElementById('ew-weight-'+id).value||null,
-    duration: document.getElementById('ew-duration-'+id).value||null,
-    notes: document.getElementById('ew-notes-'+id).value.trim()||null
+    sets, reps, weight, duration, notes
   }).eq('id',id).eq('user_id',user.id));
   if (error) return; editing.workout=null; toast('Updated','ok'); await renderWorkout();
 }
@@ -1014,13 +1045,19 @@ async function renderWorkout() {
   const el = document.getElementById('workout-list');
   if (!rows.length) { el.innerHTML='<div class="empty">No exercises logged yet</div>'; return; }
   el.innerHTML = [...rows].reverse().map(e => {
-    if (editing.workout===e.id) return `
+    if (editing.workout===e.id) {
+      const curType = e.type || 'Weights';
+      const typeBtns = ['Weights','Cardio','Bodyweight','Stretching','Other'].map(t =>
+        `<button class="wk-type-btn${t===curType?' active':''}" data-type="${t}" onclick="selectWkType(this,'ew-type-${e.id}','ew-details-${e.id}')">${t}</button>`).join('');
+      return `
       <div class="entry-editing">
-        <div class="form-row"><input type="text" id="ew-name-${e.id}" value="${esc(e.name)}" style="flex:2"><select id="ew-type-${e.id}" style="flex:1;padding:10px 8px;font-size:.85rem">${['Weights','Cardio','Bodyweight','Stretching','Other'].map(t=>`<option ${t===e.type?'selected':''}>${t}</option>`).join('')}</select></div>
-        <div class="form-row"><input type="number" id="ew-sets-${e.id}" value="${e.sets||''}" placeholder="Sets" class="narrow" inputmode="numeric"><input type="number" id="ew-reps-${e.id}" value="${e.reps||''}" placeholder="Reps" class="narrow" inputmode="numeric"><input type="number" id="ew-weight-${e.id}" value="${e.weight||''}" placeholder="lbs/kg" class="medium" inputmode="numeric"></div>
-        <div class="form-row"><input type="number" id="ew-duration-${e.id}" value="${e.duration||''}" placeholder="Duration (min)" inputmode="numeric"><input type="text" id="ew-notes-${e.id}" value="${esc(e.notes||'')}" placeholder="Notes" style="flex:2"></div>
+        <div class="wk-type-row">${typeBtns}</div>
+        <input type="hidden" id="ew-type-${e.id}" value="${curType}">
+        <div class="form-row"><input type="text" id="ew-name-${e.id}" value="${esc(e.name)}" placeholder="Exercise name"></div>
+        <div class="form-row"><input type="text" id="ew-details-${e.id}" value="${buildDetails(e)}" placeholder="${WK_PLACEHOLDERS[curType]||'Details (optional)'}"></div>
         <div class="edit-actions"><button class="btn btn-blue" onclick="saveEditWorkout('${e.id}')">Save</button><button class="btn btn-ghost" onclick="cancelEditWorkout()">Cancel</button></div>
       </div>`;
+    }
     let meta = e.type||'';
     if (e.sets)     meta+=` · ${e.sets} sets`;
     if (e.reps)     meta+=` × ${e.reps} reps`;

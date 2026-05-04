@@ -103,7 +103,14 @@
     border-bottom: 1px solid var(--border);
     padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; z-index: 50;
   }
-  .logo-mark { display: flex; align-items: center; gap: 8px; }
+  .logo-mark {
+    display: flex; align-items: center; gap: 8px; cursor: pointer;
+    padding: 5px 10px; margin: -5px -10px; border-radius: 12px;
+    transition: background .18s ease, transform .18s ease;
+    user-select: none;
+  }
+  .logo-mark:hover { background: rgba(74,222,128,.13); transform: scale(1.05); }
+  .logo-mark:active { transform: scale(.96); }
   .logo-mark span { font-size: 1.05rem; font-weight: 800; letter-spacing: -.04em; }
   .header-right { display: flex; align-items: center; gap: 10px; }
   #date-display { color: var(--muted); font-size: .78rem; }
@@ -123,7 +130,7 @@
   /* ── Nav ───────────────────────────────────────── */
   nav {
     position: fixed; bottom: 0; left: 0; right: 0; max-width: 640px; margin: 0 auto;
-    display: grid; grid-template-columns: repeat(5, 1fr);
+    display: grid; grid-template-columns: repeat(4, 1fr);
     background: var(--nav-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
     border-top: 1px solid var(--border); z-index: 100;
     padding-bottom: env(safe-area-inset-bottom);
@@ -499,8 +506,8 @@
 <div id="app" style="display:none">
 
   <header>
-    <div class="logo-mark">
-      <span id="mascot-hdr" class="mascot-idle" onclick="switchTab('summary')" title="View summary" style="cursor:pointer"></span>
+    <div class="logo-mark" onclick="switchTab('summary')" title="Home">
+      <span id="mascot-hdr" class="mascot-idle"></span>
       <span>Froggy</span>
     </div>
     <div class="header-right">
@@ -670,11 +677,10 @@
   </div>
 
   <nav>
-    <button              data-tab="food"    onclick="switchTab('food')"    id="nav-food"></button>
-    <button              data-tab="workout" onclick="switchTab('workout')" id="nav-workout"></button>
-    <button class="active" data-tab="summary" onclick="switchTab('summary')" id="nav-summary"></button>
-    <button              data-tab="daily"   onclick="switchTab('daily')"   id="nav-daily"></button>
-    <button              data-tab="info"    onclick="switchTab('info')"    id="nav-info"></button>
+    <button data-tab="food"    onclick="switchTab('food')"    id="nav-food"></button>
+    <button data-tab="workout" onclick="switchTab('workout')" id="nav-workout"></button>
+    <button data-tab="daily"   onclick="switchTab('daily')"   id="nav-daily"></button>
+    <button data-tab="info"    onclick="switchTab('info')"    id="nav-info"></button>
   </nav>
 </div>
 
@@ -750,7 +756,7 @@ function injectIcons() {
   document.getElementById('nav-workout').innerHTML = icon(IC.workout, 22) + '<span>Workout</span>';
   document.getElementById('nav-info').innerHTML    = icon(IC.info, 22)    + '<span>Notes</span>';
   document.getElementById('nav-daily').innerHTML   = icon(IC.daily, 22)   + '<span>Tasks</span>';
-  document.getElementById('nav-summary').innerHTML = icon(IC.summary, 22) + '<span>Summary</span>';
+
   document.getElementById('food-prev').innerHTML    = icon(IC.arrowL);
   document.getElementById('food-next').innerHTML    = icon(IC.arrowR);
   document.getElementById('workout-prev').innerHTML = icon(IC.arrowL);

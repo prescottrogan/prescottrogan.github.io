@@ -157,21 +157,24 @@ nav.bottomnav button.active{color:var(--gold);}
 .ibtn:hover{background:var(--gold);color:#000;}
 
 /* TASK CARDS */
-.tcard{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:15px 16px;margin-bottom:10px;display:flex;gap:12px;transition:border-color .15s;}
-.tcard:hover{border-color:var(--brd);}
+.tcard{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:15px 16px;margin-bottom:10px;transition:border-color .15s;}
+.tcard:hover{border-color:var(--gold);}
 .tcard.ph{border-left:4px solid var(--red);}
 .tcard.pm{border-left:4px solid var(--org);}
 .tcard.pl{border-left:4px solid var(--brd);}
 .tcard.tdone{opacity:.55;}
-.tlbl{font-size:.6rem;font-weight:800;letter-spacing:.7px;padding:2px 7px;border-radius:4px;border:1px solid currentColor;flex-shrink:0;margin-top:3px;white-space:nowrap;}
+.tlbl{font-size:.6rem;font-weight:800;letter-spacing:.7px;padding:2px 7px;border-radius:4px;border:1px solid currentColor;white-space:nowrap;flex-shrink:0;}
 .tl-ins{color:#60a5fa;}.tl-tr{color:#f87171;}.tl-ma{color:#a78bfa;}.tl-su{color:var(--gold);}
 .tl-qu{color:#fbbf24;}.tl-mv{color:#34d399;}.tl-fe{color:#6ee7b7;}.tl-wa{color:#93c5fd;}.tl-ot{color:var(--tdim);}
-.tbody{flex:1;min-width:0;}
 .ttitle{font-size:.9rem;font-weight:600;margin-bottom:4px;}
-.tmeta{font-size:.75rem;color:var(--tdim);}
-.tfoot{display:flex;align-items:center;gap:7px;margin-top:9px;flex-wrap:wrap;}
+.tmeta{font-size:.75rem;color:var(--tdim);margin-bottom:8px;}
+.tfoot{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
 .tdone-btn{background:var(--grnd);border:1px solid var(--grn);border-radius:6px;color:var(--grn);padding:4px 11px;font-size:.73rem;font-weight:700;cursor:pointer;}
 .tdone-btn:hover{background:var(--grn);color:#000;}
+.tlog-btn{background:var(--blud);border:1px solid var(--blu);border-radius:6px;color:var(--blu);padding:4px 11px;font-size:.73rem;font-weight:700;cursor:pointer;}
+.tlog-btn:hover{background:var(--blu);color:#fff;}
+.tedit-btn{background:transparent;border:1px solid var(--brd);border-radius:6px;color:var(--mut);padding:4px 9px;font-size:.73rem;font-weight:600;cursor:pointer;margin-left:auto;}
+.tedit-btn:hover{border-color:var(--gold);color:var(--gold);}
 
 /* TEAM */
 .tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px;}
@@ -435,9 +438,9 @@ nav.bottomnav button.active{color:var(--gold);}
 
 <!-- MODALS -->
 <div class="mover" id="mdetail"><div class="modal"><button class="mclose" onclick="closeModal('mdetail')">&#10005;</button><div class="mtitle" id="md-title"></div><div id="md-body"></div></div></div>
-<div class="mover" id="mlog-insp"><div class="modal"><button class="mclose" onclick="closeModal('mlog-insp')">&#10005;</button><div class="mtitle">Log Inspection</div><input type="hidden" id="li-aid"><div class="fg"><div class="fl">Apiary</div><div id="li-aname" style="font-weight:700;padding:6px 0;font-size:.92rem;"></div></div><div class="frow"><div class="fg"><div class="fl">Date</div><input type="date" id="li-date"></div><div class="fg"><div class="fl">Condition</div><select id="li-cond"><option value="good">Good</option><option value="fair">Fair</option><option value="poor">Poor</option></select></div></div><div class="frow"><div class="fg"><div class="fl">Active Colonies</div><input type="number" id="li-col" placeholder="e.g. 500"></div><div class="fg"><div class="fl">Treatment Applied</div><select id="li-treat"><option value="none">None</option><option value="oxalic">Oxalic Acid</option><option value="apivar">Apivar</option><option value="miteaway">Mite Away</option><option value="hopguard">HopGuard</option><option value="other">Other</option></select></div></div><div class="fg"><div class="fl">Notes</div><textarea id="li-notes" placeholder="Observations, concerns, follow-up needed..."></textarea></div><button class="btn btn-gold" style="width:100%;" onclick="submitInsp()">Save Inspection</button></div></div>
+<div class="mover" id="mlog-insp"><div class="modal"><button class="mclose" onclick="closeModal('mlog-insp')">&#10005;</button><div class="mtitle">Log Inspection</div><input type="hidden" id="li-aid"><input type="hidden" id="li-taskid"><div class="fg"><div class="fl">Apiary</div><div id="li-aname" style="font-weight:700;padding:6px 0;font-size:.92rem;"></div></div><div class="frow"><div class="fg"><div class="fl">Date</div><input type="date" id="li-date"></div><div class="fg"><div class="fl">Condition</div><select id="li-cond"><option value="good">Good</option><option value="fair">Fair</option><option value="poor">Poor</option></select></div></div><div class="frow"><div class="fg"><div class="fl">Active Colonies</div><input type="number" id="li-col" placeholder="e.g. 500"></div><div class="fg"><div class="fl">Treatment Applied</div><select id="li-treat"><option value="none">None</option><option value="oxalic">Oxalic Acid</option><option value="apivar">Apivar</option><option value="miteaway">Mite Away</option><option value="hopguard">HopGuard</option><option value="other">Other</option></select></div></div><div class="fg"><div class="fl">Notes</div><textarea id="li-notes" placeholder="Observations, concerns, follow-up needed..."></textarea></div><button class="btn btn-gold" style="width:100%;" onclick="submitInsp()">Save Inspection</button></div></div>
 <div class="mover" id="madd-apiary"><div class="modal"><button class="mclose" onclick="closeModal('madd-apiary')">&#10005;</button><div class="mtitle" id="af-title">Add Apiary</div><input type="hidden" id="af-id"><div class="fg"><div class="fl">Apiary Name</div><input type="text" id="af-name" placeholder="e.g. Rogue Valley South"></div><div class="frow"><div class="fg"><div class="fl">State</div><select id="af-state"><option value="OR">Oregon (OR)</option><option value="CA">California (CA)</option></select></div><div class="fg"><div class="fl">County</div><input type="text" id="af-county" placeholder="e.g. Jackson County"></div></div><div class="frow"><div class="fg"><div class="fl">City</div><input type="text" id="af-city" placeholder="e.g. Medford"></div><div class="fg"><div class="fl">Total Hives</div><input type="number" id="af-hives" placeholder="e.g. 500"></div></div><div class="frow"><div class="fg"><div class="fl">Latitude</div><input type="text" id="af-lat" placeholder="e.g. 42.326" oninput="updGM('af')"></div><div class="fg"><div class="fl">Longitude</div><input type="text" id="af-lng" placeholder="e.g. -122.875" oninput="updGM('af')"></div></div><div class="gmlink" id="af-gmlink"><a id="af-gma" href="#" target="_blank" rel="noopener">Open in Google Maps</a></div><div class="fg"><div class="fl">Notes / Contract Info</div><textarea id="af-notes" placeholder="Pollination contracts, crop types, access notes..."></textarea></div><div class="fg"><div class="fl">Assigned Workers</div><div class="chk-list" id="af-workers"></div></div><button class="btn btn-gold" style="width:100%;margin-top:4px;" onclick="submitApiary()">Save Apiary</button></div></div>
-<div class="mover" id="madd-task"><div class="modal"><button class="mclose" onclick="closeModal('madd-task')">&#10005;</button><div class="mtitle">Add Task</div><div class="fg"><div class="fl">Task Type</div><select id="ta-type"><option value="inspection">Inspection</option><option value="treatment">Varroa Treatment</option><option value="equipment">Equipment / Maintenance</option><option value="supering">Add / Pull Honey Supers</option><option value="queen">Queen Check / Replace</option><option value="transport">Transport Hives</option><option value="feeding">Feeding / Supplements</option><option value="water">Water Source Check</option><option value="other">Other</option></select></div><div class="fg"><div class="fl">Description</div><input type="text" id="ta-desc" placeholder="Brief description"></div><div class="frow"><div class="fg"><div class="fl">Apiary</div><select id="ta-ap"></select></div><div class="fg"><div class="fl">Assign To</div><select id="ta-assignee"></select></div></div><div class="frow"><div class="fg"><div class="fl">Due Date</div><input type="date" id="ta-due"></div><div class="fg"><div class="fl">Priority</div><select id="ta-pri"><option value="high">High</option><option value="medium" selected>Medium</option><option value="low">Low</option></select></div></div><div class="fg"><div class="fl">Notes</div><textarea id="ta-notes" placeholder="Additional details..." style="min-height:60px;"></textarea></div><button class="btn btn-gold" style="width:100%;" onclick="submitTask()">Add Task</button></div></div>
+<div class="mover" id="madd-task"><div class="modal"><button class="mclose" onclick="closeModal('madd-task')">&#10005;</button><div class="mtitle" id="ta-title">Add Task</div><input type="hidden" id="ta-id"><div class="fg"><div class="fl">Task Type</div><select id="ta-type"><option value="inspection">Inspection</option><option value="treatment">Varroa Treatment</option><option value="equipment">Equipment / Maintenance</option><option value="supering">Add / Pull Honey Supers</option><option value="queen">Queen Check / Replace</option><option value="transport">Transport Hives</option><option value="feeding">Feeding / Supplements</option><option value="water">Water Source Check</option><option value="other">Other</option></select></div><div class="fg"><div class="fl">Description</div><input type="text" id="ta-desc" placeholder="Brief description"></div><div class="frow"><div class="fg"><div class="fl">Apiary</div><select id="ta-ap"></select></div><div class="fg"><div class="fl">Assign To</div><select id="ta-assignee"></select></div></div><div class="frow"><div class="fg"><div class="fl">Due Date</div><input type="date" id="ta-due"></div><div class="fg"><div class="fl">Priority</div><select id="ta-pri"><option value="high">High</option><option value="medium" selected>Medium</option><option value="low">Low</option></select></div></div><div class="fg" id="ta-status-wrap" style="display:none;"><div class="fl">Status</div><select id="ta-status"><option value="open">To Do</option><option value="in-progress">In Progress</option><option value="done">Done</option></select></div><div class="fg"><div class="fl">Notes</div><textarea id="ta-notes" placeholder="Additional details..." style="min-height:60px;"></textarea></div><button class="btn btn-gold" style="width:100%;" onclick="submitTask()">Save Task</button><div id="ta-del-wrap" style="margin-top:10px;display:none;"><button class="btn btn-red" style="width:100%;" onclick="deleteTask()">Delete Task</button></div></div></div>
 <div class="mover" id="madd-employee"><div class="modal"><button class="mclose" onclick="closeModal('madd-employee')">&#10005;</button><div class="mtitle" id="ef-title">Add Team Member</div><input type="hidden" id="ef-id"><div class="fg"><div class="fl">Full Name</div><input type="text" id="ef-name" placeholder="Full name"></div><div class="fg"><div class="fl">Email</div><input type="email" id="ef-email" placeholder="name@prescotthoney.com"></div><div class="frow"><div class="fg"><div class="fl">Role</div><select id="ef-role"><option value="manager">Manager</option><option value="employee">Field Worker</option></select></div><div class="fg"><div class="fl">Phone</div><input type="tel" id="ef-phone" placeholder="(555) 000-0000"></div></div><div class="fg"><div class="fl">Login Password</div><input type="text" id="ef-pass" placeholder="Leave blank to keep current"></div><button class="btn btn-gold" style="width:100%;margin-top:4px;" onclick="submitEmployee()">Save</button><div id="ef-del-wrap" style="margin-top:10px;display:none;"><button class="btn btn-red" style="width:100%;" onclick="deleteEmployee()">Remove Team Member</button></div></div></div>
 <div class="mover" id="madd-dp"><div class="modal"><button class="mclose" onclick="closeModal('madd-dp')">&#10005;</button><div class="mtitle">Add Drop Point</div><input type="hidden" id="dp-aid"><div class="fg"><div class="fl">Name</div><input type="text" id="dp-name" placeholder="e.g. North Clover Field"></div><div class="frow"><div class="fg"><div class="fl">Latitude</div><input type="text" id="dp-lat" placeholder="e.g. 44.948" oninput="updGM('dp')"></div><div class="fg"><div class="fl">Longitude</div><input type="text" id="dp-lng" placeholder="e.g. -122.869" oninput="updGM('dp')"></div></div><div class="gmlink" id="dp-gmlink"><a id="dp-gma" href="#" target="_blank" rel="noopener">Open in Google Maps</a></div><div class="fg"><div class="fl">Hives</div><input type="number" id="dp-hives" placeholder="e.g. 120"></div><div class="fg"><div class="fl">Notes</div><input type="text" id="dp-notes" placeholder="Access info, landmarks..."></div><button class="btn btn-gold" style="width:100%;" onclick="submitDP()">Add Drop Point</button></div></div>
 
@@ -955,14 +958,27 @@ function updGM(pfx){
     anch.href=`https://www.google.com/maps?q=${lat},${lng}`;link.classList.add('show');
   }else if(link){link.classList.remove('show');}
 }
-function openInsp(aid){const a=getAP(aid);if(!a)return;document.getElementById('li-aid').value=aid;document.getElementById('li-aname').textContent=a.name+' — '+a.city+', '+a.state;document.getElementById('li-date').value=TODAY;document.getElementById('li-col').value=a.hives;document.getElementById('li-cond').value='good';document.getElementById('li-treat').value='none';document.getElementById('li-notes').value='';openModal('mlog-insp');}
+function openInsp(aid,taskId){
+  const a=getAP(aid);if(!a)return;
+  document.getElementById('li-aid').value=aid;
+  document.getElementById('li-taskid').value=taskId||'';
+  document.getElementById('li-aname').textContent=a.name+' — '+a.city+', '+a.state;
+  document.getElementById('li-date').value=TODAY;
+  document.getElementById('li-col').value=a.hives;
+  document.getElementById('li-cond').value='good';
+  document.getElementById('li-treat').value='none';
+  document.getElementById('li-notes').value='';
+  openModal('mlog-insp');
+}
 function submitInsp(){
   const aid=document.getElementById('li-aid').value,date=document.getElementById('li-date').value;
   if(!date){alert('Please select a date.');return;}
   S.inspections.push({id:'i'+Date.now(),apiaryId:aid,date,inspector:S.user.name,inspectorId:S.user.id,condition:document.getElementById('li-cond').value,colonies:parseInt(document.getElementById('li-col').value)||0,treatment:document.getElementById('li-treat').value,notes:document.getElementById('li-notes').value.trim()});
+  const taskId=document.getElementById('li-taskid').value;
+  if(taskId){const t=S.tasks.find(x=>x.id===taskId);if(t)t.status='done';}
   save();closeModal('mlog-insp');
   const av=document.querySelector('.view.active')?.id?.replace('view-','');
-  if(av==='dashboard')renderDash();else if(av==='apiaries')renderApiaries();
+  if(av==='dashboard')renderDash();else if(av==='apiaries')renderApiaries();else if(av==='tasks')renderTasks();
 }
 function openAddDP(aid){document.getElementById('dp-aid').value=aid;['dp-name','dp-lat','dp-lng','dp-notes'].forEach(id=>document.getElementById(id).value='');document.getElementById('dp-hives').value='';document.getElementById('dp-gmlink').classList.remove('show');openModal('madd-dp');}
 function submitDP(){
@@ -991,34 +1007,80 @@ function tCard(t,showBtn){
   const ov=t.status!=='done'&&t.dueDate<TODAY,dn=t.status==='done';
   const dc=ov?'var(--red)':t.dueDate===TODAY?'var(--org)':'var(--tdim)';
   const can=t.assignedTo===S.user.id||isOM();
+  const isInsp=t.type==='inspection';
   return`<div class="tcard p${t.priority[0]} ${dn?'tdone':''}">
-    <span class="tlbl ${tcls(t.type)}">${tlbl(t.type)}</span>
-    <div class="tbody">
-      <div class="ttitle">${esc(t.desc)}</div>
-      <div class="tmeta">${ap?esc(ap.name)+' · '+ap.city+', '+ap.state:''}</div>
-      <div class="tfoot">
-        <span class="badge ${dn?'bg':t.status==='in-progress'?'bp':'bt'}">${dn?'Done':t.status==='in-progress'?'In Progress':'To Do'}</span>
-        <span class="badge ${t.priority==='high'?'bc':t.priority==='medium'?'ba':'bt'}">${t.priority}</span>
-        <span style="font-size:.73rem;color:${dc};">${relD(t.dueDate)}</span>
-        ${asn?`<span style="font-size:.73rem;color:var(--mut);">${esc(asn.name.split(' ')[0])}</span>`:''}
-        ${showBtn&&can&&!dn?`<button class="tdone-btn" onclick="doneTask('${t.id}')">Mark Done</button>`:''}
-      </div>
-      ${t.notes?`<div style="font-size:.73rem;color:var(--mut);margin-top:4px;">${esc(t.notes)}</div>`:''}
-    </div></div>`;
+    <div class="ttitle">${esc(t.desc)}</div>
+    <div class="tmeta">${ap?esc(ap.name)+' · '+ap.city+', '+ap.state:''}</div>
+    <div class="tfoot">
+      <span class="tlbl ${tcls(t.type)}">${tlbl(t.type)}</span>
+      <span class="badge ${dn?'bg':t.status==='in-progress'?'bp':'bt'}">${dn?'Done':t.status==='in-progress'?'In Progress':'To Do'}</span>
+      <span class="badge ${t.priority==='high'?'bc':t.priority==='medium'?'ba':'bt'}">${t.priority}</span>
+      <span style="font-size:.73rem;color:${dc};">${relD(t.dueDate)}</span>
+      ${asn?`<span style="font-size:.73rem;color:var(--mut);">${esc(asn.name.split(' ')[0])}</span>`:''}
+      ${showBtn&&can&&!dn&&isInsp&&t.apiaryId?`<button class="tlog-btn" onclick="openInsp('${t.apiaryId}','${t.id}')">Log &amp; Complete</button>`:''}
+      ${showBtn&&can&&!dn&&!isInsp?`<button class="tdone-btn" onclick="doneTask('${t.id}')">Mark Done</button>`:''}
+      ${showBtn&&isOM()?`<button class="tedit-btn" onclick="openEditTask('${t.id}')">Edit</button>`:''}
+    </div>
+    ${t.notes?`<div style="font-size:.73rem;color:var(--mut);margin-top:6px;">${esc(t.notes)}</div>`:''}
+  </div>`;
 }
-function doneTask(id){const t=S.tasks.find(x=>x.id===id);if(t){t.status='done';save();}const av=document.querySelector('.view.active')?.id?.replace('view-','');if(av==='tasks')renderTasks();if(av==='dashboard')renderDash();}
+function doneTask(id){
+  const t=S.tasks.find(x=>x.id===id);if(t){t.status='done';save();}
+  const av=document.querySelector('.view.active')?.id?.replace('view-','');
+  if(av==='tasks')renderTasks();if(av==='dashboard')renderDash();
+}
 function openAddTask(preApiaryId){
+  document.getElementById('ta-title').textContent='Add Task';
+  document.getElementById('ta-id').value='';
+  document.getElementById('ta-del-wrap').style.display='none';
+  document.getElementById('ta-status-wrap').style.display='none';
   document.getElementById('ta-ap').innerHTML='<option value="">— Select Apiary —</option>'+S.apiaries.map(a=>`<option value="${a.id}">${esc(a.name)} (${a.state})</option>`).join('');
   document.getElementById('ta-assignee').innerHTML='<option value="">— Unassigned —</option>'+S.employees.filter(e=>e.role!=='owner').map(e=>`<option value="${e.id}">${esc(e.name)}</option>`).join('');
   document.getElementById('ta-due').value=TODAY;
   document.getElementById('ta-desc').value='';document.getElementById('ta-notes').value='';
+  document.getElementById('ta-type').value='inspection';document.getElementById('ta-pri').value='medium';
   if(preApiaryId)document.getElementById('ta-ap').value=preApiaryId;
+  openModal('madd-task');
+}
+function openEditTask(id){
+  const t=S.tasks.find(x=>x.id===id);if(!t)return;
+  document.getElementById('ta-title').textContent='Edit Task';
+  document.getElementById('ta-id').value=id;
+  document.getElementById('ta-del-wrap').style.display='block';
+  document.getElementById('ta-status-wrap').style.display='block';
+  document.getElementById('ta-ap').innerHTML='<option value="">— Select Apiary —</option>'+S.apiaries.map(a=>`<option value="${a.id}">${esc(a.name)} (${a.state})</option>`).join('');
+  document.getElementById('ta-assignee').innerHTML='<option value="">— Unassigned —</option>'+S.employees.filter(e=>e.role!=='owner').map(e=>`<option value="${e.id}">${esc(e.name)}</option>`).join('');
+  document.getElementById('ta-type').value=t.type;
+  document.getElementById('ta-desc').value=t.desc;
+  document.getElementById('ta-ap').value=t.apiaryId||'';
+  document.getElementById('ta-assignee').value=t.assignedTo||'';
+  document.getElementById('ta-due').value=t.dueDate||TODAY;
+  document.getElementById('ta-pri').value=t.priority||'medium';
+  document.getElementById('ta-status').value=t.status||'open';
+  document.getElementById('ta-notes').value=t.notes||'';
   openModal('madd-task');
 }
 function submitTask(){
   const desc=document.getElementById('ta-desc').value.trim();if(!desc){alert('Enter a task description.');return;}
-  S.tasks.push({id:'t'+Date.now(),type:document.getElementById('ta-type').value,desc,apiaryId:document.getElementById('ta-ap').value,assignedTo:document.getElementById('ta-assignee').value,dueDate:document.getElementById('ta-due').value,priority:document.getElementById('ta-pri').value,status:'open',notes:document.getElementById('ta-notes').value.trim()});
-  save();closeModal('madd-task');renderTasks();
+  const id=document.getElementById('ta-id').value;
+  const data={type:document.getElementById('ta-type').value,desc,apiaryId:document.getElementById('ta-ap').value,assignedTo:document.getElementById('ta-assignee').value,dueDate:document.getElementById('ta-due').value,priority:document.getElementById('ta-pri').value,notes:document.getElementById('ta-notes').value.trim()};
+  if(id){
+    const t=S.tasks.find(x=>x.id===id);
+    if(t){Object.assign(t,data);t.status=document.getElementById('ta-status').value;}
+  }else{
+    S.tasks.push({id:'t'+Date.now(),...data,status:'open'});
+  }
+  save();closeModal('madd-task');
+  const av=document.querySelector('.view.active')?.id?.replace('view-','');
+  if(av==='tasks')renderTasks();else if(av==='dashboard')renderDash();
+}
+function deleteTask(){
+  const id=document.getElementById('ta-id').value;
+  if(!id||!confirm('Delete this task?'))return;
+  S.tasks=S.tasks.filter(t=>t.id!==id);
+  save();closeModal('madd-task');
+  const av=document.querySelector('.view.active')?.id?.replace('view-','');
+  if(av==='tasks')renderTasks();else if(av==='dashboard')renderDash();
 }
 function renderTeam(){
   const workers=S.employees.filter(e=>e.role!=='owner');

@@ -436,11 +436,12 @@
   .week-day-col { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; overflow: hidden; }
   .task-due { font-size: .72rem; font-weight: 600; color: var(--accent3); margin-top: 2px; }
   .task-due.overdue { color: var(--danger); }
+  .task-add-row { display: flex; gap: 8px; align-items: center; }
+  .task-add-row input[type="text"] { flex: 1; min-width: 0; }
+  .cal-btn { flex-shrink: 0; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: var(--card); border: 1.5px solid var(--border); border-radius: 10px; cursor: pointer; color: var(--muted); transition: border-color .15s, color .15s, background .15s; }
+  .cal-btn:hover, .cal-btn.active { border-color: var(--accent4); color: var(--accent4); background: rgba(74,222,128,.09); }
   #task-due-row { display: none; margin-top: 8px; }
-  #task-due-row input[type="date"] { width: 100%; }
-  .clock-btn { background: none; border: 1.5px solid var(--border); border-radius: 10px; padding: 0 10px; cursor: pointer; color: var(--muted); transition: all .15s; display:flex; align-items:center; }
-  .clock-btn.active { border-color: var(--accent4); color: var(--accent4); background: rgba(74,222,128,.08); }
-  .clock-btn:hover { border-color: var(--accent4); color: var(--accent4); }
+  #task-due-row input[type="date"] { width: 100%; box-sizing: border-box; }
   .week-day-lbl { font-size: .62rem; font-weight: 600; color: var(--muted); }
   .wk-today { color: var(--accent5) !important; }
   .week-cal-wrap { width: 100%; height: 42px; background: var(--border); border-radius: 3px; display: flex; align-items: flex-end; overflow: hidden; }
@@ -643,9 +644,9 @@
         <button class="type-btn active" id="type-habit-btn" onclick="setAddType('habit')">Habit (recurring)</button>
         <button class="type-btn"        id="type-task-btn"  onclick="setAddType('task')">Task (one-time)</button>
       </div>
-      <div class="form-row">
-        <input type="text" id="habit-name" placeholder="Name..." style="flex:1">
-        <button id="task-clock-btn" class="clock-btn" onclick="toggleDuePicker()" style="display:none" title="Set due date"><span id="clock-icon"></span></button>
+      <div class="task-add-row">
+        <input type="text" id="habit-name" placeholder="Name...">
+        <button id="task-cal-btn" class="cal-btn" style="display:none" onclick="toggleDuePicker()" title="Set due date"><span id="cal-icon"></span></button>
         <button id="habit-add-btn" class="btn btn-purple" onclick="addItem()"><span id="habit-plus"></span>Add</button>
       </div>
       <div id="task-due-row">
@@ -762,7 +763,7 @@ function injectIcons() {
   document.getElementById('food-search-icon').innerHTML = icon(IC.search, 18);
   document.getElementById('workout-plus').innerHTML     = icon(IC.plus, 16);
   document.getElementById('habit-plus').innerHTML   = icon(IC.plus, 16);
-  document.getElementById('clock-icon').innerHTML   = icon(IC.clock, 18);
+  document.getElementById('cal-icon').innerHTML     = icon(IC.clock, 18);
   updateMascot();
 }
 
@@ -1416,12 +1417,12 @@ async function deleteInfo(id) {
 // ══════════════════════════════════════════════════════════════════════════
 function toggleDuePicker() {
   const row = document.getElementById('task-due-row');
-  const btn = document.getElementById('task-clock-btn');
+  const btn = document.getElementById('task-cal-btn');
   const inp = document.getElementById('task-due');
-  const open = row.style.display === 'block';
-  row.style.display = open ? 'none' : 'block';
-  btn.classList.toggle('active', !open);
-  if (!open) { inp.focus(); inp.showPicker && inp.showPicker(); }
+  const opening = row.style.display !== 'block';
+  row.style.display = opening ? 'block' : 'none';
+  btn.classList.toggle('active', opening);
+  if (opening) { try { inp.showPicker(); } catch(_) { inp.focus(); } }
   else inp.value = '';
 }
 
@@ -1433,10 +1434,10 @@ function setAddType(type) {
     ? 'Habit name (e.g. Drink water, Exercise...)'
     : 'Task name (e.g. Call dentist, Buy groceries...)';
   const showDue = type === 'task';
-  document.getElementById('task-clock-btn').style.display = showDue ? '' : 'none';
+  document.getElementById('task-cal-btn').style.display = showDue ? 'flex' : 'none';
   document.getElementById('task-due-row').style.display = 'none';
   document.getElementById('task-due').value = '';
-  document.getElementById('task-clock-btn').classList.remove('active');
+  document.getElementById('task-cal-btn').classList.remove('active');
 }
 
 function parseTaskName(raw) {
@@ -1466,7 +1467,7 @@ async function addItem() {
   document.getElementById('habit-name').value = '';
   document.getElementById('task-due').value = '';
   document.getElementById('task-due-row').style.display = 'none';
-  document.getElementById('task-clock-btn').classList.remove('active');
+  document.getElementById('task-cal-btn').classList.remove('active');
   await renderDaily();
 }
 

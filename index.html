@@ -18,6 +18,7 @@
     --accent2: #60a5fa;
     --accent3: #f59e0b;
     --accent4: #a78bfa;
+    --accent5: #22d3ee;
     --text: #171717;
     --text-2: #404040;
     --muted: #6b7280;
@@ -121,7 +122,7 @@
   /* ── Nav ───────────────────────────────────────── */
   nav {
     position: fixed; bottom: 0; left: 0; right: 0; max-width: 640px; margin: 0 auto;
-    display: grid; grid-template-columns: repeat(4, 1fr);
+    display: grid; grid-template-columns: repeat(5, 1fr);
     background: var(--nav-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
     border-top: 1px solid var(--border); z-index: 100;
     padding-bottom: env(safe-area-inset-bottom);
@@ -136,6 +137,7 @@
   nav button.active[data-tab="workout"] { color: var(--accent2); }
   nav button.active[data-tab="info"]    { color: var(--accent3); }
   nav button.active[data-tab="daily"]   { color: var(--accent4); }
+  nav button.active[data-tab="summary"] { color: var(--accent5); }
 
   /* ── Sections ──────────────────────────────────── */
   .section { display: none; padding: 16px 20px; }
@@ -346,6 +348,32 @@
   .chip { display: inline-flex; align-items: center; background: var(--border); border-radius: 4px; padding: 2px 8px; font-size: .72rem; color: var(--text-2); }
   .empty { text-align: center; color: var(--muted); padding: 32px 0; font-size: .9rem; }
   .text-link { color: var(--accent2); background: none; border: none; cursor: pointer; font-size: .8rem; padding: 0; margin-left: 6px; }
+
+  /* ── Summary ───────────────────────────────────────── */
+  .smry-period { display: flex; gap: 5px; margin-bottom: 16px; }
+  .smry-period-btn { flex: 1; padding: 8px 2px; border: 1px solid var(--border); border-radius: 8px; background: none; color: var(--muted); font-size: .8rem; font-weight: 600; cursor: pointer; transition: all .15s; }
+  .smry-period-btn.active { border-color: var(--text); background: var(--text); color: var(--bg); }
+  .smry-ttl { font-size: .67rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 10px; }
+  .smry-stat-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 2px; }
+  .smry-big { font-size: 2.2rem; font-weight: 700; letter-spacing: -.03em; font-variant-numeric: tabular-nums; line-height: 1; }
+  .smry-lbl { font-size: .82rem; color: var(--muted); }
+  .smry-sub { font-size: .78rem; color: var(--muted); margin-top: 4px; line-height: 1.4; }
+  .summary-bar { height: 5px; background: var(--border); border-radius: 3px; margin: 8px 0; overflow: hidden; }
+  .summary-bar-fill { height: 100%; border-radius: 3px; transition: width .4s ease; }
+  .smry-macros { display: flex; gap: 8px; margin-top: 10px; }
+  .smry-mac { flex: 1; background: var(--surface-2); border-radius: 8px; padding: 8px 10px; }
+  .smry-mac-val { font-size: 1.15rem; font-weight: 700; line-height: 1; }
+  .smry-mac-lbl { font-size: .7rem; color: var(--muted); margin-top: 3px; }
+  .week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 8px; }
+  .week-day-col { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .week-day-lbl { font-size: .62rem; font-weight: 600; color: var(--muted); }
+  .wk-today { color: var(--accent5) !important; }
+  .week-cal-wrap { width: 100%; height: 42px; background: var(--border); border-radius: 3px; display: flex; align-items: flex-end; overflow: hidden; }
+  .week-cal-bar { width: 100%; border-radius: 2px 2px 0 0; }
+  .week-wk-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .week-legend { display: flex; gap: 12px; font-size: .72rem; color: var(--muted); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); align-items: center; }
+  .week-legend span { display: flex; align-items: center; gap: 4px; }
+  .wk-swatch { display: inline-block; width: 8px; height: 8px; flex-shrink: 0; }
 </style>
 </head>
 <body>
@@ -504,11 +532,23 @@
     <div id="daily-list"></div>
   </div>
 
+  <!-- ── SUMMARY ────────────────────────────────────── -->
+  <div id="section-summary" class="section">
+    <div class="smry-period">
+      <button class="smry-period-btn" id="sp-day"   onclick="setSummaryPeriod('day')">Day</button>
+      <button class="smry-period-btn" id="sp-week"  onclick="setSummaryPeriod('week')">Week</button>
+      <button class="smry-period-btn" id="sp-month" onclick="setSummaryPeriod('month')">Month</button>
+      <button class="smry-period-btn" id="sp-year"  onclick="setSummaryPeriod('year')">Year</button>
+    </div>
+    <div id="summary-view"></div>
+  </div>
+
   <nav>
     <button class="active" data-tab="food"    onclick="switchTab('food')"    id="nav-food"></button>
     <button              data-tab="workout" onclick="switchTab('workout')" id="nav-workout"></button>
     <button              data-tab="info"    onclick="switchTab('info')"    id="nav-info"></button>
     <button              data-tab="daily"   onclick="switchTab('daily')"   id="nav-daily"></button>
+    <button              data-tab="summary" onclick="switchTab('summary')" id="nav-summary"></button>
   </nav>
 </div>
 
@@ -533,6 +573,9 @@ let _infoCache = [];
 // Daily state
 let addType = 'habit'; // 'habit' | 'task'
 
+// Summary state
+let summaryPeriod = 'week';
+
 // ── Icons ──────────────────────────────────────────────────────────────────
 const icon = (path, size = 18) =>
   `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${path}</svg>`;
@@ -552,7 +595,8 @@ const IC = {
   chevronR:'<path d="m9 18 6-6-6-6"/>',
   grid:    '<rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/>',
   sun:     '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>',
-  moon:    '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>'
+  moon:    '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',
+  summary: '<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>'
 };
 
 const FOLDER_COLORS = ['#60a5fa','#4ade80','#f59e0b','#a78bfa','#f87171','#34d399','#fb923c','#e879f9'];
@@ -575,6 +619,7 @@ function injectIcons() {
   document.getElementById('nav-workout').innerHTML = icon(IC.workout, 22) + '<span>Workout</span>';
   document.getElementById('nav-info').innerHTML    = icon(IC.info, 22)    + '<span>Info</span>';
   document.getElementById('nav-daily').innerHTML   = icon(IC.daily, 22)   + '<span>Daily</span>';
+  document.getElementById('nav-summary').innerHTML = icon(IC.summary, 22) + '<span>Summary</span>';
   document.getElementById('food-prev').innerHTML    = icon(IC.arrowL);
   document.getElementById('food-next').innerHTML    = icon(IC.arrowR);
   document.getElementById('workout-prev').innerHTML = icon(IC.arrowL);
@@ -1175,6 +1220,144 @@ async function renderDaily() {
   document.getElementById('daily-list').innerHTML = html;
 }
 
+// ══════════════════════════════════════════════════════════════════════════
+// SUMMARY
+// ══════════════════════════════════════════════════════════════════════════
+function getPeriodRange(p) {
+  const today = new Date();
+  const toStr = d => d.toISOString().split('T')[0];
+  const end = toStr(today);
+  if (p === 'day') return { start: end, end, days: 1 };
+  const n = { week: 6, month: 29, year: 364 }[p];
+  const s = new Date(today); s.setDate(s.getDate() - n);
+  return { start: toStr(s), end, days: n + 1 };
+}
+
+function setSummaryPeriod(p) {
+  summaryPeriod = p;
+  ['day','week','month','year'].forEach(x => {
+    const b = document.getElementById('sp-' + x);
+    if (b) b.classList.toggle('active', x === p);
+  });
+  renderSummary();
+}
+
+async function renderSummary() {
+  const view = document.getElementById('summary-view');
+  if (!view) return;
+  view.innerHTML = '<div class="empty">Loading…</div>';
+
+  const { start, end, days } = getPeriodRange(summaryPeriod);
+
+  const [foodRes, wkRes, habRes, compRes] = await Promise.all([
+    dbCall(() => db.from('food_entries').select('calories,protein,carbs,fat,date').eq('user_id',user.id).gte('date',start).lte('date',end)),
+    dbCall(() => db.from('workout_entries').select('id,date,type').eq('user_id',user.id).gte('date',start).lte('date',end)),
+    dbCall(() => db.from('habits').select('id,recurring,completed').eq('user_id',user.id)),
+    dbCall(() => db.from('habit_completions').select('habit_id,date').eq('user_id',user.id).gte('date',start).lte('date',end)),
+  ]);
+
+  const foods    = foodRes.data  || [];
+  const wks      = wkRes.data    || [];
+  const allItems = habRes.data   || [];
+  const comps    = compRes.data  || [];
+  const habits   = allItems.filter(h =>  h.recurring);
+  const tasks    = allItems.filter(h => !h.recurring);
+
+  // Nutrition
+  const totalCals  = foods.reduce((s,f) => s + (f.calories||0), 0);
+  const totalP     = foods.reduce((s,f) => s + (+f.protein||0), 0);
+  const totalC     = foods.reduce((s,f) => s + (+f.carbs||0),   0);
+  const totalF     = foods.reduce((s,f) => s + (+f.fat||0),     0);
+  const loggedDays = new Set(foods.map(f => f.date)).size;
+  const avgCals    = loggedDays ? Math.round(totalCals / loggedDays) : 0;
+
+  // Workouts
+  const wkDaysSet = new Set(wks.map(w => w.date));
+  const wkDays    = wkDaysSet.size;
+
+  // Habits
+  const compRate   = (habits.length && days) ? Math.min(100, Math.round((comps.length / (habits.length * days)) * 100)) : null;
+  const tasksDone  = tasks.filter(t => t.completed).length;
+
+  // ── Week chart (week period only)
+  let chartHtml = '';
+  if (summaryPeriod === 'week') {
+    const calsByDay = {};
+    foods.forEach(f => { calsByDay[f.date] = (calsByDay[f.date]||0) + f.calories; });
+    const today = todayKey();
+    const weekDays = Array.from({length:7}, (_,i) => {
+      const d = new Date(); d.setDate(d.getDate() - (6 - i));
+      return d.toISOString().split('T')[0];
+    });
+    const cols = weekDays.map(date => {
+      const d = new Date(date + 'T12:00:00');
+      const lbl = ['S','M','T','W','T','F','S'][d.getDay()];
+      const cals = calsByDay[date] || 0;
+      const barH = (cals && calGoal) ? Math.min(42, Math.max(3, Math.round((cals/calGoal)*42))) : 0;
+      const barColor = cals > calGoal ? 'var(--danger)' : 'var(--accent5)';
+      const hasWk = wkDaysSet.has(date);
+      return `<div class="week-day-col">
+        <div class="week-day-lbl${date===today?' wk-today':''}">${lbl}</div>
+        <div class="week-cal-wrap"><div class="week-cal-bar" style="height:${barH}px;background:${barColor}"></div></div>
+        <div class="week-wk-dot" style="background:${hasWk?'var(--accent2)':'var(--border)'}"></div>
+      </div>`;
+    }).join('');
+    chartHtml = `<div class="card" style="margin-bottom:12px">
+      <div class="smry-ttl">This Week</div>
+      <div class="week-grid">${cols}</div>
+      <div class="week-legend">
+        <span><i class="wk-swatch" style="background:var(--accent5);border-radius:2px"></i>Calories</span>
+        <span><i class="wk-swatch" style="background:var(--accent2);border-radius:50%"></i>Workout</span>
+      </div>
+    </div>`;
+  }
+
+  // ── Nutrition card
+  const displayCals = days === 1 ? totalCals : avgCals;
+  const goalPct = calGoal ? Math.min(100, Math.round((displayCals / calGoal) * 100)) : 0;
+  const nutritionHtml = `<div class="card" style="margin-bottom:12px">
+    <div class="smry-ttl">Nutrition</div>
+    <div class="smry-stat-row">
+      <span class="smry-big" style="color:var(--accent)">${displayCals.toLocaleString()}</span>
+      <span class="smry-lbl">kcal${days > 1 ? ' avg / day' : ' today'}</span>
+    </div>
+    <div class="summary-bar"><div class="summary-bar-fill" style="width:${goalPct}%;background:${goalPct>110?'var(--danger)':'var(--accent)'}"></div></div>
+    <div class="smry-sub">${goalPct}% of ${calGoal.toLocaleString()} goal${days > 1 ? ` · ${totalCals.toLocaleString()} total · ${loggedDays} of ${days} days logged` : ''}</div>
+    <div class="smry-macros">
+      <div class="smry-mac"><div class="smry-mac-val" style="color:var(--accent2)">${Math.round(days===1?totalP:totalP/(loggedDays||1))}g</div><div class="smry-mac-lbl">${days>1?'avg ':''}protein</div></div>
+      <div class="smry-mac"><div class="smry-mac-val" style="color:var(--accent3)">${Math.round(days===1?totalC:totalC/(loggedDays||1))}g</div><div class="smry-mac-lbl">${days>1?'avg ':''}carbs</div></div>
+      <div class="smry-mac"><div class="smry-mac-val" style="color:var(--danger)">${Math.round(days===1?totalF:totalF/(loggedDays||1))}g</div><div class="smry-mac-lbl">${days>1?'avg ':''}fat</div></div>
+    </div>
+  </div>`;
+
+  // ── Workouts card
+  const activePct = days ? Math.round((wkDays/days)*100) : 0;
+  const workoutsHtml = `<div class="card" style="margin-bottom:12px">
+    <div class="smry-ttl">Workouts</div>
+    <div style="display:flex;gap:20px;align-items:flex-end">
+      <div><div class="smry-big" style="color:var(--accent2)">${wkDays}</div><div class="smry-sub">session${wkDays!==1?'s':''}</div></div>
+      <div><div class="smry-big" style="color:var(--accent2);font-size:1.5rem">${wks.length}</div><div class="smry-sub">exercise${wks.length!==1?'s':''}</div></div>
+      ${days>1 ? `<div style="margin-left:auto;text-align:right"><div style="font-size:1.3rem;font-weight:700;color:var(--text-2)">${activePct}%</div><div class="smry-sub">days active</div></div>` : ''}
+    </div>
+  </div>`;
+
+  // ── Daily card
+  const dailyHtml = `<div class="card">
+    <div class="smry-ttl">Daily</div>
+    ${habits.length ? `
+      <div class="smry-stat-row">
+        <span class="smry-big" style="color:var(--accent4)">${compRate ?? 0}%</span>
+        <span class="smry-lbl">habit completion</span>
+      </div>
+      <div class="summary-bar"><div class="summary-bar-fill" style="width:${compRate??0}%;background:var(--accent4)"></div></div>
+      <div class="smry-sub">${habits.length} habit${habits.length!==1?'s':''}</div>
+    ` : '<div class="smry-sub">No habits tracked</div>'}
+    ${tasks.length ? `<div class="smry-sub" style="margin-top:${habits.length?6:0}px">${tasksDone} of ${tasks.length} task${tasks.length!==1?'s':''} completed</div>` : ''}
+  </div>`;
+
+  view.innerHTML = chartHtml + nutritionHtml + workoutsHtml + dailyHtml;
+}
+
 // ── Navigation ─────────────────────────────────────────────────────────────
 function switchTab(tab) {
   editing = { food: null, workout: null, info: null, habit: null, folder: null };
@@ -1186,6 +1369,7 @@ function switchTab(tab) {
   if (tab==='workout') renderWorkout();
   if (tab==='info')    renderInfo();
   if (tab==='daily')   renderDaily();
+  if (tab==='summary') setSummaryPeriod(summaryPeriod);
 }
 function changeDay(s,d) { currentDays[s]+=d; if(currentDays[s]>0)currentDays[s]=0; if(s==='food')renderFood();else renderWorkout(); }
 function goToday(s)     { currentDays[s]=0; if(s==='food')renderFood();else renderWorkout(); }

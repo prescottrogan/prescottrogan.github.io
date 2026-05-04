@@ -522,7 +522,7 @@
       <div id="food-portion-row" class="fd-portion" style="display:none">
         <span>Portion:</span>
         <input type="number" id="food-grams" value="100" min="1" inputmode="decimal" oninput="onPortionChange()">
-        <span>g · macros auto-scaled</span>
+        <span id="food-portion-suffix">g · macros auto-scaled</span>
       </div>
       <input type="number" id="food-cal" placeholder="Calories (kcal)" min="0" inputmode="numeric">
       <div class="form-row">
@@ -880,13 +880,28 @@ function selectFood(idx) {
   if (!f) return;
   const nuts = f.foodNutrients || [];
   const nut  = (fid, num) => nuts.find(n => n.nutrientId === fid || String(n.nutrientNumber) === num)?.value || 0;
-  const kcal = nut(1008, '208') || (nut(1062, '268') / 4.184);
-  _selectedFoodBase = { cal: kcal, pro: nut(1003, '203'), carb: nut(1005, '205'), fat: nut(1004, '204') };
+
+  // Branded foods store nutrients per serving size, not per 100g — normalize to per-100g base
+  const isGrams = u => u && /^(g|grm|gram)/i.test(u.trim());
+  const servGrams = (f.servingSize > 0 && isGrams(f.servingSizeUnit)) ? f.servingSize : null;
+  const scale = servGrams ? (100 / servGrams) : 1;
+
+  const rawKcal = nut(1008, '208') || (nut(1062, '268') / 4.184);
+  _selectedFoodBase = {
+    cal:  rawKcal          * scale,
+    pro:  nut(1003, '203') * scale,
+    carb: nut(1005, '205') * scale,
+    fat:  nut(1004, '204') * scale,
+  };
+
   document.getElementById('food-name').value = f.description.split(',')[0].trim();
   hideFoodDropdown();
   document.getElementById('food-portion-row').style.display = 'flex';
-  document.getElementById('food-grams').value = '100';
-  applyFoodPortion(100);
+  const defaultG = servGrams ? Math.round(servGrams) : 100;
+  document.getElementById('food-grams').value = defaultG;
+  const householdDesc = f.householdServingFullText ? ` · 1 serving = ${f.householdServingFullText}` : (servGrams ? ` · 1 serving = ${Math.round(servGrams)}g` : '');
+  document.getElementById('food-portion-suffix').textContent = `g${householdDesc || ' · macros auto-scaled'}`;
+  applyFoodPortion(defaultG);
   document.getElementById('food-grams').select();
 }
 

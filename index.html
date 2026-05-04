@@ -480,9 +480,19 @@
       </div>
       <button class="nav-arrow" onclick="changeDay('workout',1)" id="workout-next"></button>
     </div>
-    <div class="card stat-big" style="padding:18px">
-      <div class="number" id="workout-total" style="color:var(--accent2);font-size:2.5rem">0</div>
-      <div class="label">exercises logged</div>
+    <div class="card stat-big">
+      <div class="number" id="workout-week-sessions" style="color:var(--accent2)">0</div>
+      <div class="label">sessions this week</div>
+      <div class="goal-bar"><div class="goal-bar-fill" id="workout-goal-bar" style="width:0%;background:var(--accent2)"></div></div>
+      <div class="goal-text">
+        Goal: <span id="workout-goal-display">3</span>/week
+        <button class="text-link" onclick="toggleWorkoutGoalEdit()">edit</button>
+      </div>
+      <div id="workout-goal-edit" style="display:none" class="goal-row">
+        <label>Weekly session goal</label>
+        <input type="number" id="workout-goal-input" placeholder="3" min="1" max="7">
+        <button class="btn btn-blue" style="padding:8px 14px" onclick="saveWorkoutGoal()">Save</button>
+      </div>
     </div>
     <div class="card">
       <div class="section-title">Log Exercise</div>
@@ -572,6 +582,8 @@ let _infoCache = [];
 
 // Daily state
 let addType = 'habit'; // 'habit' | 'task'
+
+let workoutGoal = 3; // weekly session goal
 
 // Summary state
 let summaryPeriod = 'week';
@@ -700,8 +712,9 @@ async function dbCall(builder) {
 
 // ── Settings ───────────────────────────────────────────────────────────────
 async function loadSettings() {
-  const { data } = await dbCall(() => db.from('user_settings').select('cal_goal').eq('user_id', user.id).maybeSingle());
-  calGoal = data?.cal_goal ?? 2000;
+  const { data } = await dbCall(() => db.from('user_settings').select('cal_goal,workout_goal').eq('user_id', user.id).maybeSingle());
+  calGoal     = data?.cal_goal     ?? 2000;
+  workoutGoal = data?.workout_goal ?? 3;
 }
 async function saveCalGoal() {
   const v = parseInt(document.getElementById('cal-goal-input').value) || 2000;
@@ -711,6 +724,14 @@ async function saveCalGoal() {
   renderFood();
 }
 function toggleGoalEdit() { const el = document.getElementById('cal-goal-edit'); el.style.display = el.style.display === 'none' ? 'flex' : 'none'; }
+function toggleWorkoutGoalEdit() { const el = document.getElementById('workout-goal-edit'); el.style.display = el.style.display === 'none' ? 'flex' : 'none'; }
+async function saveWorkoutGoal() {
+  const v = Math.max(1, Math.min(7, parseInt(document.getElementById('workout-goal-input').value) || 3));
+  workoutGoal = v;
+  document.getElementById('workout-goal-edit').style.display = 'none';
+  await dbCall(() => db.from('user_settings').upsert({ user_id: user.id, workout_goal: v }, { onConflict: 'user_id' }));
+  renderWorkout();
+}
 
 // ── Food ───────────────────────────────────────────────────────────────────
 async function addFood() {
@@ -809,11 +830,21 @@ async function saveEditWorkout(id) {
 async function deleteExercise(id) { await dbCall(() => db.from('workout_entries').delete().eq('id',id).eq('user_id',user.id)); await renderWorkout(); }
 
 async function renderWorkout() {
-  const dayKey = offsetKey(currentDays.workout);
+  const dayKey  = offsetKey(currentDays.workout);
+  const wkStart = weekStartKey();
+  const wkEnd   = todayKey();
   document.getElementById('workout-day-label').textContent = fmt(dayKey);
-  const { data: list } = await dbCall(() => db.from('workout_entries').select('*').eq('user_id',user.id).eq('date',dayKey).order('created_at',{ascending:true}));
-  const rows = list||[];
-  document.getElementById('workout-total').textContent = rows.length;
+  const [dayRes, weekRes] = await Promise.all([
+    dbCall(() => db.from('workout_entries').select('*').eq('user_id',user.id).eq('date',dayKey).order('created_at',{ascending:true})),
+    dbCall(() => db.from('workout_entries').select('date').eq('user_id',user.id).gte('date',wkStart).lte('date',wkEnd))
+  ]);
+  const rows       = dayRes.data || [];
+  const wkSessions = new Set((weekRes.data||[]).map(e => e.date)).size;
+  const pct        = workoutGoal ? Math.min(100, Math.round((wkSessions/workoutGoal)*100)) : 0;
+  document.getElementById('workout-week-sessions').textContent = wkSessions;
+  document.getElementById('workout-goal-display').textContent  = workoutGoal;
+  document.getElementById('workout-goal-input').value          = workoutGoal;
+  document.getElementById('workout-goal-bar').style.width      = pct + '%';
   const el = document.getElementById('workout-list');
   if (!rows.length) { el.innerHTML='<div class="empty">No exercises logged yet</div>'; return; }
   el.innerHTML = [...rows].reverse().map(e => {
@@ -1224,13 +1255,11 @@ async function renderDaily() {
 // SUMMARY
 // ══════════════════════════════════════════════════════════════════════════
 function getPeriodRange(p) {
-  const today = new Date();
-  const toStr = d => d.toISOString().split('T')[0];
-  const end = toStr(today);
+  const end = todayKey();
   if (p === 'day') return { start: end, end, days: 1 };
   const n = { week: 6, month: 29, year: 364 }[p];
-  const s = new Date(today); s.setDate(s.getDate() - n);
-  return { start: toStr(s), end, days: n + 1 };
+  const s = new Date(); s.setDate(s.getDate() - n);
+  return { start: localDateStr(s), end, days: n + 1 };
 }
 
 function setSummaryPeriod(p) {
@@ -1287,7 +1316,7 @@ async function renderSummary() {
     const today = todayKey();
     const weekDays = Array.from({length:7}, (_,i) => {
       const d = new Date(); d.setDate(d.getDate() - (6 - i));
-      return d.toISOString().split('T')[0];
+      return localDateStr(d);
     });
     const cols = weekDays.map(date => {
       const d = new Date(date + 'T12:00:00');
@@ -1331,7 +1360,8 @@ async function renderSummary() {
   </div>`;
 
   // ── Workouts card
-  const activePct = days ? Math.round((wkDays/days)*100) : 0;
+  const activePct  = days ? Math.round((wkDays/days)*100) : 0;
+  const wkGoalPct  = workoutGoal ? Math.min(100, Math.round((wkDays/workoutGoal)*100)) : 0;
   const workoutsHtml = `<div class="card" style="margin-bottom:12px">
     <div class="smry-ttl">Workouts</div>
     <div style="display:flex;gap:20px;align-items:flex-end">
@@ -1339,6 +1369,10 @@ async function renderSummary() {
       <div><div class="smry-big" style="color:var(--accent2);font-size:1.5rem">${wks.length}</div><div class="smry-sub">exercise${wks.length!==1?'s':''}</div></div>
       ${days>1 ? `<div style="margin-left:auto;text-align:right"><div style="font-size:1.3rem;font-weight:700;color:var(--text-2)">${activePct}%</div><div class="smry-sub">days active</div></div>` : ''}
     </div>
+    ${summaryPeriod === 'week' && workoutGoal ? `
+      <div class="summary-bar" style="margin-top:10px"><div class="summary-bar-fill" style="width:${wkGoalPct}%;background:var(--accent2)"></div></div>
+      <div class="smry-sub">${wkDays} of ${workoutGoal} session goal this week${wkGoalPct>=100?' — goal met!':''}</div>
+    ` : ''}
   </div>`;
 
   // ── Daily card
@@ -1375,8 +1409,10 @@ function changeDay(s,d) { currentDays[s]+=d; if(currentDays[s]>0)currentDays[s]=
 function goToday(s)     { currentDays[s]=0; if(s==='food')renderFood();else renderWorkout(); }
 
 // ── Utils ──────────────────────────────────────────────────────────────────
-const todayKey  = () => new Date().toISOString().split('T')[0];
-const offsetKey = n => { const d=new Date(); d.setDate(d.getDate()+n); return d.toISOString().split('T')[0]; };
+const localDateStr = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const todayKey     = () => localDateStr();
+const offsetKey    = n => { const d = new Date(); d.setDate(d.getDate() + n); return localDateStr(d); };
+const weekStartKey = () => { const d = new Date(); d.setDate(d.getDate() - (d.getDay() === 0 ? 6 : d.getDay() - 1)); return localDateStr(d); };
 const fmt = key => {
   if (key===todayKey())    return 'Today';
   if (key===offsetKey(-1)) return 'Yesterday';

@@ -426,10 +426,15 @@
 <div id="auth-screen" style="display:none">
   <div class="auth-box">
     <div class="auth-logo-wrap">
-      <svg width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="56" height="56" rx="14" fill="#4ade80"/>
-        <polyline points="8,41 17,27 26,32 38,17 49,11" stroke="white" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-        <circle cx="49" cy="11" r="3.5" fill="white"/>
+      <svg width="72" height="72" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="20" cy="25" rx="17" ry="13" fill="#22c55e"/>
+        <circle cx="13" cy="12" r="8" fill="#22c55e"/><circle cx="27" cy="12" r="8" fill="#22c55e"/>
+        <ellipse cx="20" cy="28" rx="10" ry="7" fill="#dcfce7" opacity=".9"/>
+        <ellipse cx="13" cy="13" rx="5" ry="3.5" fill="white"/><circle cx="14" cy="13" r="2" fill="#111"/><circle cx="15" cy="12" r="1" fill="white"/>
+        <ellipse cx="27" cy="13" rx="5" ry="3.5" fill="white"/><circle cx="28" cy="13" r="2" fill="#111"/><circle cx="29" cy="12" r="1" fill="white"/>
+        <circle cx="17" cy="20" r="1.2" fill="rgba(0,0,0,0.25)"/><circle cx="23" cy="20" r="1.2" fill="rgba(0,0,0,0.25)"/>
+        <circle cx="8" cy="26" r="4" fill="rgba(255,130,130,0.5)"/><circle cx="32" cy="26" r="4" fill="rgba(255,130,130,0.5)"/>
+        <path d="M8,31 Q20,38 32,31" stroke="white" stroke-width="2" fill="none" stroke-linecap="round"/>
       </svg>
       <div class="auth-brand">metric</div>
       <div class="auth-sub">Sign in to sync across all your devices</div>
@@ -449,13 +454,8 @@
 
   <header>
     <div class="logo-mark">
-      <svg width="26" height="26" viewBox="0 0 26 26" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <rect width="26" height="26" rx="7" fill="#4ade80"/>
-        <polyline points="3,19 8,12 13,15 18,8 23,5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
-        <circle cx="23" cy="5" r="2" fill="white"/>
-      </svg>
+      <span id="mascot-hdr" class="mascot-idle" onclick="switchTab('summary')" title="View summary" style="cursor:pointer"></span>
       <span>metric</span>
-      <span id="mascot-hdr" class="mascot-idle" onclick="switchTab('daily')" title="Your progress buddy"></span>
     </div>
     <div class="header-right">
       <span id="date-display"></span>
@@ -465,7 +465,7 @@
   </header>
 
   <!-- ── FOOD ──────────────────────────────────────── -->
-  <div id="section-food" class="section active">
+  <div id="section-food" class="section">
     <div class="day-nav">
       <button class="nav-arrow" onclick="changeDay('food',-1)" id="food-prev"></button>
       <div class="day-nav-center">
@@ -572,11 +572,9 @@
 
   <!-- ── DAILY ─────────────────────────────────────── -->
   <div id="section-daily" class="section">
-    <div class="card mascot-card">
-      <div id="mascot-face" class="mascot-idle"></div>
-      <div class="mascot-pct" id="daily-pct">0%</div>
-      <div class="mascot-lbl" id="daily-label">done today</div>
-      <div class="mascot-msg" id="mascot-msg">Waiting for you…</div>
+    <div class="card stat-big" style="padding:18px">
+      <div class="number" id="daily-pct" style="color:var(--accent4);font-size:2.5rem">0%</div>
+      <div class="label" id="daily-label">done today</div>
     </div>
     <div class="card">
       <div class="section-title">Add</div>
@@ -593,10 +591,14 @@
   </div>
 
   <!-- ── SUMMARY ────────────────────────────────────── -->
-  <div id="section-summary" class="section">
+  <div id="section-summary" class="section active">
+    <div class="card mascot-card">
+      <div id="mascot-face" class="mascot-idle"></div>
+      <div class="mascot-msg" id="mascot-msg">Loading…</div>
+    </div>
     <div class="smry-period">
       <button class="smry-period-btn" id="sp-day"   onclick="setSummaryPeriod('day')">Day</button>
-      <button class="smry-period-btn" id="sp-week"  onclick="setSummaryPeriod('week')">Week</button>
+      <button class="smry-period-btn active" id="sp-week"  onclick="setSummaryPeriod('week')">Week</button>
       <button class="smry-period-btn" id="sp-month" onclick="setSummaryPeriod('month')">Month</button>
       <button class="smry-period-btn" id="sp-year"  onclick="setSummaryPeriod('year')">Year</button>
     </div>
@@ -604,11 +606,11 @@
   </div>
 
   <nav>
-    <button class="active" data-tab="food"    onclick="switchTab('food')"    id="nav-food"></button>
+    <button              data-tab="food"    onclick="switchTab('food')"    id="nav-food"></button>
     <button              data-tab="workout" onclick="switchTab('workout')" id="nav-workout"></button>
-    <button              data-tab="info"    onclick="switchTab('info')"    id="nav-info"></button>
+    <button class="active" data-tab="summary" onclick="switchTab('summary')" id="nav-summary"></button>
     <button              data-tab="daily"   onclick="switchTab('daily')"   id="nav-daily"></button>
-    <button              data-tab="summary" onclick="switchTab('summary')" id="nav-summary"></button>
+    <button              data-tab="info"    onclick="switchTab('info')"    id="nav-info"></button>
   </nav>
 </div>
 
@@ -751,7 +753,7 @@ async function showApp() {
   document.getElementById('app').style.display = 'block';
   document.getElementById('date-display').textContent = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
   await loadSettings();
-  renderFood();
+  setSummaryPeriod('week');
 }
 
 // ── DB wrapper ─────────────────────────────────────────────────────────────
@@ -1442,12 +1444,17 @@ async function renderSummary() {
   view.innerHTML = '<div class="empty">Loading…</div>';
 
   const { start, end, days } = getPeriodRange(summaryPeriod);
+  const today   = todayKey();
+  const wkStart = weekStartKey();
 
-  const [foodRes, wkRes, habRes, compRes] = await Promise.all([
+  const [foodRes, wkRes, habRes, compRes, wkWeekRes, todayFoodRes, todayCompRes] = await Promise.all([
     dbCall(() => db.from('food_entries').select('calories,protein,carbs,fat,date').eq('user_id',user.id).gte('date',start).lte('date',end)),
     dbCall(() => db.from('workout_entries').select('id,date,type').eq('user_id',user.id).gte('date',start).lte('date',end)),
     dbCall(() => db.from('habits').select('id,recurring,completed').eq('user_id',user.id)),
     dbCall(() => db.from('habit_completions').select('habit_id,date').eq('user_id',user.id).gte('date',start).lte('date',end)),
+    dbCall(() => db.from('workout_entries').select('date').eq('user_id',user.id).gte('date',wkStart).lte('date',today)),
+    dbCall(() => db.from('food_entries').select('calories').eq('user_id',user.id).eq('date',today)),
+    dbCall(() => db.from('habit_completions').select('habit_id').eq('user_id',user.id).eq('date',today)),
   ]);
 
   const foods    = foodRes.data  || [];
@@ -1456,6 +1463,49 @@ async function renderSummary() {
   const comps    = compRes.data  || [];
   const habits   = allItems.filter(h =>  h.recurring);
   const tasks    = allItems.filter(h => !h.recurring);
+
+  // Today's goal data (for mascot + today card)
+  const todayCals      = (todayFoodRes.data||[]).reduce((s,f)=>s+(f.calories||0),0);
+  const thisWeekWk     = new Set((wkWeekRes.data||[]).map(e=>e.date)).size;
+  const todayDoneIds   = new Set((todayCompRes.data||[]).map(c=>c.habit_id));
+  const todayHabitDone = habits.filter(h=>todayDoneIds.has(h.id)).length + tasks.filter(t=>t.completed).length;
+  const totalItems     = allItems.length;
+
+  // Update mascot state
+  _mascot.cals        = todayCals;
+  _mascot.wkSessions  = thisWeekWk;
+  _mascot.habitDone   = todayHabitDone;
+  _mascot.habitTotal  = totalItems;
+  updateMascot();
+
+  // ── Today's Goals card
+  const calPct  = calGoal ? Math.min(100, Math.round((todayCals/calGoal)*100)) : 0;
+  const wkPct   = workoutGoal ? Math.min(100, Math.round((thisWeekWk/workoutGoal)*100)) : 0;
+  const habPct  = totalItems ? Math.round((todayHabitDone/totalItems)*100) : 0;
+  const todayCard = `<div class="card" style="margin-bottom:12px">
+    <div class="smry-ttl">Today's Goals</div>
+    <div style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">
+        <span style="font-size:.85rem;font-weight:600">🍽 Calories</span>
+        <span style="font-size:.78rem;color:var(--muted)">${todayCals.toLocaleString()} / ${calGoal.toLocaleString()} kcal</span>
+      </div>
+      <div class="goal-bar"><div class="goal-bar-fill" style="width:${calPct}%;background:${calPct>110?'var(--danger)':'var(--accent)'}"></div></div>
+    </div>
+    <div style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">
+        <span style="font-size:.85rem;font-weight:600">💪 Workouts</span>
+        <span style="font-size:.78rem;color:var(--muted)">${thisWeekWk} / ${workoutGoal} this week</span>
+      </div>
+      <div class="goal-bar"><div class="goal-bar-fill" style="width:${wkPct}%;background:var(--accent2)"></div></div>
+    </div>
+    <div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">
+        <span style="font-size:.85rem;font-weight:600">✓ Habits</span>
+        <span style="font-size:.78rem;color:var(--muted)">${todayHabitDone} / ${totalItems} today</span>
+      </div>
+      <div class="goal-bar"><div class="goal-bar-fill" style="width:${habPct}%;background:var(--accent4)"></div></div>
+    </div>
+  </div>`;
 
   // Nutrition
   const totalCals  = foods.reduce((s,f) => s + (f.calories||0), 0);
@@ -1478,7 +1528,6 @@ async function renderSummary() {
   if (summaryPeriod === 'week') {
     const calsByDay = {};
     foods.forEach(f => { calsByDay[f.date] = (calsByDay[f.date]||0) + f.calories; });
-    const today = todayKey();
     const weekDays = Array.from({length:7}, (_,i) => {
       const d = new Date(); d.setDate(d.getDate() - (6 - i));
       return localDateStr(d);
@@ -1554,34 +1603,68 @@ async function renderSummary() {
     ${tasks.length ? `<div class="smry-sub" style="margin-top:${habits.length?6:0}px">${tasksDone} of ${tasks.length} task${tasks.length!==1?'s':''} completed</div>` : ''}
   </div>`;
 
-  view.innerHTML = chartHtml + nutritionHtml + workoutsHtml + dailyHtml;
+  view.innerHTML = todayCard + chartHtml + nutritionHtml + workoutsHtml + dailyHtml;
 }
 
-// ── Mascot ─────────────────────────────────────────────────────────────────
+// ── Mascot (frog) ───────────────────────────────────────────────────────────
 function mascotSVG(score, size) {
   size = size || 72;
   const s = score;
-  const body = s>=90?'#22c55e':s>=60?'#4ade80':s>=35?'#a8a29e':s>=15?'#78716c':'#57534e';
-  const mouth = s>=90?'M10,24 Q20,35 30,24':s>=65?'M11,25 Q20,32 29,25':s>=40?'M12,25 Q20,29 28,25':s>=20?'M13,26 L27,26':s>=8?'M12,28 Q20,23 28,28':'M11,29 Q20,20 29,29';
-  const blush = s>=65?0.5:s>=40?0.22:0;
-  const ey = s<20?17:15;
+  // Body: dark muted green when sad → vibrant bright green when happy
+  const body  = s>=90?'#15803d':s>=65?'#16a34a':s>=40?'#4ade80':s>=20?'#5a7a62':s>=8?'#3f5c48':'#2d4035';
+  const belly = s>=65?'#dcfce7':s>=40?'#bbf7d0':s>=20?'#9ab89e':'#7a9a7e';
+  const bl    = s>=65?0.55:s>=40?0.25:0;
+  const pd    = s>=40?0:s>=20?1:2; // pupil droops down when sad
+  // Wide frog mouth
+  const mouth = s>=90?'M7,31 Q20,41 33,31'
+              : s>=65?'M8,31 Q20,39 32,31'
+              : s>=40?'M9,30 Q20,36 31,30'
+              : s>=20?'M11,30 L29,30'
+              : s>=8 ?'M10,32 Q20,25 30,32'
+              :        'M8,33 Q20,23 32,33';
+  // Eyes: squinting ellipses when happy, round circles when sad
   let eyes;
-  if (s>=60) {
-    eyes = '<path d="M9,'+(ey+2)+' Q12,'+(ey-3)+' 15,'+(ey+2)+'" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/>'
-         + '<path d="M23,'+(ey+2)+' Q26,'+(ey-3)+' 29,'+(ey+2)+'" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/>';
+  if (s >= 60) {
+    eyes = '<ellipse cx="13" cy="13" rx="5.5" ry="3.5" fill="white"/>'
+         + '<circle cx="14" cy="13" r="2.2" fill="#111"/><circle cx="15.5" cy="11.5" r="1.1" fill="white"/>'
+         + '<ellipse cx="27" cy="13" rx="5.5" ry="3.5" fill="white"/>'
+         + '<circle cx="28" cy="13" r="2.2" fill="#111"/><circle cx="29.5" cy="11.5" r="1.1" fill="white"/>';
   } else {
-    eyes = '<circle cx="12" cy="'+ey+'" r="3.5" fill="white"/><circle cx="13" cy="'+(ey+1)+'" r="1.8" fill="#111"/>'
-         + '<circle cx="28" cy="'+ey+'" r="3.5" fill="white"/><circle cx="29" cy="'+(ey+1)+'" r="1.8" fill="#111"/>';
-    if (s<20) eyes += '<path d="M8,'+(ey-2)+' L15,'+(ey-5)+'" stroke="white" stroke-width="1.8" stroke-linecap="round"/>'
-                    + '<path d="M25,'+(ey-5)+' L32,'+(ey-2)+'" stroke="white" stroke-width="1.8" stroke-linecap="round"/>';
+    eyes = '<circle cx="13" cy="12" r="5" fill="white"/>'
+         + '<circle cx="13" cy="'+(12+pd)+'" r="2.3" fill="#111"/>'
+         + '<circle cx="27" cy="12" r="5" fill="white"/>'
+         + '<circle cx="27" cy="'+(12+pd)+'" r="2.3" fill="#111"/>';
   }
-  const tears = s<8?'<ellipse cx="10" cy="'+(ey+5)+'" rx="1.5" ry="2.5" fill="#93c5fd" opacity=".9"/><ellipse cx="28" cy="'+(ey+5)+'" rx="1.5" ry="2.5" fill="#93c5fd" opacity=".9"/>':'';
-  const stars = s>=90?'<path d="M5,9 L6,6 L7,9 L10,10 L7,11 L6,14 L5,11 L2,10Z" fill="#fbbf24"/><path d="M34,7 L35,4 L36,7 L39,8 L36,9 L35,12 L34,9 L31,8Z" fill="#fbbf24"/>':'';
+  // Teardrops slide down the cheeks when very sad
+  const tears = s<8
+    ? '<ellipse cx="10" cy="21" rx="1.5" ry="2.8" fill="#93c5fd" opacity=".9"/>'
+    + '<ellipse cx="28" cy="21" rx="1.5" ry="2.8" fill="#93c5fd" opacity=".9"/>'
+    : '';
+  // Gold stars burst out when celebrating
+  const stars = s>=90
+    ? '<path d="M3,8 L4,5 L5,8 L8,9 L5,10 L4,13 L3,10 L0,9Z" fill="#fbbf24"/>'
+    + '<path d="M35,6 L36,3 L37,6 L40,7 L37,8 L36,11 L35,8 L32,7Z" fill="#fbbf24"/>'
+    + '<path d="M18,1 L19,0 L20,1 L21,0 L22,1 L21,2 L22,3 L20,2 L18,3 L19,2Z" fill="#fb923c"/>'
+    : '';
   return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">'
-    +'<rect x="1" y="1" width="38" height="38" rx="13" fill="'+body+'"/>'+stars+eyes+tears
-    +'<circle cx="8" cy="24" r="4.5" fill="rgba(255,130,130,'+blush+')"/>'
-    +'<circle cx="32" cy="24" r="4.5" fill="rgba(255,130,130,'+blush+')"/>'
-    +'<path d="'+mouth+'" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>';
+    // Body + head bumps
+    + '<ellipse cx="20" cy="25" rx="17" ry="13" fill="'+body+'"/>'
+    + '<circle cx="13" cy="12" r="8" fill="'+body+'"/>'
+    + '<circle cx="27" cy="12" r="8" fill="'+body+'"/>'
+    // Belly patch
+    + '<ellipse cx="20" cy="28" rx="10" ry="7" fill="'+belly+'" opacity=".85"/>'
+    // Eyes on top of bumps
+    + eyes
+    // Nostrils on snout
+    + '<circle cx="17" cy="20" r="1.3" fill="rgba(0,0,0,0.22)"/>'
+    + '<circle cx="23" cy="20" r="1.3" fill="rgba(0,0,0,0.22)"/>'
+    // Blush cheeks
+    + '<circle cx="8" cy="26" r="4.5" fill="rgba(255,130,130,'+bl+')"/>'
+    + '<circle cx="32" cy="26" r="4.5" fill="rgba(255,130,130,'+bl+')"/>'
+    + tears + stars
+    // Mouth
+    + '<path d="'+mouth+'" stroke="white" stroke-width="2.2" fill="none" stroke-linecap="round"/>'
+    + '</svg>';
 }
 
 function mascotMsg(score) {
@@ -1607,7 +1690,7 @@ function updateMascot() {
   const hdr  = document.getElementById('mascot-hdr');
   if (face) { face.innerHTML=mascotSVG(s,72); face.className=cls; }
   if (msg)  msg.textContent = mascotMsg(s);
-  if (hdr)  { hdr.innerHTML=mascotSVG(s,28); hdr.className=cls; }
+  if (hdr)  { hdr.innerHTML=mascotSVG(s,34); hdr.className=cls; }
   if (s>=95 && habitTotal>0 && !_confettiFired) { _confettiFired=true; popConfetti(); }
   if (s<90) _confettiFired = false;
 }

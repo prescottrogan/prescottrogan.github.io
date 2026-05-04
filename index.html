@@ -524,17 +524,7 @@
         <input type="number" id="food-grams" value="100" min="1" inputmode="decimal" oninput="onPortionChange()">
         <span>g · macros auto-scaled</span>
       </div>
-      <div class="cal-input-wrap">
-        <input type="number" id="food-cal" placeholder="0" min="0" inputmode="numeric" class="cal-big-input">
-        <span class="cal-unit">kcal</span>
-      </div>
-      <div class="cal-chips">
-        <button class="cal-chip" onclick="addCal(50)">+50</button>
-        <button class="cal-chip" onclick="addCal(100)">+100</button>
-        <button class="cal-chip" onclick="addCal(200)">+200</button>
-        <button class="cal-chip" onclick="addCal(300)">+300</button>
-        <button class="cal-chip" onclick="addCal(500)">+500</button>
-      </div>
+      <input type="number" id="food-cal" placeholder="Calories (kcal)" min="0" inputmode="numeric">
       <div class="form-row">
         <input type="number" id="food-protein" placeholder="Protein g" min="0" inputmode="numeric">
         <input type="number" id="food-carbs"   placeholder="Carbs g"   min="0" inputmode="numeric">
@@ -856,7 +846,7 @@ async function searchFoodUSDA(query) {
     // Try curated USDA datasets first (no branded duplicates), fall back to all
     let foods = [];
     for (const dt of ['Foundation,SR%20Legacy', null]) {
-      const url = `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(query)}&pageSize=1${dt ? '&dataType=' + dt : ''}&api_key=${USDA_KEY}`;
+      const url = `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(query)}&pageSize=5${dt ? '&dataType=' + dt : ''}&api_key=${USDA_KEY}`;
       const r = await fetch(url, { signal: _foodSearchController.signal });
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       const json = await r.json();
@@ -869,14 +859,14 @@ async function searchFoodUSDA(query) {
       return;
     }
     dd.innerHTML = foods.map((f, i) => {
-      const kcal = f.foodNutrients.find(n => n.nutrientId === 1008)?.value;
-      const kj   = f.foodNutrients.find(n => n.nutrientId === 1062)?.value;
-      const cal  = Math.round(kcal ?? (kj ? kj / 4.184 : 0));
-      // Show the full description so entries are distinguishable
-      const desc = f.description.length > 60 ? f.description.slice(0, 60) + '…' : f.description;
+      const nuts = f.foodNutrients || [];
+      const nut  = (fid, num) => nuts.find(n => n.nutrientId === fid || String(n.nutrientNumber) === num)?.value || 0;
+      const kcal = nut(1008, '208') || (nut(1062, '268') / 4.184);
+      const cal  = Math.round(kcal);
+      const desc = f.description.length > 55 ? f.description.slice(0, 55) + '…' : f.description;
       return `<div class="fd-item" onclick="selectFood(${i})">
         <span class="fd-name">${esc(desc)}</span>
-        <span class="fd-meta">${cal} kcal / 100g</span>
+        <span class="fd-meta">${cal ? cal + ' kcal/100g' : 'tap to select'}</span>
       </div>`;
     }).join('');
   } catch(e) {
@@ -888,9 +878,10 @@ async function searchFoodUSDA(query) {
 function selectFood(idx) {
   const f = _foodSearchResults[idx];
   if (!f) return;
-  const get  = id => f.foodNutrients.find(n => n.nutrientId === id)?.value || 0;
-  const kcal = get(1008) || (get(1062) / 4.184);
-  _selectedFoodBase = { cal: kcal, pro: get(1003), carb: get(1005), fat: get(1004) };
+  const nuts = f.foodNutrients || [];
+  const nut  = (fid, num) => nuts.find(n => n.nutrientId === fid || String(n.nutrientNumber) === num)?.value || 0;
+  const kcal = nut(1008, '208') || (nut(1062, '268') / 4.184);
+  _selectedFoodBase = { cal: kcal, pro: nut(1003, '203'), carb: nut(1005, '205'), fat: nut(1004, '204') };
   document.getElementById('food-name').value = f.description.split(',')[0].trim();
   hideFoodDropdown();
   document.getElementById('food-portion-row').style.display = 'flex';

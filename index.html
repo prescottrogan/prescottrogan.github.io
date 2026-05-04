@@ -487,7 +487,7 @@ nav.bottomnav button.active{color:var(--gold);}
 <div class="mover" id="mlog-insp"><div class="modal"><button class="mclose" onclick="closeModal('mlog-insp')">&#10005;</button><div class="mtitle">Log Inspection</div><input type="hidden" id="li-aid"><input type="hidden" id="li-taskid"><div class="fg"><div class="fl">Apiary</div><div id="li-aname" style="font-weight:700;padding:6px 0;font-size:.92rem;color:var(--gold);"></div></div><div class="fg"><div class="fl">Date</div><input type="date" id="li-date"></div><div class="frow"><div class="fg"><div class="fl">Active Colonies (#)</div><input type="number" id="li-col" placeholder="e.g. 500"></div><div class="fg"><div class="fl">Dead-outs (DO)</div><input type="number" id="li-do" placeholder="0" min="0"></div></div><div class="frow"><div class="fg"><div class="fl">Re-Queens (Re-Q)</div><input type="number" id="li-req" placeholder="0" min="0"></div><div class="fg"><div class="fl">Feed</div><select id="li-feed"><option value="none">None</option><option value="pollen/syrup">Pollen / Syrup</option><option value="syrup">Syrup only</option><option value="pollen">Pollen only</option><option value="other">Other</option></select></div></div><div class="fg"><div class="fl">Treatment Applied</div><select id="li-treat"><option value="none">None</option><option value="oxalic">Oxalic Acid</option><option value="apivar">Apivar</option><option value="tactic">Tactic</option><option value="miteaway">Mite Away</option><option value="hopguard">HopGuard</option><option value="efb">EFB Treatment</option><option value="other">Other</option></select></div><div class="fg"><div class="fl">Comments</div><textarea id="li-notes" placeholder="Observations, colony strength, concerns, follow-up needed..."></textarea></div><button class="btn btn-gold" style="width:100%;" onclick="submitInsp()">Save Inspection</button></div></div>
 <div class="mover" id="madd-apiary"><div class="modal"><button class="mclose" onclick="closeModal('madd-apiary')">&#10005;</button><div class="mtitle" id="af-title">Add Apiary</div><input type="hidden" id="af-id"><div class="fg"><div class="fl">Apiary Name</div><input type="text" id="af-name" placeholder="e.g. Rogue Valley South"></div><div class="frow"><div class="fg"><div class="fl">State</div><select id="af-state"><option value="OR">Oregon (OR)</option><option value="CA">California (CA)</option></select></div><div class="fg"><div class="fl">County</div><input type="text" id="af-county" placeholder="e.g. Jackson County"></div></div><div class="frow"><div class="fg"><div class="fl">City</div><input type="text" id="af-city" placeholder="e.g. Medford"></div><div class="fg"><div class="fl">Total Hives</div><input type="number" id="af-hives" placeholder="e.g. 500"></div></div><div class="frow"><div class="fg"><div class="fl">Move-In Date</div><input type="date" id="af-movein"></div><div class="fg"><div class="fl">Key / Reference</div><input type="text" id="af-key" placeholder="e.g. Alves · Block 4"></div></div><div class="frow"><div class="fg"><div class="fl">Latitude</div><input type="text" id="af-lat" placeholder="e.g. 42.326" oninput="updGM('af')"></div><div class="fg"><div class="fl">Longitude</div><input type="text" id="af-lng" placeholder="e.g. -122.875" oninput="updGM('af')"></div></div><div class="gmlink" id="af-gmlink"><a id="af-gma" href="#" target="_blank" rel="noopener">Open in Google Maps</a></div><div class="fg"><div class="fl">Notes / Contract Info</div><textarea id="af-notes" placeholder="Pollination contracts, crop types, access notes..."></textarea></div><div class="fg"><div class="fl">Assigned Workers</div><div class="chk-list" id="af-workers"></div></div><button class="btn btn-gold" style="width:100%;margin-top:4px;" onclick="submitApiary()">Save Apiary</button></div></div>
 <div class="mover" id="madd-task"><div class="modal"><button class="mclose" onclick="closeModal('madd-task')">&#10005;</button><div class="mtitle" id="ta-title">Add Task</div><input type="hidden" id="ta-id"><div class="fg"><div class="fl">Task Type</div><select id="ta-type"><option value="inspection">Inspection</option><option value="treatment">Varroa Treatment</option><option value="equipment">Equipment / Maintenance</option><option value="supering">Add / Pull Honey Supers</option><option value="queen">Queen Check / Replace</option><option value="feeding">Feeding / Supplements</option><option value="water">Water Source Check</option><option value="other">Other</option></select></div><div class="fg"><div class="fl">Description</div><input type="text" id="ta-desc" placeholder="Brief description"></div><div class="frow"><div class="fg"><div class="fl">Apiary</div><select id="ta-ap"></select></div><div class="fg"><div class="fl">Assign To</div><select id="ta-assignee"></select></div></div><div class="frow"><div class="fg"><div class="fl">Due Date</div><input type="date" id="ta-due"></div><div class="fg"><div class="fl">Priority</div><select id="ta-pri"><option value="high">High</option><option value="medium" selected>Medium</option><option value="low">Low</option></select></div></div><div class="fg" id="ta-status-wrap" style="display:none;"><div class="fl">Status</div><select id="ta-status"><option value="open">To Do</option><option value="in-progress">In Progress</option><option value="done">Done</option></select></div><div class="fg"><div class="fl">Notes</div><textarea id="ta-notes" placeholder="Additional details..." style="min-height:60px;"></textarea></div><button class="btn btn-gold" style="width:100%;" onclick="submitTask()">Save Task</button><div id="ta-del-wrap" style="margin-top:10px;display:none;"><button class="btn btn-red" style="width:100%;" onclick="deleteTask()">Delete Task</button></div></div></div>
-<div class="mover" id="madd-employee"><div class="modal"><button class="mclose" onclick="closeModal('madd-employee')">&#10005;</button><div class="mtitle" id="ef-title">Add Team Member</div><input type="hidden" id="ef-id"><div class="fg"><div class="fl">Full Name</div><input type="text" id="ef-name" placeholder="Full name"></div><div class="fg"><div class="fl">Email</div><input type="email" id="ef-email" placeholder="name@prescotthoney.com"></div><div class="frow"><div class="fg"><div class="fl">Role</div><select id="ef-role"><option value="manager">Manager</option><option value="employee">Field Worker</option></select></div><div class="fg"><div class="fl">Phone</div><input type="tel" id="ef-phone" placeholder="(555) 000-0000"></div></div><div class="fg"><div class="fl">Login Password</div><input type="text" id="ef-pass" placeholder="Leave blank to keep current"></div><button class="btn btn-gold" style="width:100%;margin-top:4px;" onclick="submitEmployee()">Save</button><div id="ef-del-wrap" style="margin-top:10px;display:none;"><button class="btn btn-red" style="width:100%;" onclick="deleteEmployee()">Remove Team Member</button></div></div></div>
+<div class="mover" id="madd-employee"><div class="modal"><button class="mclose" onclick="closeModal('madd-employee')">&#10005;</button><div class="mtitle" id="ef-title">Add Team Member</div><input type="hidden" id="ef-id"><div class="fg"><div class="fl">Full Name</div><input type="text" id="ef-name" placeholder="Full name"></div><div class="fg"><div class="fl">Email</div><input type="email" id="ef-email" placeholder="name@prescotthoney.com"></div><div class="frow"><div class="fg"><div class="fl">Role</div><select id="ef-role"><option value="manager">Manager</option><option value="employee">Field Worker</option></select></div><div class="fg"><div class="fl">Phone</div><input type="tel" id="ef-phone" placeholder="(555) 000-0000"></div></div><div class="fg" id="ef-pass-wrap"><div class="fl">Login Password</div><input type="text" id="ef-pass" placeholder="Leave blank to keep current"></div><button class="btn btn-gold" style="width:100%;margin-top:4px;" onclick="submitEmployee()">Save</button><div id="ef-del-wrap" style="margin-top:10px;display:none;"><button class="btn btn-red" style="width:100%;" onclick="deleteEmployee()">Remove Team Member</button></div></div></div>
 <div class="mover" id="madd-move"><div class="modal"><button class="mclose" onclick="closeModal('madd-move')">&#10005;</button><div class="mtitle" id="mf-title">Log Hive Movement</div><input type="hidden" id="mf-id"><div class="frow"><div class="fg"><div class="fl">Date</div><input type="date" id="mf-date"></div><div class="fg"><div class="fl">Status</div><select id="mf-status"><option value="completed">Completed</option><option value="planned">Planned</option></select></div></div><div class="frow"><div class="fg"><div class="fl">From Apiary</div><select id="mf-from"></select></div><div class="fg"><div class="fl">To Apiary</div><select id="mf-to"></select></div></div><div class="frow"><div class="fg"><div class="fl">Hive Count</div><input type="number" id="mf-hives" placeholder="e.g. 40" min="1"></div><div class="fg"><div class="fl">Purpose</div><select id="mf-purpose"><option value="pollination">Pollination Contract</option><option value="returning">Returning from Contract</option><option value="seasonal">Seasonal Move</option><option value="consolidate">Consolidation</option><option value="sold">Sold / Transferred Out</option><option value="purchase">New Purchase / Stock</option><option value="winter">Winter Yard</option><option value="other">Other</option></select></div></div><div class="fg"><div class="fl">Driver / Worker</div><select id="mf-driver"></select></div><div class="fg"><div class="fl">Notes</div><textarea id="mf-notes" placeholder="Contract details, drop point, load info..." style="min-height:60px;"></textarea></div><button class="btn btn-gold" style="width:100%;" onclick="submitMovement()">Save Movement</button><div id="mf-del-wrap" style="margin-top:10px;display:none;"><button class="btn btn-red" style="width:100%;" onclick="deleteMovement()">Delete Movement</button></div></div></div>
 <div class="mover" id="madd-dp"><div class="modal"><button class="mclose" onclick="closeModal('madd-dp')">&#10005;</button><div class="mtitle">Add Drop Point</div><input type="hidden" id="dp-aid"><div class="fg"><div class="fl">Name</div><input type="text" id="dp-name" placeholder="e.g. North Clover Field"></div><div class="frow"><div class="fg"><div class="fl">Latitude</div><input type="text" id="dp-lat" placeholder="e.g. 44.948" oninput="updGM('dp')"></div><div class="fg"><div class="fl">Longitude</div><input type="text" id="dp-lng" placeholder="e.g. -122.869" oninput="updGM('dp')"></div></div><div class="gmlink" id="dp-gmlink"><a id="dp-gma" href="#" target="_blank" rel="noopener">Open in Google Maps</a></div><div class="fg"><div class="fl">Hives</div><input type="number" id="dp-hives" placeholder="e.g. 120"></div><div class="fg"><div class="fl">Notes</div><input type="text" id="dp-notes" placeholder="Access info, landmarks..."></div><button class="btn btn-gold" style="width:100%;" onclick="submitDP()">Add Drop Point</button></div></div>
 
@@ -647,7 +647,7 @@ const SEED_INSPS=Object.entries(LAST_D).map(([aid,d])=>{
   const ap=SEED_AP.find(a=>a.id===aid),emp=USERS.find(u=>u.id===ap?.assignedTo?.[0]);
   const cond=d>18?'poor':d>13?'fair':'good';
   const treats={a04:'oxalic',a02:'apivar',a13:'miteaway'};
-  return{id:`i${aid}`,apiaryId:aid,date:ago(d),inspector:emp?.name||'Staff',inspectorId:ap?.assignedTo?.[0]||'u3',colonies:ap?.hives||0,treatment:treats[aid]||'none',notes:cond==='poor'?'Multiple dead-outs observed. Immediate follow-up required.':cond==='fair'?'Some colonies reduced. Monitor closely.':'Colonies strong. Good brood pattern.'};
+  return{id:`i${aid}`,apiaryId:aid,date:ago(d),inspector:emp?.name||'Staff',inspectorId:ap?.assignedTo?.[0]||'u3',colonies:ap?.hives||0,requeens:cond==='poor'?2:0,deadouts:cond==='poor'?4:cond==='fair'?1:0,feed:cond==='poor'?'pollen/syrup':'none',treatment:treats[aid]||'none',notes:cond==='poor'?'Multiple dead-outs observed. Immediate follow-up required.':cond==='fair'?'Some colonies reduced. Monitor closely.':'Colonies strong. Good brood pattern.'};
 });
 const SEED_TASKS=[
   {id:'t01',type:'inspection',desc:'Inspect Cascade Foothills — OVERDUE',apiaryId:'a02',assignedTo:'u3',dueDate:ago(2),priority:'high',status:'open',notes:'16 days since last inspection'},
@@ -658,7 +658,7 @@ const SEED_TASKS=[
   {id:'t06',type:'water',desc:'Repair water feeders — Eastern Oregon',apiaryId:'a09',assignedTo:'u7',dueDate:ahead(2),priority:'medium',status:'open',notes:'Two feeder stations reported broken'},
   {id:'t07',type:'inspection',desc:'Inspect Stanislaus Almonds',apiaryId:'a13',assignedTo:'u5',dueDate:ahead(1),priority:'high',status:'open',notes:'Due tomorrow — almond client requires 8+ frame colonies'},
   {id:'t08',type:'equipment',desc:'Deliver new frames — Merced Grasslands',apiaryId:'a18',assignedTo:'u8',dueDate:ahead(2),priority:'medium',status:'open',notes:'200 new frames ready for delivery'},
-  {id:'t09',type:'transport',desc:'Move hives — Butte to Modesto',apiaryId:'a17',assignedTo:'u7',dueDate:ahead(2),priority:'medium',status:'open',notes:'35 hives for late almond contract'},
+  {id:'t09',type:'other',desc:'Coordinate hive load — Butte to Modesto',apiaryId:'a17',assignedTo:'u7',dueDate:ahead(2),priority:'medium',status:'open',notes:'35 hives — see Movements for transport log'},
   {id:'t10',type:'inspection',desc:'Inspect Butte County — OVERDUE',apiaryId:'a17',assignedTo:'u7',dueDate:ago(3),priority:'high',status:'open',notes:'17 days overdue'},
   {id:'t11',type:'feeding',desc:'Emergency feeding — Klamath Basin',apiaryId:'a04',assignedTo:'u5',dueDate:TODAY,priority:'high',status:'in-progress',notes:'Low stores. Sugar syrup + pollen sub.'},
   {id:'t12',type:'inspection',desc:'Inspect Columbia Gorge — OVERDUE',apiaryId:'a07',assignedTo:'u6',dueDate:ago(4),priority:'high',status:'open',notes:'18 days since last inspection'},
@@ -679,7 +679,7 @@ const SEED_MOVES=[
   {id:'mv09',date:ahead(21),fromApiaryId:'a09',toApiaryId:'a07',hiveCount:40,driverId:'u7',truckInfo:'Truck 3',purpose:'consolidate',status:'planned',notes:'Consolidate eastern Oregon colonies before fall'},
   {id:'mv10',date:ahead(60),fromApiaryId:'a01',toApiaryId:null,hiveCount:120,driverId:'u3',truckInfo:'Trucks 1+2',purpose:'pollination',status:'planned',notes:'Willamette Valley colonies to CA for almond season — depart late Dec'},
 ];
-const S={user:null,apiaries:[],inspections:[],tasks:[],movements:[],employees:[],af:'all',tf:'all',mapMode:false,leafMap:null,tileLayer:null,markerGroup:null};
+const S={user:null,apiaries:[],inspections:[],tasks:[],movements:[],employees:[],mapMode:false,leafMap:null,tileLayer:null,markerGroup:null};
 function loadData(){
   S.apiaries=JSON.parse(localStorage.getItem('phf_ap'))||JSON.parse(JSON.stringify(SEED_AP));
   S.inspections=JSON.parse(localStorage.getItem('phf_ins'))||JSON.parse(JSON.stringify(SEED_INSPS));
@@ -841,7 +841,7 @@ function renderDash(){
     <div class="scard sc-gold"><div class="snum" style="color:var(--gold)">${tot.toLocaleString()}</div><div class="slbl">Total Hives</div><div class="ssub">${aps.length} apiaries</div></div>
     <div class="scard ${over.length?'sc-red':'sc-grn'}"><div class="snum" style="color:${over.length?'var(--red)':'var(--grn)'}">${over.length}</div><div class="slbl">Overdue Inspections</div><div class="ssub">14-day cycle</div></div>
     <div class="scard ${todT.length?'sc-org':'sc-grn'}"><div class="snum" style="color:${todT.length?'var(--org)':'var(--grn)'}">${todT.length}</div><div class="slbl">Tasks Due Today</div><div class="ssub">${S.tasks.filter(t=>t.status==='done').length} completed total</div></div>
-    <div class="scard sc-blu"><div class="snum" style="color:var(--blu)">${S.employees.filter(e=>e.role!=='owner').length}</div><div class="slbl">Team Members</div><div class="ssub">OR &amp; CA regions</div></div>`:
+    <div class="scard sc-blu"><div class="snum" style="color:var(--blu)">${S.employees.filter(e=>e.role!=='owner'&&e.active!==false).length}</div><div class="slbl">Team Members</div><div class="ssub">OR &amp; CA regions</div></div>`:
     `<div class="scard sc-gold"><div class="snum" style="color:var(--gold)">${tot.toLocaleString()}</div><div class="slbl">My Hives</div><div class="ssub">${aps.length} assigned</div></div>
     <div class="scard ${over.length?'sc-red':'sc-grn'}"><div class="snum" style="color:${over.length?'var(--red)':'var(--grn)'}">${over.length}</div><div class="slbl">Need Inspection</div></div>
     <div class="scard ${todT.length?'sc-org':'sc-grn'}"><div class="snum" style="color:${todT.length?'var(--org)':'var(--grn)'}">${todT.length}</div><div class="slbl">My Tasks Today</div></div>
@@ -1027,7 +1027,7 @@ function openEditAP(id){
 function populateWorkerChks(apiaryId){
   const a=apiaryId?getAP(apiaryId):null;
   const assigned=a?.assignedTo||[];
-  const workers=S.employees.filter(e=>e.role!=='owner');
+  const workers=S.employees.filter(e=>e.role!=='owner'&&e.active!==false);
   document.getElementById('af-workers').innerHTML=workers.map(e=>`<label class="chk-item"><input type="checkbox" value="${e.id}" ${assigned.includes(e.id)?'checked':''}><span>${esc(e.name)}</span></label>`).join('');
 }
 function submitApiary(){
@@ -1129,8 +1129,7 @@ function tCard(t,showBtn){
       <span class="badge ${t.priority==='high'?'bc':t.priority==='medium'?'ba':'bt'}">${t.priority}</span>
       <span style="font-size:.73rem;color:${dc};">${relD(t.dueDate)}</span>
       ${asn?`<span style="font-size:.73rem;color:var(--mut);">${esc(asn.name.split(' ')[0])}</span>`:''}
-      ${showBtn&&can&&!dn&&isInsp&&t.apiaryId?`<button class="tlog-btn" onclick="openInsp('${t.apiaryId}','${t.id}')">Log &amp; Complete</button>`:''}
-      ${showBtn&&can&&!dn&&!isInsp?`<button class="tdone-btn" onclick="doneTask('${t.id}')">Mark Done</button>`:''}
+      ${showBtn&&can&&!dn&&isInsp&&t.apiaryId?`<button class="tlog-btn" onclick="openInsp('${t.apiaryId}','${t.id}')">Log &amp; Complete</button>`:showBtn&&can&&!dn?`<button class="tdone-btn" onclick="doneTask('${t.id}')">Mark Done</button>`:''}
       ${showBtn&&isOM()?`<button class="tedit-btn" onclick="openEditTask('${t.id}')">Edit</button>`:''}
     </div>
     ${t.notes?`<div style="font-size:.73rem;color:var(--mut);margin-top:6px;">${esc(t.notes)}</div>`:''}
@@ -1147,7 +1146,7 @@ function openAddTask(preApiaryId){
   document.getElementById('ta-del-wrap').style.display='none';
   document.getElementById('ta-status-wrap').style.display='none';
   document.getElementById('ta-ap').innerHTML='<option value="">— Select Apiary —</option>'+S.apiaries.map(a=>`<option value="${a.id}">${esc(a.name)} (${a.state})</option>`).join('');
-  document.getElementById('ta-assignee').innerHTML='<option value="">— Unassigned —</option>'+S.employees.filter(e=>e.role!=='owner').map(e=>`<option value="${e.id}">${esc(e.name)}</option>`).join('');
+  document.getElementById('ta-assignee').innerHTML='<option value="">— Unassigned —</option>'+S.employees.filter(e=>e.role!=='owner'&&e.active!==false).map(e=>`<option value="${e.id}">${esc(e.name)}</option>`).join('');
   document.getElementById('ta-due').value=TODAY;
   document.getElementById('ta-desc').value='';document.getElementById('ta-notes').value='';
   document.getElementById('ta-type').value='inspection';document.getElementById('ta-pri').value='medium';
@@ -1161,7 +1160,7 @@ function openEditTask(id){
   document.getElementById('ta-del-wrap').style.display='block';
   document.getElementById('ta-status-wrap').style.display='block';
   document.getElementById('ta-ap').innerHTML='<option value="">— Select Apiary —</option>'+S.apiaries.map(a=>`<option value="${a.id}">${esc(a.name)} (${a.state})</option>`).join('');
-  document.getElementById('ta-assignee').innerHTML='<option value="">— Unassigned —</option>'+S.employees.filter(e=>e.role!=='owner').map(e=>`<option value="${e.id}">${esc(e.name)}</option>`).join('');
+  document.getElementById('ta-assignee').innerHTML='<option value="">— Unassigned —</option>'+S.employees.filter(e=>e.role!=='owner'&&e.active!==false).map(e=>`<option value="${e.id}">${esc(e.name)}</option>`).join('');
   document.getElementById('ta-type').value=t.type;
   document.getElementById('ta-desc').value=t.desc;
   document.getElementById('ta-ap').value=t.apiaryId||'';
@@ -1240,7 +1239,7 @@ function renderMovements(){
   `).join('');
 }
 function _mvApOpts(){return'<option value="">&#8212; External / None &#8212;</option>'+S.apiaries.map(a=>`<option value="${a.id}">${esc(a.name)} (${a.state})</option>`).join('');}
-function _mvEmpOpts(){return'<option value="">&#8212; None &#8212;</option>'+S.employees.filter(e=>e.role!=='owner').map(e=>`<option value="${e.id}">${esc(e.name)}</option>`).join('');}
+function _mvEmpOpts(){return'<option value="">&#8212; None &#8212;</option>'+S.employees.filter(e=>e.role!=='owner'&&e.active!==false).map(e=>`<option value="${e.id}">${esc(e.name)}</option>`).join('');}
 function openAddMovement(preFrom,preTo){
   document.getElementById('mf-title').textContent='Log Hive Movement';
   document.getElementById('mf-id').value='';
@@ -1292,7 +1291,7 @@ function deleteMovement(){
   save();closeModal('madd-move');renderMovements();
 }
 function renderTeam(){
-  const workers=S.employees.filter(e=>e.role!=='owner');
+  const workers=S.employees.filter(e=>e.role!=='owner'&&e.active!==false);
   document.getElementById('team-grid').innerHTML=workers.map(e=>{
     const aps=S.apiaries.filter(a=>(a.assignedTo||[]).includes(e.id));
     const open=S.tasks.filter(t=>t.assignedTo===e.id&&t.status!=='done').length;
@@ -1312,7 +1311,7 @@ function renderTeam(){
     </div>`;
   }).join('');
 }
-function openAddEmployee(){document.getElementById('ef-title').textContent='Add Team Member';document.getElementById('ef-id').value='';['ef-name','ef-email','ef-phone','ef-pass'].forEach(id=>document.getElementById(id).value='');document.getElementById('ef-role').value='employee';document.getElementById('ef-del-wrap').style.display='none';openModal('madd-employee');}
+function openAddEmployee(){document.getElementById('ef-title').textContent='Add Team Member';document.getElementById('ef-id').value='';['ef-name','ef-email','ef-phone','ef-pass'].forEach(id=>document.getElementById(id).value='');document.getElementById('ef-role').value='employee';document.getElementById('ef-del-wrap').style.display='none';document.getElementById('ef-pass-wrap').style.display=phfDB.enabled?'none':'';openModal('madd-employee');}
 function openEditEmployee(id){
   const e=getEmp(id);if(!e)return;
   const isOwner=S.user.role==='owner';
@@ -1325,6 +1324,7 @@ function openEditEmployee(id){
   document.getElementById('ef-pass').value='';
   document.getElementById('ef-role').value=e.role;
   document.getElementById('ef-del-wrap').style.display='block';
+  document.getElementById('ef-pass-wrap').style.display=phfDB.enabled?'none':'';
   openModal('madd-employee');
 }
 async function submitEmployee(){
@@ -1355,6 +1355,7 @@ async function deleteEmployee(){
   if(phfDB.enabled){
     const {error}=await phfDB.client.from('phf_users').update({active:false}).eq('id',id);
     if(error){alert('Failed: '+error.message);return;}
+    S.employees=S.employees.filter(e=>e.id!==id);
     S.apiaries.forEach(a=>{if(a.assignedTo)a.assignedTo=a.assignedTo.filter(x=>x!==id);});
     save();closeModal('madd-employee');renderTeam();
     return;
@@ -1368,7 +1369,7 @@ function renderReports(){
   const orH=aps.filter(a=>a.state==='OR').reduce((s,a)=>s+a.hives,0);
   const caH=aps.filter(a=>a.state==='CA').reduce((s,a)=>s+a.hives,0);
   const onTime=aps.filter(a=>daysSince(a.id)<=14).length;
-  const pct=Math.round((onTime/aps.length)*100);
+  const pct=aps.length?Math.round((onTime/aps.length)*100):0;
   const done=S.tasks.filter(t=>t.status==='done').length;
   const open=S.tasks.filter(t=>t.status!=='done').length;
   const w7=S.inspections.filter(i=>{const d=diffD(i.date);return d>=-7&&d<=0;}).length;

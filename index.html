@@ -155,7 +155,7 @@
   nav button.active[data-tab="summary"] { color: var(--accent5); }
 
   /* ── Sections ──────────────────────────────────── */
-  .section { display: none; padding: 16px 20px; }
+  .section { display: none; padding: 16px 20px calc(80px + env(safe-area-inset-bottom)); }
   .section.active { display: block; animation: fadeIn .22s cubic-bezier(.22,1,.36,1); }
   @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
 
@@ -501,7 +501,7 @@
 <div id="onboard-screen" style="display:none">
   <div class="onboard-box">
     <div class="onboard-step active" id="ob-step-1">
-      <div style="font-size:64px;margin:4px 0 0">🐸</div>
+      <span id="ob-mascot-1" style="display:block;margin:4px 0 0"></span>
       <div class="onboard-title">Welcome to Froggy</div>
       <div class="onboard-sub">Set your daily goals. These lock in — use <strong>Reset Goals</strong> in the summary later if you need to update them.</div>
       <div class="onboard-field">
@@ -515,7 +515,7 @@
       <button class="btn btn-green btn-full" onclick="goOnboardStep2()">Next →</button>
     </div>
     <div class="onboard-step" id="ob-step-2">
-      <div style="font-size:64px;margin:4px 0 0">⚔️</div>
+      <span id="ob-mascot-2" style="display:block;margin:4px 0 0"></span>
       <div class="onboard-title">Your Daily System</div>
       <div class="onboard-sub">Add the habits you <em>must</em> complete every day. These are your core quests — skip them and your frog suffers.</div>
       <div class="onboard-habit-row">
@@ -850,6 +850,8 @@ function injectIcons() {
   document.getElementById('workout-plus').innerHTML     = icon(IC.plus, 16);
   document.getElementById('habit-plus').innerHTML   = icon(IC.plus, 16);
   document.getElementById('cal-icon').innerHTML     = icon(IC.clock, 18);
+  document.getElementById('ob-mascot-1').innerHTML  = mascotSVG(80, 80);
+  document.getElementById('ob-mascot-2').innerHTML  = mascotSVG(80, 80);
   updateMascot();
 }
 

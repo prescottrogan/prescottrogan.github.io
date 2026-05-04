@@ -440,8 +440,6 @@
   .task-add-row input[type="text"] { flex: 1; min-width: 0; }
   .cal-btn { flex-shrink: 0; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: var(--card); border: 1.5px solid var(--border); border-radius: 10px; cursor: pointer; color: var(--muted); transition: border-color .15s, color .15s, background .15s; }
   .cal-btn:hover, .cal-btn.active { border-color: var(--accent4); color: var(--accent4); background: rgba(74,222,128,.09); }
-  #task-due-row { display: none; margin-top: 8px; }
-  #task-due-row input[type="date"] { width: 100%; box-sizing: border-box; }
   .week-day-lbl { font-size: .62rem; font-weight: 600; color: var(--muted); }
   .wk-today { color: var(--accent5) !important; }
   .week-cal-wrap { width: 100%; height: 42px; background: var(--border); border-radius: 3px; display: flex; align-items: flex-end; overflow: hidden; }
@@ -644,13 +642,11 @@
         <button class="type-btn active" id="type-habit-btn" onclick="setAddType('habit')">Habit (recurring)</button>
         <button class="type-btn"        id="type-task-btn"  onclick="setAddType('task')">Task (one-time)</button>
       </div>
-      <div class="task-add-row">
+      <div class="task-add-row" style="position:relative">
         <input type="text" id="habit-name" placeholder="Name...">
         <button id="task-cal-btn" class="cal-btn" style="display:none" onclick="toggleDuePicker()" title="Set due date"><span id="cal-icon"></span></button>
+        <input type="date" id="task-due" style="position:absolute;opacity:0;pointer-events:none;width:0;height:0;bottom:0;left:0" onchange="onDueDatePicked(this.value)">
         <button id="habit-add-btn" class="btn btn-purple" onclick="addItem()"><span id="habit-plus"></span>Add</button>
-      </div>
-      <div id="task-due-row">
-        <input type="date" id="task-due">
       </div>
     </div>
     <div id="daily-list"></div>
@@ -663,8 +659,8 @@
       <div class="mascot-msg" id="mascot-msg">Loading…</div>
     </div>
     <div class="smry-period">
-      <button class="smry-period-btn" id="sp-day"   onclick="setSummaryPeriod('day')">Day</button>
-      <button class="smry-period-btn active" id="sp-week"  onclick="setSummaryPeriod('week')">Week</button>
+      <button class="smry-period-btn active" id="sp-day"   onclick="setSummaryPeriod('day')">Day</button>
+      <button class="smry-period-btn" id="sp-week"  onclick="setSummaryPeriod('week')">Week</button>
       <button class="smry-period-btn" id="sp-month" onclick="setSummaryPeriod('month')">Month</button>
       <button class="smry-period-btn" id="sp-year"  onclick="setSummaryPeriod('year')">Year</button>
     </div>
@@ -703,7 +699,7 @@ let addType = 'habit'; // 'habit' | 'task'
 let workoutGoal = 3; // weekly session goal
 
 // Summary state
-let summaryPeriod = 'week';
+let summaryPeriod = 'day';
 let _mascot = { cals: 0, habitDone: 0, habitTotal: 0, wkSessions: 0 };
 let _confettiFired = false;
 
@@ -824,7 +820,7 @@ async function showApp() {
   document.getElementById('app').style.display = 'block';
   document.getElementById('date-display').textContent = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
   await loadSettings();
-  setSummaryPeriod('week');
+  setSummaryPeriod('day');
 }
 
 // ── DB wrapper ─────────────────────────────────────────────────────────────
@@ -1416,14 +1412,18 @@ async function deleteInfo(id) {
 // DAILY — HABITS + TASKS
 // ══════════════════════════════════════════════════════════════════════════
 function toggleDuePicker() {
-  const row = document.getElementById('task-due-row');
-  const btn = document.getElementById('task-cal-btn');
   const inp = document.getElementById('task-due');
-  const opening = row.style.display !== 'block';
-  row.style.display = opening ? 'block' : 'none';
-  btn.classList.toggle('active', opening);
-  if (opening) { try { inp.showPicker(); } catch(_) { inp.focus(); } }
-  else inp.value = '';
+  try { inp.showPicker(); } catch(_) {}
+}
+function onDueDatePicked(val) {
+  const btn = document.getElementById('task-cal-btn');
+  if (val) {
+    btn.classList.add('active');
+    btn.title = formatDue(val);
+  } else {
+    btn.classList.remove('active');
+    btn.title = 'Set due date';
+  }
 }
 
 function setAddType(type) {
@@ -1435,9 +1435,9 @@ function setAddType(type) {
     : 'Task name (e.g. Call dentist, Buy groceries...)';
   const showDue = type === 'task';
   document.getElementById('task-cal-btn').style.display = showDue ? 'flex' : 'none';
-  document.getElementById('task-due-row').style.display = 'none';
-  document.getElementById('task-due').value = '';
   document.getElementById('task-cal-btn').classList.remove('active');
+  document.getElementById('task-cal-btn').title = 'Set due date';
+  document.getElementById('task-due').value = '';
 }
 
 function parseTaskName(raw) {
@@ -1466,8 +1466,8 @@ async function addItem() {
   btnLoad(btn, false); if (error) return;
   document.getElementById('habit-name').value = '';
   document.getElementById('task-due').value = '';
-  document.getElementById('task-due-row').style.display = 'none';
   document.getElementById('task-cal-btn').classList.remove('active');
+  document.getElementById('task-cal-btn').title = 'Set due date';
   await renderDaily();
 }
 

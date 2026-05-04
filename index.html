@@ -755,7 +755,7 @@ async function saveWorkoutGoal() {
 }
 
 // ── Food search (USDA FoodData Central) ────────────────────────────────────
-const USDA_KEY = 'DEMO_KEY';
+const USDA_KEY = 'zTrnEFEmXaZRz9X2SITx61IykQVuGy7Q56bohHWH';
 let _foodSearchTimer  = null;
 let _foodSearchResults = [];
 let _selectedFoodBase  = null;
@@ -775,7 +775,7 @@ async function searchFoodUSDA(query) {
   dd.style.display = 'block';
   try {
     const r = await fetch(
-      `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(query)}&pageSize=6&dataType=Foundation,SR%20Legacy,Survey%20(FNDDS)&api_key=${USDA_KEY}`
+      `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(query)}&pageSize=3&dataType=Foundation,SR%20Legacy,Survey%20(FNDDS)&api_key=${USDA_KEY}`
     );
     const json = await r.json();
     _foodSearchResults = json.foods || [];

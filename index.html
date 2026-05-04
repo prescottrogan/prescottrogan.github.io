@@ -49,7 +49,7 @@
     -webkit-font-smoothing: antialiased;
     max-width: 640px;
     margin: 0 auto;
-    padding: 0 0 88px;
+    padding: 0;
     min-height: 100vh;
   }
   svg { display: block; }
@@ -261,11 +261,11 @@
   .edit-actions .btn { flex: 1; padding: 8px 12px; font-size: .85rem; }
 
   /* ── Macros ────────────────────────────────────── */
-  .macros-row { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; }
-  .macro-box  { background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 14px 8px; text-align: center; transition: transform .15s ease, box-shadow .15s ease; }
+  .macros-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(72px, 1fr)); gap: 8px; }
+  .macro-box  { background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 8px; text-align: center; transition: transform .15s ease, box-shadow .15s ease; }
   .macro-box:hover { transform: scale(1.05); box-shadow: 0 4px 14px rgba(0,0,0,.09); }
-  .macro-box .val { font-size: 1.2rem; font-weight: 800; font-variant-numeric: tabular-nums; }
-  .macro-box .lbl { font-size: .7rem; color: var(--muted); margin-top: 3px; font-weight: 500; }
+  .macro-box .val { font-size: 1.1rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .macro-box .lbl { font-size: .72rem; color: var(--muted); margin-top: 3px; font-weight: 500; }
 
   /* ── Day nav ───────────────────────────────────── */
   .day-nav { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 8px; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
@@ -428,10 +428,10 @@
   .smry-sub { font-size: .78rem; color: var(--muted); margin-top: 4px; line-height: 1.4; }
   .summary-bar { height: 5px; background: var(--border); border-radius: 3px; margin: 8px 0; overflow: hidden; }
   .summary-bar-fill { height: 100%; border-radius: 3px; transition: width .4s ease; }
-  .smry-macros { display: flex; gap: 8px; margin-top: 10px; }
-  .smry-mac { flex: 1; background: var(--surface-2); border-radius: 8px; padding: 8px 10px; }
-  .smry-mac-val { font-size: 1.15rem; font-weight: 700; line-height: 1; }
-  .smry-mac-lbl { font-size: .7rem; color: var(--muted); margin-top: 3px; }
+  .smry-macros { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .smry-mac { flex: 1 1 60px; background: var(--surface-2); border-radius: 8px; padding: 8px 10px; }
+  .smry-mac-val { font-size: 1.1rem; font-weight: 700; line-height: 1; }
+  .smry-mac-lbl { font-size: .72rem; color: var(--muted); margin-top: 3px; }
   .week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 8px; }
   .week-day-col { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; overflow: hidden; }
   .task-due { font-size: .72rem; font-weight: 600; color: var(--accent3); margin-top: 2px; }
@@ -569,6 +569,7 @@
     </div>
     <div class="header-right">
       <span id="date-display"></span>
+      <button class="theme-btn" id="settings-btn" onclick="showResetModal()" title="Settings"><span id="settings-icon"></span></button>
       <button class="theme-btn" id="theme-toggle" onclick="toggleTheme()" title="Toggle theme"></button>
       <button class="signout-btn" onclick="signOut()">Sign out</button>
     </div>
@@ -599,11 +600,7 @@
       </div>
     </div>
     <div class="card" style="padding:14px 16px">
-      <div class="macros-row">
-        <div class="macro-box"><div class="val" id="macro-p" style="color:var(--accent2)">0g</div><div class="lbl">protein</div></div>
-        <div class="macro-box"><div class="val" id="macro-c" style="color:var(--accent3)">0g</div><div class="lbl">carbs</div></div>
-        <div class="macro-box"><div class="val" id="macro-f" style="color:var(--danger)">0g</div><div class="lbl">fat</div></div>
-      </div>
+      <div class="macros-row" id="macro-boxes"></div>
     </div>
     <div class="card">
       <div class="section-title">Add Food</div>
@@ -618,11 +615,7 @@
         <span id="food-portion-suffix">g · macros auto-scaled</span>
       </div>
       <input type="number" id="food-cal" placeholder="Calories (kcal)" min="0" inputmode="numeric">
-      <div class="form-row">
-        <input type="number" id="food-protein" placeholder="Protein g" min="0" inputmode="numeric">
-        <input type="number" id="food-carbs"   placeholder="Carbs g"   min="0" inputmode="numeric">
-        <input type="number" id="food-fat"     placeholder="Fat g"     min="0" inputmode="numeric">
-      </div>
+      <div id="food-macro-inputs"></div>
       <button id="food-add-btn" class="btn btn-green btn-full" onclick="addFood()"><span id="food-plus"></span>Add</button>
     </div>
     <div class="section-title" id="food-log-title">Today's Log</div>
@@ -742,6 +735,9 @@
         <label>Workout sessions per week</label>
         <input type="number" id="rm-wk" placeholder="3" min="1" max="7">
       </div>
+      <div class="section-title" style="margin-bottom:8px">What to track</div>
+      <div class="reset-sub" style="margin-bottom:10px">Protein, carbs, and fat are always tracked. Pick any extras. <em>Requires running a one-line SQL migration — see console after saving.</em></div>
+      <div id="macro-track-checkboxes" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px"></div>
       <div class="section-title" style="margin-bottom:10px">Locked core habits</div>
       <div id="rm-core-locked"></div>
       <div class="onboard-habit-row" style="margin-top:12px">
@@ -815,8 +811,21 @@ const IC = {
   search:  '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
   summary: '<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>',
   clock:   '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
-  lock:    '<rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>'
+  lock:    '<rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+  gear:    '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>'
 };
+
+const MACRO_DEFS = [
+  { key:'protein',     label:'Protein',     unit:'g',  color:'var(--accent2)', nid:1003, nnum:'203', core:true  },
+  { key:'carbs',       label:'Carbs',       unit:'g',  color:'var(--accent3)', nid:1005, nnum:'205', core:true  },
+  { key:'fat',         label:'Fat',         unit:'g',  color:'var(--danger)',  nid:1004, nnum:'204', core:true  },
+  { key:'fiber',       label:'Fiber',       unit:'g',  color:'var(--accent)',  nid:1079, nnum:'291', core:false },
+  { key:'sugar',       label:'Sugar',       unit:'g',  color:'var(--accent3)', nid:2000, nnum:'269', core:false },
+  { key:'sodium',      label:'Sodium',      unit:'mg', color:'var(--accent5)', nid:1093, nnum:'307', core:false },
+  { key:'sat_fat',     label:'Sat. Fat',    unit:'g',  color:'var(--danger)',  nid:1258, nnum:'606', core:false },
+  { key:'cholesterol', label:'Cholest.',    unit:'mg', color:'var(--muted)',   nid:1253, nnum:'601', core:false },
+];
+let trackedMacros = ['protein','carbs','fat'];
 
 const FOLDER_COLORS = ['#60a5fa','#4ade80','#f59e0b','#a78bfa','#f87171','#34d399','#fb923c','#e879f9'];
 
@@ -850,6 +859,7 @@ function injectIcons() {
   document.getElementById('workout-plus').innerHTML     = icon(IC.plus, 16);
   document.getElementById('habit-plus').innerHTML   = icon(IC.plus, 16);
   document.getElementById('cal-icon').innerHTML     = icon(IC.clock, 18);
+  document.getElementById('settings-icon').innerHTML = icon(IC.gear, 18);
   document.getElementById('ob-mascot-1').innerHTML  = mascotSVG(80, 80);
   document.getElementById('ob-mascot-2').innerHTML  = mascotSVG(80, 80);
   updateMascot();
@@ -1005,6 +1015,11 @@ async function showResetModal() {
   document.getElementById('rm-wk').value  = workoutGoal;
   _rmHabits = [];
   renderRmNewHabits();
+  document.getElementById('macro-track-checkboxes').innerHTML = MACRO_DEFS.filter(m => !m.core).map(m => `
+    <label style="display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px;cursor:pointer;font-size:.88rem;font-weight:500">
+      <input type="checkbox" id="mt-${m.key}" ${trackedMacros.includes(m.key)?'checked':''} style="width:16px;height:16px;accent-color:var(--accent);flex-shrink:0">
+      ${m.label} <span style="color:var(--muted);font-size:.75rem">(${m.unit})</span>
+    </label>`).join('');
   const coreIds = getCoreHabitIds();
   if (coreIds.length) {
     const { data } = await dbCall(() => db.from('habits').select('id,name').in('id', coreIds));
@@ -1037,7 +1052,15 @@ async function submitReset() {
   const cal = parseInt(document.getElementById('rm-cal').value) || calGoal;
   const wk  = Math.max(1, Math.min(7, parseInt(document.getElementById('rm-wk').value) || workoutGoal));
   calGoal = cal; workoutGoal = wk;
-  await dbCall(() => db.from('user_settings').upsert({ user_id: user.id, cal_goal: cal, workout_goal: wk }, { onConflict: 'user_id' }));
+  const newExtra = MACRO_DEFS.filter(m => !m.core && document.getElementById('mt-'+m.key)?.checked).map(m => m.key);
+  trackedMacros = ['protein','carbs','fat', ...newExtra];
+  const settingsRow = { user_id: user.id, cal_goal: cal, workout_goal: wk, tracked_macros: JSON.stringify(trackedMacros) };
+  let { error: se } = await dbCall(() => db.from('user_settings').upsert(settingsRow, { onConflict: 'user_id' }));
+  if (se?.message?.includes('tracked_macros')) {
+    console.info('Froggy: run this SQL to enable custom macro tracking:\nALTER TABLE user_settings ADD COLUMN IF NOT EXISTS tracked_macros TEXT;\nALTER TABLE food_entries ADD COLUMN IF NOT EXISTS meta JSONB;');
+    const { cal_goal: _, workout_goal: __, tracked_macros: ___, ...rest } = settingsRow;
+    await dbCall(() => db.from('user_settings').upsert({ user_id: user.id, cal_goal: cal, workout_goal: wk }, { onConflict: 'user_id' }));
+  }
   const newCoreIds = [];
   for (const name of _rmHabits) {
     const { data } = await dbCall(() => db.from('habits').insert({ user_id: user.id, name, recurring: true, completed: false }).select('id').single());
@@ -1055,9 +1078,13 @@ async function submitReset() {
 
 // ── Settings ───────────────────────────────────────────────────────────────
 async function loadSettings() {
-  const { data } = await dbCall(() => db.from('user_settings').select('cal_goal,workout_goal').eq('user_id', user.id).maybeSingle());
+  const { data } = await dbCall(() => db.from('user_settings').select('*').eq('user_id', user.id).maybeSingle());
   calGoal     = data?.cal_goal     ?? 2000;
   workoutGoal = data?.workout_goal ?? 3;
+  try { trackedMacros = JSON.parse(data?.tracked_macros || 'null') || ['protein','carbs','fat']; } catch { trackedMacros = ['protein','carbs','fat']; }
+  if (!trackedMacros.includes('protein')) trackedMacros.unshift('protein');
+  if (!trackedMacros.includes('carbs'))   trackedMacros.splice(1,0,'carbs');
+  if (!trackedMacros.includes('fat'))     trackedMacros.splice(2,0,'fat');
 }
 async function saveCalGoal() {
   const v = parseInt(document.getElementById('cal-goal-input').value) || 2000;
@@ -1156,12 +1183,8 @@ function selectFood(idx) {
   const scale = servGrams ? (100 / servGrams) : 1;
 
   const rawKcal = nut(1008, '208') || (nut(1062, '268') / 4.184);
-  _selectedFoodBase = {
-    cal:  rawKcal          * scale,
-    pro:  nut(1003, '203') * scale,
-    carb: nut(1005, '205') * scale,
-    fat:  nut(1004, '204') * scale,
-  };
+  _selectedFoodBase = { cal: rawKcal * scale };
+  MACRO_DEFS.forEach(m => { _selectedFoodBase[m.key] = nut(m.nid, m.nnum) * scale; });
 
   document.getElementById('food-name').value = f.description.split(',')[0].trim();
   hideFoodDropdown();
@@ -1177,10 +1200,11 @@ function selectFood(idx) {
 function applyFoodPortion(g) {
   if (!_selectedFoodBase) return;
   const s = g / 100;
-  document.getElementById('food-cal').value     = Math.round(_selectedFoodBase.cal  * s) || '';
-  document.getElementById('food-protein').value = +(_selectedFoodBase.pro  * s).toFixed(1) || '';
-  document.getElementById('food-carbs').value   = +(_selectedFoodBase.carb * s).toFixed(1) || '';
-  document.getElementById('food-fat').value     = +(_selectedFoodBase.fat  * s).toFixed(1) || '';
+  document.getElementById('food-cal').value = Math.round(_selectedFoodBase.cal * s) || '';
+  MACRO_DEFS.forEach(m => {
+    const el = document.getElementById('food-' + m.key);
+    if (el) el.value = +(_selectedFoodBase[m.key] * s).toFixed(m.unit === 'mg' ? 0 : 1) || '';
+  });
 }
 
 function onPortionChange() {
@@ -1194,20 +1218,43 @@ function hideFoodDropdown() {
 }
 
 // ── Food ───────────────────────────────────────────────────────────────────
+function renderFoodMacroInputs() {
+  const macros = MACRO_DEFS.filter(m => trackedMacros.includes(m.key));
+  const rows = [];
+  for (let i = 0; i < macros.length; i += 3) {
+    const chunk = macros.slice(i, i + 3);
+    rows.push(`<div class="form-row">${chunk.map(m =>
+      `<input type="number" id="food-${m.key}" placeholder="${m.label} (${m.unit})" min="0" inputmode="numeric">`
+    ).join('')}</div>`);
+  }
+  document.getElementById('food-macro-inputs').innerHTML = rows.join('');
+}
+
 async function addFood() {
   const name = document.getElementById('food-name').value.trim();
   if (!name) return flashErr('food-name', 'Enter food name');
   const btn = document.getElementById('food-add-btn'); btnLoad(btn, true);
-  const { error } = await dbCall(() => db.from('food_entries').insert({
+  const getMacro = key => parseFloat(document.getElementById('food-' + key)?.value) || 0;
+  const metaObj  = {};
+  MACRO_DEFS.filter(m => !m.core && trackedMacros.includes(m.key)).forEach(m => { const v = getMacro(m.key); if (v) metaObj[m.key] = v; });
+  const hasExtra = Object.keys(metaObj).length > 0;
+  const row = {
     user_id: user.id, date: offsetKey(currentDays.food), name,
     calories: parseInt(document.getElementById('food-cal').value) || 0,
-    protein: parseFloat(document.getElementById('food-protein').value) || 0,
-    carbs:   parseFloat(document.getElementById('food-carbs').value)   || 0,
-    fat:     parseFloat(document.getElementById('food-fat').value)     || 0,
+    protein: getMacro('protein'), carbs: getMacro('carbs'), fat: getMacro('fat'),
     time: new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
-  }));
+  };
+  if (hasExtra) row.meta = metaObj;
+  let { error } = await dbCall(() => db.from('food_entries').insert(row));
+  if (error?.message?.includes('meta')) {
+    console.info('Froggy: run this SQL in Supabase to enable extra nutrient tracking:\nALTER TABLE food_entries ADD COLUMN IF NOT EXISTS meta JSONB;\nALTER TABLE user_settings ADD COLUMN IF NOT EXISTS tracked_macros TEXT;');
+    delete row.meta;
+    ({ error } = await dbCall(() => db.from('food_entries').insert(row)));
+  }
   btnLoad(btn, false); if (error) return;
-  ['food-name','food-cal','food-protein','food-carbs','food-fat'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('food-name').value = '';
+  document.getElementById('food-cal').value  = '';
+  MACRO_DEFS.forEach(m => { const el = document.getElementById('food-' + m.key); if (el) el.value = ''; });
   document.getElementById('food-portion-row').style.display = 'none';
   _selectedFoodBase = null;
   await renderFood();
@@ -1217,12 +1264,12 @@ function cancelEditFood()   { editing.food = null; renderFood(); }
 async function saveEditFood(id) {
   const name = document.getElementById('ef-name-'+id).value.trim();
   if (!name) return toast('Name required', 'error');
-  const { error } = await dbCall(() => db.from('food_entries').update({
-    name, calories: parseInt(document.getElementById('ef-cal-'+id).value)||0,
-    protein: parseFloat(document.getElementById('ef-p-'+id).value)||0,
-    carbs:   parseFloat(document.getElementById('ef-c-'+id).value)||0,
-    fat:     parseFloat(document.getElementById('ef-f-'+id).value)||0
-  }).eq('id',id).eq('user_id',user.id));
+  const getEf = key => parseFloat(document.getElementById(`ef-${key}-${id}`)?.value) || 0;
+  const metaEf = {};
+  MACRO_DEFS.filter(m => !m.core && trackedMacros.includes(m.key)).forEach(m => { const v = getEf(m.key); if (v) metaEf[m.key] = v; });
+  const upd = { name, calories: parseInt(document.getElementById('ef-cal-'+id).value)||0, protein: getEf('protein'), carbs: getEf('carbs'), fat: getEf('fat') };
+  if (Object.keys(metaEf).length) upd.meta = metaEf;
+  const { error } = await dbCall(() => db.from('food_entries').update(upd).eq('id',id).eq('user_id',user.id));
   if (error) return; editing.food = null; toast('Updated','ok'); await renderFood();
 }
 async function deleteFood(id) { await dbCall(() => db.from('food_entries').delete().eq('id',id).eq('user_id',user.id)); await renderFood(); }
@@ -1239,27 +1286,45 @@ async function renderFood() {
   document.getElementById('cal-goal-input').value = calGoal;
   const { data: list } = await dbCall(() => db.from('food_entries').select('*').eq('user_id',user.id).eq('date',dayKey).order('created_at',{ascending:true}));
   const rows = list || [];
-  const tot = rows.reduce((a,e) => { a.cal+=e.calories; a.p+=+e.protein; a.c+=+e.carbs; a.f+=+e.fat; return a; }, {cal:0,p:0,c:0,f:0});
-  document.getElementById('cal-total').textContent = tot.cal;
-  document.getElementById('macro-p').textContent = tot.p.toFixed(0)+'g';
-  document.getElementById('macro-c').textContent = tot.c.toFixed(0)+'g';
-  document.getElementById('macro-f').textContent = tot.f.toFixed(0)+'g';
-  const pct = Math.min(100, Math.round((tot.cal/calGoal)*100));
+  renderFoodMacroInputs();
+  const totals = {};
+  MACRO_DEFS.forEach(m => { totals[m.key] = rows.reduce((s,e) => s + (m.core ? (+e[m.key]||0) : (+(e.meta?.[m.key])||0)), 0); });
+  const totalCal = rows.reduce((s,e) => s+(e.calories||0), 0);
+  document.getElementById('cal-total').textContent = totalCal;
+  document.getElementById('macro-boxes').innerHTML = MACRO_DEFS.filter(m => trackedMacros.includes(m.key)).map(m =>
+    `<div class="macro-box"><div class="val" style="color:${m.color}">${Math.round(totals[m.key])}${m.unit}</div><div class="lbl">${m.label.toLowerCase()}</div></div>`
+  ).join('');
+  const pct = Math.min(100, Math.round((totalCal/calGoal)*100));
   document.getElementById('cal-bar').style.width = pct+'%';
   document.getElementById('cal-bar').style.background = pct>110 ? 'var(--danger)' : 'var(--accent)';
   document.getElementById('cal-total').style.animation = pct > 110 ? 'cal-pulse 1.2s ease-in-out infinite' : '';
-  _mascot.cals = tot.cal;
+  _mascot.cals = totalCal;
   updateMascot();
   const el = document.getElementById('food-list');
   if (!rows.length) { el.innerHTML = '<div class="empty">Nothing logged yet</div>'; return; }
   el.innerHTML = [...rows].reverse().map(e => {
-    if (editing.food === e.id) return `
-      <div class="entry-editing">
+    if (editing.food === e.id) {
+      const editMacros = MACRO_DEFS.filter(m => trackedMacros.includes(m.key));
+      const editRows = [];
+      for (let i = 0; i < editMacros.length; i += 3) {
+        const chunk = editMacros.slice(i, i+3);
+        editRows.push(`<div class="form-row">${chunk.map(m => {
+          const val = m.core ? (e[m.key]||'') : (e.meta?.[m.key]||'');
+          return `<input type="number" id="ef-${m.key}-${e.id}" value="${val}" placeholder="${m.label}" inputmode="numeric">`;
+        }).join('')}</div>`);
+      }
+      return `<div class="entry-editing">
         <div class="form-row"><input type="text" id="ef-name-${e.id}" value="${esc(e.name)}" style="flex:2"><input type="number" id="ef-cal-${e.id}" value="${e.calories}" class="narrow" inputmode="numeric"></div>
-        <div class="form-row"><input type="number" id="ef-p-${e.id}" value="${e.protein}" placeholder="P" inputmode="numeric"><input type="number" id="ef-c-${e.id}" value="${e.carbs}" placeholder="C" inputmode="numeric"><input type="number" id="ef-f-${e.id}" value="${e.fat}" placeholder="F" inputmode="numeric"></div>
+        ${editRows.join('')}
         <div class="edit-actions"><button class="btn btn-green" onclick="saveEditFood('${e.id}')">Save</button><button class="btn btn-ghost" onclick="cancelEditFood()">Cancel</button></div>
       </div>`;
-    return `<div class="entry"><div class="entry-content"><div class="entry-name">${esc(e.name)}</div><div class="entry-meta">${e.time||''}${(e.protein||e.carbs||e.fat)?` · P ${e.protein}g · C ${e.carbs}g · F ${e.fat}g`:''}</div></div><div class="entry-right"><span class="entry-cal">${e.calories}</span><button class="icon-btn" onclick="startEditFood('${e.id}')">${icon(IC.edit,16)}</button><button class="icon-btn danger" onclick="deleteFood('${e.id}')">${icon(IC.trash,16)}</button></div></div>`;
+    }
+    const macroMeta = e.meta || {};
+    const macroStr = MACRO_DEFS.filter(m => trackedMacros.includes(m.key)).map(m => {
+      const v = m.core ? (+e[m.key]||0) : (+macroMeta[m.key]||0);
+      return v ? `${m.label.slice(0,1)} ${v}${m.unit}` : '';
+    }).filter(Boolean).join(' · ');
+    return `<div class="entry"><div class="entry-content"><div class="entry-name">${esc(e.name)}</div><div class="entry-meta">${e.time||''}${macroStr?' · '+macroStr:''}</div></div><div class="entry-right"><span class="entry-cal">${e.calories}</span><button class="icon-btn" onclick="startEditFood('${e.id}')">${icon(IC.edit,16)}</button><button class="icon-btn danger" onclick="deleteFood('${e.id}')">${icon(IC.trash,16)}</button></div></div>`;
   }).join('');
 }
 
@@ -1912,9 +1977,8 @@ async function renderSummary() {
 
   // Nutrition
   const totalCals  = foods.reduce((s,f) => s + (f.calories||0), 0);
-  const totalP     = foods.reduce((s,f) => s + (+f.protein||0), 0);
-  const totalC     = foods.reduce((s,f) => s + (+f.carbs||0),   0);
-  const totalF     = foods.reduce((s,f) => s + (+f.fat||0),     0);
+  const macroTotals = {};
+  MACRO_DEFS.forEach(m => { macroTotals[m.key] = foods.reduce((s,f) => s + (m.core ? (+f[m.key]||0) : (+(f.meta?.[m.key])||0)), 0); });
   const loggedDays = new Set(foods.map(f => f.date)).size;
   const avgCals    = loggedDays ? Math.round(totalCals / loggedDays) : 0;
 
@@ -1969,11 +2033,11 @@ async function renderSummary() {
     </div>
     <div class="summary-bar"><div class="summary-bar-fill" style="width:${goalPct}%;background:${goalPct>110?'var(--danger)':'var(--accent)'}"></div></div>
     <div class="smry-sub">${goalPct}% of ${calGoal.toLocaleString()} goal${days > 1 ? ` · ${totalCals.toLocaleString()} total · ${loggedDays} of ${days} days logged` : ''}</div>
-    <div class="smry-macros">
-      <div class="smry-mac"><div class="smry-mac-val" style="color:var(--accent2)">${Math.round(days===1?totalP:totalP/(loggedDays||1))}g</div><div class="smry-mac-lbl">${days>1?'avg ':''}protein</div></div>
-      <div class="smry-mac"><div class="smry-mac-val" style="color:var(--accent3)">${Math.round(days===1?totalC:totalC/(loggedDays||1))}g</div><div class="smry-mac-lbl">${days>1?'avg ':''}carbs</div></div>
-      <div class="smry-mac"><div class="smry-mac-val" style="color:var(--danger)">${Math.round(days===1?totalF:totalF/(loggedDays||1))}g</div><div class="smry-mac-lbl">${days>1?'avg ':''}fat</div></div>
-    </div>
+    <div class="smry-macros">${MACRO_DEFS.filter(m=>trackedMacros.includes(m.key)).map(m=>{
+      const tot = macroTotals[m.key]||0;
+      const disp = Math.round(days===1 ? tot : tot/(loggedDays||1));
+      return `<div class="smry-mac"><div class="smry-mac-val" style="color:${m.color}">${disp}${m.unit}</div><div class="smry-mac-lbl">${days>1?'avg ':''}${m.label.toLowerCase()}</div></div>`;
+    }).join('')}</div>
   </div>`;
 
   // ── Workouts card

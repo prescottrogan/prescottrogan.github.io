@@ -56,6 +56,7 @@ create table public.phf_state (
   apiaries jsonb not null default '[]'::jsonb,
   inspections jsonb not null default '[]'::jsonb,
   tasks jsonb not null default '[]'::jsonb,
+  movements jsonb not null default '[]'::jsonb,
   updated_at timestamptz not null default now(),
   updated_by uuid references public.phf_users(id) on delete set null
 );
@@ -114,6 +115,10 @@ create policy "phf_state_update_any" on public.phf_state
 alter publication supabase_realtime add table public.phf_state;
 alter publication supabase_realtime add table public.phf_users;
 
+-- =============================================================
+-- MIGRATION (if you already ran this schema and want to add movements):
+--   alter table public.phf_state
+--     add column if not exists movements jsonb not null default '[]'::jsonb;
 -- =============================================================
 -- DONE.
 --

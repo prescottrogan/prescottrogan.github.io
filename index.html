@@ -304,6 +304,25 @@ nav.bottomnav button.active{color:var(--gold);}
 /* EMPTY */
 .empty{text-align:center;padding:40px 20px;color:var(--mut);font-size:.85rem;}
 
+/* TASK GROUPS */
+.tgroup-hd{font-size:.65rem;font-weight:800;text-transform:uppercase;letter-spacing:1.3px;padding:14px 0 6px;margin-top:6px;border-bottom:1px solid var(--brd);}
+.tgroup-hd:first-child{padding-top:0;margin-top:0;}
+.tgh-red{color:var(--red);}
+.tgh-org{color:var(--org);}
+.tgh-grn{color:var(--grn);}
+.tgh-dim{color:var(--mut);}
+
+/* MOVEMENTS */
+.mvcard{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:16px;margin-bottom:10px;transition:border-color .15s;}
+.mvcard:hover{border-color:var(--gold);}
+.mvcard.mv-plan{border-left:4px solid var(--blu);}
+.mvcard.mv-done{border-left:4px solid var(--grn);}
+.mv-hd{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:6px;}
+.mv-route{font-size:.9rem;font-weight:700;}
+.mv-from-to{display:flex;align-items:center;gap:7px;font-size:.8rem;color:var(--tdim);margin-top:4px;flex-wrap:wrap;}
+.mv-arrow{color:var(--gold);font-weight:900;font-size:.9rem;}
+.mv-foot{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:8px;}
+
 @media(max-width:900px){
   .topnav{display:none;}
   .hlogo-txt .hsub{display:none;}
@@ -359,6 +378,8 @@ nav.bottomnav button.active{color:var(--gold);}
         <svg width="15" height="15" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1C5.24 1 3 3.24 3 6c0 3.75 5 9 5 9s5-5.25 5-9c0-2.76-2.24-5-5-5zm0 6.5A1.5 1.5 0 1 1 8 4a1.5 1.5 0 0 1 0 3.5z"/></svg>Apiaries</button>
       <button class="tnav-btn" data-v="tasks" onclick="switchView('tasks')">
         <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 4h12M2 8h8M2 12h5"/><circle cx="13.5" cy="11.5" r="2"/><path d="M12.5 11.5l.7.7 1.5-1.5"/></svg>Tasks</button>
+      <button class="tnav-btn" data-v="movements" onclick="switchView('movements')">
+        <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1 8h14M10 4l4 4-4 4"/><path d="M6 12l-4-4 4-4"/></svg>Movements</button>
       <button class="tnav-btn" data-v="team" onclick="switchView('team')" id="nav-team">
         <svg width="15" height="15" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="5.5" cy="4.5" r="2"/><path d="M1 14c0-2.76 2.01-5 4.5-5S10 11.24 10 14" stroke-linecap="round"/><circle cx="12" cy="5" r="1.75"/><path d="M12 10c2 0 3.5 1.5 3.5 3.5" stroke-linecap="round"/></svg>Team</button>
       <button class="tnav-btn" data-v="reports" onclick="switchView('reports')" id="nav-reports">
@@ -423,6 +444,16 @@ nav.bottomnav button.active{color:var(--gold);}
     <div id="task-list"></div>
   </div>
 
+  <div id="view-movements" class="view">
+    <div class="sh"><div class="st">Hive Movements</div><button class="btn btn-gold btn-sm" onclick="openAddMovement()">+ Log Move</button></div>
+    <div class="fbar" id="mvfbar">
+      <button class="fbtn active" data-mvf="all" onclick="setMVF('all',this)">All</button>
+      <button class="fbtn" data-mvf="planned" onclick="setMVF('planned',this)">Planned</button>
+      <button class="fbtn" data-mvf="completed" onclick="setMVF('completed',this)">Completed</button>
+    </div>
+    <div id="mv-list"></div>
+  </div>
+
   <div id="view-team" class="view">
     <div class="sh"><div class="st">Field Team</div><button class="btn btn-gold btn-sm" id="add-emp-btn" onclick="openAddEmployee()">+ Add Member</button></div>
     <div class="tgrid" id="team-grid"></div>
@@ -445,6 +476,7 @@ nav.bottomnav button.active{color:var(--gold);}
     <button class="active" data-v="dashboard" onclick="switchView('dashboard')"><svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="1" width="6" height="6" rx="1"/><rect x="9" y="1" width="6" height="6" rx="1"/><rect x="1" y="9" width="6" height="6" rx="1"/><rect x="9" y="9" width="6" height="6" rx="1"/></svg>Home</button>
     <button data-v="apiaries" onclick="switchView('apiaries')"><svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1C5.24 1 3 3.24 3 6c0 3.75 5 9 5 9s5-5.25 5-9c0-2.76-2.24-5-5-5zm0 6.5A1.5 1.5 0 1 1 8 4a1.5 1.5 0 0 1 0 3.5z"/></svg>Apiaries</button>
     <button data-v="tasks" onclick="switchView('tasks')"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M2 4h12M2 8h8M2 12h5"/><circle cx="13.5" cy="11.5" r="2"/><path d="M12.5 11.5l.7.7 1.5-1.5"/></svg>Tasks</button>
+    <button data-v="movements" onclick="switchView('movements')"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M1 8h14M10 4l4 4-4 4"/><path d="M6 12l-4-4 4-4"/></svg>Moves</button>
     <button data-v="team" onclick="switchView('team')" id="bnav-team"><svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="5.5" cy="4.5" r="2"/><path d="M1 14c0-2.76 2.01-5 4.5-5S10 11.24 10 14" stroke-linecap="round"/><circle cx="12" cy="5" r="1.75"/><path d="M12 10c2 0 3.5 1.5 3.5 3.5" stroke-linecap="round"/></svg>Team</button>
     <button data-v="reports" onclick="switchView('reports')" id="bnav-reports"><svg width="18" height="18" viewBox="0 0 16 16" fill="currentColor"><rect x="1" y="9" width="2.5" height="6" rx="1"/><rect x="5" y="5" width="2.5" height="10" rx="1"/><rect x="9" y="2" width="2.5" height="13" rx="1"/><rect x="13" y="6" width="2.5" height="9" rx="1"/></svg>Reports</button>
   </nav>
@@ -456,6 +488,7 @@ nav.bottomnav button.active{color:var(--gold);}
 <div class="mover" id="madd-apiary"><div class="modal"><button class="mclose" onclick="closeModal('madd-apiary')">&#10005;</button><div class="mtitle" id="af-title">Add Apiary</div><input type="hidden" id="af-id"><div class="fg"><div class="fl">Apiary Name</div><input type="text" id="af-name" placeholder="e.g. Rogue Valley South"></div><div class="frow"><div class="fg"><div class="fl">State</div><select id="af-state"><option value="OR">Oregon (OR)</option><option value="CA">California (CA)</option></select></div><div class="fg"><div class="fl">County</div><input type="text" id="af-county" placeholder="e.g. Jackson County"></div></div><div class="frow"><div class="fg"><div class="fl">City</div><input type="text" id="af-city" placeholder="e.g. Medford"></div><div class="fg"><div class="fl">Total Hives</div><input type="number" id="af-hives" placeholder="e.g. 500"></div></div><div class="frow"><div class="fg"><div class="fl">Move-In Date</div><input type="date" id="af-movein"></div><div class="fg"><div class="fl">Key / Reference</div><input type="text" id="af-key" placeholder="e.g. Alves · Block 4"></div></div><div class="frow"><div class="fg"><div class="fl">Latitude</div><input type="text" id="af-lat" placeholder="e.g. 42.326" oninput="updGM('af')"></div><div class="fg"><div class="fl">Longitude</div><input type="text" id="af-lng" placeholder="e.g. -122.875" oninput="updGM('af')"></div></div><div class="gmlink" id="af-gmlink"><a id="af-gma" href="#" target="_blank" rel="noopener">Open in Google Maps</a></div><div class="fg"><div class="fl">Notes / Contract Info</div><textarea id="af-notes" placeholder="Pollination contracts, crop types, access notes..."></textarea></div><div class="fg"><div class="fl">Assigned Workers</div><div class="chk-list" id="af-workers"></div></div><button class="btn btn-gold" style="width:100%;margin-top:4px;" onclick="submitApiary()">Save Apiary</button></div></div>
 <div class="mover" id="madd-task"><div class="modal"><button class="mclose" onclick="closeModal('madd-task')">&#10005;</button><div class="mtitle" id="ta-title">Add Task</div><input type="hidden" id="ta-id"><div class="fg"><div class="fl">Task Type</div><select id="ta-type"><option value="inspection">Inspection</option><option value="treatment">Varroa Treatment</option><option value="equipment">Equipment / Maintenance</option><option value="supering">Add / Pull Honey Supers</option><option value="queen">Queen Check / Replace</option><option value="transport">Transport Hives</option><option value="feeding">Feeding / Supplements</option><option value="water">Water Source Check</option><option value="other">Other</option></select></div><div class="fg"><div class="fl">Description</div><input type="text" id="ta-desc" placeholder="Brief description"></div><div class="frow"><div class="fg"><div class="fl">Apiary</div><select id="ta-ap"></select></div><div class="fg"><div class="fl">Assign To</div><select id="ta-assignee"></select></div></div><div class="frow"><div class="fg"><div class="fl">Due Date</div><input type="date" id="ta-due"></div><div class="fg"><div class="fl">Priority</div><select id="ta-pri"><option value="high">High</option><option value="medium" selected>Medium</option><option value="low">Low</option></select></div></div><div class="fg" id="ta-status-wrap" style="display:none;"><div class="fl">Status</div><select id="ta-status"><option value="open">To Do</option><option value="in-progress">In Progress</option><option value="done">Done</option></select></div><div class="fg"><div class="fl">Notes</div><textarea id="ta-notes" placeholder="Additional details..." style="min-height:60px;"></textarea></div><button class="btn btn-gold" style="width:100%;" onclick="submitTask()">Save Task</button><div id="ta-del-wrap" style="margin-top:10px;display:none;"><button class="btn btn-red" style="width:100%;" onclick="deleteTask()">Delete Task</button></div></div></div>
 <div class="mover" id="madd-employee"><div class="modal"><button class="mclose" onclick="closeModal('madd-employee')">&#10005;</button><div class="mtitle" id="ef-title">Add Team Member</div><input type="hidden" id="ef-id"><div class="fg"><div class="fl">Full Name</div><input type="text" id="ef-name" placeholder="Full name"></div><div class="fg"><div class="fl">Email</div><input type="email" id="ef-email" placeholder="name@prescotthoney.com"></div><div class="frow"><div class="fg"><div class="fl">Role</div><select id="ef-role"><option value="manager">Manager</option><option value="employee">Field Worker</option></select></div><div class="fg"><div class="fl">Phone</div><input type="tel" id="ef-phone" placeholder="(555) 000-0000"></div></div><div class="fg"><div class="fl">Login Password</div><input type="text" id="ef-pass" placeholder="Leave blank to keep current"></div><button class="btn btn-gold" style="width:100%;margin-top:4px;" onclick="submitEmployee()">Save</button><div id="ef-del-wrap" style="margin-top:10px;display:none;"><button class="btn btn-red" style="width:100%;" onclick="deleteEmployee()">Remove Team Member</button></div></div></div>
+<div class="mover" id="madd-move"><div class="modal"><button class="mclose" onclick="closeModal('madd-move')">&#10005;</button><div class="mtitle" id="mf-title">Log Hive Movement</div><input type="hidden" id="mf-id"><div class="frow"><div class="fg"><div class="fl">Date</div><input type="date" id="mf-date"></div><div class="fg"><div class="fl">Status</div><select id="mf-status"><option value="completed">Completed</option><option value="planned">Planned</option></select></div></div><div class="frow"><div class="fg"><div class="fl">From Apiary</div><select id="mf-from"></select></div><div class="fg"><div class="fl">To Apiary</div><select id="mf-to"></select></div></div><div class="frow"><div class="fg"><div class="fl">Hive Count</div><input type="number" id="mf-hives" placeholder="e.g. 40" min="1"></div><div class="fg"><div class="fl">Purpose</div><select id="mf-purpose"><option value="pollination">Pollination Contract</option><option value="returning">Returning from Contract</option><option value="seasonal">Seasonal Move</option><option value="consolidate">Consolidation</option><option value="sold">Sold / Transferred Out</option><option value="purchase">New Purchase / Stock</option><option value="winter">Winter Yard</option><option value="other">Other</option></select></div></div><div class="frow"><div class="fg"><div class="fl">Driver / Worker</div><select id="mf-driver"></select></div><div class="fg"><div class="fl">Truck / Vehicle</div><input type="text" id="mf-truck" placeholder="e.g. Truck 2 · OR-487"></div></div><div class="fg"><div class="fl">Notes</div><textarea id="mf-notes" placeholder="Contract details, drop point, load info..." style="min-height:60px;"></textarea></div><button class="btn btn-gold" style="width:100%;" onclick="submitMovement()">Save Movement</button><div id="mf-del-wrap" style="margin-top:10px;display:none;"><button class="btn btn-red" style="width:100%;" onclick="deleteMovement()">Delete Movement</button></div></div></div>
 <div class="mover" id="madd-dp"><div class="modal"><button class="mclose" onclick="closeModal('madd-dp')">&#10005;</button><div class="mtitle">Add Drop Point</div><input type="hidden" id="dp-aid"><div class="fg"><div class="fl">Name</div><input type="text" id="dp-name" placeholder="e.g. North Clover Field"></div><div class="frow"><div class="fg"><div class="fl">Latitude</div><input type="text" id="dp-lat" placeholder="e.g. 44.948" oninput="updGM('dp')"></div><div class="fg"><div class="fl">Longitude</div><input type="text" id="dp-lng" placeholder="e.g. -122.869" oninput="updGM('dp')"></div></div><div class="gmlink" id="dp-gmlink"><a id="dp-gma" href="#" target="_blank" rel="noopener">Open in Google Maps</a></div><div class="fg"><div class="fl">Hives</div><input type="number" id="dp-hives" placeholder="e.g. 120"></div><div class="fg"><div class="fl">Notes</div><input type="text" id="dp-notes" placeholder="Access info, landmarks..."></div><button class="btn btn-gold" style="width:100%;" onclick="submitDP()">Add Drop Point</button></div></div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -505,6 +538,7 @@ const phfDB = {
       apiaries: state.apiaries || [],
       inspections: state.inspections || [],
       tasks: state.tasks || [],
+      movements: state.movements || [],
       employees: (usersRes.data || []).map(u => ({ id: u.id, name: u.name, email: u.email, role: u.role, phone: u.phone, active: u.active }))
     };
   },
@@ -517,8 +551,9 @@ const phfDB = {
       const aps = SEED_AP.map(a => ({ ...a, assignedTo: [] }));
       const inspsNoIds = SEED_INSPS.map(i => ({ ...i, inspectorId: null }));
       const tasksNoIds = SEED_TASKS.map(t => ({ ...t, assignedTo: '' }));
+      const movesNoIds = SEED_MOVES.map(m => ({ ...m, driverId: null }));
       await SB.from('phf_state').update({
-        apiaries: aps, inspections: inspsNoIds, tasks: tasksNoIds, updated_at: new Date().toISOString()
+        apiaries: aps, inspections: inspsNoIds, tasks: tasksNoIds, movements: movesNoIds, updated_at: new Date().toISOString()
       }).eq('id', 1);
     }
   },
@@ -534,6 +569,7 @@ const phfDB = {
       apiaries: S.apiaries,
       inspections: S.inspections,
       tasks: S.tasks,
+      movements: S.movements || [],
       updated_at: new Date().toISOString(),
       updated_by: S.user.id
     }).eq('id', 1);
@@ -551,6 +587,7 @@ const phfDB = {
         S.apiaries = row.apiaries || [];
         S.inspections = row.inspections || [];
         S.tasks = row.tasks || [];
+        S.movements = row.movements || [];
         onChange();
       })
       .on('postgres_changes', { event: '*', schema: 'public', table: 'phf_users' }, async () => {
@@ -630,28 +667,42 @@ const SEED_TASKS=[
   {id:'t15',type:'supering',desc:'Pull honey supers — Shasta Valley',apiaryId:'a16',assignedTo:'u7',dueDate:ahead(3),priority:'medium',status:'done',notes:'Harvest complete — 68 supers pulled'},
   {id:'t16',type:'inspection',desc:'Inspect Salinas Valley',apiaryId:'a19',assignedTo:'u8',dueDate:ahead(4),priority:'medium',status:'done',notes:'All colonies strong. Excellent brood pattern.'},
 ];
-const S={user:null,apiaries:[],inspections:[],tasks:[],employees:[],af:'all',tf:'all',mapMode:false,leafMap:null,tileLayer:null,markerGroup:null};
+const SEED_MOVES=[
+  {id:'mv01',date:ago(90),fromApiaryId:null,toApiaryId:'a11',hiveCount:60,driverId:'u3',truckInfo:'Trucks 1+2',purpose:'pollination',status:'completed',notes:'Sacramento Delta almond move-in from winter yards'},
+  {id:'mv02',date:ago(88),fromApiaryId:null,toApiaryId:'a13',hiveCount:80,driverId:'u5',truckInfo:'Truck 2',purpose:'pollination',status:'completed',notes:'Stanislaus almonds move-in — 8+ frame strength verified'},
+  {id:'mv03',date:ago(85),fromApiaryId:null,toApiaryId:'a12',hiveCount:55,driverId:'u4',truckInfo:'Truck 1',purpose:'pollination',status:'completed',notes:'San Joaquin almond and cherry contracts'},
+  {id:'mv04',date:ago(45),fromApiaryId:'a17',toApiaryId:'a13',hiveCount:35,driverId:'u7',truckInfo:'Truck 3 · OR-487',purpose:'pollination',status:'completed',notes:'Late almond contract supplement, Modesto'},
+  {id:'mv05',date:ago(32),fromApiaryId:'a11',toApiaryId:'a01',hiveCount:60,driverId:'u3',truckInfo:'Trucks 1+2',purpose:'returning',status:'completed',notes:'Post-almond return to Willamette Valley'},
+  {id:'mv06',date:ago(30),fromApiaryId:'a13',toApiaryId:'a05',hiveCount:80,driverId:'u5',truckInfo:'Truck 2',purpose:'returning',status:'completed',notes:'Post-almond return to High Desert Basin for summer flow'},
+  {id:'mv07',date:ago(28),fromApiaryId:'a12',toApiaryId:'a03',hiveCount:55,driverId:'u4',truckInfo:'Truck 1',purpose:'returning',status:'completed',notes:'Return from San Joaquin to Rogue Valley'},
+  {id:'mv08',date:ahead(14),fromApiaryId:'a04',toApiaryId:'a03',hiveCount:50,driverId:'u5',truckInfo:'Truck 2',purpose:'seasonal',status:'planned',notes:'Move Klamath hives to Rogue Valley for summer forage — healthier environment'},
+  {id:'mv09',date:ahead(21),fromApiaryId:'a09',toApiaryId:'a07',hiveCount:40,driverId:'u7',truckInfo:'Truck 3',purpose:'consolidate',status:'planned',notes:'Consolidate eastern Oregon colonies before fall'},
+  {id:'mv10',date:ahead(60),fromApiaryId:'a01',toApiaryId:null,hiveCount:120,driverId:'u3',truckInfo:'Trucks 1+2',purpose:'pollination',status:'planned',notes:'Willamette Valley colonies to CA for almond season — depart late Dec'},
+];
+const S={user:null,apiaries:[],inspections:[],tasks:[],movements:[],employees:[],af:'all',tf:'all',mapMode:false,leafMap:null,tileLayer:null,markerGroup:null};
 function loadData(){
   S.apiaries=JSON.parse(localStorage.getItem('phf_ap'))||JSON.parse(JSON.stringify(SEED_AP));
   S.inspections=JSON.parse(localStorage.getItem('phf_ins'))||JSON.parse(JSON.stringify(SEED_INSPS));
   S.tasks=JSON.parse(localStorage.getItem('phf_tasks'))||JSON.parse(JSON.stringify(SEED_TASKS));
   S.employees=JSON.parse(localStorage.getItem('phf_emp'))||JSON.parse(JSON.stringify(USERS));
+  S.movements=JSON.parse(localStorage.getItem('phf_mv'))||JSON.parse(JSON.stringify(SEED_MOVES));
 }
 function save(){
   localStorage.setItem('phf_ap',JSON.stringify(S.apiaries));
   localStorage.setItem('phf_ins',JSON.stringify(S.inspections));
   localStorage.setItem('phf_tasks',JSON.stringify(S.tasks));
   localStorage.setItem('phf_emp',JSON.stringify(S.employees));
+  localStorage.setItem('phf_mv',JSON.stringify(S.movements||[]));
   if(phfDB.enabled)phfDB.scheduleSave();
 }
 async function loadFromDB(){
   const data=await phfDB.loadAll();
-  S.apiaries=data.apiaries;S.inspections=data.inspections;S.tasks=data.tasks;
+  S.apiaries=data.apiaries;S.inspections=data.inspections;S.tasks=data.tasks;S.movements=data.movements||[];
   if(data.employees.length)S.employees=data.employees;
 }
 function rerenderActive(){
   const v=document.querySelector('.view.active')?.id?.replace('view-','');
-  ({dashboard:renderDash,apiaries:renderApiaries,tasks:renderTasks,team:renderTeam,reports:renderReports}[v]||(()=>{}))();
+  ({dashboard:renderDash,apiaries:renderApiaries,tasks:renderTasks,movements:renderMovements,team:renderTeam,reports:renderReports}[v]||(()=>{}))();
   if(S.mapMode)updateMap();
 }
 function showLoginScreen(){
@@ -774,7 +825,7 @@ function switchView(v){
   document.querySelectorAll('.view').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.tnav-btn,[data-v]').forEach(b=>{if(b.dataset.v===v)b.classList.add('active');else b.classList.remove('active');});
   const el=document.getElementById('view-'+v);if(el)el.classList.add('active');
-  ({dashboard:renderDash,apiaries:renderApiaries,tasks:renderTasks,team:renderTeam,reports:renderReports}[v]||(() => {}))();
+  ({dashboard:renderDash,apiaries:renderApiaries,tasks:renderTasks,movements:renderMovements,team:renderTeam,reports:renderReports}[v]||(() => {}))();
 }
 function renderDash(){
   const u=S.user,om=isOM(),aps=myAPs();
@@ -939,6 +990,7 @@ function openAPDetail(id){
     </div>
     ${a.notes?`<div style="font-size:.82rem;color:var(--tdim);background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:12px;margin-bottom:14px;">${esc(a.notes)}</div>`:''}
     ${dps.length?`<div class="st" style="margin-bottom:8px;">Drop Points (${dps.length})</div><div style="background:var(--card);border:1px solid var(--brd);border-radius:var(--r);margin-bottom:14px;padding:4px 0;">${dps.map(dp=>`<div class="dprow"><div><div class="dpname">${esc(dp.name)}</div><div class="dpmeta">${dp.hives} hives${dp.notes?' · '+esc(dp.notes):''}</div></div>${dp.lat&&dp.lng?`<a style="font-size:.75rem;flex-shrink:0;" href="https://www.google.com/maps?q=${dp.lat},${dp.lng}" target="_blank" rel="noopener">Maps ↗</a>`:''}</div>`).join('')}</div>`:''}
+    ${(()=>{const apMoves=(S.movements||[]).filter(m=>m.fromApiaryId===id||m.toApiaryId===id).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);return apMoves.length?`<div class="st" style="margin-bottom:8px;">Hive Movements (${apMoves.length} recent)</div><div style="background:var(--card);border:1px solid var(--brd);border-radius:var(--r);margin-bottom:14px;padding:4px 0;">${apMoves.map(m=>{const fAP=m.fromApiaryId?getAP(m.fromApiaryId):null;const tAP=m.toApiaryId?getAP(m.toApiaryId):null;const isOut=m.fromApiaryId===id;return`<div class="drow" style="padding:8px 12px;gap:10px;"><span style="font-size:.73rem;font-weight:700;color:${isOut?'var(--red)':'var(--grn)'};flex-shrink:0;">${isOut?'OUT':'IN'}</span><span style="flex:1;font-size:.8rem;">${m.hiveCount} hives ${isOut?(tAP?'&#8594; '+esc(tAP.name):'&#8594; External'):(fAP?'&#8592; '+esc(fAP.name):'&#8592; External')}</span><span class="badge ${MV_CLS[m.purpose]||'bt'}" style="font-size:.6rem;">${MV_LBL[m.purpose]||'Other'}</span><span style="font-size:.72rem;color:var(--tdim);flex-shrink:0;">${fmtD(m.date)}</span></div>`;}).join('')}</div>`:''})()}
     ${otasks.length?`<div class="st" style="margin-bottom:8px;">Open Tasks (${otasks.length})</div><div style="background:var(--card);border:1px solid var(--brd);border-radius:var(--r);margin-bottom:14px;padding:4px 0;">${otasks.map(t=>`<div class="drow" style="padding:8px 12px;gap:8px;"><span class="tlbl ${tcls(t.type)}">${tlbl(t.type)}</span><span style="flex:1;font-size:.82rem;">${esc(t.desc)}</span><span style="font-size:.73rem;color:${diffD(t.dueDate)<0?'var(--red)':'var(--tdim)'}">${relD(t.dueDate)}</span></div>`).join('')}</div>`:''}
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
       <div class="st">Inspection History <span style="color:var(--mut);font-weight:400;">(${allInsps.length} total)</span></div>
@@ -946,6 +998,8 @@ function openAPDetail(id){
     <div style="background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:4px 12px;margin-bottom:16px;overflow-x:auto;">${histHTML}</div>
     <div style="display:flex;gap:8px;flex-wrap:wrap;">
       <button class="btn btn-gold" onclick="closeModal('mdetail');openInsp('${id}')">+ Log Inspection</button>
+      ${om?`<button class="btn btn-ghost" onclick="closeModal('mdetail');openAddMovement('${id}',null)">+ Move Out</button>`:''}
+      ${om?`<button class="btn btn-ghost" onclick="closeModal('mdetail');openAddMovement(null,'${id}')">+ Move In</button>`:''}
       ${om?`<button class="btn btn-ghost" onclick="closeModal('mdetail');openEditAP('${id}')">Edit</button>`:''}
       ${om?`<button class="btn btn-ghost" onclick="closeModal('mdetail');openAddDP('${id}')">+ Drop Point</button>`:''}
       ${om?`<button class="btn btn-ghost" onclick="closeModal('mdetail');openAddTask('${id}')">+ Task</button>`:''}
@@ -1043,7 +1097,22 @@ function renderTasks(){
   if(_tf==='today')list=list.filter(t=>t.dueDate===TODAY&&t.status!=='done');
   if(_tf==='overdue')list=list.filter(t=>t.dueDate<TODAY&&t.status!=='done');
   if(_tf==='open')list=list.filter(t=>t.status!=='done');
-  if(_tf==='done')list=list.filter(t=>t.status==='done');
+  if(_tf==='done'){list=list.filter(t=>t.status==='done').sort((a,b)=>b.dueDate.localeCompare(a.dueDate));document.getElementById('task-list').innerHTML=list.length?list.map(t=>tCard(t,true)).join(''):'<div class="empty">No completed tasks.</div>';return;}
+  if(_tf==='all'){
+    const overdue=list.filter(t=>t.status!=='done'&&t.dueDate<TODAY).sort((a,b)=>a.dueDate.localeCompare(b.dueDate));
+    const today=list.filter(t=>t.status!=='done'&&t.dueDate===TODAY);
+    const week=list.filter(t=>t.status!=='done'&&t.dueDate>TODAY&&diffD(t.dueDate)<=7).sort((a,b)=>a.dueDate.localeCompare(b.dueDate));
+    const later=list.filter(t=>t.status!=='done'&&diffD(t.dueDate)>7).sort((a,b)=>a.dueDate.localeCompare(b.dueDate));
+    const done=list.filter(t=>t.status==='done').sort((a,b)=>b.dueDate.localeCompare(a.dueDate)).slice(0,8);
+    let html='';
+    if(overdue.length)html+=`<div class="tgroup-hd tgh-red">Overdue &mdash; ${overdue.length}</div>`+overdue.map(t=>tCard(t,true)).join('');
+    if(today.length)html+=`<div class="tgroup-hd tgh-org">Due Today &mdash; ${today.length}</div>`+today.map(t=>tCard(t,true)).join('');
+    if(week.length)html+=`<div class="tgroup-hd tgh-grn">This Week &mdash; ${week.length}</div>`+week.map(t=>tCard(t,true)).join('');
+    if(later.length)html+=`<div class="tgroup-hd tgh-dim">Upcoming &mdash; ${later.length}</div>`+later.map(t=>tCard(t,true)).join('');
+    if(done.length)html+=`<div class="tgroup-hd tgh-dim">Recently Completed &mdash; ${done.length}</div>`+done.map(t=>tCard(t,true)).join('');
+    document.getElementById('task-list').innerHTML=html||'<div class="empty">No tasks yet.</div>';
+    return;
+  }
   list.sort((a,b)=>{if(a.status==='done'&&b.status!=='done')return 1;if(b.status==='done'&&a.status!=='done')return -1;return a.dueDate.localeCompare(b.dueDate);});
   document.getElementById('task-list').innerHTML=list.length?list.map(t=>tCard(t,true)).join(''):`<div class="empty">No tasks in this category.</div>`;
 }
@@ -1126,6 +1195,106 @@ function deleteTask(){
   save();closeModal('madd-task');
   const av=document.querySelector('.view.active')?.id?.replace('view-','');
   if(av==='tasks')renderTasks();else if(av==='dashboard')renderDash();
+}
+const MV_LBL={pollination:'Pollination',returning:'Returning',seasonal:'Seasonal Move',consolidate:'Consolidation',sold:'Sold / Out',purchase:'New Stock',winter:'Winter Yard',other:'Other'};
+const MV_CLS={pollination:'bp',returning:'bg',seasonal:'bt',consolidate:'bt',sold:'bc',purchase:'bg',winter:'bt',other:'bt'};
+let _mvf='all';
+function setMVF(f,btn){_mvf=f;document.querySelectorAll('#mvfbar .fbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderMovements();}
+function renderMovements(){
+  const om=isOM();
+  let list=[...(S.movements||[])];
+  if(_mvf==='planned')list=list.filter(m=>m.status==='planned');
+  else if(_mvf==='completed')list=list.filter(m=>m.status==='completed');
+  list.sort((a,b)=>b.date.localeCompare(a.date));
+  if(!list.length){document.getElementById('mv-list').innerHTML='<div class="empty">No movements recorded yet. Log a hive move to get started.</div>';return;}
+  const byMonth={};
+  list.forEach(m=>{const d=new Date(m.date+'T12:00:00');const k=d.toLocaleDateString('en-US',{month:'long',year:'numeric'});if(!byMonth[k])byMonth[k]=[];byMonth[k].push(m);});
+  document.getElementById('mv-list').innerHTML=Object.entries(byMonth).map(([month,moves])=>`
+    <div class="hist-year-hd">${month} <span style="font-weight:400;opacity:.7;font-size:.65rem;">(${moves.length} move${moves.length!==1?'s':''})</span></div>
+    ${moves.map(m=>{
+      const fromAP=m.fromApiaryId?getAP(m.fromApiaryId):null;
+      const toAP=m.toApiaryId?getAP(m.toApiaryId):null;
+      const driver=m.driverId?getEmp(m.driverId):null;
+      const done=m.status==='completed';
+      return`<div class="mvcard mv-${done?'done':'plan'}">
+        <div class="mv-hd">
+          <div>
+            <div class="mv-route">${m.hiveCount.toLocaleString()} hives &nbsp;&middot;&nbsp; ${MV_LBL[m.purpose]||m.purpose}</div>
+            <div class="mv-from-to">
+              <span style="font-weight:600;color:var(--txt);">${fromAP?esc(fromAP.name):'External / New Stock'}</span>
+              <span class="mv-arrow">&#8594;</span>
+              <span style="font-weight:600;color:var(--txt);">${toAP?esc(toAP.name):'External / Sold'}</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;">
+            <span class="badge ${done?'bg':'bp'}">${done?'Completed':'Planned'}</span>
+            <span class="badge ${MV_CLS[m.purpose]||'bt'}" style="font-size:.62rem;">${MV_LBL[m.purpose]||'Other'}</span>
+          </div>
+        </div>
+        <div class="mv-foot">
+          <span style="font-size:.75rem;color:var(--tdim);">${fmtD(m.date)}</span>
+          ${driver?`<span style="font-size:.73rem;color:var(--mut);">&middot; ${esc(driver.name.split(' ')[0])}</span>`:''}
+          ${m.truckInfo?`<span style="font-size:.73rem;color:var(--mut);">&middot; ${esc(m.truckInfo)}</span>`:''}
+          ${om?`<button class="tedit-btn" style="margin-left:auto;" onclick="openEditMovement('${m.id}')">Edit</button>`:''}
+        </div>
+        ${m.notes?`<div style="font-size:.73rem;color:var(--mut);margin-top:6px;">${esc(m.notes)}</div>`:''}
+      </div>`;
+    }).join('')}
+  `).join('');
+}
+function _mvApOpts(){return'<option value="">&#8212; External / None &#8212;</option>'+S.apiaries.map(a=>`<option value="${a.id}">${esc(a.name)} (${a.state})</option>`).join('');}
+function _mvEmpOpts(){return'<option value="">&#8212; None &#8212;</option>'+S.employees.filter(e=>e.role!=='owner').map(e=>`<option value="${e.id}">${esc(e.name)}</option>`).join('');}
+function openAddMovement(preFrom,preTo){
+  document.getElementById('mf-title').textContent='Log Hive Movement';
+  document.getElementById('mf-id').value='';
+  document.getElementById('mf-del-wrap').style.display='none';
+  document.getElementById('mf-date').value=TODAY;
+  document.getElementById('mf-status').value='completed';
+  document.getElementById('mf-hives').value='';
+  document.getElementById('mf-purpose').value='pollination';
+  document.getElementById('mf-truck').value='';
+  document.getElementById('mf-notes').value='';
+  document.getElementById('mf-from').innerHTML=_mvApOpts();
+  document.getElementById('mf-to').innerHTML=_mvApOpts();
+  document.getElementById('mf-driver').innerHTML=_mvEmpOpts();
+  if(preFrom)document.getElementById('mf-from').value=preFrom;
+  if(preTo)document.getElementById('mf-to').value=preTo;
+  openModal('madd-move');
+}
+function openEditMovement(id){
+  const m=(S.movements||[]).find(x=>x.id===id);if(!m)return;
+  document.getElementById('mf-title').textContent='Edit Movement';
+  document.getElementById('mf-id').value=id;
+  document.getElementById('mf-del-wrap').style.display='block';
+  document.getElementById('mf-date').value=m.date;
+  document.getElementById('mf-status').value=m.status||'completed';
+  document.getElementById('mf-hives').value=m.hiveCount||'';
+  document.getElementById('mf-purpose').value=m.purpose||'other';
+  document.getElementById('mf-truck').value=m.truckInfo||'';
+  document.getElementById('mf-notes').value=m.notes||'';
+  document.getElementById('mf-from').innerHTML=_mvApOpts();
+  document.getElementById('mf-to').innerHTML=_mvApOpts();
+  document.getElementById('mf-from').value=m.fromApiaryId||'';
+  document.getElementById('mf-to').value=m.toApiaryId||'';
+  document.getElementById('mf-driver').innerHTML=_mvEmpOpts();
+  document.getElementById('mf-driver').value=m.driverId||'';
+  openModal('madd-move');
+}
+function submitMovement(){
+  const hives=parseInt(document.getElementById('mf-hives').value)||0;
+  if(!hives){alert('Enter the number of hives moved.');return;}
+  const id=document.getElementById('mf-id').value;
+  const data={date:document.getElementById('mf-date').value||TODAY,fromApiaryId:document.getElementById('mf-from').value||null,toApiaryId:document.getElementById('mf-to').value||null,hiveCount:hives,purpose:document.getElementById('mf-purpose').value,status:document.getElementById('mf-status').value,driverId:document.getElementById('mf-driver').value||null,truckInfo:document.getElementById('mf-truck').value.trim(),notes:document.getElementById('mf-notes').value.trim()};
+  if(!S.movements)S.movements=[];
+  if(id){const m=S.movements.find(x=>x.id===id);if(m)Object.assign(m,data);}
+  else{S.movements.push({id:'mv'+Date.now(),...data});}
+  save();closeModal('madd-move');renderMovements();
+}
+function deleteMovement(){
+  const id=document.getElementById('mf-id').value;
+  if(!id||!confirm('Delete this movement record?'))return;
+  S.movements=(S.movements||[]).filter(m=>m.id!==id);
+  save();closeModal('madd-move');renderMovements();
 }
 function renderTeam(){
   const workers=S.employees.filter(e=>e.role!=='owner');

@@ -781,7 +781,7 @@ async function searchFoodUSDA(query) {
     // Try curated USDA datasets first (no branded duplicates), fall back to all
     let foods = [];
     for (const dt of ['Foundation,SR%20Legacy', null]) {
-      const url = `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(query)}&pageSize=3${dt ? '&dataType=' + dt : ''}&api_key=${USDA_KEY}`;
+      const url = `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(query)}&pageSize=1${dt ? '&dataType=' + dt : ''}&api_key=${USDA_KEY}`;
       const r = await fetch(url, { signal: _foodSearchController.signal });
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       const json = await r.json();

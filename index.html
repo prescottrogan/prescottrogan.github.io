@@ -103,8 +103,10 @@ nav.bottomnav button.active{color:var(--gold);}
 
 /* APIARY GRID */
 .agrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px;}
-.acard{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:20px;cursor:pointer;transition:all .2s;box-shadow:var(--shadow);}
-.acard:hover{transform:translateY(-2px);border-color:var(--gold);box-shadow:0 6px 24px rgba(0,0,0,.3);}
+.acard{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:20px;cursor:pointer;transition:transform .18s ease-out,border-color .18s,box-shadow .18s;box-shadow:var(--shadow);}
+.acard:hover{transform:translateY(-2px);border-color:var(--gold);}
+[data-theme="dark"] .acard:hover{box-shadow:0 8px 28px rgba(0,0,0,.45);}
+[data-theme="light"] .acard:hover{box-shadow:0 8px 28px rgba(0,0,0,.12);}
 .acard.sg{border-left:4px solid var(--grn);}
 .acard.sa{border-left:4px solid var(--org);}
 .acard.sc{border-left:4px solid var(--red);}
@@ -192,15 +194,59 @@ nav.bottomnav button.active{color:var(--gold);}
 .clbl{font-size:.75rem;color:var(--tdim);line-height:1.5;}
 
 /* MAP */
-#apiary-map{height:480px;border-radius:var(--r);border:1px solid var(--brd);margin-top:12px;}
+.map-wrap{position:relative;margin-top:12px;border-radius:var(--r);overflow:hidden;border:1px solid var(--brd);box-shadow:var(--shadow);}
+#apiary-map{height:560px;width:100%;background:var(--card);}
 .map-toggle{display:flex;gap:7px;margin-bottom:12px;}
 .mtbtn{background:var(--card);border:1px solid var(--brd);border-radius:8px;padding:7px 18px;font-size:.8rem;font-weight:600;color:var(--tdim);cursor:pointer;transition:all .15s;}
 .mtbtn.active{border-color:var(--gold);color:var(--gold);}
+.map-legend{position:absolute;bottom:14px;left:14px;background:var(--surf);border:1px solid var(--brd);border-radius:10px;padding:10px 13px;font-size:.74rem;z-index:500;box-shadow:var(--shadow);min-width:160px;}
+.map-legend-title{font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--mut);margin-bottom:6px;}
+.map-legend-item{display:flex;align-items:center;gap:8px;padding:2px 0;color:var(--tdim);}
+.lg-dot{width:11px;height:11px;border-radius:50%;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.2);flex-shrink:0;}
+.lg-dot.lg-dp{width:7px;height:7px;border:1px solid #fff;}
+.map-info{position:absolute;top:14px;right:14px;background:var(--surf);border:1px solid var(--brd);border-radius:10px;padding:8px 13px;font-size:.78rem;font-weight:600;color:var(--txt);z-index:500;box-shadow:var(--shadow);}
+.map-info span{color:var(--gold);}
+.map-fit{position:absolute;top:14px;left:14px;background:var(--surf);border:1px solid var(--brd);border-radius:8px;padding:7px 12px;font-size:.76rem;font-weight:600;color:var(--tdim);cursor:pointer;z-index:500;box-shadow:var(--shadow);transition:all .15s;}
+.map-fit:hover{border-color:var(--gold);color:var(--gold);}
+
+/* Leaflet custom markers */
+.phf-marker{width:22px;height:22px;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.25),0 3px 8px rgba(0,0,0,.35);cursor:pointer;transition:transform .18s ease-out;position:relative;}
+.phf-marker:hover{transform:scale(1.25);z-index:1000;}
+.phf-marker.m-good{background:#3d9970;}
+.phf-marker.m-attention{background:#e07b39;}
+.phf-marker.m-critical{background:#c0392b;}
+.phf-marker.m-critical::before{content:'';position:absolute;inset:-6px;border-radius:50%;border:2px solid #c0392b;animation:phf-pulse 1.8s ease-out infinite;}
+@keyframes phf-pulse{0%{transform:scale(.7);opacity:.9;}100%{transform:scale(1.7);opacity:0;}}
+.phf-dp{width:11px;height:11px;border-radius:50%;background:#F5A623;border:2px solid #fff;box-shadow:0 0 0 1px rgba(0,0,0,.3),0 1px 4px rgba(0,0,0,.3);cursor:pointer;transition:transform .15s;}
+.phf-dp:hover{transform:scale(1.5);}
+
+/* Leaflet overrides */
+.leaflet-container{font-family:inherit;background:var(--card);}
+.leaflet-control-zoom{border:none!important;box-shadow:var(--shadow)!important;border-radius:8px!important;overflow:hidden;}
+.leaflet-control-zoom a{background:var(--surf)!important;color:var(--txt)!important;border-bottom:1px solid var(--brd)!important;width:32px!important;height:32px!important;line-height:32px!important;font-size:18px!important;}
+.leaflet-control-zoom a:hover{background:var(--gold)!important;color:#000!important;}
+.leaflet-control-attribution{background:rgba(0,0,0,.55)!important;color:#aaa!important;font-size:10px!important;border-radius:4px 0 0 0;padding:2px 6px!important;}
+.leaflet-control-attribution a{color:var(--gold)!important;}
+.leaflet-popup-content-wrapper{background:var(--surf)!important;color:var(--txt)!important;border-radius:10px!important;border:1px solid var(--brd);box-shadow:0 6px 24px rgba(0,0,0,.4)!important;padding:0!important;}
+.leaflet-popup-tip{background:var(--surf)!important;border:1px solid var(--brd);}
+.leaflet-popup-content{margin:14px 16px!important;font-size:.84rem!important;line-height:1.5!important;min-width:200px;}
+.leaflet-popup-close-button{color:var(--mut)!important;font-size:18px!important;padding:6px 8px 0 0!important;}
+.leaflet-popup-close-button:hover{color:var(--red)!important;background:transparent!important;}
+.phf-pop-title{font-size:.95rem;font-weight:700;color:var(--gold);margin-bottom:3px;line-height:1.3;}
+.phf-pop-meta{font-size:.74rem;color:var(--tdim);margin-bottom:3px;}
+.phf-pop-stat{font-size:.74rem;color:var(--tdim);margin-bottom:3px;}
+.phf-pop-stat strong{color:var(--txt);}
+.phf-pop-actions{display:flex;gap:6px;margin-top:10px;}
+.phf-pop-btn{background:var(--gold);color:#000!important;padding:6px 10px;border-radius:6px;font-size:.72rem;font-weight:700;text-decoration:none!important;display:inline-block;}
+.phf-pop-btn:hover{background:var(--gold2);text-decoration:none!important;}
+.phf-pop-btn-ghost{background:transparent;border:1px solid var(--brd);color:var(--tdim)!important;}
+.phf-pop-btn-ghost:hover{border-color:var(--gold);color:var(--gold)!important;background:transparent;}
+.phf-pop-badge{display:inline-block;padding:1px 7px;border-radius:10px;font-size:.66rem;font-weight:700;letter-spacing:.3px;margin-left:5px;}
 
 /* MODAL */
 .mover{position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:300;display:none;align-items:center;justify-content:center;padding:20px;}
 .mover.open{display:flex;}
-.modal{background:var(--surf);border:1px solid var(--brd);border-radius:14px;padding:28px 24px;width:100%;max-width:520px;max-height:92vh;overflow-y:auto;position:relative;box-shadow:var(--shadow);}
+.modal{background:var(--surf);border:1px solid var(--brd);border-radius:14px;padding:28px 24px;width:100%;max-width:520px;max-height:calc(100vh - 40px);overflow-y:auto;position:relative;box-shadow:var(--shadow);}
 .mclose{position:absolute;right:16px;top:16px;background:none;border:none;color:var(--mut);font-size:1.1rem;cursor:pointer;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
 .mclose:hover{background:var(--brd);color:var(--txt);}
 .mtitle{font-size:1.05rem;font-weight:700;margin-bottom:18px;padding-right:30px;}
@@ -329,10 +375,21 @@ nav.bottomnav button.active{color:var(--gold);}
       <button class="fbtn" data-af="attention" onclick="setAF('attention',this)">Attention</button>
       <button class="fbtn" data-af="critical" onclick="setAF('critical',this)">Critical</button>
     </div>
-    <input class="srch" type="text" id="asrch" placeholder="Search by name, city or county..." oninput="renderApiaries()">
+    <input class="srch" type="text" id="asrch" placeholder="Search by name, city or county..." oninput="renderApiaries();if(S.mapMode)updateMap();">
     <div class="map-toggle"><button class="mtbtn active" id="mt-grid" onclick="setMapToggle('grid')">Grid View</button><button class="mtbtn" id="mt-map" onclick="setMapToggle('map')">Map View</button></div>
     <div id="apiary-grid"></div>
-    <div id="apiary-map" style="display:none;"></div>
+    <div class="map-wrap" id="map-wrap" style="display:none;">
+      <div id="apiary-map"></div>
+      <button class="map-fit" onclick="fitMapBounds()" title="Fit all markers">Fit All</button>
+      <div class="map-info" id="map-info"></div>
+      <div class="map-legend">
+        <div class="map-legend-title">Apiary Status</div>
+        <div class="map-legend-item"><span class="lg-dot" style="background:#3d9970;"></span>Good (&le;12 days)</div>
+        <div class="map-legend-item"><span class="lg-dot" style="background:#e07b39;"></span>Attention (13–17d)</div>
+        <div class="map-legend-item"><span class="lg-dot" style="background:#c0392b;"></span>Critical (17d+)</div>
+        <div class="map-legend-item" style="margin-top:5px;padding-top:5px;border-top:1px solid var(--brd);"><span class="lg-dot lg-dp" style="background:#F5A623;"></span>Drop Point</div>
+      </div>
+    </div>
   </div>
 
   <div id="view-tasks" class="view">
@@ -447,7 +504,7 @@ const SEED_TASKS=[
   {id:'t15',type:'supering',desc:'Pull honey supers — Shasta Valley',apiaryId:'a16',assignedTo:'u7',dueDate:ahead(3),priority:'medium',status:'done',notes:'Harvest complete — 68 supers pulled'},
   {id:'t16',type:'inspection',desc:'Inspect Salinas Valley',apiaryId:'a19',assignedTo:'u8',dueDate:ahead(4),priority:'medium',status:'done',notes:'All colonies strong. Excellent brood pattern.'},
 ];
-const S={user:null,apiaries:[],inspections:[],tasks:[],employees:[],af:'all',tf:'all',mapMode:false,leafMap:null};
+const S={user:null,apiaries:[],inspections:[],tasks:[],employees:[],af:'all',tf:'all',mapMode:false,leafMap:null,tileLayer:null,markerGroup:null};
 function loadData(){
   S.apiaries=JSON.parse(localStorage.getItem('phf_ap'))||JSON.parse(JSON.stringify(SEED_AP));
   S.inspections=JSON.parse(localStorage.getItem('phf_ins'))||JSON.parse(JSON.stringify(SEED_INSPS));
@@ -478,11 +535,15 @@ function toggleTheme(){
   document.documentElement.setAttribute('data-theme',next);
   localStorage.setItem('phf_theme',next);
   updateThemeIcon(next);
-  if(S.leafMap){
-    S.leafMap.eachLayer(l=>{if(l._url)S.leafMap.removeLayer(l);});
-    const tileUrl=next==='dark'?'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png':'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
-    L.tileLayer(tileUrl,{attribution:'&copy; OpenStreetMap &copy; CARTO',maxZoom:19}).addTo(S.leafMap);
+  if(S.leafMap&&S.tileLayer){
+    S.leafMap.removeLayer(S.tileLayer);
+    S.tileLayer=L.tileLayer(getTileUrl(),{attribution:'&copy; OpenStreetMap &copy; CARTO',maxZoom:19,subdomains:'abcd'}).addTo(S.leafMap);
   }
+}
+function getTileUrl(){
+  return document.documentElement.getAttribute('data-theme')==='dark'
+    ?'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png'
+    :'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
 }
 function updateThemeIcon(theme){
   const el=document.getElementById('theme-icon');
@@ -554,14 +615,23 @@ function renderDash(){
   document.getElementById('dtasks').innerHTML=todT.length?todT.slice(0,6).map(t=>tCard(t,false)).join(''):`<div class="empty">No tasks due today.</div>`;
 }
 let _af='all';
-function setAF(f,btn){_af=f;document.querySelectorAll('#afbar .fbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderApiaries();}
+function setAF(f,btn){_af=f;document.querySelectorAll('#afbar .fbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderApiaries();if(S.mapMode)updateMap();}
 function setMapToggle(mode){
   S.mapMode=mode==='map';
   document.getElementById('mt-grid').classList.toggle('active',!S.mapMode);
   document.getElementById('mt-map').classList.toggle('active',S.mapMode);
   document.getElementById('apiary-grid').style.display=S.mapMode?'none':'';
-  document.getElementById('apiary-map').style.display=S.mapMode?'block':'none';
-  if(S.mapMode)initMap();
+  document.getElementById('map-wrap').style.display=S.mapMode?'block':'none';
+  if(S.mapMode){if(!S.leafMap)initMap();else{updateMap();setTimeout(()=>S.leafMap.invalidateSize(),50);}}
+}
+function getFilteredApiaries(){
+  const q=(document.getElementById('asrch')?.value||'').toLowerCase();
+  let list=myAPs();
+  if(_af==='OR')list=list.filter(a=>a.state==='OR');
+  else if(_af==='CA')list=list.filter(a=>a.state==='CA');
+  else if(['good','attention','critical'].includes(_af))list=list.filter(a=>apStatus(a.id)===_af);
+  if(q)list=list.filter(a=>[a.name,a.city,a.county].some(s=>s.toLowerCase().includes(q)));
+  return list;
 }
 function renderApiaries(){
   const q=(document.getElementById('asrch')?.value||'').toLowerCase();
@@ -595,22 +665,44 @@ function renderApiaries(){
   }).join('');
 }
 function initMap(){
-  const theme=document.documentElement.getAttribute('data-theme');
-  const tileUrl=theme==='dark'?'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png':'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png';
-  if(!S.leafMap){
-    S.leafMap=L.map('apiary-map').setView([40.5,-121.5],6);
-    L.tileLayer(tileUrl,{attribution:'&copy; OpenStreetMap &copy; CARTO',maxZoom:19}).addTo(S.leafMap);
-  }
-  S.leafMap.eachLayer(l=>{if(l instanceof L.CircleMarker)S.leafMap.removeLayer(l);});
-  S.apiaries.forEach(a=>{
+  S.leafMap=L.map('apiary-map',{zoomControl:true,zoomAnimation:true,fadeAnimation:true,markerZoomAnimation:true,preferCanvas:false,worldCopyJump:false,minZoom:3,maxZoom:18}).setView([40.5,-121.5],6);
+  S.tileLayer=L.tileLayer(getTileUrl(),{attribution:'&copy; OpenStreetMap &copy; CARTO',maxZoom:19,subdomains:'abcd'}).addTo(S.leafMap);
+  S.markerGroup=L.layerGroup().addTo(S.leafMap);
+  updateMap();
+  setTimeout(()=>{S.leafMap.invalidateSize();fitMapBounds();},80);
+}
+function updateMap(){
+  if(!S.leafMap||!S.markerGroup)return;
+  S.markerGroup.clearLayers();
+  const list=getFilteredApiaries();
+  let totalHives=0,totalDP=0;
+  list.forEach(a=>{
     if(!a.lat||!a.lng||Math.abs(a.lat)<0.1)return;
-    const st=apStatus(a.id),c={good:'#3d9970',attention:'#e07b39',critical:'#c0392b'}[st];
-    const m=L.circleMarker([a.lat,a.lng],{radius:11,fillColor:c,color:'#fff',weight:2,fillOpacity:.9}).addTo(S.leafMap);
-    m.bindPopup(`<strong>${a.name}</strong><br>${a.city}, ${a.state} · ${a.hives.toLocaleString()} hives<br>Last: ${daysSince(a.id)<999?daysSince(a.id)+'d ago':'Never'}<br><a href="https://www.google.com/maps?q=${a.lat},${a.lng}" target="_blank">Open in Google Maps</a>`);
-    m.on('click',()=>openAPDetail(a.id));
-    (a.dropPoints||[]).forEach(dp=>{if(!dp.lat||!dp.lng)return;L.circleMarker([dp.lat,dp.lng],{radius:5,fillColor:'#F5A623',color:'#000',weight:1,fillOpacity:.85}).addTo(S.leafMap).bindPopup(`<strong>${esc(dp.name)}</strong><br>${esc(a.name)}<br>${dp.hives} hives<br><a href="https://www.google.com/maps?q=${dp.lat},${dp.lng}" target="_blank">Google Maps</a>`);});
+    totalHives+=a.hives;
+    const st=apStatus(a.id),ds=daysSince(a.id);
+    const icon=L.divIcon({html:`<div class="phf-marker m-${st}"></div>`,className:'',iconSize:[22,22],iconAnchor:[11,11],popupAnchor:[0,-12]});
+    const m=L.marker([a.lat,a.lng],{icon,riseOnHover:true,title:a.name}).addTo(S.markerGroup);
+    const stColor=st==='critical'?'#c0392b':st==='attention'?'#e07b39':'#3d9970';
+    const stTxt=st.toUpperCase();
+    const lastDate=ds<999?ds+'d ago':'Never';
+    const dpCount=(a.dropPoints||[]).length;
+    m.bindPopup(`<div class="phf-pop"><div class="phf-pop-title">${esc(a.name)}<span class="phf-pop-badge" style="background:${stColor}22;color:${stColor};">${stTxt}</span></div><div class="phf-pop-meta">${esc(a.city)}, ${a.state}</div><div class="phf-pop-stat"><strong>${a.hives.toLocaleString()}</strong> hives${dpCount?' &middot; '+dpCount+' drop pts':''}</div><div class="phf-pop-stat">Last inspection: <strong>${lastDate}</strong></div><div class="phf-pop-actions"><a href="javascript:void(0)" class="phf-pop-btn" onclick="S.leafMap.closePopup();openAPDetail('${a.id}')">View Details</a><a href="https://www.google.com/maps?q=${a.lat},${a.lng}" target="_blank" rel="noopener" class="phf-pop-btn phf-pop-btn-ghost">Google Maps</a></div></div>`,{maxWidth:280,closeButton:true,autoPan:true,autoPanPadding:[40,40]});
+    m.on('click',function(){S.leafMap.flyTo([a.lat,a.lng],Math.max(S.leafMap.getZoom(),9),{duration:.7,easeLinearity:.25});});
+    (a.dropPoints||[]).forEach(dp=>{
+      if(!dp.lat||!dp.lng)return;totalDP++;
+      const dpIcon=L.divIcon({html:'<div class="phf-dp"></div>',className:'',iconSize:[11,11],iconAnchor:[5.5,5.5],popupAnchor:[0,-8]});
+      L.marker([dp.lat,dp.lng],{icon:dpIcon,riseOnHover:true,title:dp.name}).addTo(S.markerGroup).bindPopup(`<div class="phf-pop"><div class="phf-pop-title" style="font-size:.88rem;">${esc(dp.name)}</div><div class="phf-pop-meta">${esc(a.name)}</div><div class="phf-pop-stat"><strong>${dp.hives}</strong> hives${dp.notes?' &middot; '+esc(dp.notes):''}</div><div class="phf-pop-actions"><a href="https://www.google.com/maps?q=${dp.lat},${dp.lng}" target="_blank" rel="noopener" class="phf-pop-btn">Google Maps</a></div></div>`,{maxWidth:240});
+    });
   });
-  setTimeout(()=>S.leafMap.invalidateSize(),100);
+  document.getElementById('map-info').innerHTML=`<span>${list.length}</span> apiaries · <span>${totalHives.toLocaleString()}</span> hives${totalDP?' · <span>'+totalDP+'</span> drop pts':''}`;
+}
+function fitMapBounds(){
+  if(!S.leafMap)return;
+  const list=getFilteredApiaries().filter(a=>a.lat&&a.lng&&Math.abs(a.lat)>0.1);
+  if(!list.length){S.leafMap.flyTo([40.5,-121.5],6,{duration:.6});return;}
+  if(list.length===1){S.leafMap.flyTo([list[0].lat,list[0].lng],10,{duration:.7});return;}
+  const bounds=L.latLngBounds(list.map(a=>[a.lat,a.lng]));
+  S.leafMap.flyToBounds(bounds,{padding:[60,60],duration:.8,easeLinearity:.25,maxZoom:11});
 }
 function openAPDetail(id){
   const a=getAP(id);if(!a)return;
@@ -683,7 +775,7 @@ function submitApiary(){
   const data={name,state:document.getElementById('af-state').value,county:document.getElementById('af-county').value.trim(),city:document.getElementById('af-city').value.trim(),hives:parseInt(document.getElementById('af-hives').value)||0,lat,lng,notes:document.getElementById('af-notes').value.trim(),assignedTo:checked};
   if(id){const ex=getAP(id);if(ex){Object.assign(ex,data);}}
   else{S.apiaries.push({id:'a'+Date.now(),...data,dropPoints:[]});}
-  save();closeModal('madd-apiary');renderApiaries();if(S.leafMap)initMap();
+  save();closeModal('madd-apiary');renderApiaries();if(S.leafMap)updateMap();
 }
 function updGM(pfx){
   const lat=document.getElementById(pfx+'-lat')?.value;
@@ -710,7 +802,7 @@ function submitDP(){
   const a=getAP(aid);if(!a)return;
   if(!a.dropPoints)a.dropPoints=[];
   a.dropPoints.push({id:'dp'+Date.now(),name,lat:parseFloat(document.getElementById('dp-lat').value)||0,lng:parseFloat(document.getElementById('dp-lng').value)||0,hives:parseInt(document.getElementById('dp-hives').value)||0,notes:document.getElementById('dp-notes').value.trim()});
-  save();closeModal('madd-dp');if(S.leafMap)initMap();openAPDetail(aid);
+  save();closeModal('madd-dp');if(S.leafMap)updateMap();openAPDetail(aid);
 }
 let _tf='all';
 function setTF(f,btn){_tf=f;document.querySelectorAll('[data-tf]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderTasks();}

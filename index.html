@@ -3,1621 +3,1030 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>HiveOps — Commercial Beekeeping Management</title>
+<title>Prescott Honey Farms</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <style>
-:root {
-  --bg: #0a0903;
-  --surface: #14110a;
-  --card: #1c1810;
-  --border: #2e2814;
-  --amber: #f59e0b;
-  --amber-light: #fbbf24;
-  --amber-dim: #78500a;
-  --green: #22c55e;
-  --green-dim: #14532d;
-  --red: #ef4444;
-  --red-dim: #7f1d1d;
-  --orange: #f97316;
-  --orange-dim: #7c2d12;
-  --blue: #3b82f6;
-  --blue-dim: #1e3a8a;
-  --text: #fef3c7;
-  --text-dim: #a8956a;
-  --muted: #6b5c3e;
-  --radius: 10px;
-  --shadow: 0 2px 12px rgba(0,0,0,0.5);
-}
+:root{--bg:#0d0b07;--surf:#181410;--card:#1e1a0f;--brd:#2a2418;--gold:#F5A623;--gold2:#c47d0e;--gd:#4a3200;--grn:#3d9970;--grnd:#0f3322;--red:#c0392b;--redd:#3d0f0a;--org:#e07b39;--orgd:#3d1f0a;--blu:#3b82f6;--blud:#1e3a5f;--txt:#f0e8d8;--tdim:#a8906a;--mut:#6b5840;--r:10px;}
 *{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;}
-button{font-family:inherit;cursor:pointer;}
-input,select,textarea{font-family:inherit;}
+body{background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;min-height:100vh;}
+button,input,select,textarea{font-family:inherit;}
+a{color:var(--gold);text-decoration:none;}
+a:hover{text-decoration:underline;}
 
-/* ── LOGIN ── */
-#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(ellipse at top,#1c1408 0%,#0a0903 70%);}
-.login-box{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:40px 32px;width:100%;max-width:420px;box-shadow:var(--shadow);}
-.login-logo{display:flex;align-items:center;gap:10px;margin-bottom:6px;}
-.login-logo-icon{font-size:2.2rem;}
-.login-logo-text{font-size:1.8rem;font-weight:800;letter-spacing:-1px;color:var(--amber);}
-.login-tagline{color:var(--text-dim);font-size:0.88rem;margin-bottom:28px;}
-.demo-label{font-size:0.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:8px;}
-.demo-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:20px;}
-.demo-btn{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 6px;font-size:0.78rem;font-weight:600;color:var(--text-dim);transition:all .15s;text-align:center;}
-.demo-btn:hover,.demo-btn.selected{border-color:var(--amber);color:var(--amber);background:#1f1a0f;}
-.demo-btn span{display:block;font-size:1.1rem;margin-bottom:2px;}
-.divider{display:flex;align-items:center;gap:10px;margin:16px 0;color:var(--muted);font-size:0.78rem;}
-.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
-.login-input{display:block;width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:11px 14px;font-size:0.95rem;outline:none;margin-bottom:10px;transition:border-color .15s;}
-.login-input:focus{border-color:var(--amber);}
-.login-btn{width:100%;background:var(--amber);color:#000;border:none;border-radius:8px;padding:13px;font-size:1rem;font-weight:700;margin-top:4px;transition:opacity .15s;}
-.login-btn:hover{opacity:.9;}
-#login-msg{font-size:0.83rem;margin-top:10px;min-height:18px;color:var(--red);}
+/* LOGIN */
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:radial-gradient(ellipse at top,#221a08 0%,#0d0b07 70%);}
+.lbox{background:var(--surf);border:1px solid var(--brd);border-radius:16px;padding:40px 32px;width:100%;max-width:420px;}
+.llogo{text-align:center;margin-bottom:28px;}
+.llogo-hex{margin:0 auto 12px;}
+.llogo-name{font-size:1.9rem;font-weight:900;letter-spacing:3px;color:var(--gold);line-height:1;}
+.llogo-sub{font-size:.8rem;letter-spacing:4px;color:var(--gold);opacity:.8;margin-top:4px;}
+.llogo-line{display:flex;align-items:center;gap:8px;margin:8px 0;}
+.llogo-line::before,.llogo-line::after{content:'';flex:1;height:1px;background:var(--gold);opacity:.4;}
+.demo-lbl{font-size:.7rem;text-transform:uppercase;letter-spacing:1px;color:var(--mut);margin-bottom:8px;}
+.demo-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:18px;}
+.dbtn{background:var(--card);border:1px solid var(--brd);border-radius:8px;padding:10px 6px;font-size:.78rem;font-weight:600;color:var(--tdim);cursor:pointer;transition:all .15s;}
+.dbtn:hover,.dbtn.sel{border-color:var(--gold);color:var(--gold);}
+.div{display:flex;align-items:center;gap:10px;margin:14px 0;color:var(--mut);font-size:.75rem;}
+.div::before,.div::after{content:'';flex:1;height:1px;background:var(--brd);}
+.linput{display:block;width:100%;background:var(--bg);border:1px solid var(--brd);border-radius:8px;color:var(--txt);padding:11px 14px;font-size:.95rem;outline:none;margin-bottom:10px;transition:border-color .15s;}
+.linput:focus{border-color:var(--gold);}
+.lbtn{width:100%;background:var(--gold);color:#000;border:none;border-radius:8px;padding:13px;font-size:1rem;font-weight:700;cursor:pointer;}
+.lbtn:hover{background:var(--gold2);}
+#lmsg{font-size:.82rem;margin-top:10px;min-height:18px;color:var(--red);}
 
-/* ── APP SHELL ── */
-#app{display:none;min-height:100vh;padding-bottom:70px;}
-header{position:sticky;top:0;z-index:100;background:var(--surface);border-bottom:1px solid var(--border);padding:12px 20px;display:flex;align-items:center;justify-content:space-between;}
-.header-left{display:flex;align-items:center;gap:10px;}
-.header-logo{font-size:1.25rem;font-weight:800;color:var(--amber);}
-.header-logo span{font-size:1.1rem;}
-#page-title{font-size:1rem;font-weight:600;color:var(--text-dim);}
-.header-right{display:flex;align-items:center;gap:8px;}
-.user-chip{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:0.78rem;display:flex;align-items:center;gap:6px;}
-.user-chip .role-dot{width:7px;height:7px;border-radius:50%;}
-.signout-btn{background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--muted);padding:5px 10px;font-size:0.75rem;transition:all .15s;}
-.signout-btn:hover{border-color:var(--red);color:var(--red);}
+/* APP */
+#app{display:none;min-height:100vh;padding-bottom:68px;}
+header{position:sticky;top:0;z-index:100;background:var(--surf);border-bottom:1px solid var(--brd);padding:10px 18px;display:flex;align-items:center;justify-content:space-between;}
+.hlogo{display:flex;align-items:center;gap:10px;}
+.hlogo-txt{line-height:1;}
+.hlogo-main{font-size:1rem;font-weight:900;letter-spacing:2px;color:var(--gold);}
+.hlogo-sub{font-size:.6rem;letter-spacing:3px;color:var(--gold);opacity:.7;}
+.hright{display:flex;align-items:center;gap:8px;}
+.uchip{background:var(--card);border:1px solid var(--brd);border-radius:20px;padding:5px 12px;font-size:.75rem;display:flex;align-items:center;gap:6px;}
+.rdot{width:7px;height:7px;border-radius:50%;}
+.soBtn{background:transparent;border:1px solid var(--brd);border-radius:6px;color:var(--mut);padding:5px 10px;font-size:.72rem;cursor:pointer;transition:all .15s;}
+.soBtn:hover{border-color:var(--red);color:var(--red);}
 
-/* ── BOTTOM NAV ── */
-nav{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-top:1px solid var(--border);display:flex;z-index:100;}
-nav button{flex:1;background:none;border:none;color:var(--muted);padding:10px 4px 8px;font-size:0.6rem;font-weight:600;letter-spacing:.4px;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:3px;transition:color .15s;}
-nav button .ni{font-size:1.25rem;}
-nav button.active{color:var(--amber);}
+/* NAV */
+nav{position:fixed;bottom:0;left:0;right:0;background:var(--surf);border-top:1px solid var(--brd);display:flex;z-index:100;}
+nav button{flex:1;background:none;border:none;color:var(--mut);padding:10px 4px 8px;font-size:.58rem;font-weight:700;letter-spacing:.5px;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;transition:color .15s;}
+nav button.active{color:var(--gold);}
 
-/* ── SECTIONS ── */
-.view{display:none;padding:16px 20px;}
+/* VIEWS */
+.view{display:none;padding:16px 18px;}
 .view.active{display:block;}
 
-/* ── BUTTONS ── */
-.btn{border:none;border-radius:8px;padding:10px 16px;font-size:0.88rem;font-weight:600;cursor:pointer;transition:opacity .15s,transform .1s;white-space:nowrap;display:inline-flex;align-items:center;gap:6px;}
-.btn:active{transform:scale(.97);}
-.btn-amber{background:var(--amber);color:#000;}
-.btn-green{background:var(--green);color:#000;}
-.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--text-dim);padding:7px 12px;font-size:0.82rem;}
-.btn-ghost:hover{border-color:var(--amber);color:var(--amber);}
+/* BUTTONS */
+.btn{border:none;border-radius:8px;padding:9px 15px;font-size:.85rem;font-weight:600;cursor:pointer;transition:opacity .15s;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;}
+.btn:active{opacity:.8;}
+.btn-gold{background:var(--gold);color:#000;}
+.btn-ghost{background:transparent;border:1px solid var(--brd);color:var(--tdim);padding:7px 12px;font-size:.8rem;}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold);}
+.btn-sm{padding:6px 11px;font-size:.76rem;}
 .btn-red{background:var(--red);color:#fff;}
-.btn-sm{padding:6px 11px;font-size:0.78rem;}
-.btn-icon{padding:7px 10px;font-size:0.85rem;}
-.btn:hover{opacity:.88;}
 
-/* ── STAT CARDS ── */
-.stats-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px;}
-.stat-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;}
-.stat-card.accent{border-color:var(--amber-dim);}
-.stat-card.danger{border-color:var(--red-dim);}
-.stat-card.warning{border-color:var(--orange-dim);}
-.stat-card.good{border-color:var(--green-dim);}
-.stat-num{font-size:2.2rem;font-weight:800;line-height:1;}
-.stat-label{font-size:0.72rem;text-transform:uppercase;letter-spacing:.8px;color:var(--text-dim);margin-top:4px;}
-.stat-sub{font-size:0.78rem;color:var(--muted);margin-top:2px;}
+/* STATS */
+.sgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;}
+.scard{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:15px;}
+.scard.ca{border-color:var(--gd);}
+.scard.cd{border-color:var(--redd);}
+.scard.cw{border-color:var(--orgd);}
+.scard.cg{border-color:var(--grnd);}
+.snum{font-size:2.1rem;font-weight:800;line-height:1;}
+.slbl{font-size:.68rem;text-transform:uppercase;letter-spacing:.8px;color:var(--tdim);margin-top:4px;}
+.ssub{font-size:.75rem;color:var(--mut);margin-top:2px;}
 
-/* ── SECTION HEADER ── */
-.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
-.section-title{font-size:0.72rem;text-transform:uppercase;letter-spacing:1px;color:var(--muted);font-weight:600;}
+/* ALERTS */
+.alert{border-radius:var(--r);padding:12px 15px;margin-bottom:12px;font-size:.85rem;display:flex;gap:10px;align-items:flex-start;}
+.alert-r{background:var(--redd);border:1px solid var(--red);}
+.alert-o{background:var(--orgd);border:1px solid var(--org);}
+.alert-b{background:var(--blud);border:1px solid var(--blu);}
 
-/* ── ALERT BANNER ── */
-.alert-banner{border-radius:var(--radius);padding:12px 16px;margin-bottom:14px;display:flex;align-items:flex-start;gap:10px;font-size:0.88rem;}
-.alert-banner.danger{background:var(--red-dim);border:1px solid var(--red);}
-.alert-banner.warning{background:var(--orange-dim);border:1px solid var(--orange);}
-.alert-banner.info{background:var(--blue-dim);border:1px solid var(--blue);}
-.alert-icon{font-size:1.1rem;margin-top:1px;flex-shrink:0;}
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:15px;margin-bottom:10px;}
 
-/* ── CARDS ── */
-.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;margin-bottom:10px;}
-.card-clickable{cursor:pointer;transition:border-color .15s;}
-.card-clickable:hover{border-color:var(--amber-dim);}
+/* APIARY CARDS */
+.agrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;}
+.acard{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:15px;cursor:pointer;transition:border-color .15s;}
+.acard:hover{border-color:var(--gd);}
+.acard.sg{border-left:3px solid var(--grn);}
+.acard.sa{border-left:3px solid var(--org);}
+.acard.sc{border-left:3px solid var(--red);}
+.acard-hd{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
+.acard-name{font-size:.98rem;font-weight:700;}
+.acard-loc{font-size:.75rem;color:var(--tdim);margin-top:2px;}
+.acard-meta{display:flex;gap:14px;margin-bottom:10px;}
+.amn{font-size:1.3rem;font-weight:700;color:var(--gold);}
+.aml{font-size:.62rem;text-transform:uppercase;letter-spacing:.5px;color:var(--mut);}
+.acard-bot{font-size:.78rem;padding-top:8px;border-top:1px solid var(--brd);display:flex;justify-content:space-between;align-items:center;}
+.wtags{display:flex;gap:4px;flex-wrap:wrap;margin-top:7px;}
+.wtag{background:var(--brd);border-radius:20px;padding:2px 8px;font-size:.68rem;color:var(--tdim);}
 
-/* ── APIARY CARD ── */
-.apiary-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;}
-.apiary-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;cursor:pointer;transition:border-color .15s;}
-.apiary-card:hover{border-color:var(--amber-dim);}
-.apiary-card.status-good{border-left:3px solid var(--green);}
-.apiary-card.status-attention{border-left:3px solid var(--orange);}
-.apiary-card.status-critical{border-left:3px solid var(--red);}
-.apiary-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px;}
-.apiary-name{font-size:1rem;font-weight:700;}
-.apiary-location{font-size:0.78rem;color:var(--text-dim);margin-top:2px;}
-.apiary-meta{display:flex;gap:16px;margin-bottom:10px;}
-.apiary-meta-item{text-align:center;}
-.apiary-meta-num{font-size:1.3rem;font-weight:700;color:var(--amber);}
-.apiary-meta-lbl{font-size:0.65rem;text-transform:uppercase;letter-spacing:.5px;color:var(--muted);}
-.apiary-inspect{font-size:0.8rem;padding:8px 0;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
-.days-badge{padding:3px 8px;border-radius:20px;font-size:0.72rem;font-weight:700;}
-.days-good{background:var(--green-dim);color:var(--green);}
-.days-warn{background:var(--orange-dim);color:var(--orange);}
-.days-bad{background:var(--red-dim);color:var(--red);}
-.apiary-workers{display:flex;gap:4px;flex-wrap:wrap;margin-top:8px;}
-.worker-tag{background:var(--border);border-radius:20px;padding:3px 8px;font-size:0.7rem;color:var(--text-dim);}
+/* BADGES */
+.badge{padding:2px 8px;border-radius:20px;font-size:.68rem;font-weight:700;}
+.bg{background:var(--grnd);color:var(--grn);}
+.ba{background:var(--orgd);color:var(--org);}
+.bc{background:var(--redd);color:var(--red);}
+.bt{background:var(--brd);color:var(--tdim);}
+.bp{background:var(--blud);color:var(--blu);}
+.bdn{background:var(--grnd);color:var(--grn);}
+.bown{background:#2d1b4e;color:#c4b5fd;}
+.bmgr{background:#1e3a5f;color:#93c5fd;}
+.bemp{background:#0f3322;color:#6ee7b7;}
 
-/* ── STATUS BADGE ── */
-.badge{padding:3px 9px;border-radius:20px;font-size:0.72rem;font-weight:600;}
-.badge-good{background:var(--green-dim);color:var(--green);}
-.badge-attention{background:var(--orange-dim);color:var(--orange);}
-.badge-critical{background:var(--red-dim);color:var(--red);}
-.badge-todo{background:var(--border);color:var(--text-dim);}
-.badge-progress{background:var(--blue-dim);color:var(--blue);}
-.badge-done{background:var(--green-dim);color:var(--green);}
-.badge-owner{background:#4c1d95;color:#c4b5fd;}
-.badge-manager{background:#1e3a8a;color:#93c5fd;}
-.badge-employee{background:#1c2e14;color:#86efac;}
+/* DAY BADGES */
+.dbadge{padding:3px 9px;border-radius:20px;font-size:.7rem;font-weight:700;}
+.db-g{background:var(--grnd);color:var(--grn);}
+.db-w{background:var(--orgd);color:var(--org);}
+.db-r{background:var(--redd);color:var(--red);}
 
-/* ── FILTER BAR ── */
-.filter-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
-.filter-btn{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:0.78rem;font-weight:600;color:var(--text-dim);transition:all .15s;cursor:pointer;}
-.filter-btn.active,.filter-btn:hover{border-color:var(--amber);color:var(--amber);}
-.search-bar{display:flex;align-items:center;gap:8px;margin-bottom:12px;}
-.search-input{flex:1;background:var(--card);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:9px 12px;font-size:0.9rem;outline:none;transition:border-color .15s;}
-.search-input:focus{border-color:var(--amber);}
+/* FILTERS */
+.fbar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;}
+.fbtn{background:var(--card);border:1px solid var(--brd);border-radius:20px;padding:5px 13px;font-size:.76rem;font-weight:600;color:var(--tdim);cursor:pointer;transition:all .15s;}
+.fbtn.active,.fbtn:hover{border-color:var(--gold);color:var(--gold);}
+.srch{width:100%;background:var(--card);border:1px solid var(--brd);border-radius:8px;color:var(--txt);padding:9px 12px;font-size:.88rem;outline:none;margin-bottom:12px;transition:border-color .15s;}
+.srch:focus{border-color:var(--gold);}
 
-/* ── TASK CARD ── */
-.task-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:8px;display:flex;align-items:flex-start;gap:12px;}
-.task-card.priority-high{border-left:3px solid var(--red);}
-.task-card.priority-medium{border-left:3px solid var(--orange);}
-.task-card.priority-low{border-left:3px solid var(--border);}
-.task-icon{font-size:1.3rem;flex-shrink:0;margin-top:2px;}
-.task-body{flex:1;min-width:0;}
-.task-title{font-size:0.92rem;font-weight:600;margin-bottom:3px;}
-.task-meta{font-size:0.75rem;color:var(--text-dim);}
-.task-footer{display:flex;align-items:center;gap:8px;margin-top:8px;flex-wrap:wrap;}
-.task-actions{display:flex;gap:6px;margin-left:auto;}
-.task-done-btn{background:var(--green-dim);border:1px solid var(--green);border-radius:6px;color:var(--green);padding:5px 10px;font-size:0.75rem;font-weight:600;cursor:pointer;transition:all .15s;}
-.task-done-btn:hover{background:var(--green);color:#000;}
-.task-done{opacity:.5;}
-.task-done .task-title{text-decoration:line-through;}
+/* TASK CARDS */
+.tcard{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:13px;margin-bottom:8px;display:flex;gap:11px;align-items:flex-start;}
+.tcard.ph{border-left:3px solid var(--red);}
+.tcard.pm{border-left:3px solid var(--org);}
+.tcard.pl{border-left:3px solid var(--brd);}
+.tlbl{font-size:.62rem;font-weight:800;letter-spacing:.6px;padding:2px 6px;border-radius:3px;border:1px solid currentColor;flex-shrink:0;margin-top:3px;}
+.tl-ins{color:#60a5fa;}
+.tl-tr{color:#f87171;}
+.tl-ma{color:#a78bfa;}
+.tl-su{color:var(--gold);}
+.tl-qu{color:#fbbf24;}
+.tl-mv{color:#34d399;}
+.tl-fe{color:#6ee7b7;}
+.tl-wa{color:#93c5fd;}
+.tl-ot{color:var(--tdim);}
+.tbody{flex:1;min-width:0;}
+.ttitle{font-size:.9rem;font-weight:600;margin-bottom:3px;}
+.tmeta{font-size:.73rem;color:var(--tdim);}
+.tfoot{display:flex;align-items:center;gap:6px;margin-top:7px;flex-wrap:wrap;}
+.tdone-btn{background:var(--grnd);border:1px solid var(--grn);border-radius:6px;color:var(--grn);padding:4px 10px;font-size:.72rem;font-weight:700;cursor:pointer;transition:all .15s;}
+.tdone-btn:hover{background:var(--grn);color:#000;}
+.tdone .ttitle{text-decoration:line-through;opacity:.5;}
 
-/* ── TEAM CARD ── */
-.team-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;}
-.team-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;}
-.team-avatar{width:44px;height:44px;border-radius:50%;background:var(--amber-dim);display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;color:var(--amber);margin-bottom:10px;}
-.team-name{font-size:1rem;font-weight:700;}
-.team-email{font-size:0.78rem;color:var(--text-dim);margin:2px 0 8px;}
-.team-apiaries{font-size:0.78rem;color:var(--muted);}
-.team-apiaries strong{color:var(--text-dim);}
+/* INSPECT ITEM */
+.iitem{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:13px;margin-bottom:8px;display:flex;align-items:center;gap:11px;}
+.iitem.io{border-left:3px solid var(--red);}
+.iitem.iw{border-left:3px solid var(--org);}
+.iitem.ig{border-left:3px solid var(--grn);}
+.iinfo{flex:1;}
+.iname{font-size:.9rem;font-weight:600;}
+.imeta{font-size:.75rem;color:var(--tdim);margin-top:2px;}
+.ibtn{background:var(--gd);border:1px solid var(--gold);border-radius:7px;color:var(--gold);padding:6px 12px;font-size:.76rem;font-weight:600;cursor:pointer;flex-shrink:0;}
+.ibtn:hover{background:var(--gold);color:#000;}
 
-/* ── INSPECTION LIST ── */
-.inspect-item{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;}
-.inspect-item.overdue{border-left:3px solid var(--red);}
-.inspect-item.due-soon{border-left:3px solid var(--orange);}
-.inspect-item.ok{border-left:3px solid var(--green);}
-.inspect-info{flex:1;}
-.inspect-name{font-size:0.92rem;font-weight:600;}
-.inspect-meta{font-size:0.78rem;color:var(--text-dim);margin-top:2px;}
-.inspect-btn{background:var(--amber-dim);border:1px solid var(--amber);border-radius:7px;color:var(--amber);padding:7px 12px;font-size:0.78rem;font-weight:600;cursor:pointer;transition:all .15s;flex-shrink:0;}
-.inspect-btn:hover{background:var(--amber);color:#000;}
+/* TEAM */
+.tgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:10px;}
+.teamcard{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:15px;}
+.tavatar{width:42px;height:42px;border-radius:50%;background:var(--gd);display:flex;align-items:center;justify-content:center;font-size:1rem;font-weight:800;color:var(--gold);margin-bottom:10px;}
+.tname{font-size:.97rem;font-weight:700;}
+.temail{font-size:.75rem;color:var(--tdim);margin:2px 0 8px;}
 
-/* ── REPORTS ── */
-.report-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:16px;}
-.report-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px;}
-.report-title{font-size:0.72rem;text-transform:uppercase;letter-spacing:.8px;color:var(--muted);margin-bottom:10px;}
-.bar-chart{display:flex;flex-direction:column;gap:7px;}
-.bar-row{display:flex;align-items:center;gap:8px;font-size:0.78rem;}
-.bar-label{width:80px;color:var(--text-dim);flex-shrink:0;font-size:0.72rem;}
-.bar-track{flex:1;background:var(--border);border-radius:3px;height:16px;overflow:hidden;}
-.bar-fill{height:100%;border-radius:3px;transition:width .5s;}
-.bar-value{width:36px;text-align:right;font-weight:600;font-size:0.78rem;flex-shrink:0;}
-.pie-row{display:flex;gap:12px;align-items:center;font-size:0.82rem;margin-bottom:8px;}
-.pie-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+/* REPORTS */
+.rgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px;}
+.rcard{background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:15px;}
+.rtitle{font-size:.68rem;text-transform:uppercase;letter-spacing:.8px;color:var(--mut);margin-bottom:10px;}
+.brow{display:flex;align-items:center;gap:8px;font-size:.76rem;margin-bottom:6px;}
+.blbl{width:90px;color:var(--tdim);font-size:.7rem;flex-shrink:0;}
+.btrack{flex:1;background:var(--brd);border-radius:3px;height:14px;overflow:hidden;}
+.bfill{height:100%;border-radius:3px;}
+.bval{width:32px;text-align:right;font-weight:600;font-size:.75rem;flex-shrink:0;}
 
-/* ── MODAL ── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:flex-end;justify-content:center;padding:0;}
-.modal-overlay.open{display:flex;}
-.modal{background:var(--surface);border:1px solid var(--border);border-radius:16px 16px 0 0;padding:24px 20px;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;}
-.modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 18px;}
-.modal-title{font-size:1.1rem;font-weight:700;margin-bottom:16px;}
-.modal-close{position:absolute;right:20px;top:20px;background:none;border:none;color:var(--muted);font-size:1.2rem;cursor:pointer;}
-.form-group{margin-bottom:14px;}
-.form-label{font-size:0.78rem;color:var(--text-dim);margin-bottom:6px;display:block;}
-.form-input{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:8px;color:var(--text);padding:10px 12px;font-size:0.92rem;outline:none;transition:border-color .15s;}
-.form-input:focus{border-color:var(--amber);}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
-.form-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23a8956a' stroke-width='1.5' fill='none'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;}
-textarea.form-input{min-height:80px;resize:vertical;}
+/* MODAL */
+.mover{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:200;display:none;align-items:flex-end;justify-content:center;}
+.mover.open{display:flex;}
+.modal{background:var(--surf);border:1px solid var(--brd);border-radius:16px 16px 0 0;padding:22px 18px;width:100%;max-width:560px;max-height:92vh;overflow-y:auto;position:relative;}
+.mhandle{width:36px;height:4px;background:var(--brd);border-radius:2px;margin:0 auto 16px;}
+.mtitle{font-size:1.05rem;font-weight:700;margin-bottom:14px;}
+.mclose{position:absolute;right:18px;top:18px;background:none;border:none;color:var(--mut);font-size:1.1rem;cursor:pointer;}
+.fg{margin-bottom:13px;}
+.fl{font-size:.75rem;color:var(--tdim);margin-bottom:5px;display:block;}
+.fi{width:100%;background:var(--bg);border:1px solid var(--brd);border-radius:8px;color:var(--txt);padding:9px 12px;font-size:.9rem;outline:none;transition:border-color .15s;}
+.fi:focus{border-color:var(--gold);}
+textarea.fi{min-height:75px;resize:vertical;}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.gmlink{font-size:.78rem;margin-top:5px;display:none;}
+.gmlink a{color:var(--gold);}
+.gmlink.show{display:block;}
 
-/* ── EMPTY STATE ── */
-.empty{text-align:center;padding:40px 20px;color:var(--muted);}
-.empty-icon{font-size:2.5rem;margin-bottom:10px;}
-.empty p{font-size:0.88rem;}
+/* DETAIL */
+.drow{display:flex;justify-content:space-between;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--brd);font-size:.85rem;}
+.drow:last-child{border-bottom:none;}
+.dk{color:var(--tdim);}
+.dv{font-weight:600;text-align:right;max-width:60%;}
+.hist-item{padding:9px 0;border-bottom:1px solid var(--brd);}
+.hist-item:last-child{border-bottom:none;}
+.hdate{font-size:.85rem;font-weight:600;}
+.hinsp{font-size:.75rem;color:var(--tdim);}
+.hnotes{font-size:.78rem;color:var(--mut);margin-top:2px;}
+.hcond{padding:1px 7px;border-radius:10px;font-size:.68rem;font-weight:700;margin-left:6px;}
+.cg{background:var(--grnd);color:var(--grn);}
+.cf{background:var(--orgd);color:var(--org);}
+.cp{background:var(--redd);color:var(--red);}
 
-/* ── DETAIL SECTIONS ── */
-.detail-row{display:flex;justify-content:space-between;align-items:flex-start;padding:10px 0;border-bottom:1px solid var(--border);}
-.detail-row:last-child{border-bottom:none;}
-.detail-key{font-size:0.8rem;color:var(--text-dim);}
-.detail-val{font-size:0.88rem;font-weight:600;text-align:right;max-width:60%;}
-.inspect-history .hist-item{padding:10px 0;border-bottom:1px solid var(--border);}
-.inspect-history .hist-item:last-child{border-bottom:none;}
-.hist-date{font-size:0.85rem;font-weight:600;}
-.hist-inspector{font-size:0.78rem;color:var(--text-dim);}
-.hist-notes{font-size:0.8rem;color:var(--muted);margin-top:3px;}
-.hist-condition{padding:2px 7px;border-radius:10px;font-size:0.7rem;font-weight:600;margin-left:8px;}
-.cond-good{background:var(--green-dim);color:var(--green);}
-.cond-fair{background:var(--orange-dim);color:var(--orange);}
-.cond-poor{background:var(--red-dim);color:var(--red);}
+/* DROP POINTS */
+.dprow{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--brd);font-size:.82rem;}
+.dprow:last-child{border-bottom:none;}
+.dpname{font-weight:600;flex:1;}
+.dphives{color:var(--tdim);font-size:.75rem;}
+.dplink{font-size:.72rem;}
 
-/* ── WELCOME ── */
-.welcome-banner{background:linear-gradient(135deg,#1f1508,#0f1208);border:1px solid var(--amber-dim);border-radius:var(--radius);padding:18px;margin-bottom:14px;}
-.welcome-greeting{font-size:1.1rem;font-weight:700;color:var(--amber);}
-.welcome-sub{font-size:0.83rem;color:var(--text-dim);margin-top:3px;}
+/* MAP */
+#apiary-map{height:450px;border-radius:var(--r);border:1px solid var(--brd);margin-top:10px;}
+.map-toggle{display:flex;gap:6px;margin-bottom:10px;}
+.mtbtn{background:var(--card);border:1px solid var(--brd);border-radius:8px;padding:7px 16px;font-size:.8rem;font-weight:600;color:var(--tdim);cursor:pointer;}
+.mtbtn.active{border-color:var(--gold);color:var(--gold);}
 
-/* ── PROGRESS RING ── */
-.compliance-ring{display:flex;align-items:center;gap:16px;padding:12px 0;}
-.ring-svg{flex-shrink:0;}
-.ring-info .ring-pct{font-size:1.8rem;font-weight:800;color:var(--amber);}
-.ring-info .ring-lbl{font-size:0.75rem;color:var(--text-dim);}
+/* SECTION HEADER */
+.sh{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;}
+.st{font-size:.68rem;text-transform:uppercase;letter-spacing:1px;color:var(--mut);font-weight:700;}
 
-/* ── RESPONSIVE ── */
+/* WELCOME */
+.wbanner{background:linear-gradient(135deg,#221a08,#0f1208);border:1px solid var(--gd);border-radius:var(--r);padding:16px;margin-bottom:14px;}
+.wgreet{font-size:1.05rem;font-weight:700;color:var(--gold);}
+.wsub{font-size:.8rem;color:var(--tdim);margin-top:3px;}
+
+/* EMPTY */
+.empty{text-align:center;padding:36px 20px;color:var(--mut);font-size:.85rem;}
+
+/* COMPLIANCE RING */
+.cring{display:flex;align-items:center;gap:16px;padding:10px 0;}
+.cpct{font-size:1.8rem;font-weight:800;}
+.clbl{font-size:.73rem;color:var(--tdim);}
+
 @media(max-width:480px){
-  .stats-grid{grid-template-columns:repeat(2,1fr);}
-  .apiary-grid{grid-template-columns:1fr;}
-  .team-grid{grid-template-columns:1fr;}
-  .report-grid{grid-template-columns:1fr;}
-  .form-row{grid-template-columns:1fr;}
+  .sgrid,.rgrid{grid-template-columns:repeat(2,1fr);}
+  .agrid,.tgrid{grid-template-columns:1fr;}
+  .frow{grid-template-columns:1fr;}
 }
 </style>
 </head>
 <body>
 
-<!-- ═══ LOGIN ═══════════════════════════════════════════════════════ -->
+<!-- LOGIN -->
 <div id="login-screen">
-  <div class="login-box">
-    <div class="login-logo">
-      <span class="login-logo-icon">🐝</span>
-      <span class="login-logo-text">HiveOps</span>
+  <div class="lbox">
+    <div class="llogo">
+      <svg class="llogo-hex" width="56" height="60" viewBox="0 0 56 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="28,3 52,16 52,44 28,57 4,44 4,16" stroke="#F5A623" stroke-width="2.5" fill="none"/>
+        <polygon points="28,11 44,20 44,38 28,47 12,38 12,20" stroke="#F5A623" stroke-width="1" fill="none" opacity="0.3"/>
+        <path d="M28 57 C27 60 26 63 28 66 C30 63 29 60 28 57Z" fill="#F5A623"/>
+      </svg>
+      <div class="llogo-line"></div>
+      <div class="llogo-name">PRESCOTT</div>
+      <div class="llogo-sub">HONEY &nbsp; FARMS</div>
     </div>
-    <div class="login-tagline">Commercial Beekeeping Management — Oregon &amp; California</div>
-
-    <div class="demo-label">Quick demo login</div>
+    <div class="demo-lbl">Quick demo login</div>
     <div class="demo-btns">
-      <button class="demo-btn" onclick="quickLogin('owner')"><span>👑</span>Owner</button>
-      <button class="demo-btn" onclick="quickLogin('manager')"><span>📋</span>Manager</button>
-      <button class="demo-btn" onclick="quickLogin('employee')"><span>🌿</span>Field Worker</button>
+      <button class="dbtn" onclick="quickLogin('owner',this)">Owner</button>
+      <button class="dbtn" onclick="quickLogin('manager',this)">Manager</button>
+      <button class="dbtn" onclick="quickLogin('employee',this)">Field Worker</button>
     </div>
-
-    <div class="divider">or sign in manually</div>
-    <input class="login-input" type="email" id="l-email" placeholder="Email">
-    <input class="login-input" type="password" id="l-pass" placeholder="Password">
-    <button class="login-btn" onclick="doLogin()">Sign In</button>
-    <div id="login-msg"></div>
+    <div class="div">or sign in manually</div>
+    <input class="linput" type="email" id="le" placeholder="Email">
+    <input class="linput" type="password" id="lp" placeholder="Password">
+    <button class="lbtn" onclick="doLogin()">Sign In</button>
+    <div id="lmsg"></div>
   </div>
 </div>
 
-<!-- ═══ APP ══════════════════════════════════════════════════════════ -->
+<!-- APP -->
 <div id="app">
   <header>
-    <div class="header-left">
-      <div class="header-logo">🐝 HiveOps</div>
-      <span style="color:var(--border)">|</span>
-      <div id="page-title">Dashboard</div>
+    <div class="hlogo">
+      <svg width="28" height="30" viewBox="0 0 56 60" fill="none"><polygon points="28,3 52,16 52,44 28,57 4,44 4,16" stroke="#F5A623" stroke-width="2.5" fill="none"/><path d="M28 57 C27 60 26 62 28 64 C30 62 29 60 28 57Z" fill="#F5A623"/></svg>
+      <div class="hlogo-txt"><div class="hlogo-main">PRESCOTT</div><div class="hlogo-sub">HONEY FARMS</div></div>
     </div>
-    <div class="header-right">
-      <div class="user-chip">
-        <div class="role-dot" id="role-dot"></div>
-        <span id="user-name-chip"></span>
-      </div>
-      <button class="signout-btn" onclick="signOut()">Sign Out</button>
+    <div class="hright">
+      <div class="uchip"><div class="rdot" id="rdot"></div><span id="uchip-name"></span></div>
+      <button class="soBtn" onclick="signOut()">Sign Out</button>
     </div>
   </header>
 
-  <!-- Dashboard -->
+  <!-- DASHBOARD -->
   <div id="view-dashboard" class="view active">
-    <div class="welcome-banner">
-      <div class="welcome-greeting" id="welcome-greeting"></div>
-      <div class="welcome-sub" id="welcome-sub"></div>
-    </div>
-    <div id="dash-alerts"></div>
-    <div class="stats-grid" id="dash-stats"></div>
-    <div class="section-header">
-      <div class="section-title">Priority Inspections</div>
-      <button class="btn btn-ghost btn-sm" onclick="switchView('inspections')">View All →</button>
-    </div>
-    <div id="dash-priority"></div>
-    <div class="section-header" style="margin-top:14px;">
-      <div class="section-title" id="tasks-section-title">Tasks Due Today</div>
-      <button class="btn btn-ghost btn-sm" onclick="switchView('tasks')">View All →</button>
-    </div>
-    <div id="dash-tasks"></div>
+    <div class="wbanner"><div class="wgreet" id="wgreet"></div><div class="wsub" id="wsub"></div></div>
+    <div id="dalerts"></div>
+    <div class="sgrid" id="dstats"></div>
+    <div class="sh"><div class="st">Priority Inspections</div><button class="btn btn-ghost btn-sm" onclick="switchView('tasks')">View All</button></div>
+    <div id="dprio"></div>
+    <div class="sh" style="margin-top:12px;"><div class="st" id="dtask-lbl">Tasks Due Today</div><button class="btn btn-ghost btn-sm" onclick="switchView('tasks')">View All</button></div>
+    <div id="dtasks"></div>
   </div>
 
-  <!-- Apiaries -->
+  <!-- APIARIES -->
   <div id="view-apiaries" class="view">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-      <div class="section-title">All Apiaries</div>
-      <button class="btn btn-amber btn-sm" id="add-apiary-btn" onclick="openModal('modal-add-apiary')">+ Add Apiary</button>
+    <div class="sh">
+      <div class="st">Apiaries</div>
+      <button class="btn btn-gold btn-sm" id="add-ap-btn" onclick="openModal('madd-apiary')">+ Add Apiary</button>
     </div>
-    <div class="filter-bar" id="apiary-filters">
-      <button class="filter-btn active" data-f="all" onclick="setApiaryFilter('all',this)">All States</button>
-      <button class="filter-btn" data-f="OR" onclick="setApiaryFilter('OR',this)">Oregon</button>
-      <button class="filter-btn" data-f="CA" onclick="setApiaryFilter('CA',this)">California</button>
-      <button class="filter-btn" data-f="good" onclick="setApiaryFilter('good',this)">✓ Good</button>
-      <button class="filter-btn" data-f="attention" onclick="setApiaryFilter('attention',this)">⚠ Attention</button>
-      <button class="filter-btn" data-f="critical" onclick="setApiaryFilter('critical',this)">🚨 Critical</button>
+    <div class="fbar" id="afbar">
+      <button class="fbtn active" data-af="all" onclick="setAF('all',this)">All</button>
+      <button class="fbtn" data-af="OR" onclick="setAF('OR',this)">Oregon</button>
+      <button class="fbtn" data-af="CA" onclick="setAF('CA',this)">California</button>
+      <button class="fbtn" data-af="good" onclick="setAF('good',this)">Good</button>
+      <button class="fbtn" data-af="attention" onclick="setAF('attention',this)">Attention</button>
+      <button class="fbtn" data-af="critical" onclick="setAF('critical',this)">Critical</button>
     </div>
-    <div class="search-bar">
-      <input class="search-input" type="text" id="apiary-search" placeholder="Search apiaries..." oninput="renderApiaries()">
+    <input class="srch" type="text" id="asrch" placeholder="Search by name, city or county..." oninput="renderApiaries()">
+    <div class="map-toggle">
+      <button class="mtbtn active" id="mt-grid" onclick="setMapToggle('grid')">Grid View</button>
+      <button class="mtbtn" id="mt-map" onclick="setMapToggle('map')">Map View</button>
     </div>
-    <div class="apiary-grid" id="apiary-grid"></div>
+    <div id="apiary-grid"></div>
+    <div id="apiary-map" style="display:none;"></div>
   </div>
 
-  <!-- Inspections -->
-  <div id="view-inspections" class="view">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-      <div class="section-title">Inspection Schedule</div>
-      <div style="font-size:0.78rem;color:var(--text-dim);">14-day cycle</div>
-    </div>
-    <div class="filter-bar">
-      <button class="filter-btn active" data-if="all" onclick="setInspFilter('all',this)">All</button>
-      <button class="filter-btn" data-if="overdue" onclick="setInspFilter('overdue',this)">Overdue</button>
-      <button class="filter-btn" data-if="due-soon" onclick="setInspFilter('due-soon',this)">Due Soon</button>
-      <button class="filter-btn" data-if="ok" onclick="setInspFilter('ok',this)">Up to Date</button>
-    </div>
-    <div id="inspection-list"></div>
-  </div>
-
-  <!-- Tasks -->
+  <!-- TASKS -->
   <div id="view-tasks" class="view">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-      <div class="section-title">Task Board</div>
-      <button class="btn btn-amber btn-sm" id="add-task-btn" onclick="openModal('modal-add-task')">+ New Task</button>
+    <div class="sh">
+      <div class="st">Task Board</div>
+      <button class="btn btn-gold btn-sm" id="add-task-btn" onclick="openAddTask()">+ New Task</button>
     </div>
-    <div class="filter-bar">
-      <button class="filter-btn active" data-tf="all" onclick="setTaskFilter('all',this)">All Tasks</button>
-      <button class="filter-btn" data-tf="mine" onclick="setTaskFilter('mine',this)">Mine</button>
-      <button class="filter-btn" data-tf="today" onclick="setTaskFilter('today',this)">Due Today</button>
-      <button class="filter-btn" data-tf="overdue" onclick="setTaskFilter('overdue',this)">Overdue</button>
-      <button class="filter-btn" data-tf="open" onclick="setTaskFilter('open',this)">Open</button>
-      <button class="filter-btn" data-tf="done" onclick="setTaskFilter('done',this)">Done</button>
+    <div class="fbar">
+      <button class="fbtn active" data-tf="all" onclick="setTF('all',this)">All</button>
+      <button class="fbtn" data-tf="mine" onclick="setTF('mine',this)">Mine</button>
+      <button class="fbtn" data-tf="today" onclick="setTF('today',this)">Due Today</button>
+      <button class="fbtn" data-tf="overdue" onclick="setTF('overdue',this)">Overdue</button>
+      <button class="fbtn" data-tf="open" onclick="setTF('open',this)">Open</button>
+      <button class="fbtn" data-tf="done" onclick="setTF('done',this)">Done</button>
     </div>
     <div id="task-list"></div>
   </div>
 
-  <!-- Team -->
+  <!-- TEAM -->
   <div id="view-team" class="view">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-      <div class="section-title">Field Team</div>
-      <button class="btn btn-amber btn-sm" id="add-emp-btn" onclick="openModal('modal-add-employee')">+ Add Employee</button>
-    </div>
-    <div class="team-grid" id="team-grid"></div>
+    <div class="sh"><div class="st">Field Team</div><button class="btn btn-gold btn-sm" id="add-emp-btn" onclick="openModal('madd-employee')">+ Add Member</button></div>
+    <div class="tgrid" id="team-grid"></div>
   </div>
 
-  <!-- Reports -->
+  <!-- REPORTS -->
   <div id="view-reports" class="view">
-    <div class="section-title" style="margin-bottom:14px;">Operations Report</div>
-    <div class="report-grid" id="report-stats"></div>
+    <div class="st" style="margin-bottom:12px;">Operations Report</div>
+    <div class="rgrid" id="rstats"></div>
     <div class="card" style="margin-bottom:12px;">
-      <div class="report-title">Inspection Compliance by Apiary (Last 30 days)</div>
-      <div class="bar-chart" id="compliance-chart"></div>
+      <div class="rtitle">Days Since Inspection — Top 10 Most Overdue</div>
+      <div id="rchart"></div>
     </div>
-    <div class="report-grid">
-      <div class="report-card">
-        <div class="report-title">Hives by State</div>
-        <div id="state-chart"></div>
-      </div>
-      <div class="report-card">
-        <div class="report-title">Apiary Status Breakdown</div>
-        <div id="status-chart"></div>
-      </div>
+    <div class="rgrid">
+      <div class="rcard"><div class="rtitle">Hives by State</div><div id="rstate"></div></div>
+      <div class="rcard"><div class="rtitle">Status Breakdown</div><div id="rstatus"></div></div>
     </div>
-    <div class="card" style="margin-top:2px;">
-      <div class="report-title" style="margin-bottom:10px;">Inspection Compliance Rate</div>
-      <div class="compliance-ring">
-        <svg class="ring-svg" width="80" height="80" viewBox="0 0 80 80">
-          <circle cx="40" cy="40" r="32" fill="none" stroke="#2e2814" stroke-width="8"/>
-          <circle cx="40" cy="40" r="32" fill="none" stroke="#f59e0b" stroke-width="8"
-            stroke-dasharray="201" stroke-dashoffset="0" stroke-linecap="round"
-            transform="rotate(-90 40 40)" id="compliance-ring-circle"/>
-        </svg>
-        <div class="ring-info">
-          <div class="ring-pct" id="compliance-pct">—</div>
-          <div class="ring-lbl">of apiaries inspected<br>within 14 days</div>
-        </div>
-      </div>
+    <div class="card" style="margin-top:4px;">
+      <div class="rtitle">14-Day Inspection Compliance</div>
+      <div class="cring"><svg width="80" height="80" viewBox="0 0 80 80"><circle cx="40" cy="40" r="32" fill="none" stroke="#2a2418" stroke-width="8"/><circle cx="40" cy="40" r="32" fill="none" stroke="#F5A623" stroke-width="8" stroke-dasharray="201" stroke-dashoffset="0" stroke-linecap="round" transform="rotate(-90 40 40)" id="cring-c"/></svg>
+      <div><div class="cpct" id="cpct">—</div><div class="clbl">apiaries inspected<br>within 14 days</div></div></div>
     </div>
   </div>
 
-  <!-- Bottom nav -->
   <nav>
     <button class="active" data-v="dashboard" onclick="switchView('dashboard')">
-      <span class="ni">🏠</span>Home
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor"><rect x="1" y="1" width="7" height="7" rx="1.5"/><rect x="10" y="1" width="7" height="7" rx="1.5"/><rect x="1" y="10" width="7" height="7" rx="1.5"/><rect x="10" y="10" width="7" height="7" rx="1.5"/></svg>
+      Home
     </button>
     <button data-v="apiaries" onclick="switchView('apiaries')">
-      <span class="ni">📍</span>Apiaries
-    </button>
-    <button data-v="inspections" onclick="switchView('inspections')">
-      <span class="ni">🔍</span>Inspect
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor"><path d="M9 1C6.24 1 4 3.24 4 6c0 4.25 5 11 5 11s5-6.75 5-11c0-2.76-2.24-5-5-5zm0 6.75A1.75 1.75 0 1 1 9 4.25a1.75 1.75 0 0 1 0 3.5z"/></svg>
+      Apiaries
     </button>
     <button data-v="tasks" onclick="switchView('tasks')">
-      <span class="ni">✅</span>Tasks
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 5h12M3 9h8M3 13h5" stroke-linecap="round"/><circle cx="15" cy="13" r="2.5"/><path d="M13.8 13l.8.8 1.6-1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Tasks
     </button>
     <button data-v="team" onclick="switchView('team')" id="nav-team">
-      <span class="ni">👥</span>Team
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="6.5" cy="5.5" r="2.5"/><path d="M1 16c0-3.04 2.46-5.5 5.5-5.5S12 12.96 12 16" stroke-linecap="round"/><circle cx="13" cy="6" r="2"/><path d="M13 12c2.21 0 4 1.79 4 4" stroke-linecap="round"/></svg>
+      Team
     </button>
     <button data-v="reports" onclick="switchView('reports')" id="nav-reports">
-      <span class="ni">📊</span>Reports
+      <svg width="18" height="18" viewBox="0 0 18 18" fill="currentColor"><rect x="1" y="10" width="3" height="7" rx="1"/><rect x="6" y="6" width="3" height="11" rx="1"/><rect x="11" y="3" width="3" height="14" rx="1"/><rect x="14" y="7" width="3" height="10" rx="1"/></svg>
+      Reports
     </button>
   </nav>
 </div>
 
-<!-- ═══ MODALS ════════════════════════════════════════════════════════ -->
-
+<!-- MODALS -->
 <!-- Apiary Detail -->
-<div class="modal-overlay" id="modal-apiary-detail">
-  <div class="modal" style="position:relative;">
-    <div class="modal-handle"></div>
-    <button class="modal-close" onclick="closeModal('modal-apiary-detail')">✕</button>
-    <div class="modal-title" id="detail-title"></div>
-    <div id="detail-body"></div>
-  </div>
+<div class="mover" id="mdetail">
+  <div class="modal"><div class="mhandle"></div><button class="mclose" onclick="closeModal('mdetail')">&#10005;</button>
+  <div class="mtitle" id="md-title"></div><div id="md-body"></div></div>
 </div>
 
 <!-- Log Inspection -->
-<div class="modal-overlay" id="modal-log-inspection">
-  <div class="modal" style="position:relative;">
-    <div class="modal-handle"></div>
-    <button class="modal-close" onclick="closeModal('modal-log-inspection')">✕</button>
-    <div class="modal-title">Log Inspection</div>
-    <input type="hidden" id="insp-apiary-id">
-    <div class="form-group">
-      <label class="form-label">Apiary</label>
-      <div id="insp-apiary-name" style="font-weight:600;padding:8px 0;"></div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Date</label>
-      <input class="form-input" type="date" id="insp-date">
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Overall Condition</label>
-        <select class="form-input form-select" id="insp-condition">
-          <option value="good">Good</option>
-          <option value="fair">Fair</option>
-          <option value="poor">Poor</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Active Colonies</label>
-        <input class="form-input" type="number" id="insp-colonies" placeholder="e.g. 500">
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Varroa Treatment Applied?</label>
-      <select class="form-input form-select" id="insp-treatment">
-        <option value="none">None</option>
-        <option value="oxalic">Oxalic Acid</option>
-        <option value="apivar">Apivar (Amitraz)</option>
-        <option value="miteaway">Mite Away Quick Strips</option>
-        <option value="hopguard">HopGuard</option>
-        <option value="other">Other</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Notes</label>
-      <textarea class="form-input" id="insp-notes" placeholder="General observations, concerns, follow-up needed..."></textarea>
-    </div>
-    <button class="btn btn-amber" style="width:100%;" onclick="submitInspection()">Save Inspection Log</button>
+<div class="mover" id="mlog-insp">
+  <div class="modal"><div class="mhandle"></div><button class="mclose" onclick="closeModal('mlog-insp')">&#10005;</button>
+  <div class="mtitle">Log Inspection</div>
+  <input type="hidden" id="li-aid">
+  <div class="fg"><div class="fl">Apiary</div><div id="li-aname" style="font-weight:700;padding:6px 0;"></div></div>
+  <div class="frow">
+    <div class="fg"><div class="fl">Date</div><input class="fi" type="date" id="li-date"></div>
+    <div class="fg"><div class="fl">Condition</div><select class="fi" id="li-cond"><option value="good">Good</option><option value="fair">Fair</option><option value="poor">Poor</option></select></div>
+  </div>
+  <div class="frow">
+    <div class="fg"><div class="fl">Active Colonies</div><input class="fi" type="number" id="li-col" placeholder="e.g. 500"></div>
+    <div class="fg"><div class="fl">Treatment Applied</div><select class="fi" id="li-treat"><option value="none">None</option><option value="oxalic">Oxalic Acid</option><option value="apivar">Apivar</option><option value="miteaway">Mite Away</option><option value="hopguard">HopGuard</option><option value="other">Other</option></select></div>
+  </div>
+  <div class="fg"><div class="fl">Notes</div><textarea class="fi" id="li-notes" placeholder="Observations, concerns, follow-up needed..."></textarea></div>
+  <button class="btn btn-gold" style="width:100%;" onclick="submitInsp()">Save Inspection</button>
+  </div>
+</div>
+
+<!-- Add / Edit Apiary -->
+<div class="mover" id="madd-apiary">
+  <div class="modal"><div class="mhandle"></div><button class="mclose" onclick="closeModal('madd-apiary')">&#10005;</button>
+  <div class="mtitle" id="aform-title">Add New Apiary</div>
+  <input type="hidden" id="af-id">
+  <div class="fg"><div class="fl">Apiary Name</div><input class="fi" type="text" id="af-name" placeholder="e.g. Rogue Valley South"></div>
+  <div class="frow">
+    <div class="fg"><div class="fl">State</div><select class="fi" id="af-state"><option value="OR">Oregon (OR)</option><option value="CA">California (CA)</option></select></div>
+    <div class="fg"><div class="fl">County</div><input class="fi" type="text" id="af-county" placeholder="e.g. Jackson County"></div>
+  </div>
+  <div class="frow">
+    <div class="fg"><div class="fl">City</div><input class="fi" type="text" id="af-city" placeholder="e.g. Medford"></div>
+    <div class="fg"><div class="fl">Total Hives</div><input class="fi" type="number" id="af-hives" placeholder="e.g. 500"></div>
+  </div>
+  <div class="frow">
+    <div class="fg"><div class="fl">Latitude</div><input class="fi" type="text" id="af-lat" placeholder="e.g. 42.326" oninput="updGMLink('af')"></div>
+    <div class="fg"><div class="fl">Longitude</div><input class="fi" type="text" id="af-lng" placeholder="e.g. -122.875" oninput="updGMLink('af')"></div>
+  </div>
+  <div class="gmlink" id="af-gmlink"><a id="af-gma" href="#" target="_blank" rel="noopener">Open in Google Maps</a></div>
+  <div class="fg"><div class="fl">Notes / Contract Info</div><textarea class="fi" id="af-notes" placeholder="Pollination contracts, crop types, access info..."></textarea></div>
+  <button class="btn btn-gold" style="width:100%;" onclick="submitApiary()">Save Apiary</button>
   </div>
 </div>
 
 <!-- Add Task -->
-<div class="modal-overlay" id="modal-add-task">
-  <div class="modal" style="position:relative;">
-    <div class="modal-handle"></div>
-    <button class="modal-close" onclick="closeModal('modal-add-task')">✕</button>
-    <div class="modal-title">Add Task</div>
-    <div class="form-group">
-      <label class="form-label">Task Type</label>
-      <select class="form-input form-select" id="task-type">
-        <option value="inspection">🔍 Inspection</option>
-        <option value="treatment">💊 Varroa Treatment</option>
-        <option value="equipment">🔧 Equipment / Maintenance</option>
-        <option value="supering">🍯 Add / Pull Honey Supers</option>
-        <option value="queen">👑 Queen Check / Replace</option>
-        <option value="transport">🚛 Transport Hives</option>
-        <option value="feeding">🌿 Feeding / Supplements</option>
-        <option value="water">💧 Water Source Check</option>
-        <option value="other">📌 Other</option>
-      </select>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Description</label>
-      <input class="form-input" type="text" id="task-desc" placeholder="Brief description of the task">
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Apiary</label>
-        <select class="form-input form-select" id="task-apiary"></select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Assign To</label>
-        <select class="form-input form-select" id="task-assignee"></select>
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Due Date</label>
-        <input class="form-input" type="date" id="task-due">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Priority</label>
-        <select class="form-input form-select" id="task-priority">
-          <option value="high">High</option>
-          <option value="medium" selected>Medium</option>
-          <option value="low">Low</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Notes (optional)</label>
-      <textarea class="form-input" id="task-notes" placeholder="Additional details..." style="min-height:60px;"></textarea>
-    </div>
-    <button class="btn btn-amber" style="width:100%;" onclick="submitTask()">Add Task</button>
+<div class="mover" id="madd-task">
+  <div class="modal"><div class="mhandle"></div><button class="mclose" onclick="closeModal('madd-task')">&#10005;</button>
+  <div class="mtitle">Add Task</div>
+  <div class="fg"><div class="fl">Task Type</div>
+    <select class="fi" id="ta-type">
+      <option value="inspection">Inspection</option><option value="treatment">Varroa Treatment</option>
+      <option value="equipment">Equipment / Maintenance</option><option value="supering">Add / Pull Honey Supers</option>
+      <option value="queen">Queen Check / Replace</option><option value="transport">Transport Hives</option>
+      <option value="feeding">Feeding / Supplements</option><option value="water">Water Source Check</option>
+      <option value="other">Other</option>
+    </select>
   </div>
-</div>
-
-<!-- Add Apiary -->
-<div class="modal-overlay" id="modal-add-apiary">
-  <div class="modal" style="position:relative;">
-    <div class="modal-handle"></div>
-    <button class="modal-close" onclick="closeModal('modal-add-apiary')">✕</button>
-    <div class="modal-title">Add New Apiary</div>
-    <div class="form-group">
-      <label class="form-label">Apiary Name</label>
-      <input class="form-input" type="text" id="na-name" placeholder="e.g. Rogue Valley South">
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">State</label>
-        <select class="form-input form-select" id="na-state">
-          <option value="OR">Oregon (OR)</option>
-          <option value="CA">California (CA)</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">County</label>
-        <input class="form-input" type="text" id="na-county" placeholder="e.g. Jackson County">
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Nearest City</label>
-        <input class="form-input" type="text" id="na-city" placeholder="e.g. Medford">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Number of Hives</label>
-        <input class="form-input" type="number" id="na-hives" placeholder="e.g. 500" min="1">
-      </div>
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Latitude</label>
-        <input class="form-input" type="text" id="na-lat" placeholder="e.g. 42.326">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Longitude</label>
-        <input class="form-input" type="text" id="na-lng" placeholder="e.g. -122.875">
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Notes / Contract Info</label>
-      <textarea class="form-input" id="na-notes" placeholder="Pollination contracts, crop types, access info..."></textarea>
-    </div>
-    <button class="btn btn-amber" style="width:100%;" onclick="submitApiary()">Add Apiary</button>
+  <div class="fg"><div class="fl">Description</div><input class="fi" type="text" id="ta-desc" placeholder="Brief description"></div>
+  <div class="frow">
+    <div class="fg"><div class="fl">Apiary</div><select class="fi" id="ta-ap"></select></div>
+    <div class="fg"><div class="fl">Assign To</div><select class="fi" id="ta-assignee"></select></div>
+  </div>
+  <div class="frow">
+    <div class="fg"><div class="fl">Due Date</div><input class="fi" type="date" id="ta-due"></div>
+    <div class="fg"><div class="fl">Priority</div><select class="fi" id="ta-pri"><option value="high">High</option><option value="medium" selected>Medium</option><option value="low">Low</option></select></div>
+  </div>
+  <div class="fg"><div class="fl">Notes</div><textarea class="fi" id="ta-notes" placeholder="Additional details..." style="min-height:60px;"></textarea></div>
+  <button class="btn btn-gold" style="width:100%;" onclick="submitTask()">Add Task</button>
   </div>
 </div>
 
 <!-- Add Employee -->
-<div class="modal-overlay" id="modal-add-employee">
-  <div class="modal" style="position:relative;">
-    <div class="modal-handle"></div>
-    <button class="modal-close" onclick="closeModal('modal-add-employee')">✕</button>
-    <div class="modal-title">Add Team Member</div>
-    <div class="form-group">
-      <label class="form-label">Full Name</label>
-      <input class="form-input" type="text" id="ne-name" placeholder="Full name">
-    </div>
-    <div class="form-group">
-      <label class="form-label">Email</label>
-      <input class="form-input" type="email" id="ne-email" placeholder="work@email.com">
-    </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">Role</label>
-        <select class="form-input form-select" id="ne-role">
-          <option value="manager">Manager</option>
-          <option value="employee">Field Worker</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Region</label>
-        <select class="form-input form-select" id="ne-region">
-          <option value="OR">Oregon</option>
-          <option value="CA">California</option>
-          <option value="both">Both States</option>
-        </select>
-      </div>
-    </div>
-    <div class="form-group">
-      <label class="form-label">Phone</label>
-      <input class="form-input" type="tel" id="ne-phone" placeholder="(555) 000-0000">
-    </div>
-    <button class="btn btn-amber" style="width:100%;" onclick="submitEmployee()">Add Team Member</button>
+<div class="mover" id="madd-employee">
+  <div class="modal"><div class="mhandle"></div><button class="mclose" onclick="closeModal('madd-employee')">&#10005;</button>
+  <div class="mtitle">Add Team Member</div>
+  <div class="fg"><div class="fl">Full Name</div><input class="fi" type="text" id="ne-name" placeholder="Full name"></div>
+  <div class="fg"><div class="fl">Email</div><input class="fi" type="email" id="ne-email" placeholder="name@prescotthoney.com"></div>
+  <div class="frow">
+    <div class="fg"><div class="fl">Role</div><select class="fi" id="ne-role"><option value="manager">Manager</option><option value="employee">Field Worker</option></select></div>
+    <div class="fg"><div class="fl">Phone</div><input class="fi" type="tel" id="ne-phone" placeholder="(555) 000-0000"></div>
+  </div>
+  <button class="btn btn-gold" style="width:100%;" onclick="submitEmployee()">Add Member</button>
   </div>
 </div>
 
+<!-- Add Drop Point -->
+<div class="mover" id="madd-dp">
+  <div class="modal"><div class="mhandle"></div><button class="mclose" onclick="closeModal('madd-dp')">&#10005;</button>
+  <div class="mtitle">Add Drop Point</div>
+  <input type="hidden" id="dp-aid">
+  <div class="fg"><div class="fl">Drop Point Name</div><input class="fi" type="text" id="dp-name" placeholder="e.g. North Clover Field"></div>
+  <div class="frow">
+    <div class="fg"><div class="fl">Latitude</div><input class="fi" type="text" id="dp-lat" placeholder="e.g. 44.948" oninput="updGMLink('dp')"></div>
+    <div class="fg"><div class="fl">Longitude</div><input class="fi" type="text" id="dp-lng" placeholder="e.g. -122.869" oninput="updGMLink('dp')"></div>
+  </div>
+  <div class="gmlink" id="dp-gmlink"><a id="dp-gma" href="#" target="_blank" rel="noopener">Open in Google Maps</a></div>
+  <div class="fg"><div class="fl">Hives at this point</div><input class="fi" type="number" id="dp-hives" placeholder="e.g. 120"></div>
+  <div class="fg"><div class="fl">Notes</div><input class="fi" type="text" id="dp-notes" placeholder="Access info, landmarks..."></div>
+  <button class="btn btn-gold" style="width:100%;" onclick="submitDP()">Add Drop Point</button>
+  </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
-// ═══════════════════════════════════════════════════════════════
-// CONSTANTS & DEMO DATA
-// ═══════════════════════════════════════════════════════════════
+// ── DATA ──────────────────────────────────────────────────────
+const TODAY='2026-05-03';
+const td=new Date(TODAY);
+const ago=n=>{const d=new Date(td);d.setDate(d.getDate()-n);return d.toISOString().split('T')[0];};
+const ahead=n=>{const d=new Date(td);d.setDate(d.getDate()+n);return d.toISOString().split('T')[0];};
 
-const TODAY = '2026-05-03';
-const todayDate = new Date(TODAY);
-
-function daysAgo(n) {
-  const d = new Date(todayDate);
-  d.setDate(d.getDate() - n);
-  return d.toISOString().split('T')[0];
-}
-function daysAhead(n) {
-  const d = new Date(todayDate);
-  d.setDate(d.getDate() + n);
-  return d.toISOString().split('T')[0];
-}
-
-const DEMO_USERS = [
-  { id:'u0', name:'Prescott Rogan',  email:'owner@hiveops.com',   password:'demo', role:'owner'    },
-  { id:'u1', name:'Jake Morrison',   email:'jake@hiveops.com',    password:'demo', role:'manager'  },
-  { id:'u2', name:'Maria Santos',    email:'maria@hiveops.com',   password:'demo', role:'manager'  },
-  { id:'u3', name:'Tom Bradley',     email:'tom@hiveops.com',     password:'demo', role:'employee' },
-  { id:'u4', name:'Sarah Chen',      email:'sarah@hiveops.com',   password:'demo', role:'employee' },
-  { id:'u5', name:'Mike Rivera',     email:'mike@hiveops.com',    password:'demo', role:'employee' },
-  { id:'u6', name:'Lisa Park',       email:'lisa@hiveops.com',    password:'demo', role:'employee' },
-  { id:'u7', name:'Dave Thompson',   email:'dave@hiveops.com',    password:'demo', role:'employee' },
-  { id:'u8', name:'Ana Gutierrez',   email:'ana@hiveops.com',     password:'demo', role:'employee' },
+const USERS=[
+  {id:'u0',name:'Prescott Rogan',email:'owner@prescotthoney.com',password:'demo',role:'owner'},
+  {id:'u1',name:'Jake Morrison',email:'jake@prescotthoney.com',password:'demo',role:'manager'},
+  {id:'u2',name:'Maria Santos',email:'maria@prescotthoney.com',password:'demo',role:'manager'},
+  {id:'u3',name:'Tom Bradley',email:'tom@prescotthoney.com',password:'demo',role:'employee'},
+  {id:'u4',name:'Sarah Chen',email:'sarah@prescotthoney.com',password:'demo',role:'employee'},
+  {id:'u5',name:'Mike Rivera',email:'mike@prescotthoney.com',password:'demo',role:'employee'},
+  {id:'u6',name:'Lisa Park',email:'lisa@prescotthoney.com',password:'demo',role:'employee'},
+  {id:'u7',name:'Dave Thompson',email:'dave@prescotthoney.com',password:'demo',role:'employee'},
+  {id:'u8',name:'Ana Gutierrez',email:'ana@prescotthoney.com',password:'demo',role:'employee'},
 ];
 
-const SEED_APIARIES = [
-  // Oregon
-  { id:'a01', name:'Willamette Valley East', state:'OR', county:'Marion County',     city:'Salem',        lat:44.942, lng:-122.876, hives:620, assignedTo:['u3','u4'], notes:'Clover and wildflower. Pollination contract with Bauman Farms.' },
-  { id:'a02', name:'Cascade Foothills',      state:'OR', county:'Linn County',       city:'Albany',       lat:44.635, lng:-123.105, hives:450, assignedTo:['u3'],       notes:'Berry farm pollination. Varroa pressure — monitor closely.' },
-  { id:'a03', name:'Rogue Valley South',     state:'OR', county:'Jackson County',    city:'Medford',      lat:42.326, lng:-122.875, hives:520, assignedTo:['u4'],       notes:'Pear & apple orchard contracts. Strong colonies.' },
-  { id:'a04', name:'Klamath Basin',          state:'OR', county:'Klamath County',    city:'Klamath Falls',lat:42.225, lng:-121.782, hives:480, assignedTo:['u5'],       notes:'High elevation. Winter losses — extra monitoring required.' },
-  { id:'a05', name:'High Desert Basin',      state:'OR', county:'Deschutes County',  city:'Bend',         lat:44.058, lng:-121.315, hives:510, assignedTo:['u3','u5'], notes:'Sagebrush honey production. Peak flow July–August.' },
-  { id:'a06', name:'Umpqua River Valley',    state:'OR', county:'Douglas County',    city:'Roseburg',     lat:43.216, lng:-123.368, hives:490, assignedTo:['u4'],       notes:'Mixed wildflower and hawthorn. Good spring buildup.' },
-  { id:'a07', name:'Columbia Gorge',         state:'OR', county:'Hood River County', city:'Hood River',   lat:45.707, lng:-121.522, hives:540, assignedTo:['u6'],       notes:'Apple & pear orchards. Wind exposure management needed.' },
-  { id:'a08', name:'Tualatin Valley',        state:'OR', county:'Washington County', city:'Hillsboro',    lat:45.522, lng:-122.989, hives:420, assignedTo:['u6'],       notes:'Nursery & farm pollination. Close to Portland metro.' },
-  { id:'a09', name:'Eastern Oregon Plateau', state:'OR', county:'Umatilla County',   city:'Pendleton',    lat:45.672, lng:-118.788, hives:530, assignedTo:['u7'],       notes:'Wheat field borders. Strong late-summer foraging.' },
-  { id:'a10', name:'Josephine Creek',        state:'OR', county:'Josephine County',  city:'Grants Pass',  lat:42.439, lng:-123.329, hives:440, assignedTo:['u7'],       notes:'Remote site. Access road challenges for inspections.' },
-  // California
-  { id:'a11', name:'Sacramento Delta',       state:'CA', county:'Yolo County',       city:'Woodland',     lat:38.678, lng:-121.773, hives:600, assignedTo:['u3','u8'], notes:'Almond pollination Feb–Mar. Premium contracts. Move in Jan.' },
-  { id:'a12', name:'San Joaquin North',      state:'CA', county:'San Joaquin County',city:'Stockton',     lat:37.944, lng:-121.291, hives:580, assignedTo:['u4'],       notes:'Almond and cherry contracts. High-value location.' },
-  { id:'a13', name:'Stanislaus Almonds',     state:'CA', county:'Stanislaus County', city:'Modesto',      lat:37.639, lng:-120.997, hives:620, assignedTo:['u5'],       notes:'Core almond site. Colonies must be 8+ frames for contract.' },
-  { id:'a14', name:'Fresno Orchards',        state:'CA', county:'Fresno County',     city:'Fresno',       lat:36.746, lng:-119.772, hives:560, assignedTo:['u5','u6'], notes:'Stone fruit & citrus. Year-round high activity.' },
-  { id:'a15', name:'Bakersfield South',      state:'CA', county:'Kern County',       city:'Bakersfield',  lat:35.373, lng:-119.019, hives:490, assignedTo:['u6'],       notes:'Cotton & citrus. Water access critical in summer.' },
-  { id:'a16', name:'Shasta Valley',          state:'CA', county:'Shasta County',     city:'Redding',      lat:40.587, lng:-122.392, hives:470, assignedTo:['u7'],       notes:'Wildflower honey production. Strong natural forage.' },
-  { id:'a17', name:'Butte County Orchards',  state:'CA', county:'Butte County',      city:'Chico',        lat:39.729, lng:-121.838, hives:510, assignedTo:['u7'],       notes:'Almond & walnut contracts. Access road needs grading.' },
-  { id:'a18', name:'Merced Grasslands',      state:'CA', county:'Merced County',     city:'Merced',       lat:37.302, lng:-120.483, hives:520, assignedTo:['u8'],       notes:'Clover honey production. Good late-season flows.' },
-  { id:'a19', name:'Salinas Valley',         state:'CA', county:'Monterey County',   city:'Salinas',      lat:36.677, lng:-121.655, hives:480, assignedTo:['u8'],       notes:'Vegetable crop pollination. Coastal fog management.' },
-  { id:'a20', name:'Visalia Citrus',         state:'CA', county:'Tulare County',     city:'Visalia',      lat:36.330, lng:-119.292, hives:540, assignedTo:['u4'],       notes:'Citrus & vineyard. Strong spring buildup every year.' },
+const SEED_AP=[
+  {id:'a01',name:'Willamette Valley East',state:'OR',county:'Marion County',city:'Salem',lat:44.942,lng:-122.876,hives:620,assignedTo:['u3','u4'],notes:'Clover and wildflower. Pollination contract with Bauman Farms.',
+   dropPoints:[{id:'dp01a',name:'North Clover Field',lat:44.948,lng:-122.869,hives:120,notes:'Near creek'},
+               {id:'dp01b',name:'South Berry Farm',lat:44.937,lng:-122.883,hives:110,notes:'Berry farm row 4'},
+               {id:'dp01c',name:'East Pasture',lat:44.945,lng:-122.861,hives:130,notes:'Open pasture'},
+               {id:'dp01d',name:'River Bottom',lat:44.940,lng:-122.891,hives:100,notes:'Flood risk spring'},
+               {id:'dp01e',name:'Highway Yard',lat:44.952,lng:-122.874,hives:160,notes:'Main staging yard'}]},
+  {id:'a02',name:'Cascade Foothills',state:'OR',county:'Linn County',city:'Albany',lat:44.635,lng:-123.105,hives:450,assignedTo:['u3'],notes:'Berry farm pollination. Varroa pressure — monitor closely.',dropPoints:[]},
+  {id:'a03',name:'Rogue Valley South',state:'OR',county:'Jackson County',city:'Medford',lat:42.326,lng:-122.875,hives:520,assignedTo:['u4'],notes:'Pear and apple orchard contracts. Strong colonies.',dropPoints:[]},
+  {id:'a04',name:'Klamath Basin',state:'OR',county:'Klamath County',city:'Klamath Falls',lat:42.225,lng:-121.782,hives:480,assignedTo:['u5'],notes:'High elevation. Winter losses — extra monitoring required.',dropPoints:[]},
+  {id:'a05',name:'High Desert Basin',state:'OR',county:'Deschutes County',city:'Bend',lat:44.058,lng:-121.315,hives:510,assignedTo:['u3','u5'],notes:'Sagebrush honey production. Peak flow July-August.',dropPoints:[]},
+  {id:'a06',name:'Umpqua River Valley',state:'OR',county:'Douglas County',city:'Roseburg',lat:43.216,lng:-123.368,hives:490,assignedTo:['u4'],notes:'Mixed wildflower. Good spring buildup.',dropPoints:[]},
+  {id:'a07',name:'Columbia Gorge',state:'OR',county:'Hood River County',city:'Hood River',lat:45.707,lng:-121.522,hives:540,assignedTo:['u6'],notes:'Apple and pear orchards. Wind exposure management needed.',dropPoints:[]},
+  {id:'a08',name:'Tualatin Valley',state:'OR',county:'Washington County',city:'Hillsboro',lat:45.522,lng:-122.989,hives:420,assignedTo:['u6'],notes:'Nursery and farm pollination. Close to Portland metro.',dropPoints:[]},
+  {id:'a09',name:'Eastern Oregon Plateau',state:'OR',county:'Umatilla County',city:'Pendleton',lat:45.672,lng:-118.788,hives:530,assignedTo:['u7'],notes:'Wheat field borders. Strong late-summer foraging.',dropPoints:[]},
+  {id:'a10',name:'Josephine Creek',state:'OR',county:'Josephine County',city:'Grants Pass',lat:42.439,lng:-123.329,hives:440,assignedTo:['u7'],notes:'Remote site. Access road challenges for inspections.',dropPoints:[]},
+  {id:'a11',name:'Sacramento Delta',state:'CA',county:'Yolo County',city:'Woodland',lat:38.678,lng:-121.773,hives:600,assignedTo:['u3','u8'],notes:'Almond pollination Feb-Mar. Premium contracts. Move in Jan.',
+   dropPoints:[{id:'dp11a',name:'Almond Block A',lat:38.682,lng:-121.778,hives:100,notes:'Row 1-10'},
+               {id:'dp11b',name:'Almond Block B',lat:38.675,lng:-121.769,hives:100,notes:'Row 11-20'},
+               {id:'dp11c',name:'Almond Block C',lat:38.671,lng:-121.782,hives:100,notes:'Row 21-30'},
+               {id:'dp11d',name:'North Field',lat:38.685,lng:-121.774,hives:100,notes:'North section'},
+               {id:'dp11e',name:'South Field',lat:38.673,lng:-121.765,hives:100,notes:'South section'},
+               {id:'dp11f',name:'Creek Side',lat:38.669,lng:-121.773,hives:100,notes:'Near canal'}]},
+  {id:'a12',name:'San Joaquin North',state:'CA',county:'San Joaquin County',city:'Stockton',lat:37.944,lng:-121.291,hives:580,assignedTo:['u4'],notes:'Almond and cherry contracts. High-value location.',dropPoints:[]},
+  {id:'a13',name:'Stanislaus Almonds',state:'CA',county:'Stanislaus County',city:'Modesto',lat:37.639,lng:-120.997,hives:620,assignedTo:['u5'],notes:'Core almond site. Colonies must be 8+ frames for contract.',
+   dropPoints:[{id:'dp13a',name:'West Block',lat:37.643,lng:-121.003,hives:160,notes:'Contract block W'},
+               {id:'dp13b',name:'East Block',lat:37.636,lng:-120.990,hives:155,notes:'Contract block E'},
+               {id:'dp13c',name:'North Section',lat:37.641,lng:-120.996,hives:150,notes:'Row 1-15'},
+               {id:'dp13d',name:'South Section',lat:37.635,lng:-121.005,hives:155,notes:'Row 16-30'}]},
+  {id:'a14',name:'Fresno Orchards',state:'CA',county:'Fresno County',city:'Fresno',lat:36.746,lng:-119.772,hives:560,assignedTo:['u5','u6'],notes:'Stone fruit and citrus. Year-round high activity.',dropPoints:[]},
+  {id:'a15',name:'Bakersfield South',state:'CA',county:'Kern County',city:'Bakersfield',lat:35.373,lng:-119.019,hives:490,assignedTo:['u6'],notes:'Cotton and citrus. Water access critical in summer.',dropPoints:[]},
+  {id:'a16',name:'Shasta Valley',state:'CA',county:'Shasta County',city:'Redding',lat:40.587,lng:-122.392,hives:470,assignedTo:['u7'],notes:'Wildflower honey production. Strong natural forage.',dropPoints:[]},
+  {id:'a17',name:'Butte County Orchards',state:'CA',county:'Butte County',city:'Chico',lat:39.729,lng:-121.838,hives:510,assignedTo:['u7'],notes:'Almond and walnut contracts. Access road needs grading.',dropPoints:[]},
+  {id:'a18',name:'Merced Grasslands',state:'CA',county:'Merced County',city:'Merced',lat:37.302,lng:-120.483,hives:520,assignedTo:['u8'],notes:'Clover honey production. Good late-season flows.',dropPoints:[]},
+  {id:'a19',name:'Salinas Valley',state:'CA',county:'Monterey County',city:'Salinas',lat:36.677,lng:-121.655,hives:480,assignedTo:['u8'],notes:'Vegetable crop pollination. Coastal fog management.',dropPoints:[]},
+  {id:'a20',name:'Visalia Citrus',state:'CA',county:'Tulare County',city:'Visalia',lat:36.330,lng:-119.292,hives:540,assignedTo:['u4'],notes:'Citrus and vineyard. Strong spring buildup every year.',dropPoints:[]},
 ];
 
-// Last inspection dates (days ago from today)
-const LAST_INSP = {
-  a01:5,  a02:16, a03:3,  a04:21, a05:8,
-  a06:1,  a07:18, a08:6,  a09:11, a10:14,
-  a11:2,  a12:7,  a13:13, a14:4,  a15:9,
-  a16:1,  a17:17, a18:5,  a19:10, a20:3
-};
+const LAST_D={a01:5,a02:16,a03:3,a04:21,a05:8,a06:1,a07:18,a08:6,a09:11,a10:14,a11:2,a12:7,a13:13,a14:4,a15:9,a16:1,a17:17,a18:5,a19:10,a20:3};
 
-const SEED_INSPECTIONS = Object.entries(LAST_INSP).flatMap(([aid, daysBack]) => {
-  const apiaryList = SEED_APIARIES;
-  const ap = apiaryList.find(a => a.id === aid);
-  if (!ap) return [];
-  const inspector = ap.assignedTo[0];
-  const insp_user = DEMO_USERS.find(u => u.id === inspector);
-  // Overdue ones get "poor/fair" condition
-  const cond = daysBack > 18 ? 'poor' : daysBack > 13 ? 'fair' : 'good';
-  const treatments = { a04:'oxalic', a02:'apivar', a13:'miteaway' };
-  return [{
-    id: `i${aid}1`,
-    apiaryId: aid,
-    date: daysAgo(daysBack),
-    inspector: insp_user ? insp_user.name : 'Unknown',
-    inspectorId: inspector,
-    condition: cond,
-    colonies: ap.hives,
-    treatment: treatments[aid] || 'none',
-    notes: cond === 'poor' ? 'Multiple dead-outs observed. Immediate follow-up required.' :
-           cond === 'fair' ? 'Some colonies showing reduced population. Monitor.' :
-           'Colonies looking strong. Good brood pattern.',
-  }];
+const SEED_INSPS=Object.entries(LAST_D).map(([aid,d])=>{
+  const ap=SEED_AP.find(a=>a.id===aid);
+  const emp=USERS.find(u=>u.id===(ap?.assignedTo?.[0]));
+  const cond=d>18?'poor':d>13?'fair':'good';
+  const treats={a04:'oxalic',a02:'apivar',a13:'miteaway'};
+  return{id:`i${aid}`,apiaryId:aid,date:ago(d),inspector:emp?.name||'Staff',inspectorId:ap?.assignedTo?.[0]||'u3',
+    condition:cond,colonies:ap?.hives||0,treatment:treats[aid]||'none',
+    notes:cond==='poor'?'Multiple dead-outs observed. Immediate follow-up required.':cond==='fair'?'Some colonies reduced. Monitor closely.':'Colonies strong. Good brood pattern.'};
 });
 
-const SEED_TASKS = [
-  { id:'t01', type:'inspection', desc:'Inspect Cascade Foothills — OVERDUE',      apiaryId:'a02', assignedTo:'u3', dueDate:daysAgo(2),    priority:'high',   status:'open',    notes:'16 days since last inspection' },
-  { id:'t02', type:'treatment',  desc:'Oxalic acid treatment — Klamath Basin',    apiaryId:'a04', assignedTo:'u5', dueDate:TODAY,         priority:'high',   status:'open',    notes:'Critical — 21 days overdue for inspection. Heavy mite load expected.' },
-  { id:'t03', type:'supering',   desc:'Add honey supers — Sacramento Delta',      apiaryId:'a11', assignedTo:'u3', dueDate:daysAhead(1),  priority:'medium', status:'open',    notes:'Flow starting early this year' },
-  { id:'t04', type:'queen',      desc:'Check queen status — Columbia Gorge',      apiaryId:'a07', assignedTo:'u6', dueDate:TODAY,         priority:'high',   status:'open',    notes:'Worker reports possible queen loss in 3 colonies' },
-  { id:'t05', type:'inspection', desc:'Inspect Josephine Creek',                   apiaryId:'a10', assignedTo:'u7', dueDate:TODAY,         priority:'high',   status:'open',    notes:'14 days since last inspection — due today' },
-  { id:'t06', type:'water',      desc:'Repair water feeders — Eastern OR Plateau', apiaryId:'a09', assignedTo:'u7', dueDate:daysAhead(2),  priority:'medium', status:'open',    notes:'Two feeder stations reported broken' },
-  { id:'t07', type:'inspection', desc:'Inspect Stanislaus Almonds',               apiaryId:'a13', assignedTo:'u5', dueDate:daysAhead(1),  priority:'high',   status:'open',    notes:'Due tomorrow — almond client requires 8+ frame colonies' },
-  { id:'t08', type:'equipment',  desc:'Deliver new frames — Merced Grasslands',   apiaryId:'a18', assignedTo:'u8', dueDate:daysAhead(2),  priority:'medium', status:'open',    notes:'200 new frames ordered and ready for delivery' },
-  { id:'t09', type:'transport',  desc:'Transport hives to almonds — Butte → Modesto', apiaryId:'a17', assignedTo:'u7', dueDate:daysAhead(2), priority:'medium', status:'open', notes:'35 hives to move for late almond contract' },
-  { id:'t10', type:'inspection', desc:'Inspect Butte County Orchards — OVERDUE', apiaryId:'a17', assignedTo:'u7', dueDate:daysAgo(3),    priority:'high',   status:'open',    notes:'17 days overdue — priority today' },
-  { id:'t11', type:'feeding',    desc:'Emergency feeding — Klamath Basin',         apiaryId:'a04', assignedTo:'u5', dueDate:TODAY,         priority:'high',   status:'in-progress', notes:'Low stores after winter. Sugar syrup + pollen sub.' },
-  { id:'t12', type:'inspection', desc:'Inspect Columbia Gorge — OVERDUE',         apiaryId:'a07', assignedTo:'u6', dueDate:daysAgo(4),    priority:'high',   status:'open',    notes:'18 days since last inspection' },
-  { id:'t13', type:'water',      desc:'Check water sources — all CA apiaries',    apiaryId:'a11', assignedTo:'u8', dueDate:TODAY,         priority:'medium', status:'open',    notes:'Hot stretch forecast — verify all stations are full' },
-  { id:'t14', type:'equipment',  desc:'Replace aging hive bodies — Rogue Valley', apiaryId:'a03', assignedTo:'u4', dueDate:daysAhead(5),  priority:'low',    status:'open',    notes:'~40 boxes flagged for replacement' },
-  { id:'t15', type:'treatment',  desc:'Follow-up varroa check — Cascade Foothills', apiaryId:'a02', assignedTo:'u3', dueDate:daysAhead(3), priority:'high', status:'open',    notes:'Confirm mite count after last Apivar treatment' },
-  { id:'t16', type:'inspection', desc:'Inspect Willamette Valley East',           apiaryId:'a01', assignedTo:'u3', dueDate:daysAhead(4),  priority:'medium', status:'open',    notes:'Due in 9 days — schedule this week' },
-  { id:'t17', type:'supering',   desc:'Pull honey supers — Shasta Valley',        apiaryId:'a16', assignedTo:'u7', dueDate:daysAhead(3),  priority:'medium', status:'done',    notes:'Harvest complete — 68 supers pulled' },
-  { id:'t18', type:'inspection', desc:'Inspect Salinas Valley',                   apiaryId:'a19', assignedTo:'u8', dueDate:daysAhead(4),  priority:'medium', status:'done',    notes:'All colonies strong. Excellent brood pattern.' },
+const SEED_TASKS=[
+  {id:'t01',type:'inspection',desc:'Inspect Cascade Foothills — OVERDUE',apiaryId:'a02',assignedTo:'u3',dueDate:ago(2),priority:'high',status:'open',notes:'16 days since last inspection'},
+  {id:'t02',type:'treatment',desc:'Oxalic acid treatment — Klamath Basin',apiaryId:'a04',assignedTo:'u5',dueDate:TODAY,priority:'high',status:'open',notes:'Critical — 21 days overdue. Heavy mite load expected.'},
+  {id:'t03',type:'supering',desc:'Add honey supers — Sacramento Delta',apiaryId:'a11',assignedTo:'u3',dueDate:ahead(1),priority:'medium',status:'open',notes:'Flow starting early this year'},
+  {id:'t04',type:'queen',desc:'Queen check — Columbia Gorge',apiaryId:'a07',assignedTo:'u6',dueDate:TODAY,priority:'high',status:'open',notes:'Worker reports possible queen loss in 3 colonies'},
+  {id:'t05',type:'inspection',desc:'Inspect Josephine Creek — due today',apiaryId:'a10',assignedTo:'u7',dueDate:TODAY,priority:'high',status:'open',notes:'14 days since last inspection'},
+  {id:'t06',type:'water',desc:'Repair water feeders — Eastern Oregon',apiaryId:'a09',assignedTo:'u7',dueDate:ahead(2),priority:'medium',status:'open',notes:'Two feeder stations reported broken'},
+  {id:'t07',type:'inspection',desc:'Inspect Stanislaus Almonds',apiaryId:'a13',assignedTo:'u5',dueDate:ahead(1),priority:'high',status:'open',notes:'Due tomorrow — almond client requires 8+ frame colonies'},
+  {id:'t08',type:'equipment',desc:'Deliver new frames — Merced Grasslands',apiaryId:'a18',assignedTo:'u8',dueDate:ahead(2),priority:'medium',status:'open',notes:'200 new frames ready for delivery'},
+  {id:'t09',type:'transport',desc:'Move hives to almonds — Butte to Modesto',apiaryId:'a17',assignedTo:'u7',dueDate:ahead(2),priority:'medium',status:'open',notes:'35 hives for late almond contract'},
+  {id:'t10',type:'inspection',desc:'Inspect Butte County — OVERDUE',apiaryId:'a17',assignedTo:'u7',dueDate:ago(3),priority:'high',status:'open',notes:'17 days overdue'},
+  {id:'t11',type:'feeding',desc:'Emergency feeding — Klamath Basin',apiaryId:'a04',assignedTo:'u5',dueDate:TODAY,priority:'high',status:'in-progress',notes:'Low stores. Sugar syrup + pollen sub.'},
+  {id:'t12',type:'inspection',desc:'Inspect Columbia Gorge — OVERDUE',apiaryId:'a07',assignedTo:'u6',dueDate:ago(4),priority:'high',status:'open',notes:'18 days since last inspection'},
+  {id:'t13',type:'water',desc:'Check water sources — CA apiaries',apiaryId:'a11',assignedTo:'u8',dueDate:TODAY,priority:'medium',status:'open',notes:'Hot stretch forecast — verify all stations full'},
+  {id:'t14',type:'equipment',desc:'Replace aging hive bodies — Rogue Valley',apiaryId:'a03',assignedTo:'u4',dueDate:ahead(5),priority:'low',status:'open',notes:'~40 boxes flagged for replacement'},
+  {id:'t15',type:'supering',desc:'Pull honey supers — Shasta Valley',apiaryId:'a16',assignedTo:'u7',dueDate:ahead(3),priority:'medium',status:'done',notes:'Harvest complete — 68 supers pulled'},
+  {id:'t16',type:'inspection',desc:'Inspect Salinas Valley',apiaryId:'a19',assignedTo:'u8',dueDate:ahead(4),priority:'medium',status:'done',notes:'All colonies strong. Excellent brood pattern.'},
 ];
 
-// ═══════════════════════════════════════════════════════════════
-// STATE
-// ═══════════════════════════════════════════════════════════════
+// ── STATE ─────────────────────────────────────────────────────
+const S={user:null,apiaries:[],inspections:[],tasks:[],employees:[...USERS],af:'all',tf:'all',mapMode:false,leafMap:null};
 
-let state = {
-  user: null,
-  apiaries: [],
-  inspections: [],
-  tasks: [],
-  employees: [...DEMO_USERS],
-  apiaryFilter: 'all',
-  inspFilter: 'all',
-  taskFilter: 'all',
-};
-
-// ═══════════════════════════════════════════════════════════════
-// INIT & AUTH
-// ═══════════════════════════════════════════════════════════════
-
-function init() {
+// ── INIT ──────────────────────────────────────────────────────
+function init(){
   loadData();
-  const session = JSON.parse(localStorage.getItem('hiveops_session') || 'null');
-  if (session) {
-    state.user = session;
-    showApp();
-  } else {
-    document.getElementById('login-screen').style.display = 'flex';
-  }
-  // Prefill today's date
-  document.getElementById('insp-date').value = TODAY;
-  document.getElementById('task-due').value = TODAY;
-  // Close modals on overlay click
-  document.querySelectorAll('.modal-overlay').forEach(o => {
-    o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
-  });
+  const sess=JSON.parse(localStorage.getItem('phf_sess')||'null');
+  if(sess){S.user=sess;showApp();}
+  else document.getElementById('login-screen').style.display='flex';
+  document.getElementById('li-date').value=TODAY;
+  document.getElementById('ta-due').value=TODAY;
+  document.querySelectorAll('.mover').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
 }
 
-function loadData() {
-  state.apiaries    = JSON.parse(localStorage.getItem('hiveops_apiaries'))    || JSON.parse(JSON.stringify(SEED_APIARIES));
-  state.inspections = JSON.parse(localStorage.getItem('hiveops_inspections')) || JSON.parse(JSON.stringify(SEED_INSPECTIONS));
-  state.tasks       = JSON.parse(localStorage.getItem('hiveops_tasks'))       || JSON.parse(JSON.stringify(SEED_TASKS));
-  state.employees   = JSON.parse(localStorage.getItem('hiveops_employees'))   || [...DEMO_USERS];
+function loadData(){
+  S.apiaries=JSON.parse(localStorage.getItem('phf_ap'))||JSON.parse(JSON.stringify(SEED_AP));
+  S.inspections=JSON.parse(localStorage.getItem('phf_ins'))||JSON.parse(JSON.stringify(SEED_INSPS));
+  S.tasks=JSON.parse(localStorage.getItem('phf_tasks'))||JSON.parse(JSON.stringify(SEED_TASKS));
+  S.employees=JSON.parse(localStorage.getItem('phf_emp'))||[...USERS];
+}
+function save(){
+  localStorage.setItem('phf_ap',JSON.stringify(S.apiaries));
+  localStorage.setItem('phf_ins',JSON.stringify(S.inspections));
+  localStorage.setItem('phf_tasks',JSON.stringify(S.tasks));
+  localStorage.setItem('phf_emp',JSON.stringify(S.employees));
 }
 
-function saveData() {
-  localStorage.setItem('hiveops_apiaries',    JSON.stringify(state.apiaries));
-  localStorage.setItem('hiveops_inspections', JSON.stringify(state.inspections));
-  localStorage.setItem('hiveops_tasks',       JSON.stringify(state.tasks));
-  localStorage.setItem('hiveops_employees',   JSON.stringify(state.employees));
+// ── AUTH ──────────────────────────────────────────────────────
+function quickLogin(role,btn){
+  document.querySelectorAll('.dbtn').forEach(b=>b.classList.remove('sel'));
+  btn.classList.add('sel');
+  const map={owner:'owner@prescotthoney.com',manager:'jake@prescotthoney.com',employee:'tom@prescotthoney.com'};
+  document.getElementById('le').value=map[role];
+  document.getElementById('lp').value='demo';
 }
-
-function quickLogin(role) {
-  document.querySelectorAll('.demo-btn').forEach(b => b.classList.remove('selected'));
-  event.target.closest('.demo-btn').classList.add('selected');
-  const map = { owner:'owner@hiveops.com', manager:'jake@hiveops.com', employee:'tom@hiveops.com' };
-  document.getElementById('l-email').value = map[role];
-  document.getElementById('l-pass').value  = 'demo';
+function doLogin(){
+  const email=document.getElementById('le').value.trim().toLowerCase();
+  const pass=document.getElementById('lp').value;
+  const user=USERS.find(u=>u.email===email&&u.password===pass);
+  if(!user){document.getElementById('lmsg').textContent='Invalid credentials. Use "demo" as password.';return;}
+  S.user=user;localStorage.setItem('phf_sess',JSON.stringify(user));showApp();
 }
-
-function doLogin() {
-  const email = document.getElementById('l-email').value.trim().toLowerCase();
-  const pass  = document.getElementById('l-pass').value;
-  const user  = DEMO_USERS.find(u => u.email === email && u.password === pass);
-  if (!user) {
-    document.getElementById('login-msg').textContent = 'Invalid email or password. Try "demo" as password.';
-    return;
-  }
-  state.user = user;
-  localStorage.setItem('hiveops_session', JSON.stringify(user));
-  showApp();
+function signOut(){
+  S.user=null;localStorage.removeItem('phf_sess');
+  document.getElementById('app').style.display='none';
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('le').value='';document.getElementById('lp').value='';
+  document.getElementById('lmsg').textContent='';
 }
-
-function signOut() {
-  state.user = null;
-  localStorage.removeItem('hiveops_session');
-  document.getElementById('app').style.display = 'none';
-  document.getElementById('login-screen').style.display = 'flex';
-  document.getElementById('l-email').value = '';
-  document.getElementById('l-pass').value  = '';
-  document.getElementById('login-msg').textContent = '';
-}
-
-function showApp() {
-  document.getElementById('login-screen').style.display = 'none';
-  document.getElementById('app').style.display = 'block';
-  // User chip
-  const dotColors = { owner:'#f59e0b', manager:'#3b82f6', employee:'#22c55e' };
-  document.getElementById('role-dot').style.background = dotColors[state.user.role] || '#ccc';
-  document.getElementById('user-name-chip').textContent = state.user.name.split(' ')[0] + ' · ' + state.user.role;
-  // Role visibility
-  const isOwnerOrMgr = ['owner','manager'].includes(state.user.role);
-  document.getElementById('add-apiary-btn').style.display = isOwnerOrMgr ? '' : 'none';
-  document.getElementById('add-task-btn').style.display   = isOwnerOrMgr ? '' : 'none';
-  document.getElementById('add-emp-btn').style.display    = isOwnerOrMgr ? '' : 'none';
-  if (!isOwnerOrMgr) {
-    document.getElementById('nav-team').style.display    = 'none';
-    document.getElementById('nav-reports').style.display = 'none';
-  }
+function showApp(){
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app').style.display='block';
+  const dc={owner:'#F5A623',manager:'#3b82f6',employee:'#3d9970'};
+  document.getElementById('rdot').style.background=dc[S.user.role]||'#ccc';
+  document.getElementById('uchip-name').textContent=S.user.name.split(' ')[0]+' · '+S.user.role;
+  const om=['owner','manager'].includes(S.user.role);
+  ['add-ap-btn','add-task-btn','add-emp-btn'].forEach(id=>{const el=document.getElementById(id);if(el)el.style.display=om?'':'none';});
+  if(!om){document.getElementById('nav-team').style.display='none';document.getElementById('nav-reports').style.display='none';}
   switchView('dashboard');
 }
 
-// ═══════════════════════════════════════════════════════════════
-// NAVIGATION
-// ═══════════════════════════════════════════════════════════════
-
-function switchView(v) {
-  document.querySelectorAll('.view').forEach(s => s.classList.remove('active'));
-  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
-  const viewEl = document.getElementById('view-' + v);
-  if (viewEl) viewEl.classList.add('active');
-  const navBtn = document.querySelector(`nav button[data-v="${v}"]`);
-  if (navBtn) navBtn.classList.add('active');
-  const titles = { dashboard:'Dashboard', apiaries:'Apiaries', inspections:'Inspections', tasks:'Tasks', team:'Team', reports:'Reports' };
-  document.getElementById('page-title').textContent = titles[v] || '';
-  const renders = { dashboard: renderDashboard, apiaries: renderApiaries, inspections: renderInspections, tasks: renderTasks, team: renderTeam, reports: renderReports };
-  if (renders[v]) renders[v]();
+// ── NAV ───────────────────────────────────────────────────────
+function switchView(v){
+  document.querySelectorAll('.view').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));
+  const el=document.getElementById('view-'+v);if(el)el.classList.add('active');
+  const nb=document.querySelector(`nav button[data-v="${v}"]`);if(nb)nb.classList.add('active');
+  ({dashboard:renderDash,apiaries:renderApiaries,tasks:renderTasks,team:renderTeam,reports:renderReports}[v]||(() => {}))();
 }
 
-// ═══════════════════════════════════════════════════════════════
-// HELPERS
-// ═══════════════════════════════════════════════════════════════
+// ── HELPERS ───────────────────────────────────────────────────
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+const fmtD=s=>{if(!s)return '—';const d=new Date(s+'T12:00:00');return d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});};
+const diffD=s=>s?Math.floor((new Date(s)-new Date(TODAY))/86400000):9999;
+const relD=s=>{const d=diffD(s);if(d===0)return 'Today';if(d===1)return 'Tomorrow';if(d===-1)return 'Yesterday';return d<0?Math.abs(d)+'d overdue':'In '+d+'d';};
+const getEmp=id=>S.employees.find(e=>e.id===id);
+const getAP=id=>S.apiaries.find(a=>a.id===id);
+const lastInsp=id=>[...S.inspections].filter(i=>i.apiaryId===id).sort((a,b)=>b.date.localeCompare(a.date))[0]||null;
+const daysSince=id=>{const l=lastInsp(id);return l?Math.floor((new Date(TODAY)-new Date(l.date))/86400000):999;};
+const apStatus=id=>{const d=daysSince(id);return d>17?'critical':d>12?'attention':'good';};
+const nextDue=id=>{const l=lastInsp(id);if(!l)return null;const d=new Date(l.date);d.setDate(d.getDate()+14);return d.toISOString().split('T')[0];};
+const myAPs=()=>['owner','manager'].includes(S.user?.role)?S.apiaries:S.apiaries.filter(a=>(a.assignedTo||[]).includes(S.user?.id));
+const tlbl=(type)=>({inspection:'INSPECT',treatment:'TREAT',equipment:'MAINT',supering:'SUPERS',queen:'QUEEN',transport:'MOVE',feeding:'FEED',water:'WATER',other:'OTHER'}[type]||'OTHER');
+const tcls=(type)=>({inspection:'tl-ins',treatment:'tl-tr',equipment:'tl-ma',supering:'tl-su',queen:'tl-qu',transport:'tl-mv',feeding:'tl-fe',water:'tl-wa',other:'tl-ot'}[type]||'tl-ot');
 
-function getLastInspection(apiaryId) {
-  const insps = state.inspections.filter(i => i.apiaryId === apiaryId).sort((a,b) => b.date.localeCompare(a.date));
-  return insps[0] || null;
+// ── DASHBOARD ─────────────────────────────────────────────────
+function renderDash(){
+  const u=S.user,om=['owner','manager'].includes(u.role),aps=myAPs();
+  const over=aps.filter(a=>daysSince(a.id)>14);
+  const todTasks=S.tasks.filter(t=>t.status!=='done'&&t.dueDate<=TODAY&&(om||t.assignedTo===u.id));
+  const hr=new Date().getHours();
+  document.getElementById('wgreet').textContent=(hr<12?'Good morning':hr<17?'Good afternoon':'Good evening')+', '+u.name.split(' ')[0]+'!';
+  document.getElementById('wsub').textContent=om?`${over.length} apiar${over.length!==1?'ies':'y'} overdue for inspection  ·  ${todTasks.length} tasks due today`:
+    `${over.length} of your apiaries need inspection  ·  ${todTasks.length} tasks due today`;
+  const crit=aps.filter(a=>daysSince(a.id)>17);
+  document.getElementById('dalerts').innerHTML=crit.length?`<div class="alert alert-r"><strong>${crit.length} apiar${crit.length!==1?'ies':'y'} critically overdue (17+ days):</strong> ${crit.map(a=>esc(a.name)).join(', ')}</div>`:
+    over.length?`<div class="alert alert-o"><strong>${over.length} apiar${over.length!==1?'ies':'y'} overdue</strong> for their 14-day inspection cycle.</div>`:'';
+  const tot=aps.reduce((s,a)=>s+a.hives,0);
+  document.getElementById('dstats').innerHTML=om?`
+    <div class="scard ca"><div class="snum" style="color:var(--gold)">${tot.toLocaleString()}</div><div class="slbl">Total Hives</div><div class="ssub">${aps.length} apiaries</div></div>
+    <div class="scard ${over.length?'cd':'cg'}"><div class="snum" style="color:${over.length?'var(--red)':'var(--grn)'}">${over.length}</div><div class="slbl">Overdue Inspections</div><div class="ssub">14-day cycle</div></div>
+    <div class="scard ${todTasks.length?'cw':'cg'}"><div class="snum" style="color:${todTasks.length?'var(--org)':'var(--grn)'}">${todTasks.length}</div><div class="slbl">Tasks Due Today</div><div class="ssub">${S.tasks.filter(t=>t.status==='done').length} completed total</div></div>
+    <div class="scard"><div class="snum" style="color:var(--blu)">${S.employees.filter(e=>e.role!=='owner').length}</div><div class="slbl">Team Members</div><div class="ssub">OR &amp; CA regions</div></div>`:`
+    <div class="scard ca"><div class="snum" style="color:var(--gold)">${tot.toLocaleString()}</div><div class="slbl">My Hives</div><div class="ssub">${aps.length} apiaries</div></div>
+    <div class="scard ${over.length?'cd':'cg'}"><div class="snum" style="color:${over.length?'var(--red)':'var(--grn)'}">${over.length}</div><div class="slbl">Need Inspection</div><div class="ssub">my apiaries</div></div>
+    <div class="scard ${todTasks.length?'cw':'cg'}"><div class="snum" style="color:${todTasks.length?'var(--org)':'var(--grn)'}">${todTasks.length}</div><div class="slbl">My Tasks Today</div></div>
+    <div class="scard cg"><div class="snum" style="color:var(--grn)">${S.tasks.filter(t=>t.assignedTo===u.id&&t.status==='done').length}</div><div class="slbl">Completed</div></div>`;
+  const prio=aps.map(a=>({...a,ds:daysSince(a.id)})).filter(a=>a.ds>=10).sort((a,b)=>b.ds-a.ds).slice(0,5);
+  document.getElementById('dprio').innerHTML=prio.length?prio.map(a=>{
+    const st=apStatus(a.id);const cls=st==='critical'?'io':st==='attention'?'iw':'ig';
+    const dc=st==='critical'?'db-r':st==='attention'?'db-w':'db-g';
+    const li=lastInsp(a.id);
+    return `<div class="iitem ${cls}"><div class="iinfo"><div class="iname">${esc(a.name)}</div><div class="imeta">${a.city}, ${a.state} · ${a.hives.toLocaleString()} hives · Last: ${fmtD(li?.date)}</div></div><span class="dbadge ${dc}">${a.ds}d</span><button class="ibtn" onclick="openInsp('${a.id}')">Log</button></div>`;
+  }).join(''):`<div class="alert alert-b">All apiaries are current on inspections.</div>`;
+  document.getElementById('dtask-lbl').textContent=om?'Tasks Due Today':'My Tasks Today';
+  document.getElementById('dtasks').innerHTML=todTasks.length?todTasks.slice(0,6).map(t=>tCard(t,false)).join(''):`<div class="empty">No tasks due today.</div>`;
 }
 
-function getDaysSinceInspection(apiaryId) {
-  const last = getLastInspection(apiaryId);
-  if (!last) return 999;
-  const diff = Math.floor((new Date(TODAY) - new Date(last.date)) / 86400000);
-  return diff;
+// ── APIARIES ──────────────────────────────────────────────────
+let _af='all';
+function setAF(f,btn){_af=f;document.querySelectorAll('#afbar .fbtn').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderApiaries();}
+function setMapToggle(mode){
+  S.mapMode=mode==='map';
+  document.getElementById('mt-grid').classList.toggle('active',!S.mapMode);
+  document.getElementById('mt-map').classList.toggle('active',S.mapMode);
+  document.getElementById('apiary-grid').style.display=S.mapMode?'none':'';
+  document.getElementById('apiary-map').style.display=S.mapMode?'block':'none';
+  if(S.mapMode)initMap();
 }
-
-function getApiaryStatus(apiaryId) {
-  const days = getDaysSinceInspection(apiaryId);
-  if (days > 17) return 'critical';
-  if (days > 12) return 'attention';
-  return 'good';
-}
-
-function nextDueDate(apiaryId) {
-  const last = getLastInspection(apiaryId);
-  if (!last) return 'Never inspected';
-  const d = new Date(last.date);
-  d.setDate(d.getDate() + 14);
-  return d.toISOString().split('T')[0];
-}
-
-function fmtDate(dateStr) {
-  if (!dateStr) return '—';
-  const d = new Date(dateStr + 'T12:00:00');
-  return d.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
-}
-
-function daysFromToday(dateStr) {
-  if (!dateStr) return 9999;
-  return Math.floor((new Date(dateStr) - new Date(TODAY)) / 86400000);
-}
-
-function relativeDate(dateStr) {
-  const diff = daysFromToday(dateStr);
-  if (diff === 0)  return 'Today';
-  if (diff === 1)  return 'Tomorrow';
-  if (diff === -1) return 'Yesterday';
-  if (diff < 0)   return Math.abs(diff) + 'd overdue';
-  return 'In ' + diff + 'd';
-}
-
-function getEmployee(id) {
-  return state.employees.find(e => e.id === id);
-}
-
-function getApiary(id) {
-  return state.apiaries.find(a => a.id === id);
-}
-
-function getTaskIcon(type) {
-  const icons = { inspection:'🔍', treatment:'💊', equipment:'🔧', supering:'🍯', queen:'👑', transport:'🚛', feeding:'🌿', water:'💧', other:'📌' };
-  return icons[type] || '📌';
-}
-
-function visibleApiaries() {
-  const u = state.user;
-  if (['owner','manager'].includes(u.role)) return state.apiaries;
-  return state.apiaries.filter(a => a.assignedTo && a.assignedTo.includes(u.id));
-}
-
-// ═══════════════════════════════════════════════════════════════
-// DASHBOARD
-// ═══════════════════════════════════════════════════════════════
-
-function renderDashboard() {
-  const u = state.user;
-  const isOwnerMgr = ['owner','manager'].includes(u.role);
-  const myApiaries = visibleApiaries();
-
-  // Welcome
-  const hour = new Date().getHours();
-  const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
-  document.getElementById('welcome-greeting').textContent = greet + ', ' + u.name.split(' ')[0] + '!';
-
-  // Overdue count
-  const overdueApiaries = myApiaries.filter(a => getDaysSinceInspection(a.id) > 14);
-  const todayTasks = state.tasks.filter(t => {
-    if (t.status === 'done') return false;
-    if (!isOwnerMgr && t.assignedTo !== u.id) return false;
-    return t.dueDate <= TODAY;
-  });
-
-  document.getElementById('welcome-sub').textContent =
-    isOwnerMgr
-      ? `${overdueApiaries.length} apiar${overdueApiaries.length !== 1 ? 'ies' : 'y'} overdue for inspection · ${todayTasks.length} tasks due today`
-      : `${overdueApiaries.length} of your apiaries need inspection · ${todayTasks.length} tasks assigned to you today`;
-
-  // Alerts
-  const alertEl = document.getElementById('dash-alerts');
-  alertEl.innerHTML = '';
-  const criticalApiaries = myApiaries.filter(a => getDaysSinceInspection(a.id) > 17);
-  if (criticalApiaries.length) {
-    alertEl.innerHTML += `<div class="alert-banner danger">
-      <div class="alert-icon">🚨</div>
-      <div><strong>${criticalApiaries.length} apiar${criticalApiaries.length!==1?'ies':'y'} critically overdue</strong> (17+ days since inspection): ${criticalApiaries.map(a=>a.name).join(', ')}</div>
-    </div>`;
-  } else if (overdueApiaries.length) {
-    alertEl.innerHTML += `<div class="alert-banner warning">
-      <div class="alert-icon">⚠️</div>
-      <div><strong>${overdueApiaries.length} apiar${overdueApiaries.length!==1?'ies':'y'} overdue</strong> for their 14-day inspection.</div>
-    </div>`;
-  }
-
-  // Stats
-  const totalHives = myApiaries.reduce((s,a) => s+a.hives, 0);
-  const statsEl = document.getElementById('dash-stats');
-  if (isOwnerMgr) {
-    statsEl.innerHTML = `
-      <div class="stat-card accent">
-        <div class="stat-num" style="color:var(--amber)">${totalHives.toLocaleString()}</div>
-        <div class="stat-label">Total Hives</div>
-        <div class="stat-sub">${myApiaries.length} apiaries</div>
+function renderApiaries(){
+  const srch=(document.getElementById('asrch')?.value||'').toLowerCase();
+  let list=myAPs();
+  if(_af==='OR')list=list.filter(a=>a.state==='OR');
+  else if(_af==='CA')list=list.filter(a=>a.state==='CA');
+  else if(['good','attention','critical'].includes(_af))list=list.filter(a=>apStatus(a.id)===_af);
+  if(srch)list=list.filter(a=>[a.name,a.city,a.county].some(s=>s.toLowerCase().includes(srch)));
+  const el=document.getElementById('apiary-grid');
+  if(!list.length){el.innerHTML='<div class="empty">No apiaries match your filter.</div>';return;}
+  el.innerHTML=list.map(a=>{
+    const ds=daysSince(a.id),st=apStatus(a.id),li=lastInsp(a.id),nd=nextDue(a.id);
+    const dc=st==='critical'?'db-r':st==='attention'?'db-w':'db-g';
+    const bc=st==='critical'?'bc':st==='attention'?'ba':'bg';
+    const workers=(a.assignedTo||[]).map(id=>{const e=getEmp(id);return e?`<span class="wtag">${esc(e.name.split(' ')[0])}</span>`:''}).join('');
+    return `<div class="acard s${st[0]}" onclick="openAPDetail('${a.id}')">
+      <div class="acard-hd"><div><div class="acard-name">${esc(a.name)}</div><div class="acard-loc">${esc(a.city)}, ${a.state} · ${esc(a.county)}</div></div><span class="badge ${bc}">${st}</span></div>
+      <div class="acard-meta"><div><div class="amn">${a.hives.toLocaleString()}</div><div class="aml">Hives</div></div>
+        <div style="flex:1;padding-left:14px;"><div style="font-size:.78rem;color:var(--tdim);">Last inspected</div><div style="font-size:.85rem;font-weight:600;">${li?fmtD(li.date):'Never'}</div><div style="font-size:.72rem;color:var(--mut);">Next: ${nd?fmtD(nd):'N/A'}${(a.dropPoints||[]).length?' · '+(a.dropPoints.length)+' drop pts':''}</div></div>
       </div>
-      <div class="stat-card ${overdueApiaries.length>0?'danger':'good'}">
-        <div class="stat-num" style="color:${overdueApiaries.length>0?'var(--red)':'var(--green)'}">${overdueApiaries.length}</div>
-        <div class="stat-label">Overdue Inspections</div>
-        <div class="stat-sub">14-day cycle</div>
+      <div class="acard-bot"><span style="color:var(--tdim);">${ds<99?ds+'d since inspection':'Never inspected'}</span>
+        <div style="display:flex;gap:5px;align-items:center;"><span class="dbadge ${dc}">${ds<99?ds+'d':'—'}</span><button class="ibtn btn-sm" onclick="event.stopPropagation();openInsp('${a.id}')">+ Log</button></div>
       </div>
-      <div class="stat-card ${todayTasks.length>0?'warning':'good'}">
-        <div class="stat-num" style="color:${todayTasks.length>0?'var(--orange)':'var(--green)'}">${todayTasks.length}</div>
-        <div class="stat-label">Tasks Due Today</div>
-        <div class="stat-sub">${state.tasks.filter(t=>t.status==='done').length} completed total</div>
-      </div>
-      <div class="stat-card">
-        <div class="stat-num" style="color:var(--blue)">${state.employees.filter(e=>e.role!=='owner').length}</div>
-        <div class="stat-label">Team Members</div>
-        <div class="stat-sub">OR &amp; CA regions</div>
-      </div>`;
-  } else {
-    const myTasks = state.tasks.filter(t => t.assignedTo === u.id && t.status !== 'done');
-    const myOver  = myApiaries.filter(a => getDaysSinceInspection(a.id) > 14);
-    statsEl.innerHTML = `
-      <div class="stat-card accent">
-        <div class="stat-num" style="color:var(--amber)">${totalHives.toLocaleString()}</div>
-        <div class="stat-label">My Hives</div>
-        <div class="stat-sub">${myApiaries.length} apiaries assigned</div>
-      </div>
-      <div class="stat-card ${myOver.length>0?'danger':'good'}">
-        <div class="stat-num" style="color:${myOver.length>0?'var(--red)':'var(--green)'}">${myOver.length}</div>
-        <div class="stat-label">Need Inspection</div>
-        <div class="stat-sub">14-day cycle</div>
-      </div>
-      <div class="stat-card ${myTasks.length>0?'warning':'good'}">
-        <div class="stat-num" style="color:${myTasks.length>0?'var(--orange)':'var(--green)'}">${myTasks.length}</div>
-        <div class="stat-label">Open Tasks</div>
-        <div class="stat-sub">assigned to me</div>
-      </div>
-      <div class="stat-card good">
-        <div class="stat-num" style="color:var(--green)">${state.tasks.filter(t=>t.assignedTo===u.id&&t.status==='done').length}</div>
-        <div class="stat-label">Tasks Done</div>
-        <div class="stat-sub">this period</div>
-      </div>`;
-  }
-
-  // Priority inspections (overdue + due soon)
-  const priorityEl = document.getElementById('dash-priority');
-  const priorityApiaries = myApiaries
-    .map(a => ({ ...a, days: getDaysSinceInspection(a.id) }))
-    .filter(a => a.days >= 10)
-    .sort((a,b) => b.days - a.days)
-    .slice(0, 5);
-
-  if (!priorityApiaries.length) {
-    priorityEl.innerHTML = '<div class="alert-banner info"><div class="alert-icon">✅</div><div>All apiaries are up to date on inspections.</div></div>';
-  } else {
-    priorityEl.innerHTML = priorityApiaries.map(a => {
-      const st = getApiaryStatus(a.id);
-      const cls = st === 'critical' ? 'overdue' : st === 'attention' ? 'due-soon' : 'ok';
-      const badgeCls = st === 'critical' ? 'days-bad' : st === 'attention' ? 'days-warn' : 'days-good';
-      return `<div class="inspect-item ${cls}">
-        <div class="inspect-info">
-          <div class="inspect-name">${esc(a.name)}</div>
-          <div class="inspect-meta">${a.city}, ${a.state} · ${a.hives} hives · Last: ${fmtDate(getLastInspection(a.id)?.date)}</div>
-        </div>
-        <span class="days-badge ${badgeCls}">${a.days}d ago</span>
-        <button class="inspect-btn" onclick="openInspectionModal('${a.id}')">Log</button>
-      </div>`;
-    }).join('');
-  }
-
-  // Today's tasks
-  document.getElementById('tasks-section-title').textContent = isOwnerMgr ? 'Tasks Due Today' : 'My Tasks Today';
-  const dashTaskEl = document.getElementById('dash-tasks');
-  if (!todayTasks.length) {
-    dashTaskEl.innerHTML = '<div class="empty"><div class="empty-icon">✅</div><p>No tasks due today.</p></div>';
-  } else {
-    dashTaskEl.innerHTML = todayTasks.slice(0,6).map(t => renderTaskCard(t, false)).join('');
-  }
-}
-
-// ═══════════════════════════════════════════════════════════════
-// APIARIES
-// ═══════════════════════════════════════════════════════════════
-
-let _apiaryFilter = 'all';
-
-function setApiaryFilter(f, btn) {
-  _apiaryFilter = f;
-  document.querySelectorAll('#apiary-filters .filter-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderApiaries();
-}
-
-function renderApiaries() {
-  const search = (document.getElementById('apiary-search')?.value || '').toLowerCase();
-  let list = visibleApiaries();
-
-  if (_apiaryFilter === 'OR') list = list.filter(a => a.state === 'OR');
-  else if (_apiaryFilter === 'CA') list = list.filter(a => a.state === 'CA');
-  else if (['good','attention','critical'].includes(_apiaryFilter)) {
-    list = list.filter(a => getApiaryStatus(a.id) === _apiaryFilter);
-  }
-  if (search) list = list.filter(a =>
-    a.name.toLowerCase().includes(search) ||
-    a.city.toLowerCase().includes(search) ||
-    a.county.toLowerCase().includes(search)
-  );
-
-  const el = document.getElementById('apiary-grid');
-  if (!list.length) {
-    el.innerHTML = '<div class="empty" style="grid-column:1/-1"><div class="empty-icon">📍</div><p>No apiaries match your filter.</p></div>';
-    return;
-  }
-  el.innerHTML = list.map(a => {
-    const days = getDaysSinceInspection(a.id);
-    const st   = getApiaryStatus(a.id);
-    const due  = nextDueDate(a.id);
-    const daysUntilDue = daysFromToday(due);
-    const badgeCls = st === 'critical' ? 'days-bad' : st === 'attention' ? 'days-warn' : 'days-good';
-    const workers = (a.assignedTo || []).map(id => {
-      const e = getEmployee(id);
-      return e ? `<span class="worker-tag">${e.name.split(' ')[0]}</span>` : '';
-    }).join('');
-    const lastInsp = getLastInspection(a.id);
-    return `<div class="apiary-card status-${st}" onclick="openApiaryDetail('${a.id}')">
-      <div class="apiary-header">
-        <div>
-          <div class="apiary-name">${esc(a.name)}</div>
-          <div class="apiary-location">📍 ${esc(a.city)}, ${a.state} · ${esc(a.county)}</div>
-        </div>
-        <span class="badge badge-${st === 'critical' ? 'critical' : st === 'attention' ? 'attention' : 'good'}">${st}</span>
-      </div>
-      <div class="apiary-meta">
-        <div class="apiary-meta-item">
-          <div class="apiary-meta-num">${a.hives.toLocaleString()}</div>
-          <div class="apiary-meta-lbl">Hives</div>
-        </div>
-        <div class="apiary-meta-item" style="text-align:left;flex:1;padding-left:12px;">
-          <div style="font-size:0.82rem;color:var(--text-dim);">Last inspected</div>
-          <div style="font-size:0.88rem;font-weight:600;">${lastInsp ? fmtDate(lastInsp.date) : 'Never'}</div>
-          <div style="font-size:0.75rem;color:var(--muted);">Next due: ${fmtDate(due)}</div>
-        </div>
-      </div>
-      <div class="apiary-inspect">
-        <span style="font-size:0.78rem;color:var(--text-dim);">
-          ${days < 99 ? days + 'd since inspection' : 'Never inspected'}
-        </span>
-        <div style="display:flex;align-items:center;gap:6px;">
-          <span class="days-badge ${badgeCls}">${days < 99 ? days + 'd' : 'N/A'}</span>
-          <button class="inspect-btn btn-sm" onclick="event.stopPropagation();openInspectionModal('${a.id}')">+ Log</button>
-        </div>
-      </div>
-      <div class="apiary-workers">${workers}</div>
-    </div>`;
+      <div class="wtags">${workers}</div></div>`;
   }).join('');
 }
 
-// ═══════════════════════════════════════════════════════════════
-// APIARY DETAIL MODAL
-// ═══════════════════════════════════════════════════════════════
+// ── MAP ───────────────────────────────────────────────────────
+function initMap(){
+  if(S.leafMap){updateMapMarkers();return;}
+  const m=L.map('apiary-map').setView([40.5,-121.5],6);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{attribution:'&copy; OpenStreetMap &copy; CARTO',maxZoom:19}).addTo(m);
+  S.leafMap=m;
+  updateMapMarkers();
+  setTimeout(()=>m.invalidateSize(),150);
+}
+function updateMapMarkers(){
+  if(!S.leafMap)return;
+  S.leafMap.eachLayer(l=>{if(l instanceof L.CircleMarker||l instanceof L.Marker)S.leafMap.removeLayer(l);});
+  S.apiaries.forEach(a=>{
+    if(!a.lat||!a.lng)return;
+    const st=apStatus(a.id),colors={'good':'#3d9970','attention':'#e07b39','critical':'#c0392b'};
+    const m=L.circleMarker([a.lat,a.lng],{radius:10,fillColor:colors[st],color:'#fff',weight:2,fillOpacity:.9}).addTo(S.leafMap);
+    const ds=daysSince(a.id);
+    m.bindPopup(`<strong>${a.name}</strong><br>${a.city}, ${a.state}<br>${a.hives.toLocaleString()} hives<br>Last inspected: ${ds<99?ds+'d ago':'Never'}<br><a href="https://www.google.com/maps?q=${a.lat},${a.lng}" target="_blank">Open in Google Maps</a>`);
+    m.on('click',()=>openAPDetail(a.id));
+    (a.dropPoints||[]).forEach(dp=>{
+      if(!dp.lat||!dp.lng)return;
+      L.circleMarker([dp.lat,dp.lng],{radius:5,fillColor:'#F5A623',color:'#000',weight:1,fillOpacity:.8}).addTo(S.leafMap)
+        .bindPopup(`<strong>${dp.name}</strong><br>${a.name}<br>${dp.hives} hives<br><a href="https://www.google.com/maps?q=${dp.lat},${dp.lng}" target="_blank">Google Maps</a>`);
+    });
+  });
+}
 
-function openApiaryDetail(apiaryId) {
-  const a = getApiary(apiaryId);
-  if (!a) return;
-  const days = getDaysSinceInspection(a.id);
-  const st   = getApiaryStatus(a.id);
-  const due  = nextDueDate(a.id);
-  const lastInsp = getLastInspection(a.id);
-  const isOwnerMgr = ['owner','manager'].includes(state.user.role);
-
-  document.getElementById('detail-title').textContent = a.name;
-
-  const inspHistory = state.inspections
-    .filter(i => i.apiaryId === apiaryId)
-    .sort((a,b) => b.date.localeCompare(a.date))
-    .slice(0, 5);
-
-  const openTasks = state.tasks.filter(t => t.apiaryId === apiaryId && t.status !== 'done');
-
-  document.getElementById('detail-body').innerHTML = `
-    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
-      <span class="badge badge-${st==='critical'?'critical':st==='attention'?'attention':'good'}">${st.toUpperCase()}</span>
-      <span class="badge badge-todo">${a.state === 'OR' ? '🌲 Oregon' : '☀️ California'}</span>
-      <span class="badge badge-todo">${a.hives.toLocaleString()} hives</span>
+// ── APIARY DETAIL ─────────────────────────────────────────────
+function openAPDetail(id){
+  const a=getAP(id);if(!a)return;
+  const ds=daysSince(a.id),st=apStatus(a.id),nd=nextDue(a.id),li=lastInsp(a.id);
+  const om=['owner','manager'].includes(S.user.role);
+  const insps=[...S.inspections].filter(i=>i.apiaryId===id).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+  const otasks=S.tasks.filter(t=>t.apiaryId===id&&t.status!=='done');
+  const bc=st==='critical'?'bc':st==='attention'?'ba':'bg';
+  const dps=a.dropPoints||[];
+  document.getElementById('md-title').textContent=a.name;
+  document.getElementById('md-body').innerHTML=`
+    <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:13px;">
+      <span class="badge ${bc}">${st.toUpperCase()}</span>
+      <span class="badge bt">${a.state==='OR'?'Oregon':'California'}</span>
+      <span class="badge bt">${a.hives.toLocaleString()} hives</span>
+      ${dps.length?`<span class="badge bt">${dps.length} drop points</span>`:''}
     </div>
     <div class="card" style="margin-bottom:10px;">
-      <div class="detail-row"><span class="detail-key">Location</span><span class="detail-val">${esc(a.city)}, ${esc(a.county)}, ${a.state}</span></div>
-      <div class="detail-row"><span class="detail-key">GPS</span><span class="detail-val">${a.lat}, ${a.lng}</span></div>
-      <div class="detail-row"><span class="detail-key">Total Hives</span><span class="detail-val" style="color:var(--amber)">${a.hives.toLocaleString()}</span></div>
-      <div class="detail-row"><span class="detail-key">Last Inspection</span><span class="detail-val">${lastInsp ? fmtDate(lastInsp.date) + ' (' + days + 'd ago)' : 'Never'}</span></div>
-      <div class="detail-row"><span class="detail-key">Next Due</span><span class="detail-val" style="color:${st!=='good'?'var(--red)':'var(--green)'}">${fmtDate(due)} ${days>14?'⚠ OVERDUE':''}</span></div>
-      <div class="detail-row" style="border:none;">
-        <span class="detail-key">Assigned Workers</span>
-        <span class="detail-val">${(a.assignedTo||[]).map(id=>getEmployee(id)?.name||'?').join(', ') || 'None'}</span>
-      </div>
+      <div class="drow"><span class="dk">Location</span><span class="dv">${esc(a.city)}, ${esc(a.county)}, ${a.state}</span></div>
+      <div class="drow"><span class="dk">Coordinates</span><span class="dv"><a href="https://www.google.com/maps?q=${a.lat},${a.lng}" target="_blank" rel="noopener">${a.lat}, ${a.lng}</a></span></div>
+      <div class="drow"><span class="dk">Total Hives</span><span class="dv" style="color:var(--gold)">${a.hives.toLocaleString()}</span></div>
+      <div class="drow"><span class="dk">Last Inspection</span><span class="dv">${li?fmtD(li.date)+' ('+ds+'d ago)':'Never'}</span></div>
+      <div class="drow"><span class="dk">Next Due</span><span class="dv" style="color:${st!=='good'?'var(--red)':'var(--grn)'}">${nd?fmtD(nd):'N/A'}${ds>14?' — OVERDUE':''}</span></div>
+      <div class="drow" style="border:none;"><span class="dk">Assigned Workers</span><span class="dv">${(a.assignedTo||[]).map(id=>getEmp(id)?.name||'?').join(', ')||'None'}</span></div>
     </div>
-    ${a.notes ? `<div class="card" style="margin-bottom:10px;font-size:0.85rem;color:var(--text-dim);">📝 ${esc(a.notes)}</div>` : ''}
-    ${openTasks.length ? `
-    <div class="section-title" style="margin-bottom:8px;">Open Tasks (${openTasks.length})</div>
-    ${openTasks.map(t=>`<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--border);font-size:0.85rem;">
-      <span>${getTaskIcon(t.type)}</span>
-      <span style="flex:1">${esc(t.desc)}</span>
-      <span style="font-size:0.75rem;color:${daysFromToday(t.dueDate)<0?'var(--red)':'var(--text-dim)'}">${relativeDate(t.dueDate)}</span>
-    </div>`).join('')}
-    ` : ''}
-    <div class="section-title" style="margin:14px 0 8px;">Inspection History</div>
-    <div class="inspect-history">
-      ${inspHistory.length ? inspHistory.map(i => `
-        <div class="hist-item">
-          <div style="display:flex;align-items:center;gap:6px;">
-            <span class="hist-date">${fmtDate(i.date)}</span>
-            <span class="hist-condition cond-${i.condition}">${i.condition.toUpperCase()}</span>
-          </div>
-          <div class="hist-inspector">Inspector: ${esc(i.inspector)}${i.treatment!=='none'?' · Treatment: '+i.treatment:''}</div>
-          ${i.notes ? `<div class="hist-notes">${esc(i.notes)}</div>` : ''}
-        </div>
-      `).join('') : '<div class="empty" style="padding:16px 0;"><p>No inspection records yet.</p></div>'}
-    </div>
-    <div style="display:flex;gap:8px;margin-top:16px;">
-      <button class="btn btn-amber" style="flex:1;" onclick="closeModal('modal-apiary-detail');openInspectionModal('${apiaryId}')">+ Log Inspection</button>
-      ${isOwnerMgr ? `<button class="btn btn-ghost" onclick="closeModal('modal-apiary-detail');openAddTaskForApiary('${apiaryId}')">+ Add Task</button>` : ''}
-    </div>
-  `;
-  openModal('modal-apiary-detail');
+    ${a.notes?`<div class="card" style="font-size:.82rem;color:var(--tdim);margin-bottom:10px;">${esc(a.notes)}</div>`:''}
+    ${dps.length?`<div class="st" style="margin-bottom:8px;">Drop Points (${dps.length})</div>
+    <div class="card" style="margin-bottom:10px;">${dps.map(dp=>`
+      <div class="dprow">
+        <div><div class="dpname">${esc(dp.name)}</div><div class="dphives">${dp.hives} hives${dp.notes?' · '+esc(dp.notes):''}</div></div>
+        <a class="dplink" href="https://www.google.com/maps?q=${dp.lat},${dp.lng}" target="_blank" rel="noopener">Maps</a>
+      </div>`).join('')}
+    </div>`:''}
+    ${otasks.length?`<div class="st" style="margin-bottom:8px;">Open Tasks (${otasks.length})</div>${otasks.map(t=>`<div style="display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid var(--brd);font-size:.82rem;"><span class="tlbl ${tcls(t.type)}">${tlbl(t.type)}</span><span style="flex:1;">${esc(t.desc)}</span><span style="color:${diffD(t.dueDate)<0?'var(--red)':'var(--tdim)'};font-size:.73rem;">${relD(t.dueDate)}</span></div>`).join('')}`:''}
+    <div class="st" style="margin:12px 0 8px;">Inspection History</div>
+    <div class="card" style="margin-bottom:12px;">${insps.length?insps.map(i=>`<div class="hist-item"><div style="display:flex;align-items:center;"><span class="hdate">${fmtD(i.date)}</span><span class="hcond c${i.condition[0]}">${i.condition.toUpperCase()}</span></div><div class="hinsp">Inspector: ${esc(i.inspector)}${i.treatment!=='none'?' · Treatment: '+i.treatment:''}</div>${i.notes?`<div class="hnotes">${esc(i.notes)}</div>`:''}</div>`).join(''):`<div class="empty" style="padding:12px 0;">No inspections logged yet.</div>`}</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+      <button class="btn btn-gold" style="flex:1;" onclick="closeModal('mdetail');openInsp('${id}')">Log Inspection</button>
+      ${om?`<button class="btn btn-ghost" onclick="closeModal('mdetail');openEditAP('${id}')">Edit Apiary</button>`:''}
+      ${om?`<button class="btn btn-ghost" onclick="closeModal('mdetail');openAddDPFor('${id}')">+ Drop Point</button>`:''}
+    </div>`;
+  openModal('mdetail');
 }
 
-// ═══════════════════════════════════════════════════════════════
-// INSPECTIONS VIEW
-// ═══════════════════════════════════════════════════════════════
-
-let _inspFilter = 'all';
-
-function setInspFilter(f, btn) {
-  _inspFilter = f;
-  document.querySelectorAll('[data-if]').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderInspections();
+// ── EDIT APIARY ───────────────────────────────────────────────
+function openEditAP(id){
+  const a=getAP(id);if(!a)return;
+  document.getElementById('aform-title').textContent='Edit Apiary';
+  document.getElementById('af-id').value=id;
+  document.getElementById('af-name').value=a.name;
+  document.getElementById('af-state').value=a.state;
+  document.getElementById('af-county').value=a.county;
+  document.getElementById('af-city').value=a.city;
+  document.getElementById('af-hives').value=a.hives;
+  document.getElementById('af-lat').value=a.lat;
+  document.getElementById('af-lng').value=a.lng;
+  document.getElementById('af-notes').value=a.notes||'';
+  updGMLink('af');
+  openModal('madd-apiary');
+}
+function submitApiary(){
+  const id=document.getElementById('af-id').value;
+  const name=document.getElementById('af-name').value.trim();
+  if(!name){alert('Please enter an apiary name.');return;}
+  const data={name,state:document.getElementById('af-state').value,county:document.getElementById('af-county').value.trim(),
+    city:document.getElementById('af-city').value.trim(),hives:parseInt(document.getElementById('af-hives').value)||0,
+    lat:parseFloat(document.getElementById('af-lat').value)||0,lng:parseFloat(document.getElementById('af-lng').value)||0,
+    notes:document.getElementById('af-notes').value.trim()};
+  if(id){Object.assign(getAP(id),data);}
+  else{S.apiaries.push({id:'a'+Date.now(),...data,assignedTo:[],dropPoints:[]});}
+  save();closeModal('madd-apiary');
+  document.getElementById('af-id').value='';
+  document.getElementById('aform-title').textContent='Add New Apiary';
+  renderApiaries();if(S.leafMap)updateMapMarkers();
 }
 
-function renderInspections() {
-  let list = visibleApiaries().map(a => ({
-    ...a,
-    days: getDaysSinceInspection(a.id),
-    status: getApiaryStatus(a.id),
-    nextDue: nextDueDate(a.id),
-    lastInsp: getLastInspection(a.id),
-  })).sort((a,b) => b.days - a.days);
+// ── DROP POINTS ───────────────────────────────────────────────
+function openAddDPFor(aid){
+  document.getElementById('dp-aid').value=aid;
+  document.getElementById('dp-name').value='';
+  document.getElementById('dp-lat').value='';
+  document.getElementById('dp-lng').value='';
+  document.getElementById('dp-hives').value='';
+  document.getElementById('dp-notes').value='';
+  document.getElementById('dp-gmlink').classList.remove('show');
+  openModal('madd-dp');
+}
+function submitDP(){
+  const aid=document.getElementById('dp-aid').value;
+  const name=document.getElementById('dp-name').value.trim();
+  if(!name){alert('Please enter a drop point name.');return;}
+  const a=getAP(aid);if(!a)return;
+  if(!a.dropPoints)a.dropPoints=[];
+  a.dropPoints.push({id:'dp'+Date.now(),name,lat:parseFloat(document.getElementById('dp-lat').value)||0,lng:parseFloat(document.getElementById('dp-lng').value)||0,hives:parseInt(document.getElementById('dp-hives').value)||0,notes:document.getElementById('dp-notes').value.trim()});
+  save();closeModal('madd-dp');
+  if(S.leafMap)updateMapMarkers();
+  openAPDetail(aid);
+}
 
-  if (_inspFilter === 'overdue')   list = list.filter(a => a.days > 14);
-  if (_inspFilter === 'due-soon')  list = list.filter(a => a.days >= 10 && a.days <= 14);
-  if (_inspFilter === 'ok')        list = list.filter(a => a.days < 10);
+// ── GOOGLE MAPS LINK ──────────────────────────────────────────
+function updGMLink(pfx){
+  const lat=document.getElementById(pfx+'-lat')?.value;
+  const lng=document.getElementById(pfx+'-lng')?.value;
+  const linkEl=document.getElementById(pfx+'-gmlink');
+  const anchor=document.getElementById(pfx+'-gma');
+  if(linkEl&&anchor&&lat&&lng&&!isNaN(lat)&&!isNaN(lng)){
+    anchor.href=`https://www.google.com/maps?q=${lat},${lng}`;
+    linkEl.classList.add('show');
+  } else if(linkEl){linkEl.classList.remove('show');}
+}
 
-  const el = document.getElementById('inspection-list');
-  if (!list.length) {
-    el.innerHTML = '<div class="empty"><div class="empty-icon">🔍</div><p>No apiaries in this category.</p></div>';
-    return;
-  }
-  el.innerHTML = list.map(a => {
-    const cls = a.status === 'critical' ? 'overdue' : a.status === 'attention' ? 'due-soon' : 'ok';
-    const badgeCls = a.status === 'critical' ? 'days-bad' : a.status === 'attention' ? 'days-warn' : 'days-good';
-    const daysUntilDue = daysFromToday(a.nextDue);
-    const dueLabel = a.days > 14 ? `⚠ ${a.days - 14}d overdue` : `Due ${relativeDate(a.nextDue)}`;
-    return `<div class="inspect-item ${cls}">
-      <div class="inspect-info">
-        <div class="inspect-name">${esc(a.name)}</div>
-        <div class="inspect-meta">
-          ${a.city}, ${a.state} · ${a.hives} hives<br>
-          Last: ${a.lastInsp ? fmtDate(a.lastInsp.date) + ' (' + a.days + 'd ago)' : 'Never inspected'}
-          · <span style="color:${a.days>14?'var(--red)':a.days>10?'var(--orange)':'var(--green)'}">${dueLabel}</span>
-        </div>
+// ── INSPECTION MODAL ──────────────────────────────────────────
+function openInsp(aid){
+  const a=getAP(aid);if(!a)return;
+  document.getElementById('li-aid').value=aid;
+  document.getElementById('li-aname').textContent=a.name+' — '+a.city+', '+a.state;
+  document.getElementById('li-date').value=TODAY;
+  document.getElementById('li-col').value=a.hives;
+  document.getElementById('li-cond').value='good';
+  document.getElementById('li-treat').value='none';
+  document.getElementById('li-notes').value='';
+  openModal('mlog-insp');
+}
+function submitInsp(){
+  const aid=document.getElementById('li-aid').value;
+  const date=document.getElementById('li-date').value;
+  if(!date){alert('Please select a date.');return;}
+  S.inspections.push({id:'i'+Date.now(),apiaryId:aid,date,inspector:S.user.name,inspectorId:S.user.id,
+    condition:document.getElementById('li-cond').value,colonies:parseInt(document.getElementById('li-col').value)||0,
+    treatment:document.getElementById('li-treat').value,notes:document.getElementById('li-notes').value.trim()});
+  save();closeModal('mlog-insp');
+  const av=document.querySelector('.view.active')?.id?.replace('view-','');
+  if(av==='dashboard')renderDash();else if(av==='apiaries')renderApiaries();
+}
+
+// ── TASKS ─────────────────────────────────────────────────────
+let _tf='all';
+function setTF(f,btn){_tf=f;document.querySelectorAll('[data-tf]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderTasks();}
+function renderTasks(){
+  const u=S.user,om=['owner','manager'].includes(u.role);
+  let list=om?S.tasks:S.tasks.filter(t=>t.assignedTo===u.id);
+  if(_tf==='mine')list=list.filter(t=>t.assignedTo===u.id);
+  if(_tf==='today')list=list.filter(t=>t.dueDate===TODAY&&t.status!=='done');
+  if(_tf==='overdue')list=list.filter(t=>t.dueDate<TODAY&&t.status!=='done');
+  if(_tf==='open')list=list.filter(t=>t.status!=='done');
+  if(_tf==='done')list=list.filter(t=>t.status==='done');
+  list.sort((a,b)=>{if(a.status==='done'&&b.status!=='done')return 1;if(b.status==='done'&&a.status!=='done')return -1;return a.dueDate.localeCompare(b.dueDate);});
+  const el=document.getElementById('task-list');
+  el.innerHTML=list.length?list.map(t=>tCard(t,true)).join(''):`<div class="empty">No tasks here.</div>`;
+}
+function tCard(t,showBtn){
+  const ap=getAP(t.apiaryId),asn=getEmp(t.assignedTo);
+  const ov=t.status!=='done'&&t.dueDate<TODAY,is=t.dueDate===TODAY,dn=t.status==='done';
+  const dc=ov?'color:var(--red)':is?'color:var(--org)':'color:var(--tdim)';
+  const can=t.assignedTo===S.user.id||['owner','manager'].includes(S.user.role);
+  return `<div class="tcard p${t.priority[0]} ${dn?'tdone':''}">
+    <span class="tlbl ${tcls(t.type)}">${tlbl(t.type)}</span>
+    <div class="tbody">
+      <div class="ttitle">${esc(t.desc)}</div>
+      <div class="tmeta">${ap?esc(ap.name)+' · '+ap.city+', '+ap.state:''}</div>
+      <div class="tfoot">
+        <span class="badge ${dn?'bdn':t.status==='in-progress'?'bp':'bt'}">${dn?'Done':t.status==='in-progress'?'In Progress':'To Do'}</span>
+        <span class="badge ${t.priority==='high'?'bc':t.priority==='medium'?'ba':'bt'}">${t.priority}</span>
+        <span style="font-size:.73rem;${dc}">${relD(t.dueDate)}</span>
+        ${asn?`<span style="font-size:.72rem;color:var(--mut);">${esc(asn.name.split(' ')[0])}</span>`:''}
+        ${showBtn&&can&&!dn?`<button class="tdone-btn" onclick="doneTask('${t.id}')">Mark Done</button>`:''}
       </div>
-      <span class="days-badge ${badgeCls}">${a.days < 99 ? a.days + 'd' : '—'}</span>
-      <button class="inspect-btn" onclick="openInspectionModal('${a.id}')">Log</button>
+      ${t.notes?`<div style="font-size:.72rem;color:var(--mut);margin-top:3px;">${esc(t.notes)}</div>`:''}
+    </div></div>`;
+}
+function doneTask(id){const t=S.tasks.find(t=>t.id===id);if(t){t.status='done';save();}const av=document.querySelector('.view.active')?.id?.replace('view-','');if(av==='tasks')renderTasks();if(av==='dashboard')renderDash();}
+function openAddTask(){
+  document.getElementById('ta-ap').innerHTML='<option value="">— Select Apiary —</option>'+S.apiaries.map(a=>`<option value="${a.id}">${esc(a.name)} (${a.state})</option>`).join('');
+  document.getElementById('ta-assignee').innerHTML='<option value="">— Unassigned —</option>'+S.employees.filter(e=>e.role!=='owner').map(e=>`<option value="${e.id}">${esc(e.name)}</option>`).join('');
+  document.getElementById('ta-due').value=TODAY;
+  openModal('madd-task');
+}
+function submitTask(){
+  const desc=document.getElementById('ta-desc').value.trim();
+  if(!desc){alert('Please enter a task description.');return;}
+  S.tasks.push({id:'t'+Date.now(),type:document.getElementById('ta-type').value,desc,apiaryId:document.getElementById('ta-ap').value,assignedTo:document.getElementById('ta-assignee').value,dueDate:document.getElementById('ta-due').value,priority:document.getElementById('ta-pri').value,status:'open',notes:document.getElementById('ta-notes').value.trim()});
+  save();closeModal('madd-task');renderTasks();
+}
+
+// ── TEAM ──────────────────────────────────────────────────────
+function renderTeam(){
+  const workers=S.employees.filter(e=>e.role!=='owner');
+  document.getElementById('team-grid').innerHTML=workers.map(e=>{
+    const aps=S.apiaries.filter(a=>(a.assignedTo||[]).includes(e.id));
+    const open=S.tasks.filter(t=>t.assignedTo===e.id&&t.status!=='done').length;
+    const done=S.tasks.filter(t=>t.assignedTo===e.id&&t.status==='done').length;
+    const init=e.name.split(' ').map(n=>n[0]).join('');
+    return `<div class="teamcard">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;">
+        <div class="tavatar">${init}</div><span class="badge b${e.role==='manager'?'mgr':'emp'}">${e.role}</span>
+      </div>
+      <div class="tname">${esc(e.name)}</div><div class="temail">${esc(e.email)}</div>
+      <div style="display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;">
+        <span style="font-size:.72rem;background:var(--brd);padding:2px 8px;border-radius:10px;color:var(--tdim);">${aps.length} apiar${aps.length!==1?'ies':'y'}</span>
+        <span style="font-size:.72rem;background:var(--orgd);padding:2px 8px;border-radius:10px;color:var(--org);">${open} open</span>
+        <span style="font-size:.72rem;background:var(--grnd);padding:2px 8px;border-radius:10px;color:var(--grn);">${done} done</span>
+      </div>
+      <div style="font-size:.75rem;color:var(--tdim);">${aps.length?aps.map(a=>`${esc(a.name)} (${a.state})`).join('<br>'):'No apiaries assigned'}</div>
     </div>`;
   }).join('');
 }
-
-// ═══════════════════════════════════════════════════════════════
-// INSPECTION MODAL
-// ═══════════════════════════════════════════════════════════════
-
-function openInspectionModal(apiaryId) {
-  const a = getApiary(apiaryId);
-  if (!a) return;
-  document.getElementById('insp-apiary-id').value   = apiaryId;
-  document.getElementById('insp-apiary-name').textContent = a.name + ' — ' + a.city + ', ' + a.state;
-  document.getElementById('insp-date').value         = TODAY;
-  document.getElementById('insp-colonies').value     = a.hives;
-  document.getElementById('insp-condition').value    = 'good';
-  document.getElementById('insp-treatment').value    = 'none';
-  document.getElementById('insp-notes').value        = '';
-  openModal('modal-log-inspection');
+function submitEmployee(){
+  const name=document.getElementById('ne-name').value.trim(),email=document.getElementById('ne-email').value.trim().toLowerCase();
+  if(!name||!email){alert('Please fill in name and email.');return;}
+  S.employees.push({id:'u'+Date.now(),name,email,role:document.getElementById('ne-role').value,phone:document.getElementById('ne-phone').value.trim(),password:'demo'});
+  save();closeModal('madd-employee');renderTeam();
 }
 
-function submitInspection() {
-  const apiaryId = document.getElementById('insp-apiary-id').value;
-  const date     = document.getElementById('insp-date').value;
-  if (!date) { alert('Please select a date.'); return; }
-  const newInsp = {
-    id: 'i' + Date.now(),
-    apiaryId,
-    date,
-    inspector: state.user.name,
-    inspectorId: state.user.id,
-    condition:  document.getElementById('insp-condition').value,
-    colonies:   parseInt(document.getElementById('insp-colonies').value) || 0,
-    treatment:  document.getElementById('insp-treatment').value,
-    notes:      document.getElementById('insp-notes').value.trim(),
-  };
-  state.inspections.push(newInsp);
-  saveData();
-  closeModal('modal-log-inspection');
-  // Refresh current view
-  const activeView = document.querySelector('.view.active')?.id?.replace('view-','');
-  if (activeView) { const renders = { dashboard: renderDashboard, apiaries: renderApiaries, inspections: renderInspections }; if (renders[activeView]) renders[activeView](); }
-}
-
-// ═══════════════════════════════════════════════════════════════
-// TASKS
-// ═══════════════════════════════════════════════════════════════
-
-let _taskFilter = 'all';
-
-function setTaskFilter(f, btn) {
-  _taskFilter = f;
-  document.querySelectorAll('[data-tf]').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  renderTasks();
-}
-
-function renderTasks() {
-  const u = state.user;
-  const isOwnerMgr = ['owner','manager'].includes(u.role);
-  let list = isOwnerMgr ? state.tasks : state.tasks.filter(t => t.assignedTo === u.id);
-
-  if (_taskFilter === 'mine')    list = list.filter(t => t.assignedTo === u.id);
-  if (_taskFilter === 'today')   list = list.filter(t => t.dueDate === TODAY && t.status !== 'done');
-  if (_taskFilter === 'overdue') list = list.filter(t => t.dueDate < TODAY && t.status !== 'done');
-  if (_taskFilter === 'open')    list = list.filter(t => t.status !== 'done');
-  if (_taskFilter === 'done')    list = list.filter(t => t.status === 'done');
-
-  // Sort: overdue first, then by date, then done last
-  list = list.sort((a,b) => {
-    if (a.status === 'done' && b.status !== 'done') return 1;
-    if (b.status === 'done' && a.status !== 'done') return -1;
-    return a.dueDate.localeCompare(b.dueDate);
-  });
-
-  const el = document.getElementById('task-list');
-  if (!list.length) {
-    el.innerHTML = '<div class="empty"><div class="empty-icon">✅</div><p>No tasks here.</p></div>';
-    return;
-  }
-  el.innerHTML = list.map(t => renderTaskCard(t, true)).join('');
-}
-
-function renderTaskCard(t, showComplete) {
-  const apiary = getApiary(t.apiaryId);
-  const assignee = getEmployee(t.assignedTo);
-  const isOverdue = t.status !== 'done' && t.dueDate < TODAY;
-  const isToday   = t.dueDate === TODAY;
-  const isDone    = t.status === 'done';
-  const dueCls    = isOverdue ? 'color:var(--red)' : isToday ? 'color:var(--orange)' : 'color:var(--text-dim)';
-  const u = state.user;
-  const canComplete = t.assignedTo === u.id || ['owner','manager'].includes(u.role);
-
-  return `<div class="task-card priority-${t.priority} ${isDone?'task-done':''}">
-    <div class="task-icon">${getTaskIcon(t.type)}</div>
-    <div class="task-body">
-      <div class="task-title">${esc(t.desc)}</div>
-      <div class="task-meta">${apiary ? esc(apiary.name) + ' · ' + apiary.city + ', ' + apiary.state : ''}</div>
-      <div class="task-footer">
-        <span class="badge badge-${isDone?'done':t.status==='in-progress'?'progress':'todo'}">${isDone?'Done':t.status==='in-progress'?'In Progress':'To Do'}</span>
-        <span class="badge badge-${t.priority==='high'?'critical':t.priority==='medium'?'attention':'todo'}">${t.priority}</span>
-        <span style="font-size:0.75rem;${dueCls}">${relativeDate(t.dueDate)}</span>
-        ${assignee?`<span style="font-size:0.75rem;color:var(--muted)">👤 ${esc(assignee.name.split(' ')[0])}</span>`:''}
-        ${showComplete && canComplete && !isDone ? `<button class="task-done-btn" onclick="markTaskDone('${t.id}')">✓ Done</button>` : ''}
-      </div>
-      ${t.notes ? `<div style="font-size:0.75rem;color:var(--muted);margin-top:4px;">${esc(t.notes)}</div>` : ''}
-    </div>
-  </div>`;
-}
-
-function markTaskDone(taskId) {
-  const t = state.tasks.find(t => t.id === taskId);
-  if (t) { t.status = 'done'; saveData(); }
-  const activeView = document.querySelector('.view.active')?.id?.replace('view-','');
-  if (activeView === 'tasks') renderTasks();
-  if (activeView === 'dashboard') renderDashboard();
-}
-
-function openAddTaskForApiary(apiaryId) {
-  populateTaskModal();
-  document.getElementById('task-apiary').value = apiaryId;
-  openModal('modal-add-task');
-}
-
-function populateTaskModal() {
-  const apiarySelect = document.getElementById('task-apiary');
-  apiarySelect.innerHTML = '<option value="">— Select Apiary —</option>' +
-    state.apiaries.map(a => `<option value="${a.id}">${esc(a.name)} (${a.state})</option>`).join('');
-  const assigneeSelect = document.getElementById('task-assignee');
-  assigneeSelect.innerHTML = '<option value="">— Unassigned —</option>' +
-    state.employees.filter(e=>e.role!=='owner').map(e => `<option value="${e.id}">${esc(e.name)} (${e.role})</option>`).join('');
-  document.getElementById('task-due').value = TODAY;
-}
-
-function submitTask() {
-  const desc = document.getElementById('task-desc').value.trim();
-  if (!desc) { alert('Please enter a task description.'); return; }
-  const newTask = {
-    id: 't' + Date.now(),
-    type:       document.getElementById('task-type').value,
-    desc,
-    apiaryId:   document.getElementById('task-apiary').value,
-    assignedTo: document.getElementById('task-assignee').value,
-    dueDate:    document.getElementById('task-due').value,
-    priority:   document.getElementById('task-priority').value,
-    status:     'open',
-    notes:      document.getElementById('task-notes').value.trim(),
-  };
-  state.tasks.push(newTask);
-  saveData();
-  closeModal('modal-add-task');
-  renderTasks();
-}
-
-// ═══════════════════════════════════════════════════════════════
-// TEAM
-// ═══════════════════════════════════════════════════════════════
-
-function renderTeam() {
-  const workers = state.employees.filter(e => e.role !== 'owner');
-  const el = document.getElementById('team-grid');
-  el.innerHTML = workers.map(e => {
-    const myApiaries = state.apiaries.filter(a => (a.assignedTo||[]).includes(e.id));
-    const openTasks  = state.tasks.filter(t => t.assignedTo === e.id && t.status !== 'done');
-    const doneTasks  = state.tasks.filter(t => t.assignedTo === e.id && t.status === 'done');
-    const dotColors  = { manager:'#3b82f6', employee:'#22c55e' };
-    const initials   = e.name.split(' ').map(n=>n[0]).join('');
-    return `<div class="team-card">
-      <div style="display:flex;align-items:flex-start;justify-content:space-between;">
-        <div class="team-avatar">${initials}</div>
-        <span class="badge badge-${e.role}">${e.role}</span>
-      </div>
-      <div class="team-name">${esc(e.name)}</div>
-      <div class="team-email">${esc(e.email)}</div>
-      <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
-        <span style="font-size:0.75rem;background:var(--border);padding:2px 8px;border-radius:10px;color:var(--text-dim);">
-          ${myApiaries.length} apiar${myApiaries.length!==1?'ies':'y'}
-        </span>
-        <span style="font-size:0.75rem;background:var(--orange-dim);padding:2px 8px;border-radius:10px;color:var(--orange);">
-          ${openTasks.length} open task${openTasks.length!==1?'s':''}
-        </span>
-        <span style="font-size:0.75rem;background:var(--green-dim);padding:2px 8px;border-radius:10px;color:var(--green);">
-          ${doneTasks.length} done
-        </span>
-      </div>
-      <div class="team-apiaries">
-        <strong>Assigned:</strong><br>
-        ${myApiaries.length ? myApiaries.map(a=>`${esc(a.name)} (${a.state})`).join('<br>') : 'No apiaries assigned'}
-      </div>
-    </div>`;
+// ── REPORTS ───────────────────────────────────────────────────
+function renderReports(){
+  const aps=S.apiaries,tot=aps.reduce((s,a)=>s+a.hives,0);
+  const orH=aps.filter(a=>a.state==='OR').reduce((s,a)=>s+a.hives,0);
+  const caH=aps.filter(a=>a.state==='CA').reduce((s,a)=>s+a.hives,0);
+  const onTime=aps.filter(a=>daysSince(a.id)<=14).length;
+  const pct=Math.round((onTime/aps.length)*100);
+  const done=S.tasks.filter(t=>t.status==='done').length;
+  const open=S.tasks.filter(t=>t.status!=='done').length;
+  const w7=S.inspections.filter(i=>{const d=diffD(i.date);return d>=-7&&d<=0;}).length;
+  document.getElementById('rstats').innerHTML=`
+    <div class="rcard"><div class="rtitle">Total Fleet</div><div style="font-size:2rem;font-weight:800;color:var(--gold)">${tot.toLocaleString()}</div><div style="font-size:.76rem;color:var(--tdim);">hives across ${aps.length} apiaries</div></div>
+    <div class="rcard"><div class="rtitle">Compliance Rate</div><div style="font-size:2rem;font-weight:800;color:${pct>70?'var(--grn)':'var(--red)'}">${pct}%</div><div style="font-size:.76rem;color:var(--tdim);">${onTime} / ${aps.length} on schedule</div></div>
+    <div class="rcard"><div class="rtitle">Inspections This Week</div><div style="font-size:2rem;font-weight:800;color:var(--blu)">${w7}</div><div style="font-size:.76rem;color:var(--tdim);">across all locations</div></div>
+    <div class="rcard"><div class="rtitle">Task Completion</div><div style="font-size:2rem;font-weight:800;color:var(--grn)">${done}</div><div style="font-size:.76rem;color:var(--tdim);">${open} open remaining</div></div>`;
+  const worst=[...aps].map(a=>({...a,ds:daysSince(a.id)})).sort((a,b)=>b.ds-a.ds).slice(0,10);
+  document.getElementById('rchart').innerHTML=worst.map(a=>{
+    const p=Math.min(100,Math.round((a.ds/21)*100));
+    const c=a.ds>17?'var(--red)':a.ds>12?'var(--org)':'var(--grn)';
+    return `<div class="brow"><div class="blbl" title="${a.name}">${a.name.split(' ').slice(0,2).join(' ')}</div><div class="btrack"><div class="bfill" style="width:${p}%;background:${c};"></div></div><div class="bval" style="color:${c}">${a.ds}d</div></div>`;
   }).join('');
-}
-
-function submitEmployee() {
-  const name = document.getElementById('ne-name').value.trim();
-  const email= document.getElementById('ne-email').value.trim().toLowerCase();
-  if (!name || !email) { alert('Please fill in name and email.'); return; }
-  const newEmp = {
-    id: 'u' + Date.now(),
-    name,
-    email,
-    role: document.getElementById('ne-role').value,
-    region: document.getElementById('ne-region').value,
-    phone: document.getElementById('ne-phone').value.trim(),
-    password: 'demo',
-  };
-  state.employees.push(newEmp);
-  saveData();
-  closeModal('modal-add-employee');
-  renderTeam();
-}
-
-// ═══════════════════════════════════════════════════════════════
-// REPORTS
-// ═══════════════════════════════════════════════════════════════
-
-function renderReports() {
-  const apiaries = state.apiaries;
-  const totalHives = apiaries.reduce((s,a)=>s+a.hives,0);
-  const orHives = apiaries.filter(a=>a.state==='OR').reduce((s,a)=>s+a.hives,0);
-  const caHives = apiaries.filter(a=>a.state==='CA').reduce((s,a)=>s+a.hives,0);
-  const overdue = apiaries.filter(a=>getDaysSinceInspection(a.id)>14).length;
-  const onTime  = apiaries.filter(a=>getDaysSinceInspection(a.id)<=14).length;
-  const compliancePct = Math.round((onTime/apiaries.length)*100);
-  const doneTasks = state.tasks.filter(t=>t.status==='done').length;
-  const openTasks = state.tasks.filter(t=>t.status!=='done').length;
-  const inspThisWeek = state.inspections.filter(i=>{
-    const d = daysFromToday(i.date);
-    return d >= -7 && d <= 0;
-  }).length;
-
-  document.getElementById('report-stats').innerHTML = `
-    <div class="report-card">
-      <div class="report-title">Total Fleet</div>
-      <div style="font-size:2rem;font-weight:800;color:var(--amber)">${totalHives.toLocaleString()}</div>
-      <div style="font-size:0.78rem;color:var(--text-dim);">hives across 20 apiaries</div>
-    </div>
-    <div class="report-card">
-      <div class="report-title">Compliance Rate</div>
-      <div style="font-size:2rem;font-weight:800;color:${compliancePct>70?'var(--green)':'var(--red)'}">${compliancePct}%</div>
-      <div style="font-size:0.78rem;color:var(--text-dim);">${onTime} / ${apiaries.length} apiaries on schedule</div>
-    </div>
-    <div class="report-card">
-      <div class="report-title">Inspections This Week</div>
-      <div style="font-size:2rem;font-weight:800;color:var(--blue)">${inspThisWeek}</div>
-      <div style="font-size:0.78rem;color:var(--text-dim);">across all locations</div>
-    </div>
-    <div class="report-card">
-      <div class="report-title">Task Completion</div>
-      <div style="font-size:2rem;font-weight:800;color:var(--green)">${doneTasks}</div>
-      <div style="font-size:0.78rem;color:var(--text-dim);">${openTasks} open tasks remaining</div>
+  document.getElementById('rstate').innerHTML=`
+    <div style="display:flex;justify-content:space-between;font-size:.82rem;margin-bottom:6px;"><span>Oregon</span><strong>${orH.toLocaleString()}</strong></div>
+    <div style="height:10px;background:var(--brd);border-radius:4px;margin-bottom:8px;overflow:hidden;"><div style="height:100%;width:${Math.round(orH/tot*100)}%;background:var(--grn);"></div></div>
+    <div style="display:flex;justify-content:space-between;font-size:.82rem;margin-bottom:6px;"><span>California</span><strong>${caH.toLocaleString()}</strong></div>
+    <div style="height:10px;background:var(--brd);border-radius:4px;overflow:hidden;"><div style="height:100%;width:${Math.round(caH/tot*100)}%;background:var(--gold);"></div></div>`;
+  const g=aps.filter(a=>apStatus(a.id)==='good').length,at=aps.filter(a=>apStatus(a.id)==='attention').length,cr=aps.filter(a=>apStatus(a.id)==='critical').length;
+  document.getElementById('rstatus').innerHTML=`
+    <div style="font-size:.8rem;margin-bottom:5px;display:flex;justify-content:space-between;"><span>Good (&le;12d)</span><strong style="color:var(--grn)">${g}</strong></div>
+    <div style="font-size:.8rem;margin-bottom:5px;display:flex;justify-content:space-between;"><span>Attention (13-17d)</span><strong style="color:var(--org)">${at}</strong></div>
+    <div style="font-size:.8rem;margin-bottom:12px;display:flex;justify-content:space-between;"><span>Critical (17d+)</span><strong style="color:var(--red)">${cr}</strong></div>
+    <div style="height:8px;background:var(--brd);border-radius:4px;display:flex;overflow:hidden;">
+      <div style="width:${Math.round(g/aps.length*100)}%;background:var(--grn);"></div>
+      <div style="width:${Math.round(at/aps.length*100)}%;background:var(--org);"></div>
+      <div style="width:${Math.round(cr/aps.length*100)}%;background:var(--red);"></div>
     </div>`;
-
-  // Compliance chart — top 10 worst
-  const worstApiaries = [...apiaries]
-    .map(a => ({ ...a, days: getDaysSinceInspection(a.id) }))
-    .sort((a,b) => b.days - a.days)
-    .slice(0, 10);
-  const maxDays = Math.max(...worstApiaries.map(a=>a.days), 14);
-
-  document.getElementById('compliance-chart').innerHTML = worstApiaries.map(a => {
-    const pct = Math.min(100, Math.round((a.days / 21) * 100));
-    const color = a.days > 17 ? 'var(--red)' : a.days > 12 ? 'var(--orange)' : 'var(--green)';
-    return `<div class="bar-row">
-      <div class="bar-label" title="${a.name}">${a.name.split(' ').slice(0,2).join(' ')}</div>
-      <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${color};"></div></div>
-      <div class="bar-value" style="color:${color}">${a.days}d</div>
-    </div>`;
-  }).join('');
-
-  // State chart
-  document.getElementById('state-chart').innerHTML = `
-    <div class="pie-row"><div class="pie-dot" style="background:var(--green)"></div><span style="flex:1">Oregon</span><strong>${orHives.toLocaleString()} hives</strong></div>
-    <div class="pie-row"><div class="pie-dot" style="background:var(--amber)"></div><span style="flex:1">California</span><strong>${caHives.toLocaleString()} hives</strong></div>
-    <div style="height:8px;background:var(--border);border-radius:4px;margin-top:8px;overflow:hidden;">
-      <div style="height:100%;width:${Math.round(orHives/totalHives*100)}%;background:var(--green);border-radius:4px;"></div>
-    </div>
-    <div style="display:flex;justify-content:space-between;font-size:0.72rem;color:var(--muted);margin-top:4px;">
-      <span>${Math.round(orHives/totalHives*100)}% OR</span>
-      <span>${Math.round(caHives/totalHives*100)}% CA</span>
-    </div>`;
-
-  // Status chart
-  const good = apiaries.filter(a=>getApiaryStatus(a.id)==='good').length;
-  const attn = apiaries.filter(a=>getApiaryStatus(a.id)==='attention').length;
-  const crit = apiaries.filter(a=>getApiaryStatus(a.id)==='critical').length;
-  document.getElementById('status-chart').innerHTML = `
-    <div class="pie-row"><div class="pie-dot" style="background:var(--green)"></div><span style="flex:1">Good (≤12d)</span><strong>${good}</strong></div>
-    <div class="pie-row"><div class="pie-dot" style="background:var(--orange)"></div><span style="flex:1">Attention (13–17d)</span><strong>${attn}</strong></div>
-    <div class="pie-row"><div class="pie-dot" style="background:var(--red)"></div><span style="flex:1">Critical (17d+)</span><strong>${crit}</strong></div>
-    <div style="height:8px;background:var(--border);border-radius:4px;margin-top:8px;display:flex;overflow:hidden;">
-      <div style="height:100%;width:${Math.round(good/apiaries.length*100)}%;background:var(--green);"></div>
-      <div style="height:100%;width:${Math.round(attn/apiaries.length*100)}%;background:var(--orange);"></div>
-      <div style="height:100%;width:${Math.round(crit/apiaries.length*100)}%;background:var(--red);"></div>
-    </div>`;
-
-  // Compliance ring
-  const circumference = 2 * Math.PI * 32;
-  const offset = circumference - (compliancePct / 100) * circumference;
-  document.getElementById('compliance-ring-circle').style.strokeDashoffset = offset;
-  document.getElementById('compliance-ring-circle').style.stroke = compliancePct > 70 ? 'var(--green)' : compliancePct > 50 ? 'var(--orange)' : 'var(--red)';
-  document.getElementById('compliance-pct').textContent = compliancePct + '%';
-  document.getElementById('compliance-pct').style.color = compliancePct > 70 ? 'var(--green)' : compliancePct > 50 ? 'var(--orange)' : 'var(--red)';
+  const circ=2*Math.PI*32,off=circ-(pct/100)*circ;
+  const rc=document.getElementById('cring-c');
+  rc.style.strokeDashoffset=off;rc.style.stroke=pct>70?'var(--grn)':pct>50?'var(--org)':'var(--red)';
+  document.getElementById('cpct').textContent=pct+'%';
+  document.getElementById('cpct').style.color=pct>70?'var(--grn)':pct>50?'var(--org)':'var(--red)';
 }
 
-// ═══════════════════════════════════════════════════════════════
-// MODAL UTILS
-// ═══════════════════════════════════════════════════════════════
-
-function openModal(id) {
-  document.getElementById(id).classList.add('open');
-  if (id === 'modal-add-task') populateTaskModal();
-}
-function closeModal(id) {
-  document.getElementById(id).classList.remove('open');
-}
-
-function submitApiary() {
-  const name = document.getElementById('na-name').value.trim();
-  if (!name) { alert('Please enter an apiary name.'); return; }
-  const newA = {
-    id: 'a' + Date.now(),
-    name,
-    state:  document.getElementById('na-state').value,
-    county: document.getElementById('na-county').value.trim(),
-    city:   document.getElementById('na-city').value.trim(),
-    hives:  parseInt(document.getElementById('na-hives').value) || 0,
-    lat:    parseFloat(document.getElementById('na-lat').value)  || 0,
-    lng:    parseFloat(document.getElementById('na-lng').value)  || 0,
-    notes:  document.getElementById('na-notes').value.trim(),
-    assignedTo: [],
-  };
-  state.apiaries.push(newA);
-  saveData();
-  closeModal('modal-add-apiary');
-  renderApiaries();
-}
-
-// ═══════════════════════════════════════════════════════════════
-// UTILS
-// ═══════════════════════════════════════════════════════════════
-
-function esc(s) {
-  return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-// ═══════════════════════════════════════════════════════════════
-// BOOT
-// ═══════════════════════════════════════════════════════════════
+// ── MODAL UTILS ───────────────────────────────────────────────
+function openModal(id){document.getElementById(id).classList.add('open');}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
 
 init();
 </script>

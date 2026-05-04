@@ -400,6 +400,21 @@
   .week-legend { display: flex; gap: 12px; font-size: .72rem; color: var(--muted); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); align-items: center; }
   .week-legend span { display: flex; align-items: center; gap: 4px; }
   .wk-swatch { display: inline-block; width: 8px; height: 8px; flex-shrink: 0; }
+
+  /* ── Mascot ─────────────────────────────────────── */
+  @keyframes m-idle      { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+  @keyframes m-bounce    { 0%,100%{transform:translateY(0) scale(1)} 40%{transform:translateY(-9px) scale(1.06)} }
+  @keyframes m-celebrate { 0%,100%{transform:rotate(-12deg) scale(1.1)} 50%{transform:rotate(12deg) scale(1.12)} }
+  @keyframes confetti-fall { to { transform:translateY(110vh) rotate(720deg); opacity:0; } }
+  @keyframes cal-pulse   { 0%,100%{opacity:1} 50%{opacity:.5} }
+  .mascot-idle      { animation:m-idle 2.8s ease-in-out infinite; display:inline-block; }
+  .mascot-bounce    { animation:m-bounce 1.1s ease-in-out infinite; display:inline-block; }
+  .mascot-celebrate { animation:m-celebrate .44s ease-in-out infinite; display:inline-block; }
+  .mascot-card  { text-align:center; padding:28px 16px 20px; }
+  .mascot-pct   { font-size:3.2rem; font-weight:800; color:var(--accent4); letter-spacing:-.04em; margin-top:8px; font-variant-numeric:tabular-nums; }
+  .mascot-lbl   { font-size:.82rem; color:var(--muted); margin-top:4px; font-weight:500; }
+  .mascot-msg   { font-size:.88rem; color:var(--text-2); margin-top:12px; font-weight:500; min-height:1.3em; }
+  #mascot-hdr   { line-height:0; cursor:pointer; }
 </style>
 </head>
 <body>
@@ -440,6 +455,7 @@
         <circle cx="23" cy="5" r="2" fill="white"/>
       </svg>
       <span>metric</span>
+      <span id="mascot-hdr" class="mascot-idle" onclick="switchTab('daily')" title="Your progress buddy"></span>
     </div>
     <div class="header-right">
       <span id="date-display"></span>
@@ -556,9 +572,11 @@
 
   <!-- ── DAILY ─────────────────────────────────────── -->
   <div id="section-daily" class="section">
-    <div class="card stat-big" style="padding:18px">
-      <div class="number" id="daily-pct" style="color:var(--accent4);font-size:2.5rem">0%</div>
-      <div class="label" id="daily-label">done today</div>
+    <div class="card mascot-card">
+      <div id="mascot-face" class="mascot-idle"></div>
+      <div class="mascot-pct" id="daily-pct">0%</div>
+      <div class="mascot-lbl" id="daily-label">done today</div>
+      <div class="mascot-msg" id="mascot-msg">Waiting for you…</div>
     </div>
     <div class="card">
       <div class="section-title">Add</div>
@@ -619,6 +637,8 @@ let workoutGoal = 3; // weekly session goal
 
 // Summary state
 let summaryPeriod = 'week';
+let _mascot = { cals: 0, habitDone: 0, habitTotal: 0, wkSessions: 0 };
+let _confettiFired = false;
 
 // ── Icons ──────────────────────────────────────────────────────────────────
 const icon = (path, size = 18) =>
@@ -671,6 +691,7 @@ function injectIcons() {
   document.getElementById('food-plus').innerHTML    = icon(IC.plus, 16);
   document.getElementById('workout-plus').innerHTML = icon(IC.plus, 16);
   document.getElementById('habit-plus').innerHTML   = icon(IC.plus, 16);
+  updateMascot();
 }
 
 // ── Auth ───────────────────────────────────────────────────────────────────
@@ -911,6 +932,9 @@ async function renderFood() {
   const pct = Math.min(100, Math.round((tot.cal/calGoal)*100));
   document.getElementById('cal-bar').style.width = pct+'%';
   document.getElementById('cal-bar').style.background = pct>110 ? 'var(--danger)' : 'var(--accent)';
+  document.getElementById('cal-total').style.animation = pct > 110 ? 'cal-pulse 1.2s ease-in-out infinite' : '';
+  _mascot.cals = tot.cal;
+  updateMascot();
   const el = document.getElementById('food-list');
   if (!rows.length) { el.innerHTML = '<div class="empty">Nothing logged yet</div>'; return; }
   el.innerHTML = [...rows].reverse().map(e => {
@@ -975,6 +999,8 @@ async function renderWorkout() {
   const rows       = dayRes.data || [];
   const wkSessions = new Set((weekRes.data||[]).map(e => e.date)).size;
   const pct        = workoutGoal ? Math.min(100, Math.round((wkSessions/workoutGoal)*100)) : 0;
+  _mascot.wkSessions = wkSessions;
+  updateMascot();
   document.getElementById('workout-week-sessions').textContent = wkSessions;
   document.getElementById('workout-goal-display').textContent  = workoutGoal;
   document.getElementById('workout-goal-input').value          = workoutGoal;
@@ -1320,6 +1346,9 @@ async function renderDaily() {
   const pct = all.length ? Math.round((doneCnt / all.length)*100) : 0;
   document.getElementById('daily-pct').textContent = pct+'%';
   document.getElementById('daily-label').textContent = `${doneCnt} of ${all.length} done`;
+  _mascot.habitDone = doneCnt;
+  _mascot.habitTotal = all.length;
+  updateMascot();
 
   if (!all.length) {
     document.getElementById('daily-list').innerHTML = '<div class="card"><div class="empty">Add habits or tasks above</div></div>';
@@ -1526,6 +1555,71 @@ async function renderSummary() {
   </div>`;
 
   view.innerHTML = chartHtml + nutritionHtml + workoutsHtml + dailyHtml;
+}
+
+// ── Mascot ─────────────────────────────────────────────────────────────────
+function mascotSVG(score, size) {
+  size = size || 72;
+  const s = score;
+  const body = s>=90?'#22c55e':s>=60?'#4ade80':s>=35?'#a8a29e':s>=15?'#78716c':'#57534e';
+  const mouth = s>=90?'M10,24 Q20,35 30,24':s>=65?'M11,25 Q20,32 29,25':s>=40?'M12,25 Q20,29 28,25':s>=20?'M13,26 L27,26':s>=8?'M12,28 Q20,23 28,28':'M11,29 Q20,20 29,29';
+  const blush = s>=65?0.5:s>=40?0.22:0;
+  const ey = s<20?17:15;
+  let eyes;
+  if (s>=60) {
+    eyes = '<path d="M9,'+(ey+2)+' Q12,'+(ey-3)+' 15,'+(ey+2)+'" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/>'
+         + '<path d="M23,'+(ey+2)+' Q26,'+(ey-3)+' 29,'+(ey+2)+'" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/>';
+  } else {
+    eyes = '<circle cx="12" cy="'+ey+'" r="3.5" fill="white"/><circle cx="13" cy="'+(ey+1)+'" r="1.8" fill="#111"/>'
+         + '<circle cx="28" cy="'+ey+'" r="3.5" fill="white"/><circle cx="29" cy="'+(ey+1)+'" r="1.8" fill="#111"/>';
+    if (s<20) eyes += '<path d="M8,'+(ey-2)+' L15,'+(ey-5)+'" stroke="white" stroke-width="1.8" stroke-linecap="round"/>'
+                    + '<path d="M25,'+(ey-5)+' L32,'+(ey-2)+'" stroke="white" stroke-width="1.8" stroke-linecap="round"/>';
+  }
+  const tears = s<8?'<ellipse cx="10" cy="'+(ey+5)+'" rx="1.5" ry="2.5" fill="#93c5fd" opacity=".9"/><ellipse cx="28" cy="'+(ey+5)+'" rx="1.5" ry="2.5" fill="#93c5fd" opacity=".9"/>':'';
+  const stars = s>=90?'<path d="M5,9 L6,6 L7,9 L10,10 L7,11 L6,14 L5,11 L2,10Z" fill="#fbbf24"/><path d="M34,7 L35,4 L36,7 L39,8 L36,9 L35,12 L34,9 L31,8Z" fill="#fbbf24"/>':'';
+  return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">'
+    +'<rect x="1" y="1" width="38" height="38" rx="13" fill="'+body+'"/>'+stars+eyes+tears
+    +'<circle cx="8" cy="24" r="4.5" fill="rgba(255,130,130,'+blush+')"/>'
+    +'<circle cx="32" cy="24" r="4.5" fill="rgba(255,130,130,'+blush+')"/>'
+    +'<path d="'+mouth+'" stroke="white" stroke-width="2.5" fill="none" stroke-linecap="round"/></svg>';
+}
+
+function mascotMsg(score) {
+  if (score>=95) return "All goals crushed! You're on fire! 🎉";
+  if (score>=80) return "Incredible progress today!";
+  if (score>=65) return "Looking great, keep it up!";
+  if (score>=45) return "Good progress, you've got this!";
+  if (score>=25) return "A little more effort...";
+  if (score>=10) return "Let's get moving!";
+  return "I'm waiting for you...";
+}
+
+function updateMascot() {
+  const { cals, habitDone, habitTotal, wkSessions } = _mascot;
+  let score = 0, n = 0;
+  if (calGoal>0 && cals>0)          { score+=Math.min(100,(cals/calGoal)*100); n++; }
+  if (habitTotal>0)                  { score+=(habitDone/habitTotal)*100; n++; }
+  if (workoutGoal>0 && wkSessions>0) { score+=Math.min(100,(wkSessions/workoutGoal)*100); n++; }
+  const s = n ? Math.round(score/n) : 0;
+  const cls = s>=90?'mascot-celebrate':s>=55?'mascot-bounce':'mascot-idle';
+  const face = document.getElementById('mascot-face');
+  const msg  = document.getElementById('mascot-msg');
+  const hdr  = document.getElementById('mascot-hdr');
+  if (face) { face.innerHTML=mascotSVG(s,72); face.className=cls; }
+  if (msg)  msg.textContent = mascotMsg(s);
+  if (hdr)  { hdr.innerHTML=mascotSVG(s,28); hdr.className=cls; }
+  if (s>=95 && habitTotal>0 && !_confettiFired) { _confettiFired=true; popConfetti(); }
+  if (s<90) _confettiFired = false;
+}
+
+function popConfetti() {
+  const cols = ['#4ade80','#60a5fa','#f59e0b','#a78bfa','#f87171','#22d3ee','#fb923c'];
+  for (let i=0;i<45;i++) {
+    const el = document.createElement('div');
+    el.style.cssText = 'position:fixed;width:'+(6+Math.random()*7)+'px;height:'+(6+Math.random()*7)+'px;background:'+cols[i%cols.length]+';border-radius:'+(Math.random()>.5?'50%':'2px')+';top:-12px;left:'+(4+Math.random()*92)+'%;z-index:9998;pointer-events:none;animation:confetti-fall '+(0.85+Math.random()*.9)+'s ease-in forwards;animation-delay:'+(Math.random()*.65)+'s';
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),2600);
+  }
 }
 
 // ── Navigation ─────────────────────────────────────────────────────────────

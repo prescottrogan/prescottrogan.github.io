@@ -895,8 +895,9 @@ async function renderFood() {
   const dayKey = offsetKey(currentDays.food);
   const dayLabel = fmt(dayKey);
   document.getElementById('food-day-label').textContent = dayLabel;
-  document.getElementById('cal-day-label').textContent = 'calories · ' + dayLabel.toLowerCase();
-  document.getElementById('food-log-title').textContent = dayLabel === 'Today' ? "Today's Log" : dayLabel + "'s Log";
+  const dayLabelShort = dayLabel === 'Today' || dayLabel === 'Yesterday' ? dayLabel.toLowerCase() : dayLabel;
+  document.getElementById('cal-day-label').textContent = 'calories · ' + dayLabelShort;
+  document.getElementById('food-log-title').textContent = dayLabel === 'Today' ? "Today's Log" : dayLabel === 'Yesterday' ? "Yesterday's Log" : `Log — ${dayLabel}`;
   document.getElementById('food-today-btn').style.display = currentDays.food === 0 ? 'none' : '';
   document.getElementById('cal-goal-display').textContent = calGoal;
   document.getElementById('cal-goal-input').value = calGoal;
@@ -965,7 +966,7 @@ async function renderWorkout() {
   const wkEnd   = todayKey();
   const dayLabel = fmt(dayKey);
   document.getElementById('workout-day-label').textContent = dayLabel;
-  document.getElementById('workout-log-title').textContent = dayLabel === 'Today' ? 'Workout Log' : dayLabel + "'s Workout";
+  document.getElementById('workout-log-title').textContent = dayLabel === 'Today' ? 'Workout Log' : dayLabel === 'Yesterday' ? "Yesterday's Workout" : `Workout — ${dayLabel}`;
   document.getElementById('workout-today-btn').style.display = currentDays.workout === 0 ? 'none' : '';
   const [dayRes, weekRes] = await Promise.all([
     dbCall(() => db.from('workout_entries').select('*').eq('user_id',user.id).eq('date',dayKey).order('created_at',{ascending:true})),
@@ -1007,6 +1008,8 @@ async function renderInfo() {
     await renderFolderList(view);
   } else if (currentFolder === '__all__') {
     await renderFolderContents(view, null, 'All Notes');
+  } else if (currentFolder === '__uncat__') {
+    await renderFolderContents(view, null, 'No Folder');
   } else {
     const folder = _folderCache.find(f => f.id === currentFolder);
     await renderFolderContents(view, currentFolder, folder?.name || 'Folder');

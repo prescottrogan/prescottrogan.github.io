@@ -1907,7 +1907,8 @@ function switchTab(tab) {
   if (tab==='summary') setSummaryPeriod(summaryPeriod);
 }
 function changeDay(s,d) {
-  currentDays[s]+=d; if(currentDays[s]>0)currentDays[s]=0;
+  currentDays[s]+=d;
+  if(s!=='daily' && currentDays[s]>0) currentDays[s]=0;
   if(s==='food')renderFood(); else if(s==='workout')renderWorkout(); else if(s==='daily')renderDaily();
 }
 function goToday(s) {

@@ -756,9 +756,10 @@ async function saveWorkoutGoal() {
 
 // ── Food search (USDA FoodData Central) ────────────────────────────────────
 const USDA_KEY = 'zTrnEFEmXaZRz9X2SITx61IykQVuGy7Q56bohHWH';
-let _foodSearchTimer  = null;
-let _foodSearchResults = [];
-let _selectedFoodBase  = null;
+let _foodSearchTimer      = null;
+let _foodSearchController = null;
+let _foodSearchResults    = [];
+let _selectedFoodBase     = null;
 
 function onFoodInput() {
   const q = document.getElementById('food-name').value.trim();
@@ -766,17 +767,23 @@ function onFoodInput() {
   document.getElementById('food-portion-row').style.display = 'none';
   clearTimeout(_foodSearchTimer);
   if (q.length < 2) { hideFoodDropdown(); return; }
-  _foodSearchTimer = setTimeout(() => searchFoodUSDA(q), 420);
+  _foodSearchTimer = setTimeout(() => searchFoodUSDA(q), 500);
 }
 
 async function searchFoodUSDA(query) {
+  // Cancel any previous in-flight request
+  if (_foodSearchController) _foodSearchController.abort();
+  _foodSearchController = new AbortController();
+
   const dd = document.getElementById('food-dropdown');
   dd.innerHTML = '<div class="fd-item fd-msg">Searching…</div>';
   dd.style.display = 'block';
   try {
     const r = await fetch(
-      `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(query)}&pageSize=3&dataType=Foundation,SR%20Legacy,Survey%20(FNDDS)&api_key=${USDA_KEY}`
+      `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(query)}&pageSize=3&api_key=${USDA_KEY}`,
+      { signal: _foodSearchController.signal }
     );
+    if (!r.ok) throw new Error(`HTTP ${r.status}`);
     const json = await r.json();
     _foodSearchResults = json.foods || [];
     if (!_foodSearchResults.length) {
@@ -784,7 +791,10 @@ async function searchFoodUSDA(query) {
       return;
     }
     dd.innerHTML = _foodSearchResults.map((f, i) => {
-      const cal  = Math.round(f.foodNutrients.find(n => n.nutrientId === 1008)?.value || 0);
+      // Some entries report energy as kJ (1062) instead of kcal (1008)
+      const kcal = f.foodNutrients.find(n => n.nutrientId === 1008)?.value;
+      const kj   = f.foodNutrients.find(n => n.nutrientId === 1062)?.value;
+      const cal  = Math.round(kcal ?? (kj ? kj / 4.184 : 0));
       const name = f.description.split(',')[0].trim();
       const sub  = f.description.includes(',')
         ? f.description.slice(f.description.indexOf(',') + 1).trim().toLowerCase()
@@ -796,6 +806,7 @@ async function searchFoodUSDA(query) {
       </div>`;
     }).join('');
   } catch(e) {
+    if (e.name === 'AbortError') return;
     dd.innerHTML = '<div class="fd-item fd-msg">Search unavailable — enter manually</div>';
   }
 }
@@ -803,8 +814,9 @@ async function searchFoodUSDA(query) {
 function selectFood(idx) {
   const f = _foodSearchResults[idx];
   if (!f) return;
-  const get = id => f.foodNutrients.find(n => n.nutrientId === id)?.value || 0;
-  _selectedFoodBase = { cal: get(1008), pro: get(1003), carb: get(1005), fat: get(1004) };
+  const get  = id => f.foodNutrients.find(n => n.nutrientId === id)?.value || 0;
+  const kcal = get(1008) || (get(1062) / 4.184);
+  _selectedFoodBase = { cal: kcal, pro: get(1003), carb: get(1005), fat: get(1004) };
   document.getElementById('food-name').value = f.description.split(',')[0].trim();
   hideFoodDropdown();
   document.getElementById('food-portion-row').style.display = 'flex';

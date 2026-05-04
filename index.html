@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Prescott Honey Farms</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <style>
 :root{--bg:#0d0b07;--surf:#181410;--card:#1e1a0f;--brd:#2a2418;--gold:#F5A623;--gold2:#c47d0e;--gd:#3d2800;--grn:#3d9970;--grnd:#0f3322;--red:#c0392b;--redd:#3d0f0a;--org:#e07b39;--orgd:#3d1f0a;--blu:#3b82f6;--blud:#1e3a5f;--txt:#f0e8d8;--tdim:#a8906a;--mut:#6b5840;--r:10px;--shadow:0 2px 16px rgba(0,0,0,.4);}
 [data-theme="light"]{--bg:#f7f4ee;--surf:#ffffff;--card:#ffffff;--brd:#e0d8c8;--gold:#b8770a;--gold2:#8b5e08;--gd:#fff3d6;--grn:#2a7a52;--grnd:#e6f4ed;--red:#a8291f;--redd:#fde8e6;--org:#c05c1f;--orgd:#fdeede;--blu:#1d4ed8;--blud:#dbeafe;--txt:#2a2010;--tdim:#5a4a30;--mut:#9a8a70;--r:10px;--shadow:0 2px 16px rgba(0,0,0,.12);}
@@ -442,6 +443,114 @@ nav.bottomnav button.active{color:var(--gold);}
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script>
+// =====================================================================
+// SUPABASE BACKEND CONFIG
+// Paste your Project URL and anon (public) key from Supabase
+// (Settings -> API).  Leave empty strings to run in offline demo mode.
+// =====================================================================
+const SUPABASE_URL = '';
+const SUPABASE_ANON_KEY = '';
+
+const SB = (SUPABASE_URL && SUPABASE_ANON_KEY && window.supabase)
+  ? window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+      auth: { persistSession: true, autoRefreshToken: true, storage: localStorage }
+    })
+  : null;
+
+const phfDB = {
+  enabled: !!SB,
+  client: SB,
+  realtimeChan: null,
+  saveTimer: null,
+  lastWriteAt: 0,
+
+  async signIn(email, password) {
+    const { error } = await SB.auth.signInWithPassword({ email, password });
+    if (error) throw error;
+  },
+  async signOut() { try { await SB.auth.signOut(); } catch(e){} },
+
+  async getCurrentUser() {
+    const { data: { user } } = await SB.auth.getUser();
+    if (!user) return null;
+    const { data: prof } = await SB.from('phf_users').select('*').eq('id', user.id).maybeSingle();
+    if (!prof) return { id: user.id, name: user.email.split('@')[0], email: user.email, role: 'employee', phone: null, active: true };
+    return { id: prof.id, name: prof.name, email: prof.email, role: prof.role, phone: prof.phone, active: prof.active };
+  },
+
+  async loadAll() {
+    const [stateRes, usersRes] = await Promise.all([
+      SB.from('phf_state').select('*').eq('id', 1).maybeSingle(),
+      SB.from('phf_users').select('*').order('name')
+    ]);
+    const state = stateRes.data || {};
+    return {
+      apiaries: state.apiaries || [],
+      inspections: state.inspections || [],
+      tasks: state.tasks || [],
+      employees: (usersRes.data || []).map(u => ({ id: u.id, name: u.name, email: u.email, role: u.role, phone: u.phone, active: u.active }))
+    };
+  },
+
+  // Seed phf_state with demo data the first time the row is empty.
+  // Strips local-only worker IDs since Supabase auth uses UUIDs.
+  async seedIfEmpty() {
+    const { data } = await SB.from('phf_state').select('apiaries').eq('id', 1).maybeSingle();
+    if (data && Array.isArray(data.apiaries) && data.apiaries.length === 0) {
+      const aps = SEED_AP.map(a => ({ ...a, assignedTo: [] }));
+      const inspsNoIds = SEED_INSPS.map(i => ({ ...i, inspectorId: null }));
+      const tasksNoIds = SEED_TASKS.map(t => ({ ...t, assignedTo: '' }));
+      await SB.from('phf_state').update({
+        apiaries: aps, inspections: inspsNoIds, tasks: tasksNoIds, updated_at: new Date().toISOString()
+      }).eq('id', 1);
+    }
+  },
+
+  scheduleSave() {
+    clearTimeout(this.saveTimer);
+    this.saveTimer = setTimeout(() => this.flushSave(), 250);
+  },
+  async flushSave() {
+    if (!SB || !S.user) return;
+    this.lastWriteAt = Date.now();
+    const { error } = await SB.from('phf_state').update({
+      apiaries: S.apiaries,
+      inspections: S.inspections,
+      tasks: S.tasks,
+      updated_at: new Date().toISOString(),
+      updated_by: S.user.id
+    }).eq('id', 1);
+    if (error) console.error('PHF state save error', error);
+  },
+
+  subscribeRealtime(onChange) {
+    if (this.realtimeChan) { try { this.realtimeChan.unsubscribe(); } catch(e){} }
+    this.realtimeChan = SB.channel('phf_changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'phf_state' }, payload => {
+        const row = payload.new;
+        if (!row) return;
+        // Ignore echoes from our own writes within last 2s
+        if (row.updated_by === S.user?.id && Date.now() - this.lastWriteAt < 2000) return;
+        S.apiaries = row.apiaries || [];
+        S.inspections = row.inspections || [];
+        S.tasks = row.tasks || [];
+        onChange();
+      })
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'phf_users' }, async () => {
+        const { data: users } = await SB.from('phf_users').select('*').order('name');
+        S.employees = (users || []).map(u => ({ id: u.id, name: u.name, email: u.email, role: u.role, phone: u.phone, active: u.active }));
+        onChange();
+      })
+      .subscribe();
+  },
+
+  async updateUser(u) {
+    return await SB.from('phf_users').update({
+      name: u.name, role: u.role, phone: u.phone || null, active: u.active !== false
+    }).eq('id', u.id);
+  }
+};
+
 const TODAY='2026-05-03';
 const td=new Date(TODAY);
 const ago=n=>{const d=new Date(td);d.setDate(d.getDate()-n);return d.toISOString().split('T')[0];};
@@ -516,18 +625,56 @@ function save(){
   localStorage.setItem('phf_ins',JSON.stringify(S.inspections));
   localStorage.setItem('phf_tasks',JSON.stringify(S.tasks));
   localStorage.setItem('phf_emp',JSON.stringify(S.employees));
+  if(phfDB.enabled)phfDB.scheduleSave();
 }
-function init(){
-  loadData();
+async function loadFromDB(){
+  const data=await phfDB.loadAll();
+  S.apiaries=data.apiaries;S.inspections=data.inspections;S.tasks=data.tasks;
+  if(data.employees.length)S.employees=data.employees;
+}
+function rerenderActive(){
+  const v=document.querySelector('.view.active')?.id?.replace('view-','');
+  ({dashboard:renderDash,apiaries:renderApiaries,tasks:renderTasks,team:renderTeam,reports:renderReports}[v]||(()=>{}))();
+  if(S.mapMode)updateMap();
+}
+function showLoginScreen(){
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('app').style.display='none';
+  if(phfDB.enabled){
+    const dl=document.querySelector('.demo-lbl');if(dl)dl.style.display='none';
+    const db=document.querySelector('.demo-btns');if(db)db.style.display='none';
+    const ldiv=document.querySelector('.ldiv');if(ldiv)ldiv.style.display='none';
+  }
+}
+async function init(){
   const theme=localStorage.getItem('phf_theme')||'dark';
   document.documentElement.setAttribute('data-theme',theme);
   updateThemeIcon(theme);
-  const sess=JSON.parse(localStorage.getItem('phf_sess')||'null');
-  if(sess&&S.employees.find(e=>e.id===sess.id)){S.user=sess;showApp();}
-  else{document.getElementById('login-screen').style.display='flex';}
   document.getElementById('li-date').value=TODAY;
   document.getElementById('ta-due').value=TODAY;
   document.querySelectorAll('.mover').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open');}));
+
+  if(phfDB.enabled){
+    try{
+      const user=await phfDB.getCurrentUser();
+      if(user){
+        S.user=user;
+        await phfDB.seedIfEmpty();
+        await loadFromDB();
+        phfDB.subscribeRealtime(rerenderActive);
+        showApp();
+        return;
+      }
+    }catch(e){console.warn('Supabase init failed, falling back to local mode',e);}
+    loadData();
+    showLoginScreen();
+    return;
+  }
+
+  loadData();
+  const sess=JSON.parse(localStorage.getItem('phf_sess')||'null');
+  if(sess&&S.employees.find(e=>e.id===sess.id)){S.user=sess;showApp();}
+  else{showLoginScreen();}
 }
 function toggleTheme(){
   const cur=document.documentElement.getAttribute('data-theme');
@@ -553,13 +700,35 @@ function updateThemeIcon(theme){
     :'<path d="M13 9.5A6 6 0 0 1 6.5 3a6 6 0 1 0 6.5 6.5z"/>';
 }
 function quickLogin(role,btn){document.querySelectorAll('.dbtn').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');const m={owner:'owner@prescotthoney.com',manager:'jake@prescotthoney.com',employee:'tom@prescotthoney.com'};document.getElementById('le').value=m[role];document.getElementById('lp').value='demo';}
-function doLogin(){
+async function doLogin(){
   const email=document.getElementById('le').value.trim().toLowerCase(),pass=document.getElementById('lp').value;
+  const msg=document.getElementById('lmsg');
+  if(phfDB.enabled){
+    msg.textContent='Signing in…';msg.style.color='var(--tdim)';
+    try{
+      await phfDB.signIn(email,pass);
+      const user=await phfDB.getCurrentUser();
+      if(!user){msg.textContent='No profile found for this account.';msg.style.color='var(--red)';return;}
+      S.user=user;
+      await phfDB.seedIfEmpty();
+      await loadFromDB();
+      phfDB.subscribeRealtime(rerenderActive);
+      msg.textContent='';
+      showApp();
+    }catch(e){msg.textContent=(e&&e.message)?e.message:'Sign in failed.';msg.style.color='var(--red)';}
+    return;
+  }
   const user=S.employees.find(u=>u.email===email&&u.password===pass)||USERS.find(u=>u.email===email&&u.password===pass);
-  if(!user){document.getElementById('lmsg').textContent='Invalid credentials. Try password: demo';return;}
+  if(!user){msg.textContent='Invalid credentials. Try password: demo';msg.style.color='var(--red)';return;}
   S.user=user;localStorage.setItem('phf_sess',JSON.stringify(user));showApp();
 }
-function signOut(){S.user=null;localStorage.removeItem('phf_sess');document.getElementById('app').style.display='none';document.getElementById('login-screen').style.display='flex';document.getElementById('le').value='';document.getElementById('lp').value='';document.getElementById('lmsg').textContent='';}
+async function signOut(){
+  if(phfDB.enabled)await phfDB.signOut();
+  S.user=null;localStorage.removeItem('phf_sess');
+  document.getElementById('app').style.display='none';
+  showLoginScreen();
+  document.getElementById('le').value='';document.getElementById('lp').value='';document.getElementById('lmsg').textContent='';
+}
 function showApp(){
   document.getElementById('login-screen').style.display='none';document.getElementById('app').style.display='block';
   const dc={owner:'#F5A623',manager:'#3b82f6',employee:'#3d9970'};
@@ -887,21 +1056,38 @@ function openEditEmployee(id){
   document.getElementById('ef-del-wrap').style.display='block';
   openModal('madd-employee');
 }
-function submitEmployee(){
+async function submitEmployee(){
   const id=document.getElementById('ef-id').value;
   const name=document.getElementById('ef-name').value.trim(),email=document.getElementById('ef-email').value.trim().toLowerCase();
   if(!name||!email){alert('Please fill in name and email.');return;}
+  const role=document.getElementById('ef-role').value;
+  const phone=document.getElementById('ef-phone').value.trim();
   const pass=document.getElementById('ef-pass').value||undefined;
+  if(phfDB.enabled){
+    if(!id){alert('To add a new team member: open your Supabase dashboard → Authentication → Users → "Add user". After they sign in once, you can edit their role here.');return;}
+    const e=getEmp(id);if(e){e.name=name;e.role=role;e.phone=phone;}
+    const {error}=await phfDB.updateUser({id,name,role,phone,active:true});
+    if(error){alert('Update failed: '+error.message);return;}
+    closeModal('madd-employee');renderTeam();
+    return;
+  }
   if(id){
-    const e=getEmp(id);if(e){e.name=name;e.email=email;e.role=document.getElementById('ef-role').value;e.phone=document.getElementById('ef-phone').value.trim();if(pass)e.password=pass;}
+    const e=getEmp(id);if(e){e.name=name;e.email=email;e.role=role;e.phone=phone;if(pass)e.password=pass;}
   }else{
-    S.employees.push({id:'u'+Date.now(),name,email,role:document.getElementById('ef-role').value,phone:document.getElementById('ef-phone').value.trim(),password:pass||'demo'});
+    S.employees.push({id:'u'+Date.now(),name,email,role,phone,password:pass||'demo'});
   }
   save();closeModal('madd-employee');renderTeam();
 }
-function deleteEmployee(){
+async function deleteEmployee(){
   const id=document.getElementById('ef-id').value;
   if(!id||!confirm('Remove this team member?'))return;
+  if(phfDB.enabled){
+    const {error}=await phfDB.client.from('phf_users').update({active:false}).eq('id',id);
+    if(error){alert('Failed: '+error.message);return;}
+    S.apiaries.forEach(a=>{if(a.assignedTo)a.assignedTo=a.assignedTo.filter(x=>x!==id);});
+    save();closeModal('madd-employee');renderTeam();
+    return;
+  }
   S.employees=S.employees.filter(e=>e.id!==id);
   S.apiaries.forEach(a=>{if(a.assignedTo)a.assignedTo=a.assignedTo.filter(x=>x!==id);});
   save();closeModal('madd-employee');renderTeam();

@@ -130,6 +130,24 @@
   }
   .theme-btn:hover { border-color: var(--border-light); color: var(--text); }
 
+  /* ── Header day nav ────────────────────────────── */
+  #header-day-nav {
+    display: flex; align-items: center; gap: 6px;
+    padding: 5px 14px 8px;
+    border-top: 1px solid var(--border);
+  }
+  #header-day-nav .hdn-arrow {
+    background: transparent; border: 1px solid var(--border); border-radius: 8px;
+    color: var(--text); cursor: pointer; flex-shrink: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 32px; height: 32px; transition: background .12s, transform .08s;
+  }
+  #header-day-nav .hdn-arrow:hover { background: var(--border); }
+  #header-day-nav .hdn-arrow:active { transform: scale(.88); }
+  #header-day-nav .hdn-arrow svg { width: 16px; height: 16px; }
+  #header-day-nav .hdn-center { flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; }
+  #header-day-nav .hdn-date { font-weight: 700; font-size: .9rem; }
+
   /* ── Nav ───────────────────────────────────────── */
   nav {
     position: fixed; bottom: 0; left: 0; right: 0; max-width: 640px; margin: 0 auto;
@@ -912,18 +930,18 @@
         <span class="ssb-val" id="ssb-cals-val">0</span>
       </div>
     </div>
+    <div id="header-day-nav" style="display:none">
+      <button class="hdn-arrow" id="hdn-prev" onclick="changeDayActive(-1)"></button>
+      <div class="hdn-center">
+        <span class="hdn-date" id="hdn-date">Today</span>
+        <button class="today-btn" id="hdn-today" onclick="goTodayActive()">Today</button>
+      </div>
+      <button class="hdn-arrow" id="hdn-next" onclick="changeDayActive(1)"></button>
+    </div>
   </header>
 
   <!-- ── FOOD ──────────────────────────────────────── -->
   <div id="section-food" class="section">
-    <div class="day-nav">
-      <button class="nav-arrow" onclick="changeDay('food',-1)" id="food-prev"></button>
-      <div class="day-nav-center">
-        <span class="day-nav-date" id="food-day-label"></span>
-        <button class="today-btn" id="food-today-btn" onclick="goToday('food')">Today</button>
-      </div>
-      <button class="nav-arrow" onclick="changeDay('food',1)" id="food-next"></button>
-    </div>
     <div class="card stat-big">
       <div class="number" id="cal-total" style="color:var(--accent)">0</div>
       <div class="label" id="cal-day-label">calories today</div>
@@ -1016,14 +1034,6 @@
 
     <!-- Training Log -->
     <div class="section-title act-quest-title">Training Log</div>
-    <div class="day-nav">
-      <button class="nav-arrow" onclick="changeDay('activity',-1)" id="activity-prev"></button>
-      <div class="day-nav-center">
-        <span class="day-nav-date" id="activity-day-label"></span>
-        <button class="today-btn" id="activity-today-btn" onclick="goToday('activity')">Today</button>
-      </div>
-      <button class="nav-arrow" onclick="changeDay('activity',1)" id="activity-next"></button>
-    </div>
     <div id="activity-list"><div class="card"><div class="empty">No training logged yet</div></div></div>
   </div>
 
@@ -1046,14 +1056,6 @@
       <div class="quest-status" id="quest-status"></div>
     </div>
 
-    <div class="day-nav">
-      <button class="nav-arrow" onclick="changeDay('daily',-1)" id="daily-prev"></button>
-      <div class="day-nav-center">
-        <span class="day-nav-date" id="daily-day-label"></span>
-        <button class="today-btn" id="daily-today-btn" onclick="goToday('daily')">Today</button>
-      </div>
-      <button class="nav-arrow" onclick="changeDay('daily',1)" id="daily-next"></button>
-    </div>
     <div class="card stat-big" style="padding:18px">
       <div class="number" id="daily-pct" style="color:var(--accent4);font-size:2.5rem">0%</div>
       <div class="label" id="daily-label">done today</div>
@@ -1173,6 +1175,7 @@ const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
 let user = null;
 let calGoal = 2000;
 let currentDays = { food: 0, activity: 0, daily: 0 };
+let activeTab = 'summary';
 let editing = { food: null, activity: null, info: null, habit: null, folder: null };
 
 // Info state
@@ -1527,12 +1530,8 @@ function injectIcons() {
   document.getElementById('nav-info').innerHTML      = icon(IC.info, 22)    + '<span>Notes</span>';
   document.getElementById('nav-daily').innerHTML     = icon(IC.daily, 22)   + '<span>Tasks</span>';
 
-  document.getElementById('food-prev').innerHTML     = icon(IC.arrowL);
-  document.getElementById('food-next').innerHTML     = icon(IC.arrowR);
-  document.getElementById('activity-prev').innerHTML = icon(IC.arrowL);
-  document.getElementById('activity-next').innerHTML = icon(IC.arrowR);
-  document.getElementById('daily-prev').innerHTML    = icon(IC.arrowL);
-  document.getElementById('daily-next').innerHTML    = icon(IC.arrowR);
+  document.getElementById('hdn-prev').innerHTML = icon(IC.arrowL);
+  document.getElementById('hdn-next').innerHTML = icon(IC.arrowR);
   document.getElementById('food-plus').innerHTML         = icon(IC.plus, 16);
   document.getElementById('food-search-icon').innerHTML  = icon(IC.search, 18);
   document.getElementById('activity-plus').innerHTML     = icon(IC.plus, 16);
@@ -1991,11 +1990,9 @@ async function deleteFood(id) { await dbCall(() => db.from('food_entries').delet
 async function renderFood() {
   const dayKey = offsetKey(currentDays.food);
   const dayLabel = fmt(dayKey);
-  document.getElementById('food-day-label').textContent = dayLabel;
   const dayLabelShort = dayLabel === 'Today' || dayLabel === 'Yesterday' ? dayLabel.toLowerCase() : dayLabel;
   document.getElementById('cal-day-label').textContent = 'calories · ' + dayLabelShort;
   document.getElementById('food-log-title').textContent = dayLabel === 'Today' ? "Today's Log" : dayLabel === 'Yesterday' ? "Yesterday's Log" : `Log — ${dayLabel}`;
-  document.getElementById('food-today-btn').style.display = currentDays.food === 0 ? 'none' : '';
   document.getElementById('cal-goal-display').textContent = calGoal;
   document.getElementById('cal-goal-input').value = calGoal;
   const { data: list } = await dbCall(() => db.from('food_entries').select('*').eq('user_id',user.id).eq('date',dayKey).order('created_at',{ascending:true}));
@@ -2123,10 +2120,6 @@ async function renderActivity() {
   const wkStart  = weekStartKey();
   const wkEnd    = todayKey();
   const dayLabel = fmt(dayKey);
-  const dayEl    = document.getElementById('activity-day-label');
-  const todayEl  = document.getElementById('activity-today-btn');
-  if (dayEl)   dayEl.textContent = dayLabel;
-  if (todayEl) todayEl.style.display = currentDays.activity === 0 ? 'none' : '';
 
   const [dayRes, weekRes] = await Promise.all([
     dbCall(() => db.from('workout_entries').select('*').eq('user_id',user.id).eq('date',dayKey).order('created_at',{ascending:true})),
@@ -2533,8 +2526,6 @@ async function deleteItem(id) {
 async function renderDaily() {
   const dateKey  = offsetKey(currentDays.daily);
   const dayLabel = fmt(dateKey);
-  document.getElementById('daily-day-label').textContent = dayLabel;
-  document.getElementById('daily-today-btn').style.display = currentDays.daily === 0 ? 'none' : '';
   renderDailyQuest();
 
   const [itemsRes, compRes] = await Promise.all([
@@ -3063,13 +3054,34 @@ function popConfetti() {
 }
 
 // ── Navigation ─────────────────────────────────────────────────────────────
+const DAY_NAV_TABS = ['food', 'activity', 'daily'];
+
+function updateHeaderDayNav() {
+  const nav = document.getElementById('header-day-nav');
+  if (!nav) return;
+  const show = DAY_NAV_TABS.includes(activeTab);
+  nav.style.display = show ? '' : 'none';
+  if (!show) return;
+  const offset  = currentDays[activeTab];
+  const dateKey = offsetKey(offset);
+  const dateEl  = document.getElementById('hdn-date');
+  const todayEl = document.getElementById('hdn-today');
+  if (dateEl)  dateEl.textContent = fmt(dateKey);
+  if (todayEl) todayEl.style.display = offset === 0 ? 'none' : '';
+}
+
+function changeDayActive(d) { changeDay(activeTab, d); }
+function goTodayActive()    { goToday(activeTab); }
+
 function switchTab(tab) {
+  activeTab = tab;
   editing = { food: null, activity: null, info: null, habit: null, folder: null };
   hideFoodDropdown();
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
   document.getElementById('section-'+tab).classList.add('active');
   document.querySelector(`nav button[data-tab="${tab}"]`)?.classList.add('active');
+  updateHeaderDayNav();
   if (tab==='food')     renderFood();
   if (tab==='activity') renderActivity();
   if (tab==='info')     renderInfo();
@@ -3080,10 +3092,12 @@ function changeDay(s,d) {
   currentDays[s]+=d;
   if(s!=='daily' && currentDays[s]>0) currentDays[s]=0;
   if(s==='food') renderFood(); else if(s==='activity') renderActivity(); else if(s==='daily') renderDaily();
+  updateHeaderDayNav();
 }
 function goToday(s) {
   currentDays[s]=0;
   if(s==='food') renderFood(); else if(s==='activity') renderActivity(); else if(s==='daily') renderDaily();
+  updateHeaderDayNav();
 }
 
 // ── Utils ──────────────────────────────────────────────────────────────────

@@ -619,7 +619,7 @@
   .act-type-btn.active .act-name { color:var(--accent4); }
 
   .act-duration-wrap  { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
-  .act-duration-input { flex:1; font-size:2rem !important; font-weight:800 !important; text-align:center; padding:14px !important; margin-bottom:0 !important; border-color:var(--accent4) !important; }
+  .act-duration-input { flex:1; font-size:1rem !important; font-weight:600 !important; text-align:center; padding:10px !important; margin-bottom:0 !important; border-color:var(--accent4) !important; }
   .act-duration-unit  { color:var(--muted); font-size:.95rem; font-weight:600; flex-shrink:0; }
 
   .act-xp-preview {
@@ -725,7 +725,7 @@
   .act-goal-edit-row input { width:84px; margin:0; }
 
   /* ── Log Training (collapsible) ─────────────────── */
-  .log-training-card { padding:0 !important; overflow:hidden; }
+  .log-training-card { overflow:hidden; }
   .log-training-trigger {
     display:flex; align-items:center; justify-content:space-between; gap:10px;
     width:100%; padding:14px 18px;
@@ -969,59 +969,32 @@
   <!-- ── ACTIVITY ──────────────────────────────────── -->
   <div id="section-activity" class="section">
 
-    <!-- Power Level hero -->
-    <div class="card quest-system-card" id="act-power-hero">
-      <div class="hero-power">
-        <div class="hero-power-row">
-          <span class="hero-power-rank"  id="act-xp-rank">E-RANK</span>
-          <span class="hero-power-level" id="act-xp-level">Lv.1</span>
-          <span class="hero-power-total" id="act-total-xp">0 XP</span>
-        </div>
-        <div class="hero-power-bar"><div class="hero-power-bar-fill" id="act-xp-bar" style="width:0%"></div></div>
-        <div class="hero-power-pct" id="act-xp-pct">0% · 0 / 100 XP to next</div>
-      </div>
-    </div>
-
-    <!-- Compact weekly progress strip -->
+    <!-- Daily activity goal strip -->
     <div class="act-stat-strip">
       <div class="act-stat-text">
-        <strong id="activity-week-sessions">0</strong>
-        <span style="opacity:.6">/ <span id="activity-goal-display">3</span></span>
-        <span class="act-stat-label">sessions this week</span>
+        <strong id="activity-mins-today">0</strong>
+        <span style="opacity:.6">/ 30</span>
+        <span class="act-stat-label">min today</span>
       </div>
-      <button class="text-link" onclick="toggleActivityGoalEdit()">edit goal</button>
     </div>
     <div class="act-goal-bar"><div class="act-goal-bar-fill" id="activity-goal-bar" style="width:0%"></div></div>
-    <div id="activity-goal-edit" class="act-goal-edit-row" style="display:none">
-      <label>Weekly session goal</label>
-      <input type="number" id="activity-goal-input" placeholder="3" min="1" max="7">
-      <button class="btn btn-purple" style="padding:8px 14px" onclick="saveActivityGoal()">Save</button>
-    </div>
 
-    <!-- Log Training (collapsible — supplemental, not the path) -->
+    <!-- Log Activity -->
     <div class="card log-training-card">
-      <button class="log-training-trigger" id="log-training-trigger" onclick="toggleLogTraining()">
-        <span class="lt-left">
-          <span class="lt-icon">+</span>
-          <span class="lt-label">Log Training</span>
-        </span>
-        <span class="lt-hint">Optional · supplemental XP</span>
-      </button>
-      <div class="log-training-body" id="log-training-body" style="display:none">
+      <div class="log-training-body" id="log-training-body">
         <div class="act-type-grid" id="act-type-grid"></div>
         <div class="act-duration-wrap">
-          <input type="number" id="act-duration" class="act-duration-input" placeholder="0" min="20" max="600" inputmode="numeric" oninput="updateXPPreview()">
+          <input type="number" id="act-duration" class="act-duration-input" placeholder="0" max="600" inputmode="numeric">
           <span class="act-duration-unit">minutes</span>
         </div>
         <input type="text" id="act-notes" placeholder="Notes (optional)">
-        <div class="act-xp-preview" id="act-xp-preview">Min 20 min — the system has standards</div>
-        <button id="activity-add-btn" class="btn btn-purple btn-full" onclick="addActivity()"><span id="activity-plus"></span>Log Training</button>
+        <button id="activity-add-btn" class="btn btn-purple btn-full" onclick="addActivity()"><span id="activity-plus"></span>Log Activity</button>
       </div>
     </div>
 
-    <!-- Training Log -->
-    <div class="section-title act-quest-title">Training Log</div>
-    <div id="activity-list"><div class="card"><div class="empty">No training logged yet</div></div></div>
+    <!-- Activity Log -->
+    <div class="section-title act-quest-title">Activity Log</div>
+    <div id="activity-list"><div class="card"><div class="empty">No activity logged yet</div></div></div>
   </div>
 
   <!-- ── INFO ──────────────────────────────────────── -->
@@ -1227,7 +1200,7 @@ const ACTIVITY_TYPES = [
   { id:'sport',    emoji:'🏐', name:'Sport',    xpPerMin:1   },
   { id:'hiking',   emoji:'🥾', name:'Hiking',   xpPerMin:1   },
 ];
-const ACTIVITY_MIN_DUR = 20; // minutes — anything less is not training
+const ACTIVITY_MIN_DUR = 0;
 let _selectedActivity = ACTIVITY_TYPES[0];
 
 // ── Daily Quest tiers (Solo Leveling-style mandatory training) ────────────
@@ -1801,14 +1774,6 @@ async function saveCalGoal() {
   renderFood();
 }
 function toggleGoalEdit() { const el = document.getElementById('cal-goal-edit'); el.style.display = el.style.display === 'none' ? 'flex' : 'none'; }
-function toggleActivityGoalEdit() { const el = document.getElementById('activity-goal-edit'); el.style.display = el.style.display === 'none' ? 'flex' : 'none'; }
-async function saveActivityGoal() {
-  const v = Math.max(1, Math.min(7, parseInt(document.getElementById('activity-goal-input').value) || 3));
-  workoutGoal = v;
-  document.getElementById('activity-goal-edit').style.display = 'none';
-  await dbCall(() => db.from('user_settings').upsert({ user_id: user.id, workout_goal: v }, { onConflict: 'user_id' }));
-  renderActivity();
-}
 
 // ── Food search (USDA FoodData Central) ────────────────────────────────────
 const USDA_KEY = 'zTrnEFEmXaZRz9X2SITx61IykQVuGy7Q56bohHWH';
@@ -2037,39 +2002,12 @@ async function renderFood() {
 function selectActivityType(idx) {
   _selectedActivity = ACTIVITY_TYPES[idx];
   document.querySelectorAll('.act-type-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
-  updateXPPreview();
-}
-
-function toggleLogTraining() {
-  const body = document.getElementById('log-training-body');
-  const trig = document.getElementById('log-training-trigger');
-  if (!body || !trig) return;
-  const isOpen = body.style.display !== 'none';
-  body.style.display = isOpen ? 'none' : 'block';
-  trig.classList.toggle('expanded', !isOpen);
-  if (!isOpen) setTimeout(() => document.getElementById('act-duration')?.focus(), 100);
-}
-
-function calcActivityXP(type, durationMin) {
-  if (durationMin < ACTIVITY_MIN_DUR) return 0;
-  return Math.min(Math.floor(durationMin * type.xpPerMin), 100);
-}
-
-function updateXPPreview() {
-  const dur     = parseInt(document.getElementById('act-duration')?.value) || 0;
-  const preview = document.getElementById('act-xp-preview');
-  if (!preview) return;
-  if (!dur) { preview.textContent = 'Min 20 min — the system has standards'; return; }
-  if (dur < ACTIVITY_MIN_DUR) { preview.innerHTML = `<span style="color:var(--danger)">Below ${ACTIVITY_MIN_DUR} min — no XP awarded</span>`; return; }
-  const xp = calcActivityXP(_selectedActivity, dur);
-  preview.innerHTML = `${_selectedActivity.emoji} ${_selectedActivity.name} · ${dur} min → <strong>+${xp} XP</strong>`;
 }
 
 async function addActivity() {
   const dur = parseInt(document.getElementById('act-duration').value) || 0;
-  if (dur < ACTIVITY_MIN_DUR) return flashErr('act-duration', `Min ${ACTIVITY_MIN_DUR} minutes — no shortcuts`);
+  if (!dur) return flashErr('act-duration', 'Enter duration');
   const btn = document.getElementById('activity-add-btn'); btnLoad(btn, true);
-  const xpEarned = calcActivityXP(_selectedActivity, dur);
   const { error } = await dbCall(() => db.from('workout_entries').insert({
     user_id:  user.id,
     date:     offsetKey(currentDays.activity),
@@ -2083,10 +2021,8 @@ async function addActivity() {
   btnLoad(btn, false); if (error) return;
   document.getElementById('act-duration').value = '';
   document.getElementById('act-notes').value    = '';
-  updateXPPreview();
-  await awardXP(xpEarned, _selectedActivity.name);
   await renderActivity();
-  toast(`Quest complete! +${xpEarned} XP`, 'ok');
+  toast('Activity logged', 'ok');
 }
 
 function startEditActivity(id) { editing.activity = id; renderActivity(); }
@@ -2111,33 +2047,27 @@ async function deleteActivity(id) {
 
 async function renderActivity() {
   const dayKey   = offsetKey(currentDays.activity);
-  const wkStart  = weekStartKey();
-  const wkEnd    = todayKey();
+  const todayKey_ = todayKey();
   const dayLabel = fmt(dayKey);
 
-  const [dayRes, weekRes] = await Promise.all([
+  const [dayRes, todayRes] = await Promise.all([
     dbCall(() => db.from('workout_entries').select('*').eq('user_id',user.id).eq('date',dayKey).order('created_at',{ascending:true})),
-    dbCall(() => db.from('workout_entries').select('date').eq('user_id',user.id).gte('date',wkStart).lte('date',wkEnd))
+    dbCall(() => db.from('workout_entries').select('duration').eq('user_id',user.id).eq('date',todayKey_))
   ]);
-  const rows       = dayRes.data  || [];
-  const wkSessions = new Set((weekRes.data||[]).map(e => e.date)).size;
-  const pct        = workoutGoal ? Math.min(100, Math.round((wkSessions/workoutGoal)*100)) : 0;
+  const rows      = dayRes.data   || [];
+  const todayMins = (todayRes.data||[]).reduce((s,e) => s + (parseInt(e.duration)||0), 0);
+  const pct       = Math.min(100, Math.round((todayMins / 30) * 100));
   await refreshTodayStats();
-  updateXPDisplay();
 
-  const wkEl = document.getElementById('activity-week-sessions');
-  const gdEl = document.getElementById('activity-goal-display');
-  const giEl = document.getElementById('activity-goal-input');
-  const gbEl = document.getElementById('activity-goal-bar');
-  if (wkEl) wkEl.textContent = wkSessions;
-  if (gdEl) gdEl.textContent = workoutGoal;
-  if (giEl) giEl.value       = workoutGoal;
-  if (gbEl) gbEl.style.width = pct + '%';
+  const minsEl = document.getElementById('activity-mins-today');
+  const gbEl   = document.getElementById('activity-goal-bar');
+  if (minsEl) minsEl.textContent = todayMins;
+  if (gbEl)   gbEl.style.width   = pct + '%';
 
   const listEl = document.getElementById('activity-list');
   if (!listEl) return;
   if (!rows.length) {
-    const emptyMsg = dayLabel === 'Today' ? 'No training logged yet. Time to begin!' : `No activity on ${dayLabel}`;
+    const emptyMsg = dayLabel === 'Today' ? 'No activity logged yet' : `No activity on ${dayLabel}`;
     listEl.innerHTML = `<div class="card"><div class="empty">${emptyMsg}</div></div>`;
     return;
   }
@@ -2145,7 +2075,6 @@ async function renderActivity() {
   listEl.innerHTML = [...rows].reverse().map(e => {
     const actType = ACTIVITY_TYPES.find(t => t.id === e.type) || ACTIVITY_TYPES[ACTIVITY_TYPES.length - 1];
     const dur = parseInt(e.duration) || 0;
-    const xp  = calcActivityXP(actType, dur);
 
     if (editing.activity === e.id) {
       const typeOpts = ACTIVITY_TYPES.map(t =>
@@ -2177,7 +2106,6 @@ async function renderActivity() {
           <div class="quest-name">${esc(actType.name)}</div>
           <div class="quest-meta">${metaParts.join(' · ')}</div>
         </div>
-        <span class="quest-xp-badge">+${xp} XP</span>
         <button class="icon-btn" onclick="startEditActivity('${e.id}')">${icon(IC.edit,16)}</button>
         <button class="icon-btn danger" onclick="deleteActivity('${e.id}')">${icon(IC.trash,16)}</button>
       </div>
@@ -2813,7 +2741,7 @@ async function renderSummary() {
     </div>
     <div>
       <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">
-        <span style="font-size:.82rem;font-weight:700">🏋 Training</span>
+        <span style="font-size:.82rem;font-weight:700">🏋 Activity</span>
         <span style="font-size:.76rem;color:var(--muted)">${thisWeekWk} / ${workoutGoal} this week</span>
       </div>
       <div class="goal-bar"><div class="goal-bar-fill" style="width:${wkPct}%;background:var(--accent4)"></div></div>

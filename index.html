@@ -582,15 +582,16 @@
   .quest-meta  { font-size:.74rem; color:var(--muted); margin-top:2px; }
   .act-quest-title { color:var(--accent4) !important; letter-spacing:.08em; }
 
-  /* ── Daily Quest Hero (Quest + Power Level merged) ─────────────────── */
+  /* ── Daily Quest Banner ─────────────────────────────────────────────── */
   .quest-system-card {
-    background: linear-gradient(135deg, #0c0521 0%, #1a0a3a 50%, #0a0a24 100%) !important;
-    border: 1.5px solid var(--accent4) !important;
+    background: linear-gradient(135deg, #0c0521 0%, #1a0a3a 50%, #0a0a24 100%);
+    border: none;
+    border-bottom: 1.5px solid rgba(167,139,250,.45);
     position: relative; overflow: hidden;
-    box-shadow:
-      0 0 36px rgba(167,139,250,.22),
-      inset 0 1px 0 rgba(255,255,255,.06);
-    padding: 22px !important;
+    box-shadow: 0 6px 28px rgba(167,139,250,.18), 0 2px 12px rgba(0,0,0,.35);
+    padding: 16px 20px 20px;
+    margin: -16px -20px 20px;
+    border-radius: 0;
   }
   .quest-system-card::before {
     content:''; position:absolute; inset:0; pointer-events:none;
@@ -898,7 +899,7 @@
   <div id="section-daily" class="section">
 
     <!-- System Daily Quest card (cinematic hero) -->
-    <div class="card quest-system-card" id="quest-system-card">
+    <div class="quest-system-card" id="quest-system-card">
       <div class="quest-header">
         <span class="quest-system-label">⚡ DAILY QUEST</span>
         <span class="quest-streak-badge" id="quest-streak" style="display:none">🔥 0</span>

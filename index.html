@@ -188,11 +188,6 @@
   input:focus, textarea:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(74,222,128,.13); }
   .form-row input { flex: 1; min-width: 0; }
   .form-row input.narrow { flex: 0 0 76px; }
-  .wk-type-row { display:flex; gap:6px; margin-bottom:10px; overflow-x:auto; padding-bottom:2px; scrollbar-width:none; }
-  .wk-type-row::-webkit-scrollbar { display:none; }
-  .wk-type-btn { flex-shrink:0; padding:7px 13px; border-radius:20px; border:1.5px solid var(--border); background:var(--bg); color:var(--muted); font-size:.82rem; font-weight:600; cursor:pointer; transition:all .15s; }
-  .wk-type-btn:hover:not(.active) { border-color:var(--accent2); color:var(--accent2); transform:scale(1.04); }
-  .wk-type-btn.active { background:var(--accent2); color:#061e3a; border-color:var(--accent2); }
   textarea { resize: vertical; min-height: 80px; }
   input[type="text"], input[type="number"], input[type="date"] { margin-bottom: 8px; }
   input[type="date"]::-webkit-calendar-picker-indicator { opacity: .5; cursor: pointer; filter: var(--cal-icon-filter, none); }
@@ -250,7 +245,6 @@
   .entry-cal  { font-weight: 700; font-size: .95rem; color: var(--accent); font-variant-numeric: tabular-nums; }
   .entry-meta { font-size: .76rem; color: var(--muted); margin-top: 3px; }
   .entry-right { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
-  .workout-entry .entry-cal { color: var(--accent2); }
   .entry-editing {
     background: var(--surface-2); margin: 4px -8px; padding: 12px;
     border-radius: 8px; border-bottom: none;
@@ -601,6 +595,75 @@
   nav button.active[data-tab="activity"] { color: var(--accent4); }
   nav button.active[data-tab="info"]     { color: var(--accent3); }
   nav button.active[data-tab="daily"]    { color: var(--accent4); }
+
+  /* ── Daily Quest System ─────────────────────────── */
+  .quest-system-card {
+    background: linear-gradient(135deg, #1a0033, #0a0024) !important;
+    border: 2px solid var(--accent4) !important;
+    position: relative; overflow: hidden;
+    box-shadow: 0 0 30px rgba(167,139,250,.18);
+  }
+  .quest-system-card::before {
+    content:''; position:absolute; inset:0;
+    background: radial-gradient(circle at 0% 0%, rgba(167,139,250,.28) 0%, transparent 55%);
+    pointer-events:none;
+  }
+  .quest-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; position:relative; }
+  .quest-system-label {
+    font-size:.7rem; font-weight:900; letter-spacing:.22em; color:var(--accent4);
+    text-shadow:0 0 12px rgba(167,139,250,.55);
+  }
+  .quest-streak-badge {
+    font-size:.74rem; font-weight:900; color:#fff;
+    background: linear-gradient(90deg,#f97316,#dc2626);
+    padding:3px 10px; border-radius:14px;
+    box-shadow:0 0 14px rgba(249,115,22,.35);
+  }
+  .quest-message {
+    font-size:.78rem; color:rgba(255,255,255,.62); margin-bottom:14px;
+    font-style:italic; line-height:1.45; position:relative;
+  }
+  .quest-items { display:flex; flex-direction:column; gap:6px; position:relative; }
+  .quest-item {
+    display:flex; align-items:center; gap:10px; padding:10px 12px;
+    background:rgba(255,255,255,.04); border:1px solid rgba(167,139,250,.22);
+    border-radius:8px; cursor:pointer; transition:all .15s; user-select:none;
+  }
+  .quest-item:hover { background:rgba(167,139,250,.08); border-color:rgba(167,139,250,.45); transform:translateX(2px); }
+  .quest-item.done { background:rgba(74,222,128,.08); border-color:rgba(74,222,128,.32); }
+  .quest-check {
+    width:22px; height:22px; border:2px solid rgba(255,255,255,.22);
+    border-radius:6px; display:flex; align-items:center; justify-content:center;
+    flex-shrink:0; color:transparent; transition:all .18s cubic-bezier(.34,1.56,.64,1);
+  }
+  .quest-check.done { background:var(--accent); border-color:var(--accent); color:#052e16; }
+  .quest-item-name { flex:1; font-size:.94rem; font-weight:700; color:#fff; }
+  .quest-item.done .quest-item-name { text-decoration:line-through; color:rgba(255,255,255,.45); }
+  .quest-item-target { font-size:.78rem; font-weight:800; color:var(--accent4); font-variant-numeric:tabular-nums; flex-shrink:0; letter-spacing:.02em; }
+  .quest-item.done .quest-item-target { color:rgba(74,222,128,.7); }
+  .quest-status { margin-top:14px; text-align:center; font-size:.78rem; font-weight:800; letter-spacing:.05em; position:relative; }
+  .quest-pending  { color:#fca5a5; }
+  .quest-complete { color:var(--accent); text-shadow:0 0 12px rgba(74,222,128,.5); }
+
+  /* ── Penalty Modal ──────────────────────────────── */
+  #penalty-modal { display:none; position:fixed; inset:0; z-index:650; background:rgba(0,0,0,.88); align-items:center; justify-content:center; padding:20px; }
+  #penalty-modal.open { display:flex; }
+  .penalty-box {
+    background: linear-gradient(135deg, #1a0000, #0a0000);
+    border:2px solid #dc2626; border-radius:24px;
+    padding:36px 28px; text-align:center; max-width:340px; width:100%;
+    animation: levelup-pop .5s cubic-bezier(.34,1.56,.64,1) forwards;
+    box-shadow:0 0 60px rgba(220,38,38,.45);
+  }
+  .penalty-icon  { font-size:4rem; display:block; margin-bottom:8px; filter:drop-shadow(0 0 16px rgba(220,38,38,.5)); }
+  .penalty-title { font-size:1rem; font-weight:900; letter-spacing:.18em; color:#dc2626; margin-bottom:14px; }
+  .penalty-msg   { font-size:.9rem; color:rgba(255,255,255,.85); margin-bottom:20px; line-height:1.5; }
+  .penalty-stats { display:flex; gap:10px; justify-content:center; margin-bottom:22px; flex-wrap:wrap; }
+  .penalty-stats > div {
+    background:rgba(220,38,38,.15); border:1px solid rgba(220,38,38,.4);
+    padding:8px 14px; border-radius:10px; color:#fca5a5;
+    font-size:.85rem; font-weight:800;
+  }
 </style>
 </head>
 <body>
@@ -740,6 +803,18 @@
 
   <!-- ── ACTIVITY ──────────────────────────────────── -->
   <div id="section-activity" class="section">
+
+    <!-- Daily Quest (system-imposed) -->
+    <div class="card quest-system-card" id="quest-system-card">
+      <div class="quest-header">
+        <span class="quest-system-label">⚡ DAILY QUEST</span>
+        <span class="quest-streak-badge" id="quest-streak" style="display:none">🔥 0</span>
+      </div>
+      <div class="quest-message">The system has assigned today's mandatory training. Failure costs XP and resets your streak.</div>
+      <div class="quest-items" id="quest-items"></div>
+      <div class="quest-status" id="quest-status"></div>
+    </div>
+
     <div class="card act-power-card">
       <div class="act-rank-label" id="act-xp-rank">E-Rank</div>
       <div class="act-level-num" id="act-xp-level">Level 1</div>
@@ -888,6 +963,17 @@
     </div>
   </div>
 
+  <!-- Penalty Modal -->
+  <div id="penalty-modal">
+    <div class="penalty-box">
+      <span class="penalty-icon">💀</span>
+      <div class="penalty-title">DAILY QUEST FAILED</div>
+      <div class="penalty-msg" id="penalty-msg">You did not complete yesterday's training. The system shows no mercy.</div>
+      <div class="penalty-stats" id="penalty-stats"></div>
+      <button class="btn btn-purple btn-full" onclick="document.getElementById('penalty-modal').classList.remove('open')" style="background:#dc2626;color:#fff">Accept Punishment</button>
+    </div>
+  </div>
+
   <nav>
     <button data-tab="food"     onclick="switchTab('food')"     id="nav-food"></button>
     <button data-tab="activity" onclick="switchTab('activity')" id="nav-activity"></button>
@@ -967,21 +1053,30 @@ let trackedMacros = ['protein','carbs','fat'];
 const FOLDER_COLORS = ['#60a5fa','#4ade80','#f59e0b','#a78bfa','#f87171','#34d399','#fb923c','#e879f9'];
 
 // ── Activity types ─────────────────────────────────────────────────────────
+// Min 20 minutes. No "easy" categories. The system has standards.
 const ACTIVITY_TYPES = [
-  { id:'running',  emoji:'🏃', name:'Running',  xpPerMin:2   },
-  { id:'strength', emoji:'⚔️', name:'Strength', xpPerMin:2   },
-  { id:'cardio',   emoji:'💨', name:'Cardio',   xpPerMin:1.5 },
-  { id:'sport',    emoji:'🏐', name:'Sport',    xpPerMin:1.5 },
-  { id:'cycling',  emoji:'🚴', name:'Cycling',  xpPerMin:1.5 },
-  { id:'swimming', emoji:'🏊', name:'Swimming', xpPerMin:2   },
-  { id:'combat',   emoji:'🥊', name:'Combat',   xpPerMin:2   },
-  { id:'yoga',     emoji:'🧘', name:'Yoga',     xpPerMin:1   },
-  { id:'hiking',   emoji:'🥾', name:'Hiking',   xpPerMin:1.5 },
-  { id:'walking',  emoji:'🚶', name:'Walking',  xpPerMin:1   },
-  { id:'dance',    emoji:'💃', name:'Dance',    xpPerMin:1.5 },
-  { id:'other',    emoji:'⚡', name:'Other',    xpPerMin:1.5 },
+  { id:'running',  emoji:'🏃', name:'Running',  xpPerMin:1.5 },
+  { id:'strength', emoji:'⚔️', name:'Strength', xpPerMin:1.5 },
+  { id:'hiit',     emoji:'🔥', name:'HIIT',     xpPerMin:2   },
+  { id:'combat',   emoji:'🥊', name:'Combat',   xpPerMin:1.5 },
+  { id:'cycling',  emoji:'🚴', name:'Cycling',  xpPerMin:1   },
+  { id:'swimming', emoji:'🏊', name:'Swimming', xpPerMin:1.5 },
+  { id:'sport',    emoji:'🏐', name:'Sport',    xpPerMin:1   },
+  { id:'hiking',   emoji:'🥾', name:'Hiking',   xpPerMin:1   },
 ];
+const ACTIVITY_MIN_DUR = 20; // minutes — anything less is not training
 let _selectedActivity = ACTIVITY_TYPES[0];
+
+// ── Daily Quest tiers (Solo Leveling-style mandatory training) ────────────
+const QUEST_TIERS = [
+  { range:[1,3],   pushups:30,  situps:30,  squats:30,  runKm:1  },
+  { range:[4,9],   pushups:50,  situps:50,  squats:50,  runKm:2  },
+  { range:[10,19], pushups:80,  situps:80,  squats:80,  runKm:5  },
+  { range:[20,39], pushups:100, situps:100, squats:100, runKm:10 },  // the original Sung Jin-Woo set
+  { range:[40,99], pushups:150, situps:150, squats:150, runKm:15 },
+];
+const QUEST_BONUS_XP    = 200;
+const QUEST_PENALTY_XP  = 100;
 
 // ── XP State ───────────────────────────────────────────────────────────────
 let totalXP = 0;
@@ -1003,34 +1098,37 @@ function getLevelProgress(xp) {
   return { level: lvl, current: xp - cur, needed, pct: needed ? Math.round(((xp - cur) / needed) * 100) : 100 };
 }
 function getRankInfo(level) {
-  if (level >= 100) return { rank:'Shadow Monarch', color:'#7c3aed', bg:'rgba(124,58,237,.15)', icon:'👑', msg:'You have reached the pinnacle. None stand above you.' };
-  if (level >= 76)  return { rank:'National',       color:'#dc2626', bg:'rgba(220,38,38,.15)',  icon:'⚔️', msg:'A legend among hunters. Your name is known worldwide.' };
-  if (level >= 51)  return { rank:'S-Rank',         color:'#a855f7', bg:'rgba(168,85,247,.15)', icon:'💜', msg:'Elite. Only a handful in the world match your power.' };
-  if (level >= 36)  return { rank:'A-Rank',         color:'#f59e0b', bg:'rgba(245,158,11,.15)', icon:'⭐', msg:'Top tier. You stand above nearly every hunter.' };
-  if (level >= 21)  return { rank:'B-Rank',         color:'#3b82f6', bg:'rgba(59,130,246,.15)', icon:'🔷', msg:'Skilled hunter. The foundation of your power grows.' };
-  if (level >= 11)  return { rank:'C-Rank',         color:'#22d3ee', bg:'rgba(34,211,238,.15)', icon:'💠', msg:'Capable hunter. You\'re building real momentum.' };
-  if (level >= 6)   return { rank:'D-Rank',         color:'#4ade80', bg:'rgba(74,222,128,.15)', icon:'🟢', msg:'You\'ve proven yourself. Keep grinding.' };
-  return              { rank:'E-Rank',               color:'#6b7280', bg:'rgba(107,114,128,.15)', icon:'⬜', msg:'Every Shadow Monarch starts somewhere. Begin your rise.' };
+  if (level >= 100) return { rank:'Shadow Monarch', color:'#7c3aed', bg:'rgba(124,58,237,.15)', icon:'👑', msg:'Sovereign of the Shadows. The pinnacle is cold and lonely.' };
+  if (level >= 76)  return { rank:'National',       color:'#dc2626', bg:'rgba(220,38,38,.15)',  icon:'⚔️', msg:'A weapon of the state. Your name carries weight.' };
+  if (level >= 51)  return { rank:'S-Rank',         color:'#a855f7', bg:'rgba(168,85,247,.15)', icon:'💜', msg:'Elite. Few reach this level. Fewer stay.' };
+  if (level >= 36)  return { rank:'A-Rank',         color:'#f59e0b', bg:'rgba(245,158,11,.15)', icon:'⭐', msg:'Strong. Strength means nothing without consistency.' };
+  if (level >= 21)  return { rank:'B-Rank',         color:'#3b82f6', bg:'rgba(59,130,246,.15)', icon:'🔷', msg:'Above the masses. Still nothing exceptional.' };
+  if (level >= 11)  return { rank:'C-Rank',         color:'#22d3ee', bg:'rgba(34,211,238,.15)', icon:'💠', msg:'Average among hunters. Push harder or fall behind.' };
+  if (level >= 6)   return { rank:'D-Rank',         color:'#4ade80', bg:'rgba(74,222,128,.15)', icon:'🟢', msg:'Out of the bottom. The real climb starts now.' };
+  return              { rank:'E-Rank',               color:'#6b7280', bg:'rgba(107,114,128,.15)', icon:'⬜', msg:'The weakest. Most quit here. Will you?' };
 }
 
-async function awardXP(amount, reason) {
-  if (!user || amount <= 0) return;
+async function awardXP(amount, reason, extraMeta) {
+  if (!user || !amount) return;
   const prev    = totalXP;
-  totalXP      += amount;
+  totalXP       = Math.max(0, totalXP + amount);
   const prevLvl = getLevel(prev);
   const newLvl  = getLevel(totalXP);
-  db.auth.updateUser({ data: { ...user.user_metadata, total_xp: totalXP } }).then(({ data }) => {
+  const meta    = { ...user.user_metadata, total_xp: totalXP, ...(extraMeta || {}) };
+  db.auth.updateUser({ data: meta }).then(({ data }) => {
     if (data?.user) user = data.user;
   });
   updateXPDisplay();
   showXPPopup(amount);
-  if (newLvl > prevLvl) setTimeout(() => showLevelUpModal(newLvl), 700);
+  if (newLvl > prevLvl) setTimeout(() => showLevelChangeModal(newLvl, true),  700);
+  if (newLvl < prevLvl) setTimeout(() => showLevelChangeModal(newLvl, false), 700);
 }
 
 function showXPPopup(amount) {
   const el = document.createElement('div');
   el.className = 'xp-popup';
-  el.textContent = `+${amount} XP`;
+  el.textContent = (amount >= 0 ? '+' : '') + amount + ' XP';
+  if (amount < 0) { el.style.color = '#dc2626'; el.style.textShadow = '0 0 20px rgba(220,38,38,.6)'; }
   const badge = document.getElementById('level-badge');
   if (badge) {
     const r = badge.getBoundingClientRect();
@@ -1043,16 +1141,20 @@ function showXPPopup(amount) {
   setTimeout(() => el.remove(), 1600);
 }
 
-function showLevelUpModal(newLevel) {
-  const rank = getRankInfo(newLevel);
+function showLevelChangeModal(newLevel, isUp) {
+  const rank  = getRankInfo(newLevel);
+  const titleEl = document.querySelector('#levelup-modal .levelup-title');
   document.getElementById('lu-level').textContent = `Level ${newLevel}`;
   document.getElementById('lu-rank').textContent  = rank.rank;
-  document.getElementById('lu-rank').style.color  = rank.color;
-  document.getElementById('lu-icon').textContent  = rank.icon;
-  document.getElementById('lu-msg').textContent   = rank.msg;
+  document.getElementById('lu-rank').style.color  = isUp ? rank.color : '#dc2626';
+  document.getElementById('lu-icon').textContent  = isUp ? rank.icon : '⚠️';
+  document.getElementById('lu-msg').textContent   = isUp ? rank.msg : 'You have weakened. The system shows no mercy. Climb back.';
+  if (titleEl) titleEl.textContent = isUp ? 'Power Level Increased!' : 'Power Level Decreased';
   document.getElementById('levelup-modal').classList.add('open');
-  popConfetti();
+  if (isUp) popConfetti();
 }
+// Backwards-compatible name kept for any callers expecting it
+function showLevelUpModal(lvl) { showLevelChangeModal(lvl, true); }
 
 function updateXPDisplay() {
   const prog = getLevelProgress(totalXP);
@@ -1074,6 +1176,127 @@ function updateXPDisplay() {
   if (xpLvl)  xpLvl.textContent  = `Level ${prog.level}`;
   if (xpRank) { xpRank.textContent = rank.rank; xpRank.style.color = rank.color; }
   if (xpTot)  xpTot.textContent  = `${totalXP.toLocaleString()} total XP`;
+}
+
+// ── Daily Quest System ─────────────────────────────────────────────────────
+function getQuestTargets(level) {
+  for (const t of QUEST_TIERS) {
+    if (level >= t.range[0] && level <= t.range[1]) return t;
+  }
+  return QUEST_TIERS[QUEST_TIERS.length - 1];
+}
+function makeNewQuestState(date) {
+  return { date, pushups:false, situps:false, squats:false, run:false, bonus_awarded:false };
+}
+function getCurrentQuestState() {
+  const s = user?.user_metadata?.quest_state;
+  if (s && s.date === todayKey()) return s;
+  return makeNewQuestState(todayKey());
+}
+function questAllDone(s) { return s.pushups && s.situps && s.squats && s.run; }
+function getQuestStreak() { return user?.user_metadata?.quest_streak || 0; }
+
+// Called once on app load: penalize if yesterday was incomplete; roll to today.
+async function checkDailyQuestPenalty() {
+  if (!user) return;
+  const today = todayKey();
+  const state = user.user_metadata?.quest_state;
+
+  // No state yet — first run. Create today's state, no penalty.
+  if (!state) {
+    await db.auth.updateUser({ data: { ...user.user_metadata, quest_state: makeNewQuestState(today) } });
+    await refreshUser();
+    return;
+  }
+
+  // Same day — keep state.
+  if (state.date === today) return;
+
+  // Day rolled over. Did they complete the previous day's quest?
+  if (state.bonus_awarded || questAllDone(state)) {
+    // Success — roll over fresh state, keep streak.
+    await db.auth.updateUser({ data: { ...user.user_metadata, quest_state: makeNewQuestState(today) } });
+    await refreshUser();
+    return;
+  }
+
+  // Failure — apply penalty, reset streak, start fresh state.
+  const prevStreak = getQuestStreak();
+  await awardXP(-QUEST_PENALTY_XP, 'Quest Failed', {
+    quest_state:  makeNewQuestState(today),
+    quest_streak: 0,
+  });
+  showPenaltyModal(prevStreak);
+}
+
+async function toggleQuestItem(key) {
+  if (!user) return;
+  const cur = getCurrentQuestState();
+  const next = { ...cur, [key]: !cur[key] };
+  // If this completes the quest for the first time, award bonus + bump streak.
+  if (questAllDone(next) && !next.bonus_awarded) {
+    next.bonus_awarded = true;
+    const newStreak = getQuestStreak() + 1;
+    await awardXP(QUEST_BONUS_XP, 'Daily Quest Complete', {
+      quest_state:  next,
+      quest_streak: newStreak,
+    });
+  } else {
+    // Just save the toggle.
+    const meta = { ...user.user_metadata, quest_state: next };
+    db.auth.updateUser({ data: meta }).then(({ data }) => { if (data?.user) user = data.user; });
+    user.user_metadata = meta; // optimistic local update so re-render is instant
+  }
+  renderDailyQuest();
+  updateMascot();
+}
+
+function renderDailyQuest() {
+  const card = document.getElementById('quest-system-card');
+  if (!card) return;
+  const state    = getCurrentQuestState();
+  const lvl      = getLevel(totalXP);
+  const targets  = getQuestTargets(lvl);
+  const allDone  = questAllDone(state);
+  const streak   = getQuestStreak();
+
+  const streakEl = document.getElementById('quest-streak');
+  if (streakEl) streakEl.style.display = streak >= 1 ? '' : 'none';
+  if (streakEl) streakEl.innerHTML     = `🔥 ${streak}`;
+
+  const items = [
+    { key:'pushups', label:'Push-ups', target:`${targets.pushups} reps` },
+    { key:'situps',  label:'Sit-ups',  target:`${targets.situps} reps`  },
+    { key:'squats',  label:'Squats',   target:`${targets.squats} reps`  },
+    { key:'run',     label:'Run',      target:`${targets.runKm} km`     },
+  ];
+
+  document.getElementById('quest-items').innerHTML = items.map(it => {
+    const done = !!state[it.key];
+    return `<div class="quest-item${done?' done':''}" onclick="toggleQuestItem('${it.key}')">
+      <span class="quest-check${done?' done':''}">${done ? icon(IC.check, 14) : ''}</span>
+      <span class="quest-item-name">${it.label}</span>
+      <span class="quest-item-target">${it.target}</span>
+    </div>`;
+  }).join('');
+
+  const status = document.getElementById('quest-status');
+  if (allDone) {
+    status.innerHTML = `<span class="quest-complete">✓ QUEST COMPLETE${state.bonus_awarded ? ` · +${QUEST_BONUS_XP} XP` : ''}</span>`;
+  } else {
+    const remaining = items.filter(it => !state[it.key]).length;
+    status.innerHTML = `<span class="quest-pending">${remaining} task${remaining!==1?'s':''} remaining · failure costs −${QUEST_PENALTY_XP} XP</span>`;
+  }
+}
+
+function showPenaltyModal(prevStreak) {
+  const modal = document.getElementById('penalty-modal');
+  if (!modal) return;
+  const msgEl    = document.getElementById('penalty-msg');
+  const statsEl  = document.getElementById('penalty-stats');
+  if (msgEl)   msgEl.textContent   = 'You did not complete yesterday\'s training. The system shows no mercy.';
+  if (statsEl) statsEl.innerHTML   = `<div>−${QUEST_PENALTY_XP} XP</div>` + (prevStreak >= 1 ? `<div>Streak Reset (was ${prevStreak})</div>` : '<div>Streak: 0</div>');
+  modal.classList.add('open');
 }
 
 // ── Theme ──────────────────────────────────────────────────────────────────
@@ -1365,6 +1588,7 @@ async function loadSettings() {
   if (!trackedMacros.includes('fat'))     trackedMacros.splice(2,0,'fat');
   totalXP = user?.user_metadata?.total_xp ?? 0;
   updateXPDisplay();
+  await checkDailyQuestPenalty();
 }
 async function saveCalGoal() {
   const v = parseInt(document.getElementById('cal-goal-input').value) || 2000;
@@ -1532,7 +1756,7 @@ async function addFood() {
     ({ error } = await dbCall(() => db.from('food_entries').insert(row)));
   }
   btnLoad(btn, false); if (error) return;
-  await awardXP(10, 'Food logged');
+  await awardXP(5, 'Food logged');
   document.getElementById('food-name').value = '';
   document.getElementById('food-cal').value  = '';
   MACRO_DEFS.forEach(m => { const el = document.getElementById('food-' + m.key); if (el) el.value = ''; });
@@ -1617,21 +1841,23 @@ function selectActivityType(idx) {
 }
 
 function calcActivityXP(type, durationMin) {
-  return 30 + Math.min(Math.floor(durationMin * type.xpPerMin), 120);
+  if (durationMin < ACTIVITY_MIN_DUR) return 0;
+  return Math.min(Math.floor(durationMin * type.xpPerMin), 100);
 }
 
 function updateXPPreview() {
   const dur     = parseInt(document.getElementById('act-duration')?.value) || 0;
   const preview = document.getElementById('act-xp-preview');
   if (!preview) return;
-  if (!dur) { preview.textContent = 'Enter duration to see XP reward'; return; }
+  if (!dur) { preview.textContent = 'Min 20 min — the system has standards'; return; }
+  if (dur < ACTIVITY_MIN_DUR) { preview.innerHTML = `<span style="color:var(--danger)">Below ${ACTIVITY_MIN_DUR} min — no XP awarded</span>`; return; }
   const xp = calcActivityXP(_selectedActivity, dur);
   preview.innerHTML = `${_selectedActivity.emoji} ${_selectedActivity.name} · ${dur} min → <strong>+${xp} XP</strong>`;
 }
 
 async function addActivity() {
   const dur = parseInt(document.getElementById('act-duration').value) || 0;
-  if (!dur || dur < 1) return flashErr('act-duration', 'Enter duration in minutes');
+  if (dur < ACTIVITY_MIN_DUR) return flashErr('act-duration', `Min ${ACTIVITY_MIN_DUR} minutes — no shortcuts`);
   const btn = document.getElementById('activity-add-btn'); btnLoad(btn, true);
   const xpEarned = calcActivityXP(_selectedActivity, dur);
   const { error } = await dbCall(() => db.from('workout_entries').insert({
@@ -1693,6 +1919,7 @@ async function renderActivity() {
   _mascot.wkSessions = wkSessions;
   updateMascot();
   updateXPDisplay();
+  renderDailyQuest();
 
   const wkEl = document.getElementById('activity-week-sessions');
   const gdEl = document.getElementById('activity-goal-display');
@@ -2072,8 +2299,10 @@ async function toggleItem(id, isRecurring) {
     didComplete = nowDone;
   }
   if (didComplete) {
-    const isCore = getCoreHabitIds().includes(id);
-    await awardXP(isCore ? 50 : 25, isCore ? 'Core Habit' : 'Habit');
+    const isCore = isRecurring && getCoreHabitIds().includes(id);
+    const xp     = isCore ? 50 : isRecurring ? 25 : 15;
+    const reason = isCore ? 'Core Habit' : isRecurring ? 'Habit' : 'Task';
+    await awardXP(xp, reason);
   }
   await renderDaily();
 }
@@ -2566,7 +2795,11 @@ function updateMascot() {
   const calS   = calPct <= 100 ? calPct : Math.max(0, 100 - (calPct - 100) * 2);
   const habS   = habitTotal > 0 ? (habitDone / habitTotal) * 100 : 0;
   const wkS    = workoutGoal > 0 ? Math.min(100, (wkSessions / workoutGoal) * 100) : 0;
-  const s      = Math.round((calS + habS + wkS) / 3);
+  // Daily quest factors heavily into mood — the system demands it.
+  const qState = user?.user_metadata?.quest_state;
+  const qCount = qState ? (!!qState.pushups + !!qState.situps + !!qState.squats + !!qState.run) : 0;
+  const qS     = (qCount / 4) * 100;
+  const s      = Math.round((calS + habS + wkS + qS) / 4);
   const cls = s>=90?'mascot-celebrate':s>=55?'mascot-bounce':'mascot-idle';
   const face = document.getElementById('mascot-face');
   const msg  = document.getElementById('mascot-msg');

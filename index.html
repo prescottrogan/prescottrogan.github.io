@@ -814,6 +814,12 @@
       </div>
     </div>
     <div id="system-status-bar">
+      <div class="ssb-item" onclick="switchTab('food')" title="Calories">
+        <span class="ssb-lbl">🍽 Cals</span>
+        <div class="ssb-bar"><div class="ssb-bar-fill" id="ssb-cals-fill" style="width:0%;background:var(--accent)"></div></div>
+        <span class="ssb-val" id="ssb-cals-val">0</span>
+      </div>
+      <div class="ssb-sep"></div>
       <div class="ssb-item" id="ssb-quest-item" onclick="openQuestModal()" title="Daily Quest">
         <span class="ssb-lbl">⚡ Quest</span>
         <div class="ssb-bar"><div class="ssb-bar-fill" id="ssb-quest-fill" style="width:0%;background:var(--accent4)"></div></div>
@@ -824,12 +830,6 @@
         <span class="ssb-lbl">☑ Tasks</span>
         <div class="ssb-bar"><div class="ssb-bar-fill" id="ssb-habits-fill" style="width:0%;background:var(--accent4)"></div></div>
         <span class="ssb-val" id="ssb-habits-val">–</span>
-      </div>
-      <div class="ssb-sep"></div>
-      <div class="ssb-item" onclick="switchTab('food')" title="Calories">
-        <span class="ssb-lbl">🍽 Cals</span>
-        <div class="ssb-bar"><div class="ssb-bar-fill" id="ssb-cals-fill" style="width:0%;background:var(--accent)"></div></div>
-        <span class="ssb-val" id="ssb-cals-val">0</span>
       </div>
     </div>
     <div id="header-day-nav">

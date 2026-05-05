@@ -544,18 +544,44 @@
   .levelup-rank  { font-size:1.4rem; font-weight:800; letter-spacing:.02em; animation:rank-shimmer 2s ease-in-out infinite; margin-bottom:16px; display:block; }
   .levelup-msg   { font-size:.88rem; color:var(--muted); margin-bottom:22px; line-height:1.5; }
 
-  .act-power-card {
-    background:linear-gradient(135deg,#0f0c29,#1a1033,#24243e) !important;
-    border-color:#3d2d6e !important; padding:20px !important; text-align:center; position:relative; overflow:hidden;
+  /* Power Level — embedded inside the Quest hero card, compact and inline */
+  .hero-divider {
+    height:1px; margin:18px 0 14px; position:relative;
+    background:linear-gradient(90deg,transparent,rgba(167,139,250,.42),transparent);
   }
-  [data-theme="light"] .act-power-card { background:linear-gradient(135deg,#1a0533,#2d1060,#1a0a4a) !important; }
-  .act-power-card::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 0%,rgba(167,139,250,.25) 0%,transparent 70%); pointer-events:none; }
-  .act-rank-label { font-size:.7rem; font-weight:800; letter-spacing:.18em; text-transform:uppercase; color:var(--accent4); margin-bottom:4px; animation:rank-shimmer 3s ease-in-out infinite; }
-  .act-level-num  { font-size:2rem; font-weight:900; letter-spacing:-.03em; color:#fff; line-height:1.1; margin-bottom:12px; }
-  .act-xp-bar-wrap { height:8px; background:rgba(255,255,255,.1); border-radius:4px; overflow:hidden; margin:0 0 6px; }
-  .act-xp-bar { height:100%; border-radius:4px; background:linear-gradient(90deg,var(--accent4),var(--accent5)); transition:width .5s cubic-bezier(.4,0,.2,1); }
-  .act-xp-pct  { font-size:.72rem; color:rgba(255,255,255,.5); margin-bottom:4px; }
-  .act-total-xp{ font-size:.68rem; color:rgba(255,255,255,.35); font-variant-numeric:tabular-nums; }
+  .hero-divider::after {
+    content:''; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
+    width:6px; height:6px; border-radius:50%; background:var(--accent4);
+    box-shadow:0 0 12px rgba(167,139,250,.7);
+  }
+  .hero-power { position:relative; }
+  .hero-power-row {
+    display:flex; align-items:baseline; gap:10px; margin-bottom:8px;
+  }
+  .hero-power-rank {
+    font-size:.7rem; font-weight:900; letter-spacing:.2em; text-transform:uppercase;
+    color:var(--accent4); text-shadow:0 0 12px rgba(167,139,250,.5);
+    animation:rank-shimmer 3s ease-in-out infinite;
+  }
+  .hero-power-level {
+    font-size:1rem; font-weight:900; color:#fff; letter-spacing:-.01em;
+  }
+  .hero-power-total {
+    margin-left:auto; font-size:.74rem; font-weight:600;
+    color:rgba(255,255,255,.55); font-variant-numeric:tabular-nums;
+  }
+  .hero-power-bar {
+    height:6px; background:rgba(255,255,255,.08); border-radius:3px; overflow:hidden;
+  }
+  .hero-power-bar-fill {
+    height:100%; border-radius:3px;
+    background:linear-gradient(90deg,var(--accent4),var(--accent5));
+    transition:width .5s cubic-bezier(.4,0,.2,1);
+  }
+  .hero-power-pct {
+    font-size:.68rem; color:rgba(255,255,255,.5);
+    margin-top:6px; font-variant-numeric:tabular-nums; letter-spacing:.01em;
+  }
 
   .act-type-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-bottom:14px; }
   .act-type-btn {
@@ -596,41 +622,53 @@
   nav button.active[data-tab="info"]     { color: var(--accent3); }
   nav button.active[data-tab="daily"]    { color: var(--accent4); }
 
-  /* ── Daily Quest System ─────────────────────────── */
+  /* ── Daily Quest Hero (Quest + Power Level merged) ─────────────────── */
   .quest-system-card {
-    background: linear-gradient(135deg, #1a0033, #0a0024) !important;
-    border: 2px solid var(--accent4) !important;
+    background: linear-gradient(135deg, #0c0521 0%, #1a0a3a 50%, #0a0a24 100%) !important;
+    border: 1.5px solid var(--accent4) !important;
     position: relative; overflow: hidden;
-    box-shadow: 0 0 30px rgba(167,139,250,.18);
+    box-shadow:
+      0 0 36px rgba(167,139,250,.22),
+      inset 0 1px 0 rgba(255,255,255,.06);
+    padding: 22px !important;
   }
   .quest-system-card::before {
-    content:''; position:absolute; inset:0;
-    background: radial-gradient(circle at 0% 0%, rgba(167,139,250,.28) 0%, transparent 55%);
-    pointer-events:none;
+    content:''; position:absolute; inset:0; pointer-events:none;
+    background:
+      radial-gradient(circle at 0% 0%,   rgba(167,139,250,.32) 0%, transparent 55%),
+      radial-gradient(circle at 100% 100%, rgba(34,211,238,.10) 0%, transparent 55%);
+  }
+  /* Subtle scan-line texture for that "system" feel */
+  .quest-system-card::after {
+    content:''; position:absolute; inset:0; pointer-events:none; opacity:.5;
+    background:repeating-linear-gradient(
+      0deg, transparent 0 2px, rgba(255,255,255,.012) 2px 3px
+    );
   }
   .quest-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; position:relative; }
   .quest-system-label {
-    font-size:.7rem; font-weight:900; letter-spacing:.22em; color:var(--accent4);
-    text-shadow:0 0 12px rgba(167,139,250,.55);
+    font-size:.72rem; font-weight:900; letter-spacing:.24em; color:var(--accent4);
+    text-shadow:0 0 14px rgba(167,139,250,.6);
   }
   .quest-streak-badge {
     font-size:.74rem; font-weight:900; color:#fff;
     background: linear-gradient(90deg,#f97316,#dc2626);
-    padding:3px 10px; border-radius:14px;
-    box-shadow:0 0 14px rgba(249,115,22,.35);
+    padding:4px 11px; border-radius:14px;
+    box-shadow:0 0 16px rgba(249,115,22,.4);
+    display:inline-flex; align-items:center; gap:3px;
   }
   .quest-message {
-    font-size:.78rem; color:rgba(255,255,255,.62); margin-bottom:14px;
-    font-style:italic; line-height:1.45; position:relative;
+    font-size:.76rem; color:rgba(255,255,255,.58); margin-bottom:14px;
+    font-style:italic; line-height:1.5; position:relative;
   }
   .quest-items { display:flex; flex-direction:column; gap:6px; position:relative; }
   .quest-item {
-    display:flex; align-items:center; gap:10px; padding:10px 12px;
-    background:rgba(255,255,255,.04); border:1px solid rgba(167,139,250,.22);
-    border-radius:8px; cursor:pointer; transition:all .15s; user-select:none;
+    display:flex; align-items:center; gap:11px; padding:11px 13px;
+    background:rgba(255,255,255,.035); border:1px solid rgba(167,139,250,.2);
+    border-radius:10px; cursor:pointer; transition:all .15s ease; user-select:none;
   }
-  .quest-item:hover { background:rgba(167,139,250,.08); border-color:rgba(167,139,250,.45); transform:translateX(2px); }
-  .quest-item.done { background:rgba(74,222,128,.08); border-color:rgba(74,222,128,.32); }
+  .quest-item:hover { background:rgba(167,139,250,.09); border-color:rgba(167,139,250,.5); transform:translateX(2px); }
+  .quest-item.done { background:rgba(74,222,128,.07); border-color:rgba(74,222,128,.32); }
   .quest-check {
     width:22px; height:22px; border:2px solid rgba(255,255,255,.22);
     border-radius:6px; display:flex; align-items:center; justify-content:center;
@@ -641,9 +679,64 @@
   .quest-item.done .quest-item-name { text-decoration:line-through; color:rgba(255,255,255,.45); }
   .quest-item-target { font-size:.78rem; font-weight:800; color:var(--accent4); font-variant-numeric:tabular-nums; flex-shrink:0; letter-spacing:.02em; }
   .quest-item.done .quest-item-target { color:rgba(74,222,128,.7); }
-  .quest-status { margin-top:14px; text-align:center; font-size:.78rem; font-weight:800; letter-spacing:.05em; position:relative; }
+  .quest-status { margin-top:14px; text-align:center; font-size:.74rem; font-weight:800; letter-spacing:.04em; position:relative; }
   .quest-pending  { color:#fca5a5; }
   .quest-complete { color:var(--accent); text-shadow:0 0 12px rgba(74,222,128,.5); }
+
+  /* ── Activity sub-elements (compact) ───────────── */
+  .act-stat-strip {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 4px; margin:4px 0 6px;
+  }
+  .act-stat-text { font-size:.8rem; color:var(--muted); display:flex; align-items:baseline; gap:4px; }
+  .act-stat-text strong { color:var(--accent4); font-weight:900; font-variant-numeric:tabular-nums; font-size:.95rem; }
+  .act-stat-text .act-stat-label { margin-left:6px; }
+  .act-stat-strip .text-link { font-size:.75rem; }
+  .act-goal-bar { height:4px; background:var(--border); border-radius:2px; overflow:hidden; margin:0 0 14px; }
+  .act-goal-bar-fill { height:100%; background:var(--accent4); border-radius:2px; transition:width .4s ease; }
+  .act-goal-edit-row {
+    display:flex; align-items:center; gap:8px; padding:10px 12px;
+    background:var(--surface-2); border-radius:10px; margin-bottom:14px;
+  }
+  .act-goal-edit-row label { font-size:.78rem; color:var(--muted); flex:1; }
+  .act-goal-edit-row input { width:84px; margin:0; }
+
+  /* ── Log Training (collapsible) ─────────────────── */
+  .log-training-card { padding:0 !important; overflow:hidden; }
+  .log-training-trigger {
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
+    width:100%; padding:14px 18px;
+    background:transparent; border:none; cursor:pointer; font-family:inherit;
+    color:inherit; transition:background .15s ease;
+    text-align:left;
+  }
+  .log-training-trigger:hover { background:var(--surface-2); }
+  .log-training-trigger .lt-left { display:flex; align-items:center; gap:8px; }
+  .log-training-trigger .lt-icon {
+    width:24px; height:24px; border-radius:7px;
+    background:rgba(167,139,250,.14); color:var(--accent4);
+    display:inline-flex; align-items:center; justify-content:center;
+    font-size:1.05rem; font-weight:800; line-height:1;
+    transition:transform .25s ease;
+  }
+  .log-training-trigger.expanded .lt-icon { transform:rotate(45deg); }
+  .log-training-trigger .lt-label {
+    font-size:.92rem; font-weight:700; color:var(--text); letter-spacing:-.005em;
+  }
+  .log-training-trigger .lt-hint {
+    font-size:.7rem; color:var(--muted); font-weight:500;
+    text-align:right; line-height:1.3;
+  }
+  .log-training-body {
+    padding:0 18px 18px;
+    border-top:1px solid var(--border);
+    padding-top:14px;
+    animation:lt-expand .28s ease;
+  }
+  @keyframes lt-expand {
+    from { opacity:0; transform:translateY(-4px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
 
   /* ── Penalty Modal ──────────────────────────────── */
   #penalty-modal { display:none; position:fixed; inset:0; z-index:650; background:rgba(0,0,0,.88); align-items:center; justify-content:center; padding:20px; }
@@ -804,7 +897,7 @@
   <!-- ── ACTIVITY ──────────────────────────────────── -->
   <div id="section-activity" class="section">
 
-    <!-- Daily Quest (system-imposed) -->
+    <!-- HERO: Daily Quest + Power Level (merged) -->
     <div class="card quest-system-card" id="quest-system-card">
       <div class="quest-header">
         <span class="quest-system-label">⚡ DAILY QUEST</span>
@@ -813,15 +906,59 @@
       <div class="quest-message">The system has assigned today's mandatory training. Failure costs XP and resets your streak.</div>
       <div class="quest-items" id="quest-items"></div>
       <div class="quest-status" id="quest-status"></div>
+
+      <div class="hero-divider"></div>
+
+      <div class="hero-power">
+        <div class="hero-power-row">
+          <span class="hero-power-rank"  id="act-xp-rank">E-RANK</span>
+          <span class="hero-power-level" id="act-xp-level">Lv.1</span>
+          <span class="hero-power-total" id="act-total-xp">0 XP</span>
+        </div>
+        <div class="hero-power-bar"><div class="hero-power-bar-fill" id="act-xp-bar" style="width:0%"></div></div>
+        <div class="hero-power-pct" id="act-xp-pct">0% · 0 / 100 XP to next</div>
+      </div>
     </div>
 
-    <div class="card act-power-card">
-      <div class="act-rank-label" id="act-xp-rank">E-Rank</div>
-      <div class="act-level-num" id="act-xp-level">Level 1</div>
-      <div class="act-xp-bar-wrap"><div class="act-xp-bar" id="act-xp-bar" style="width:0%"></div></div>
-      <div class="act-xp-pct" id="act-xp-pct">0% to next level</div>
-      <div class="act-total-xp" id="act-total-xp">0 total XP</div>
+    <!-- Compact weekly progress strip -->
+    <div class="act-stat-strip">
+      <div class="act-stat-text">
+        <strong id="activity-week-sessions">0</strong>
+        <span style="opacity:.6">/ <span id="activity-goal-display">3</span></span>
+        <span class="act-stat-label">sessions this week</span>
+      </div>
+      <button class="text-link" onclick="toggleActivityGoalEdit()">edit goal</button>
     </div>
+    <div class="act-goal-bar"><div class="act-goal-bar-fill" id="activity-goal-bar" style="width:0%"></div></div>
+    <div id="activity-goal-edit" class="act-goal-edit-row" style="display:none">
+      <label>Weekly session goal</label>
+      <input type="number" id="activity-goal-input" placeholder="3" min="1" max="7">
+      <button class="btn btn-purple" style="padding:8px 14px" onclick="saveActivityGoal()">Save</button>
+    </div>
+
+    <!-- Log Training (collapsible — supplemental, not the path) -->
+    <div class="card log-training-card">
+      <button class="log-training-trigger" id="log-training-trigger" onclick="toggleLogTraining()">
+        <span class="lt-left">
+          <span class="lt-icon">+</span>
+          <span class="lt-label">Log Training</span>
+        </span>
+        <span class="lt-hint">Optional · supplemental XP</span>
+      </button>
+      <div class="log-training-body" id="log-training-body" style="display:none">
+        <div class="act-type-grid" id="act-type-grid"></div>
+        <div class="act-duration-wrap">
+          <input type="number" id="act-duration" class="act-duration-input" placeholder="0" min="20" max="600" inputmode="numeric" oninput="updateXPPreview()">
+          <span class="act-duration-unit">minutes</span>
+        </div>
+        <input type="text" id="act-notes" placeholder="Notes (optional)">
+        <div class="act-xp-preview" id="act-xp-preview">Min 20 min — the system has standards</div>
+        <button id="activity-add-btn" class="btn btn-purple btn-full" onclick="addActivity()"><span id="activity-plus"></span>Log Training</button>
+      </div>
+    </div>
+
+    <!-- Training Log -->
+    <div class="section-title act-quest-title">Training Log</div>
     <div class="day-nav">
       <button class="nav-arrow" onclick="changeDay('activity',-1)" id="activity-prev"></button>
       <div class="day-nav-center">
@@ -830,33 +967,7 @@
       </div>
       <button class="nav-arrow" onclick="changeDay('activity',1)" id="activity-next"></button>
     </div>
-    <div class="card stat-big">
-      <div class="number" id="activity-week-sessions" style="color:var(--accent4)">0</div>
-      <div class="label">sessions this week</div>
-      <div class="goal-bar"><div class="goal-bar-fill" id="activity-goal-bar" style="width:0%;background:var(--accent4)"></div></div>
-      <div class="goal-text">
-        Goal: <span id="activity-goal-display">3</span>/week
-        <button class="text-link" onclick="toggleActivityGoalEdit()">edit</button>
-      </div>
-      <div id="activity-goal-edit" style="display:none" class="goal-row">
-        <label>Weekly session goal</label>
-        <input type="number" id="activity-goal-input" placeholder="3" min="1" max="7">
-        <button class="btn btn-purple" style="padding:8px 14px" onclick="saveActivityGoal()">Save</button>
-      </div>
-    </div>
-    <div class="card">
-      <div class="section-title" style="color:var(--accent4);letter-spacing:.1em">⚡ Begin Quest</div>
-      <div class="act-type-grid" id="act-type-grid"></div>
-      <div class="act-duration-wrap">
-        <input type="number" id="act-duration" class="act-duration-input" placeholder="0" min="1" max="600" inputmode="numeric" oninput="updateXPPreview()">
-        <span class="act-duration-unit">minutes</span>
-      </div>
-      <input type="text" id="act-notes" placeholder="Notes (optional)">
-      <div class="act-xp-preview" id="act-xp-preview">Select an activity to see XP reward</div>
-      <button id="activity-add-btn" class="btn btn-purple btn-full" onclick="addActivity()"><span id="activity-plus"></span>Complete Quest</button>
-    </div>
-    <div class="section-title act-quest-title">Quest Log</div>
-    <div id="activity-list"><div class="card"><div class="empty">No quests completed yet. Begin your journey!</div></div></div>
+    <div id="activity-list"><div class="card"><div class="empty">No training logged yet</div></div></div>
   </div>
 
   <!-- ── INFO ──────────────────────────────────────── -->
@@ -1172,10 +1283,10 @@ function updateXPDisplay() {
   const xpRank = document.getElementById('act-xp-rank');
   const xpTot  = document.getElementById('act-total-xp');
   if (xpBar)  xpBar.style.width  = prog.pct + '%';
-  if (xpPct)  xpPct.textContent  = `${prog.pct}% to next level · ${prog.current} / ${prog.needed} XP`;
-  if (xpLvl)  xpLvl.textContent  = `Level ${prog.level}`;
+  if (xpPct)  xpPct.textContent  = `${prog.pct}% · ${prog.current.toLocaleString()} / ${prog.needed.toLocaleString()} XP to next`;
+  if (xpLvl)  xpLvl.textContent  = `Lv.${prog.level}`;
   if (xpRank) { xpRank.textContent = rank.rank; xpRank.style.color = rank.color; }
-  if (xpTot)  xpTot.textContent  = `${totalXP.toLocaleString()} total XP`;
+  if (xpTot)  xpTot.textContent  = `${totalXP.toLocaleString()} XP`;
 }
 
 // ── Daily Quest System ─────────────────────────────────────────────────────
@@ -1838,6 +1949,16 @@ function selectActivityType(idx) {
   _selectedActivity = ACTIVITY_TYPES[idx];
   document.querySelectorAll('.act-type-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
   updateXPPreview();
+}
+
+function toggleLogTraining() {
+  const body = document.getElementById('log-training-body');
+  const trig = document.getElementById('log-training-trigger');
+  if (!body || !trig) return;
+  const isOpen = body.style.display !== 'none';
+  body.style.display = isOpen ? 'none' : 'block';
+  trig.classList.toggle('expanded', !isOpen);
+  if (!isOpen) setTimeout(() => document.getElementById('act-duration')?.focus(), 100);
 }
 
 function calcActivityXP(type, durationMin) {

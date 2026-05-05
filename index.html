@@ -497,6 +497,25 @@
   .mascot-lbl   { font-size:.82rem; color:var(--muted); margin-top:4px; font-weight:500; }
   .mascot-msg   { font-size:.88rem; color:var(--text-2); margin-top:12px; font-weight:500; min-height:1.3em; }
   #mascot-hdr   { line-height:0; cursor:pointer; }
+
+  /* ── Calendar view ──────────────────────────────── */
+  .cal-month-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+  .cal-month-label { font-weight:700; font-size:1rem; }
+  .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; }
+  .cal-hdr  { font-size:.62rem; font-weight:700; color:var(--muted); text-align:center; padding:0 0 6px; text-transform:uppercase; letter-spacing:.04em; }
+  .cal-cell { display:flex; flex-direction:column; align-items:center; gap:3px; padding:5px 2px; border-radius:8px; min-height:46px; transition:background .12s; }
+  .cal-cell.has-data { cursor:pointer; }
+  .cal-cell.has-data:hover { background:var(--surface-2); }
+  .cal-num  { font-size:.78rem; font-weight:600; color:var(--text-2); width:24px; height:24px; display:flex; align-items:center; justify-content:center; border-radius:50%; }
+  .cal-cell.cal-today .cal-num { background:var(--accent5); color:#fff; font-weight:800; }
+  .cal-cell.cal-other .cal-num { color:var(--border); }
+  .cal-dot  { width:10px; height:10px; border-radius:50%; }
+
+  /* ── Streak badge ───────────────────────────────── */
+  .streak-badge { font-size:.65rem; font-weight:700; color:#f97316; background:rgba(249,115,22,.12); border:1px solid rgba(249,115,22,.25); border-radius:6px; padding:2px 5px; flex-shrink:0; }
+
+  /* ── Greeting ───────────────────────────────────── */
+  .mascot-greeting { font-size:.95rem; font-weight:700; color:var(--text); margin-top:6px; letter-spacing:-.01em; }
 </style>
 </head>
 <body>
@@ -511,6 +530,10 @@
       <span id="ob-mascot-1" style="display:block;margin:4px 0 0"></span>
       <div class="onboard-title">Welcome to Froggy</div>
       <div class="onboard-sub">Set your daily goals. These lock in — use <strong>Reset Goals</strong> in the summary later if you need to update them.</div>
+      <div class="onboard-field">
+        <label>Your name</label>
+        <input type="text" id="ob-name" placeholder="What should we call you?">
+      </div>
       <div class="onboard-field">
         <label>Daily calorie goal (kcal)</label>
         <input type="number" id="ob-cal" placeholder="2000" min="500" max="9999">
@@ -712,6 +735,7 @@
   <div id="section-summary" class="section active">
     <div class="card mascot-card">
       <div id="mascot-face" class="mascot-idle"></div>
+      <div class="mascot-greeting" id="mascot-greeting"></div>
       <div class="mascot-msg" id="mascot-msg">Loading…</div>
     </div>
     <div class="smry-period">
@@ -719,6 +743,7 @@
       <button class="smry-period-btn" id="sp-week"  onclick="setSummaryPeriod('week')">Week</button>
       <button class="smry-period-btn" id="sp-month" onclick="setSummaryPeriod('month')">Month</button>
       <button class="smry-period-btn" id="sp-year"  onclick="setSummaryPeriod('year')">Year</button>
+      <button class="smry-period-btn" id="sp-cal"   onclick="setSummaryPeriod('cal')">Cal</button>
     </div>
     <div id="summary-view"></div>
     <div style="padding: 0 0 8px">
@@ -730,6 +755,12 @@
     <div class="reset-box">
       <h3>Settings</h3>
       <div class="reset-sub">Adjust goals, pick what to track, or add core habits. Your existing data is never deleted.</div>
+
+      <div class="modal-section">Profile</div>
+      <div class="onboard-field" style="margin-bottom:0">
+        <label>Your name</label>
+        <input type="text" id="rm-name" placeholder="What should we call you?">
+      </div>
 
       <div class="modal-section">Goals</div>
       <div class="onboard-field" style="margin-bottom:10px">
@@ -792,6 +823,7 @@ let workoutGoal = 3; // weekly session goal
 
 // Summary state
 let summaryPeriod = 'day';
+let _calMonth = new Date();
 let _mascot = { cals: 0, habitDone: 0, habitTotal: 0, wkSessions: 0 };
 let _confettiFired = false;
 
@@ -995,19 +1027,22 @@ function renderObHabits() {
 }
 
 async function submitOnboarding() {
-  const cal = parseInt(document.getElementById('ob-cal').value) || 2000;
-  const wk  = parseInt(document.getElementById('ob-wk').value)  || 3;
+  const cal         = parseInt(document.getElementById('ob-cal').value) || 2000;
+  const wk          = parseInt(document.getElementById('ob-wk').value)  || 3;
+  const displayName = document.getElementById('ob-name').value.trim();
   const btn = document.getElementById('ob-submit-btn');
   btnLoad(btn, true);
   calGoal = cal; workoutGoal = wk;
   await dbCall(() => db.from('user_settings').upsert({ user_id: user.id, cal_goal: cal, workout_goal: wk }, { onConflict: 'user_id' }));
   const coreIds = [];
-  for (const name of _obHabits) {
-    const { data } = await dbCall(() => db.from('habits').insert({ user_id: user.id, name, recurring: true, completed: false }).select('id').single());
+  for (const habitName of _obHabits) {
+    const { data } = await dbCall(() => db.from('habits').insert({ user_id: user.id, name: habitName, recurring: true, completed: false }).select('id').single());
     if (data?.id) coreIds.push(data.id);
   }
   const prev = getCoreHabitIds();
-  await db.auth.updateUser({ data: { ...user.user_metadata, setup_complete: true, core_habit_ids: [...new Set([...prev, ...coreIds])] } });
+  const meta = { ...user.user_metadata, setup_complete: true, core_habit_ids: [...new Set([...prev, ...coreIds])] };
+  if (displayName) meta.display_name = displayName;
+  await db.auth.updateUser({ data: meta });
   await refreshUser();
   btnLoad(btn, false);
   document.getElementById('onboard-screen').style.display = 'none';
@@ -1017,8 +1052,9 @@ async function submitOnboarding() {
 
 // ── Reset modal ─────────────────────────────────────────────────────────────
 async function showResetModal() {
-  document.getElementById('rm-cal').value = calGoal;
-  document.getElementById('rm-wk').value  = workoutGoal;
+  document.getElementById('rm-name').value = user?.user_metadata?.display_name || '';
+  document.getElementById('rm-cal').value  = calGoal;
+  document.getElementById('rm-wk').value   = workoutGoal;
   _rmHabits = [];
   renderRmNewHabits();
   document.getElementById('macro-track-checkboxes').innerHTML = MACRO_DEFS.filter(m => !m.core).map(m =>
@@ -1055,8 +1091,9 @@ function renderRmNewHabits() {
 }
 
 async function submitReset() {
-  const cal = parseInt(document.getElementById('rm-cal').value) || calGoal;
-  const wk  = Math.max(1, Math.min(7, parseInt(document.getElementById('rm-wk').value) || workoutGoal));
+  const cal         = parseInt(document.getElementById('rm-cal').value) || calGoal;
+  const wk          = Math.max(1, Math.min(7, parseInt(document.getElementById('rm-wk').value) || workoutGoal));
+  const displayName = document.getElementById('rm-name').value.trim();
   calGoal = cal; workoutGoal = wk;
   const newExtra = MACRO_DEFS.filter(m => !m.core && document.getElementById('mt-'+m.key)?.checked).map(m => m.key);
   trackedMacros = ['protein','carbs','fat', ...newExtra];
@@ -1064,22 +1101,26 @@ async function submitReset() {
   let { error: se } = await dbCall(() => db.from('user_settings').upsert(settingsRow, { onConflict: 'user_id' }));
   if (se?.message?.includes('tracked_macros')) {
     console.info('Froggy: run this SQL to enable custom macro tracking:\nALTER TABLE user_settings ADD COLUMN IF NOT EXISTS tracked_macros TEXT;\nALTER TABLE food_entries ADD COLUMN IF NOT EXISTS meta JSONB;');
-    const { cal_goal: _, workout_goal: __, tracked_macros: ___, ...rest } = settingsRow;
     await dbCall(() => db.from('user_settings').upsert({ user_id: user.id, cal_goal: cal, workout_goal: wk }, { onConflict: 'user_id' }));
   }
   const newCoreIds = [];
-  for (const name of _rmHabits) {
-    const { data } = await dbCall(() => db.from('habits').insert({ user_id: user.id, name, recurring: true, completed: false }).select('id').single());
+  for (const habitName of _rmHabits) {
+    const { data } = await dbCall(() => db.from('habits').insert({ user_id: user.id, name: habitName, recurring: true, completed: false }).select('id').single());
     if (data?.id) newCoreIds.push(data.id);
   }
+  // Always update metadata (display_name + any new core habits)
+  const meta = { ...user.user_metadata };
+  if (displayName) meta.display_name = displayName;
+  else delete meta.display_name;
   if (newCoreIds.length) {
     const prev = getCoreHabitIds();
-    await db.auth.updateUser({ data: { ...user.user_metadata, core_habit_ids: [...new Set([...prev, ...newCoreIds])] } });
-    await refreshUser();
+    meta.core_habit_ids = [...new Set([...prev, ...newCoreIds])];
   }
+  await db.auth.updateUser({ data: meta });
+  await refreshUser();
   hideResetModal();
   await renderAll();
-  toast('Goals updated!', 'ok');
+  toast('Settings saved!', 'ok');
 }
 
 // ── Settings ───────────────────────────────────────────────────────────────
@@ -1775,11 +1816,25 @@ async function renderDaily() {
 
   const [itemsRes, compRes] = await Promise.all([
     dbCall(() => db.from('habits').select('*').eq('user_id',user.id).order('created_at')),
-    dbCall(() => db.from('habit_completions').select('habit_id').eq('user_id',user.id).eq('date',dateKey))
+    dbCall(() => db.from('habit_completions').select('habit_id,date').eq('user_id',user.id).gte('date', offsetKey(-90)))
   ]);
 
-  const all   = itemsRes.data || [];
-  const doneHabitIds = new Set((compRes.data||[]).map(c=>c.habit_id));
+  const all      = itemsRes.data || [];
+  const allComps = compRes.data || [];
+  const doneHabitIds = new Set(allComps.filter(c => c.date === dateKey).map(c => c.habit_id));
+
+  // Precompute streaks for all recurring habits
+  const streakMap = {};
+  all.filter(h => h.recurring).forEach(h => {
+    const dates = new Set(allComps.filter(c => c.habit_id === h.id).map(c => c.date));
+    let streak = 0;
+    const skip = dates.has(todayKey()) ? 0 : 1;
+    for (let i = skip; i <= 90; i++) {
+      if (dates.has(offsetKey(-i))) streak++;
+      else break;
+    }
+    streakMap[h.id] = streak;
+  });
 
   const habits  = all.filter(h =>  h.recurring);
   const tasks   = all.filter(h => !h.recurring);
@@ -1812,7 +1867,9 @@ async function renderDaily() {
       </div>`;
     }
     const isCore = item.recurring && getCoreHabitIds().includes(item.id);
-    const shape = item.recurring ? 'round' : 'square';
+    const shape  = item.recurring ? 'round' : 'square';
+    const streak = item.recurring ? (streakMap[item.id] || 0) : 0;
+    const streakBadge = streak >= 2 ? `<span class="streak-badge">🔥 ${streak}</span>` : '';
     const badge = isCore
       ? `<span class="core-badge">${icon(IC.lock,11)} Core</span>`
       : item.recurring
@@ -1829,7 +1886,7 @@ async function renderDaily() {
         <div class="habit-name">${esc(parsed.name)}</div>
         ${dueHtml}
       </div>
-      ${badge}
+      ${streakBadge}${badge}
       ${isCore ? '' : `<button class="icon-btn" onclick="startEditHabit('${item.id}')">${icon(IC.edit,16)}</button>`}
       ${isCore ? '' : `<button class="icon-btn danger" onclick="deleteItem('${item.id}')">${icon(IC.trash,16)}</button>`}
     </div>`;
@@ -1886,11 +1943,99 @@ function getPeriodRange(p) {
 
 function setSummaryPeriod(p) {
   summaryPeriod = p;
-  ['day','week','month','year'].forEach(x => {
+  ['day','week','month','year','cal'].forEach(x => {
     const b = document.getElementById('sp-' + x);
     if (b) b.classList.toggle('active', x === p);
   });
-  renderSummary();
+  if (p === 'cal') renderCalendarView();
+  else renderSummary();
+}
+
+function changeCalMonth(delta) {
+  _calMonth = new Date(_calMonth.getFullYear(), _calMonth.getMonth() + delta, 1);
+  renderCalendarView();
+}
+
+async function renderCalendarView() {
+  const view = document.getElementById('summary-view');
+  if (!view) return;
+  view.innerHTML = '<div class="empty">Loading…</div>';
+
+  const yr  = _calMonth.getFullYear();
+  const mo  = _calMonth.getMonth();
+  const firstDay  = new Date(yr, mo, 1);
+  const lastDay   = new Date(yr, mo + 1, 0);
+  const monthStart = localDateStr(firstDay);
+  const monthEnd   = localDateStr(lastDay);
+
+  const [habRes, compRes] = await Promise.all([
+    dbCall(() => db.from('habits').select('id').eq('user_id', user.id).eq('recurring', true)),
+    dbCall(() => db.from('habit_completions').select('habit_id,date').eq('user_id', user.id).gte('date', monthStart).lte('date', monthEnd))
+  ]);
+
+  const totalHabits = (habRes.data || []).length;
+  const comps = compRes.data || [];
+  const byDay = {};
+  comps.forEach(c => { (byDay[c.date] || (byDay[c.date] = new Set())).add(c.habit_id); });
+
+  const today   = todayKey();
+  const now     = new Date();
+  const isCurMo = yr === now.getFullYear() && mo === now.getMonth();
+
+  const startPad = (firstDay.getDay() + 6) % 7;
+  const cells = [];
+  for (let i = 0; i < startPad; i++) {
+    const d = new Date(yr, mo, 1 - (startPad - i));
+    cells.push({ date: localDateStr(d), n: d.getDate(), other: true });
+  }
+  for (let d = 1; d <= lastDay.getDate(); d++) {
+    cells.push({ date: `${yr}-${String(mo+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`, n: d, other: false });
+  }
+  while (cells.length % 7 !== 0) {
+    const d = new Date(yr, mo + 1, cells.length - lastDay.getDate() - startPad + 1);
+    cells.push({ date: localDateStr(d), n: d.getDate(), other: true });
+  }
+
+  const dayHdrs = ['Mo','Tu','We','Th','Fr','Sa','Su'].map(l => `<div class="cal-hdr">${l}</div>`).join('');
+
+  const cellsHtml = cells.map(cell => {
+    const future  = cell.date > today;
+    const isToday = cell.date === today;
+    let dotStyle = 'opacity:0';
+    let pct = 0;
+    let cls = 'cal-cell';
+    if (cell.other) {
+      cls += ' cal-other';
+    } else if (!future) {
+      if (totalHabits > 0) {
+        pct = Math.round(((byDay[cell.date]?.size || 0) / totalHabits) * 100);
+        const col = pct >= 75 ? 'var(--accent)' : pct >= 33 ? 'var(--accent3)' : 'var(--danger)';
+        dotStyle = `background:${col}`;
+        cls += ' has-data';
+      } else {
+        dotStyle = 'background:var(--border)';
+      }
+    }
+    if (isToday) cls += ' cal-today';
+    const titleAttr = (!cell.other && !future && totalHabits > 0) ? ` title="${pct}% habits done"` : '';
+    return `<div class="${cls}"${titleAttr}><span class="cal-num">${cell.n}</span><span class="cal-dot" style="${dotStyle}"></span></div>`;
+  }).join('');
+
+  const monthLabel = firstDay.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  view.innerHTML = `<div class="card">
+    <div class="cal-month-nav">
+      <button class="nav-arrow" style="width:34px;height:34px" onclick="changeCalMonth(-1)">${icon(IC.arrowL,16)}</button>
+      <span class="cal-month-label">${monthLabel}</span>
+      <button class="nav-arrow" style="width:34px;height:34px${isCurMo?';opacity:.3;pointer-events:none':''}" onclick="changeCalMonth(1)">${icon(IC.arrowR,16)}</button>
+    </div>
+    <div class="cal-grid">${dayHdrs}${cellsHtml}</div>
+    ${totalHabits === 0 ? '<div class="smry-sub" style="margin-top:12px;text-align:center">Add recurring habits to see your performance calendar</div>' : ''}
+    <div class="week-legend" style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border);justify-content:center;flex-wrap:wrap;gap:12px">
+      <span><i class="wk-swatch" style="background:var(--accent);border-radius:50%;width:10px;height:10px"></i>Great (75%+)</span>
+      <span><i class="wk-swatch" style="background:var(--accent3);border-radius:50%;width:10px;height:10px"></i>OK (33%+)</span>
+      <span><i class="wk-swatch" style="background:var(--danger);border-radius:50%;width:10px;height:10px"></i>Low</span>
+    </div>
+  </div>`;
 }
 
 async function renderSummary() {
@@ -2140,9 +2285,16 @@ function updateMascot() {
   const face = document.getElementById('mascot-face');
   const msg  = document.getElementById('mascot-msg');
   const hdr  = document.getElementById('mascot-hdr');
+  const greet = document.getElementById('mascot-greeting');
   if (face) { face.innerHTML=mascotSVG(s,72); face.className=cls; }
   if (msg)  msg.textContent = mascotMsg(s);
   if (hdr)  { hdr.innerHTML=mascotSVG(s,34); hdr.className=cls; }
+  if (greet) {
+    const name = user?.user_metadata?.display_name;
+    const h = new Date().getHours();
+    const tod = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+    greet.textContent = name ? `${tod}, ${name}!` : '';
+  }
   if (s>=95 && habitTotal>0 && !_confettiFired) { _confettiFired=true; popConfetti(); }
   if (s<90) _confettiFired = false;
 }

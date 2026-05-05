@@ -1185,9 +1185,8 @@ async function awardXP(amount, reason, extraMeta) {
   const prevLvl = getLevel(prev);
   const newLvl  = getLevel(totalXP);
   const meta    = { ...user.user_metadata, total_xp: totalXP, ...(extraMeta || {}) };
-  db.auth.updateUser({ data: meta }).then(({ data }) => {
-    if (data?.user) user = data.user;
-  });
+  const { data: updData } = await db.auth.updateUser({ data: meta });
+  if (updData?.user) user = updData.user;
   updateXPDisplay();
   showXPPopup(amount);
   if (newLvl > prevLvl) setTimeout(() => showLevelChangeModal(newLvl, true),  700);
@@ -1836,7 +1835,7 @@ async function addFood() {
   const row = {
     user_id: user.id, date: offsetKey(currentDays.food), name,
     calories: parseInt(document.getElementById('food-cal').value) || 0,
-    protein: getMacro('protein'), carbs: getMacro('carbs'), fat: getMacro('fat'),
+    protein: getMacro('protein'), carbs: 0, fat: 0,
     time: new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
   };
   if (hasExtra) row.meta = metaObj;
@@ -1863,7 +1862,7 @@ async function saveEditFood(id) {
   const getEf = key => parseFloat(document.getElementById(`ef-${key}-${id}`)?.value) || 0;
   const metaEf = {};
   MACRO_DEFS.filter(m => !m.core && trackedMacros.includes(m.key)).forEach(m => { const v = getEf(m.key); if (v) metaEf[m.key] = v; });
-  const upd = { name, calories: parseInt(document.getElementById('ef-cal-'+id).value)||0, protein: getEf('protein'), carbs: getEf('carbs'), fat: getEf('fat') };
+  const upd = { name, calories: parseInt(document.getElementById('ef-cal-'+id).value)||0, protein: getEf('protein'), carbs: 0, fat: 0 };
   if (Object.keys(metaEf).length) upd.meta = metaEf;
   const { error } = await dbCall(() => db.from('food_entries').update(upd).eq('id',id).eq('user_id',user.id));
   if (error) return; editing.food = null; toast('Updated','ok'); await renderFood();
@@ -1888,10 +1887,11 @@ async function renderFood() {
   document.getElementById('macro-boxes').innerHTML = MACRO_DEFS.filter(m => trackedMacros.includes(m.key)).map(m =>
     `<div class="macro-box"><div class="val" style="color:${m.color}">${Math.round(totals[m.key])}${m.unit}</div><div class="lbl">${m.label.toLowerCase()}</div></div>`
   ).join('');
-  const pct = Math.min(100, Math.round((totalCal/calGoal)*100));
+  const rawPct = calGoal ? Math.round((totalCal/calGoal)*100) : 0;
+  const pct    = Math.min(100, rawPct);
   document.getElementById('cal-bar').style.width = pct+'%';
-  document.getElementById('cal-bar').style.background = pct>110 ? 'var(--danger)' : 'var(--accent)';
-  document.getElementById('cal-total').style.animation = pct > 110 ? 'cal-pulse 1.2s ease-in-out infinite' : '';
+  document.getElementById('cal-bar').style.background = rawPct > 100 ? 'var(--danger)' : 'var(--accent)';
+  document.getElementById('cal-total').style.animation = rawPct > 100 ? 'cal-pulse 1.2s ease-in-out infinite' : '';
   await refreshTodayStats();
   const el = document.getElementById('food-list');
   if (!rows.length) { el.innerHTML = '<div class="empty">Nothing logged yet</div>'; return; }
@@ -1917,7 +1917,7 @@ async function renderFood() {
       const v = m.core ? (+e[m.key]||0) : (+macroMeta[m.key]||0);
       return v ? `${m.label.slice(0,1)} ${v}${m.unit}` : '';
     }).filter(Boolean).join(' · ');
-    return `<div class="entry"><div class="entry-content"><div class="entry-name">${esc(e.name)}</div><div class="entry-meta">${e.time||''}${macroStr?' · '+macroStr:''}</div></div><div class="entry-right"><span class="entry-cal">${e.calories}</span><button class="icon-btn" onclick="startEditFood('${e.id}')">${icon(IC.edit,16)}</button><button class="icon-btn danger" onclick="deleteFood('${e.id}')">${icon(IC.trash,16)}</button></div></div>`;
+    return `<div class="entry"><div class="entry-content"><div class="entry-name">${esc(e.name)}</div><div class="entry-meta">${esc(e.time||'')}${macroStr?' · '+macroStr:''}</div></div><div class="entry-right"><span class="entry-cal">${e.calories}</span><button class="icon-btn" onclick="startEditFood('${e.id}')">${icon(IC.edit,16)}</button><button class="icon-btn danger" onclick="deleteFood('${e.id}')">${icon(IC.trash,16)}</button></div></div>`;
   }).join('');
 }
 
@@ -1930,9 +1930,9 @@ function renderActivityTypeGrid() {
   grid.innerHTML = all.map((t, i) => {
     const isCustom = customActivities.some(c => c.id === t.id);
     return `<button class="act-type-btn${i===selIdx?' active':''}${isCustom?' custom-type':''}" onclick="selectActivityType(${i})">
-      ${isCustom ? `<button class="custom-del-btn" onclick="event.stopPropagation();removeCustomActivity('${t.id}')">×</button>` : ''}
-      <span class="act-emoji">${t.emoji}</span>
-      <span class="act-name">${t.name}</span>
+      ${isCustom ? `<button class="custom-del-btn" onclick="event.stopPropagation();removeCustomActivity('${esc(t.id)}')">×</button>` : ''}
+      <span class="act-emoji">${esc(t.emoji)}</span>
+      <span class="act-name">${esc(t.name)}</span>
     </button>`;
   }).join('') + `<button class="act-type-btn add-act-btn" onclick="toggleCustomActivityForm()" title="Add custom activity">
     <span class="act-emoji">+</span>
@@ -2048,7 +2048,7 @@ async function renderActivity() {
 
     if (editing.activity === e.id) {
       const typeOpts = getAllActivityTypes().map(t =>
-        `<option value="${t.id}"${t.id===e.type?' selected':''}>${t.emoji} ${t.name}</option>`
+        `<option value="${esc(t.id)}"${t.id===e.type?' selected':''}>${esc(t.emoji)} ${esc(t.name)}</option>`
       ).join('');
       return `<div class="card" style="margin-bottom:8px">
         <select id="ea-type-${e.id}" style="margin-bottom:8px">${typeOpts}</select>
@@ -2067,11 +2067,11 @@ async function renderActivity() {
     const metaParts = [];
     if (dur)     metaParts.push(`${dur} min`);
     if (e.notes) metaParts.push(esc(e.notes));
-    if (e.time)  metaParts.push(e.time);
+    if (e.time)  metaParts.push(esc(e.time));
 
     return `<div class="card" style="margin-bottom:8px">
       <div class="quest-entry">
-        <span class="quest-emoji">${actType.emoji}</span>
+        <span class="quest-emoji">${esc(actType.emoji)}</span>
         <div class="quest-info">
           <div class="quest-name">${esc(actType.name)}</div>
           <div class="quest-meta">${metaParts.join(' · ')}</div>
@@ -2643,8 +2643,6 @@ async function renderSummary() {
 
   const { start, end, days } = getPeriodRange(summaryPeriod);
   const today   = todayKey();
-  const wkStart = weekStartKey();
-
   const [foodRes, wkRes, habRes, compRes, todayWkRes, todayFoodRes, todayCompRes] = await Promise.all([
     dbCall(() => db.from('food_entries').select('calories,protein,carbs,fat,date').eq('user_id',user.id).gte('date',start).lte('date',end)),
     dbCall(() => db.from('workout_entries').select('id,date,type,duration').eq('user_id',user.id).gte('date',start).lte('date',end)),
@@ -2985,7 +2983,7 @@ function switchTab(tab) {
 }
 function changeDay(s,d) {
   currentDays[s]+=d;
-  if(s!=='daily' && currentDays[s]>0) currentDays[s]=0;
+  if(currentDays[s]>0) currentDays[s]=0;
   if(s==='food') renderFood(); else if(s==='activity') renderActivity(); else if(s==='daily') renderDaily();
   updateHeaderDayNav();
 }
@@ -3007,7 +3005,7 @@ const fmt = key => {
   return new Date(+y,+m-1,+d).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
 };
 function esc(s) { return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function flashErr(id, ph) { const el=document.getElementById(id); el.style.borderColor='var(--danger)'; el.placeholder=ph; setTimeout(()=>el.style.borderColor='',1500); }
+function flashErr(id, ph) { const el=document.getElementById(id); const orig=el.placeholder; el.style.borderColor='var(--danger)'; el.placeholder=ph; setTimeout(()=>{ el.style.borderColor=''; el.placeholder=orig; },1500); }
 function setLoading(on) { const b=document.getElementById('loading-bar'); b.style.opacity='1'; b.style.width=on?'70%':'100%'; if(!on)setTimeout(()=>{b.style.width='0%';b.style.opacity='0';},350); }
 function btnLoad(btn,on) { if(!btn)return; if(on){btn._orig=btn.innerHTML;btn.innerHTML='...';btn.disabled=true;}else{btn.innerHTML=btn._orig||btn.innerHTML;btn.disabled=false;} }
 let _tt; function toast(msg,type=''){const el=document.getElementById('toast');el.textContent=msg;el.className='show '+type;clearTimeout(_tt);_tt=setTimeout(()=>el.className=type,2200);}

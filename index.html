@@ -116,7 +116,6 @@
   .logo-mark:active { transform: scale(.96); }
   .logo-mark span { font-size: 1.05rem; font-weight: 800; letter-spacing: -.04em; }
   .header-right { display: flex; align-items: center; gap: 10px; }
-  #date-display { color: var(--muted); font-size: .78rem; }
   .signout-btn {
     background: transparent; border: 1px solid var(--border); border-radius: 6px;
     color: var(--muted); padding: 5px 10px; font-size: .75rem; cursor: pointer;
@@ -132,21 +131,24 @@
 
   /* ── Header day nav ────────────────────────────── */
   #header-day-nav {
-    display: flex; align-items: center; gap: 6px;
-    padding: 5px 14px 8px;
+    display: flex; align-items: center; gap: 8px;
+    padding: 6px 14px 9px;
     border-top: 1px solid var(--border);
   }
   #header-day-nav .hdn-arrow {
     background: transparent; border: 1px solid var(--border); border-radius: 8px;
     color: var(--text); cursor: pointer; flex-shrink: 0;
     display: inline-flex; align-items: center; justify-content: center;
-    width: 32px; height: 32px; transition: background .12s, transform .08s;
+    width: 32px; height: 32px; transition: background .12s, transform .08s, opacity .15s;
   }
   #header-day-nav .hdn-arrow:hover { background: var(--border); }
   #header-day-nav .hdn-arrow:active { transform: scale(.88); }
   #header-day-nav .hdn-arrow svg { width: 16px; height: 16px; }
-  #header-day-nav .hdn-center { flex: 1; display: flex; align-items: center; justify-content: center; gap: 10px; }
-  #header-day-nav .hdn-date { font-weight: 700; font-size: .9rem; }
+  #header-day-nav .hdn-arrow.disabled { opacity: 0; pointer-events: none; }
+  #header-day-nav .hdn-center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; line-height: 1.1; }
+  #header-day-nav .hdn-date { font-weight: 700; font-size: .92rem; }
+  #header-day-nav .hdn-subdate { font-size: .72rem; color: var(--muted); margin-top: 2px; }
+  #header-day-nav .today-btn { flex-shrink: 0; }
 
   /* ── Nav ───────────────────────────────────────── */
   nav {
@@ -172,7 +174,7 @@
   nav button.active[data-tab="food"]     { color: var(--accent); }
   nav button.active[data-tab="activity"] { color: var(--accent4); }
   nav button.active[data-tab="info"]     { color: var(--accent3); }
-  nav button.active[data-tab="daily"]    { color: var(--accent4); }
+  nav button.active[data-tab="daily"]    { color: var(--accent); }
 
   /* ── Sections ──────────────────────────────────── */
   .section { display: none; padding: 16px 20px calc(80px + env(safe-area-inset-bottom)); }
@@ -379,12 +381,12 @@
     cursor: pointer; display: flex; align-items: center; justify-content: center;
     flex-shrink: 0; transition: all .18s cubic-bezier(.34,1.56,.64,1);
   }
-  .habit-check:hover { transform: scale(1.15); border-color: var(--accent4); }
+  .habit-check:hover { transform: scale(1.15); border-color: var(--accent); }
   .habit-check.round  { border-radius: 50%; }
   .habit-check.square { border-radius: 5px; }
   .habit-check svg { width: 14px; height: 14px; stroke-width: 3; opacity: 0; transition: opacity .15s; }
   .habit-check.done { color: #fff; }
-  .habit-check.round.done  { background: var(--accent4); border-color: var(--accent4); }
+  .habit-check.round.done  { background: var(--accent); border-color: var(--accent); }
   .habit-check.square.done { background: var(--accent3); border-color: var(--accent3); }
   .habit-check.done svg { opacity: 1; }
 
@@ -393,7 +395,7 @@
     font-size: .65rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
     padding: 2px 6px; border-radius: 4px; flex-shrink: 0;
   }
-  .badge-daily { background: rgba(167,139,250,.12); color: var(--accent4); }
+  .badge-daily { background: rgba(74,222,128,.12); color: var(--accent); }
   .badge-side  { background: rgba(245,158,11,.12);  color: var(--accent3); }
 
   .list-divider {
@@ -641,7 +643,7 @@
   nav button.active[data-tab="food"]     { color: var(--accent); }
   nav button.active[data-tab="activity"] { color: var(--accent4); }
   nav button.active[data-tab="info"]     { color: var(--accent3); }
-  nav button.active[data-tab="daily"]    { color: var(--accent4); }
+  nav button.active[data-tab="daily"]    { color: var(--accent); }
 
   /* ── Daily Quest Hero (Quest + Power Level merged) ─────────────────── */
   .quest-system-card {
@@ -807,20 +809,6 @@
   }
   .ssb-sep { width: 1px; height: 14px; background: var(--border); flex-shrink: 0; margin: 0 6px; }
 
-  /* ── Missions Tab — always dark cinematic ───────────────────────────────── */
-  #section-daily {
-    background: linear-gradient(170deg, #080818 0%, #0e0b22 60%, #080818 100%);
-    --bg: #080818;
-    --surface: #13112a;
-    --surface-2: #1a1830;
-    --border: #272548;
-    --border-light: #363468;
-    --text: #f0f0f8;
-    --text-2: #d0d0e8;
-    --muted: #8080a8;
-  }
-  #section-daily .day-nav { box-shadow: none; }
-  #section-daily .card:hover { box-shadow: 0 6px 20px rgba(0,0,0,.6); }
 </style>
 </head>
 <body>
@@ -904,10 +892,8 @@
         <span>Froggy</span>
       </div>
       <div class="header-right">
-        <span id="date-display"></span>
         <span id="level-badge" onclick="switchTab('activity')" title="Your Power Level" style="background:rgba(107,114,128,.12);color:#6b7280;border-color:rgba(107,114,128,.3)">Lv.1</span>
         <button class="theme-btn" id="settings-btn" onclick="showResetModal()" title="Settings"><span id="settings-icon"></span></button>
-        <button class="theme-btn" id="theme-toggle" onclick="toggleTheme()" title="Toggle theme"></button>
         <button class="signout-btn" onclick="signOut()">Sign out</button>
       </div>
     </div>
@@ -930,12 +916,13 @@
         <span class="ssb-val" id="ssb-cals-val">0</span>
       </div>
     </div>
-    <div id="header-day-nav" style="display:none">
+    <div id="header-day-nav">
       <button class="hdn-arrow" id="hdn-prev" onclick="changeDayActive(-1)"></button>
       <div class="hdn-center">
-        <span class="hdn-date" id="hdn-date">Today</span>
-        <button class="today-btn" id="hdn-today" onclick="goTodayActive()">Today</button>
+        <div class="hdn-date" id="hdn-date">Today</div>
+        <div class="hdn-subdate" id="hdn-subdate"></div>
       </div>
+      <button class="today-btn" id="hdn-today" onclick="goTodayActive()" style="display:none">Today</button>
       <button class="hdn-arrow" id="hdn-next" onclick="changeDayActive(1)"></button>
     </div>
   </header>
@@ -1056,10 +1043,6 @@
       <div class="quest-status" id="quest-status"></div>
     </div>
 
-    <div class="card stat-big" style="padding:18px">
-      <div class="number" id="daily-pct" style="color:var(--accent4);font-size:2.5rem">0%</div>
-      <div class="label" id="daily-label">done today</div>
-    </div>
     <div class="card">
       <div class="section-title">Add Task</div>
       <div class="type-toggle">
@@ -1068,7 +1051,7 @@
       </div>
       <div class="task-add-row">
         <input type="text" id="habit-name" placeholder="Name...">
-        <button id="habit-add-btn" class="btn btn-purple" onclick="addItem()"><span id="habit-plus"></span>Add</button>
+        <button id="habit-add-btn" class="btn btn-green" onclick="addItem()"><span id="habit-plus"></span>Add</button>
       </div>
     </div>
     <div id="daily-list"></div>
@@ -1097,7 +1080,7 @@
   <div id="reset-modal">
     <div class="reset-box">
       <h3>Settings</h3>
-      <div class="reset-sub">Adjust goals, pick what to track, or add core tasks. Your existing data is never deleted.</div>
+      <div class="reset-sub">Adjust goals, theme, or core tasks. Your existing data is never deleted.</div>
 
       <div class="modal-section">Profile</div>
       <div class="onboard-field" style="margin-bottom:0">
@@ -1115,8 +1098,11 @@
         <input type="number" id="rm-wk" placeholder="3" min="1" max="7">
       </div>
 
-      <div class="modal-section">What to track</div>
-      <div id="macro-track-checkboxes" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
+      <div class="modal-section">Appearance</div>
+      <button class="btn btn-ghost btn-full" onclick="toggleTheme()" style="justify-content:flex-start;gap:8px">
+        <span id="rm-theme-icon"></span>
+        <span id="rm-theme-label">Switch to Dark Mode</span>
+      </button>
 
       <div class="modal-section">Core tasks <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:.72rem;color:var(--muted)">— tap 🗑 to unlock</span></div>
       <div id="rm-core-locked"></div>
@@ -1222,16 +1208,10 @@ const IC = {
 };
 
 const MACRO_DEFS = [
-  { key:'protein',     label:'Protein',     unit:'g',  color:'var(--accent2)', nid:1003, nnum:'203', core:true  },
-  { key:'carbs',       label:'Carbs',       unit:'g',  color:'var(--accent3)', nid:1005, nnum:'205', core:true  },
-  { key:'fat',         label:'Fat',         unit:'g',  color:'var(--danger)',  nid:1004, nnum:'204', core:true  },
-  { key:'fiber',       label:'Fiber',       unit:'g',  color:'var(--accent)',  nid:1079, nnum:'291', core:false },
-  { key:'sugar',       label:'Sugar',       unit:'g',  color:'var(--accent3)', nid:2000, nnum:'269', core:false },
-  { key:'sodium',      label:'Sodium',      unit:'mg', color:'var(--accent5)', nid:1093, nnum:'307', core:false },
-  { key:'sat_fat',     label:'Sat. Fat',    unit:'g',  color:'var(--danger)',  nid:1258, nnum:'606', core:false },
-  { key:'cholesterol', label:'Cholest.',    unit:'mg', color:'var(--muted)',   nid:1253, nnum:'601', core:false },
+  { key:'protein', label:'Protein', unit:'g', color:'var(--accent2)', nid:1003, nnum:'203', core:true  },
+  { key:'sugar',   label:'Sugar',   unit:'g', color:'var(--accent3)', nid:2000, nnum:'269', core:false },
 ];
-let trackedMacros = ['protein','carbs','fat'];
+let trackedMacros = ['protein','sugar'];
 
 const FOLDER_COLORS = ['#60a5fa','#4ade80','#f59e0b','#a78bfa','#f87171','#34d399','#fb923c','#e879f9'];
 
@@ -1483,6 +1463,31 @@ function showPenaltyModal(prevStreak) {
   modal.classList.add('open');
 }
 
+// ── Today stats (always today, regardless of navigation) ──────────────────
+async function refreshTodayStats() {
+  if (!user) return;
+  const today = todayKey();
+  const wkStart = weekStartKey();
+  const [foodRes, habRes, compRes, wkRes] = await Promise.all([
+    dbCall(() => db.from('food_entries').select('calories').eq('user_id',user.id).eq('date',today)),
+    dbCall(() => db.from('habits').select('id,recurring,completed').eq('user_id',user.id)),
+    dbCall(() => db.from('habit_completions').select('habit_id').eq('user_id',user.id).eq('date',today)),
+    dbCall(() => db.from('workout_entries').select('date').eq('user_id',user.id).gte('date',wkStart).lte('date',today)),
+  ]);
+  const foods   = foodRes.data || [];
+  const items   = habRes.data  || [];
+  const comps   = compRes.data || [];
+  const wks     = wkRes.data   || [];
+  const doneIds = new Set(comps.map(c => c.habit_id));
+  const habits  = items.filter(h => h.recurring);
+  const tasks   = items.filter(h => !h.recurring);
+  _mascot.cals       = foods.reduce((s,f) => s + (f.calories||0), 0);
+  _mascot.habitDone  = habits.filter(h => doneIds.has(h.id)).length + tasks.filter(t => t.completed).length;
+  _mascot.habitTotal = items.length;
+  _mascot.wkSessions = new Set(wks.map(e => e.date)).size;
+  updateMascot();
+}
+
 // ── System Status Bar ──────────────────────────────────────────────────────
 function updateSystemStatus() {
   // Quest progress
@@ -1515,16 +1520,20 @@ function updateSystemStatus() {
 function setTheme(dark) {
   document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
   localStorage.setItem('froggy-theme', dark ? 'dark' : 'light');
-  const btn = document.getElementById('theme-toggle');
-  if (btn) btn.innerHTML = icon(dark ? IC.sun : IC.moon, 18);
+  updateThemeButton();
 }
 function toggleTheme() {
   setTheme(document.documentElement.getAttribute('data-theme') !== 'dark');
 }
+function updateThemeButton() {
+  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const ico  = document.getElementById('rm-theme-icon');
+  const lbl  = document.getElementById('rm-theme-label');
+  if (ico) ico.innerHTML  = icon(dark ? IC.sun : IC.moon, 16);
+  if (lbl) lbl.textContent = dark ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+}
 
 function injectIcons() {
-  const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  document.getElementById('theme-toggle').innerHTML  = icon(isDark ? IC.sun : IC.moon, 18);
   document.getElementById('nav-food').innerHTML      = icon(IC.food, 22)    + '<span>Food</span>';
   document.getElementById('nav-activity').innerHTML  = icon(IC.workout, 22) + '<span>Activity</span>';
   document.getElementById('nav-info').innerHTML      = icon(IC.info, 22)    + '<span>Notes</span>';
@@ -1607,9 +1616,9 @@ function setAuthMsg(m, e=false) { const el = document.getElementById('auth-msg')
 function showAuth() { document.getElementById('app').style.display = 'none'; document.getElementById('auth-screen').style.display = 'flex'; }
 async function showApp() {
   document.getElementById('auth-screen').style.display = 'none';
-  document.getElementById('date-display').textContent = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
   await loadSettings();
   injectIcons();
+  updateHeaderDayNav();
   if (!user?.user_metadata?.setup_complete) {
     document.getElementById('app').style.display = 'none';
     document.getElementById('onboard-screen').style.display = 'flex';
@@ -1716,11 +1725,7 @@ async function showResetModal() {
   document.getElementById('rm-wk').value   = workoutGoal;
   _rmHabits = [];
   renderRmNewHabits();
-  document.getElementById('macro-track-checkboxes').innerHTML = MACRO_DEFS.filter(m => !m.core).map(m =>
-    `<label class="macro-check-item">
-      <input type="checkbox" id="mt-${m.key}" ${trackedMacros.includes(m.key)?'checked':''}>
-      <span class="mci-label">${m.label}</span><span class="mci-unit">${m.unit}</span>
-    </label>`).join('');
+  updateThemeButton();
   const coreIds = getCoreHabitIds();
   if (coreIds.length) {
     const { data } = await dbCall(() => db.from('habits').select('id,name').in('id', coreIds));
@@ -1757,14 +1762,7 @@ async function submitReset() {
   const wk          = Math.max(1, Math.min(7, parseInt(document.getElementById('rm-wk').value) || workoutGoal));
   const displayName = document.getElementById('rm-name').value.trim();
   calGoal = cal; workoutGoal = wk;
-  const newExtra = MACRO_DEFS.filter(m => !m.core && document.getElementById('mt-'+m.key)?.checked).map(m => m.key);
-  trackedMacros = ['protein','carbs','fat', ...newExtra];
-  const settingsRow = { user_id: user.id, cal_goal: cal, workout_goal: wk, tracked_macros: JSON.stringify(trackedMacros) };
-  let { error: se } = await dbCall(() => db.from('user_settings').upsert(settingsRow, { onConflict: 'user_id' }));
-  if (se?.message?.includes('tracked_macros')) {
-    console.info('Froggy: run this SQL to enable custom macro tracking:\nALTER TABLE user_settings ADD COLUMN IF NOT EXISTS tracked_macros TEXT;\nALTER TABLE food_entries ADD COLUMN IF NOT EXISTS meta JSONB;');
-    await dbCall(() => db.from('user_settings').upsert({ user_id: user.id, cal_goal: cal, workout_goal: wk }, { onConflict: 'user_id' }));
-  }
+  await dbCall(() => db.from('user_settings').upsert({ user_id: user.id, cal_goal: cal, workout_goal: wk }, { onConflict: 'user_id' }));
   const newCoreIds = [];
   for (const habitName of _rmHabits) {
     const { data } = await dbCall(() => db.from('habits').insert({ user_id: user.id, name: habitName, recurring: true, completed: false }).select('id').single());
@@ -1790,10 +1788,7 @@ async function loadSettings() {
   const { data } = await dbCall(() => db.from('user_settings').select('*').eq('user_id', user.id).maybeSingle());
   calGoal     = data?.cal_goal     ?? 2000;
   workoutGoal = data?.workout_goal ?? 3;
-  try { trackedMacros = JSON.parse(data?.tracked_macros || 'null') || ['protein','carbs','fat']; } catch { trackedMacros = ['protein','carbs','fat']; }
-  if (!trackedMacros.includes('protein')) trackedMacros.unshift('protein');
-  if (!trackedMacros.includes('carbs'))   trackedMacros.splice(1,0,'carbs');
-  if (!trackedMacros.includes('fat'))     trackedMacros.splice(2,0,'fat');
+  trackedMacros = ['protein','sugar'];
   totalXP = user?.user_metadata?.total_xp ?? 0;
   updateXPDisplay();
   await checkDailyQuestPenalty();
@@ -2009,8 +2004,7 @@ async function renderFood() {
   document.getElementById('cal-bar').style.width = pct+'%';
   document.getElementById('cal-bar').style.background = pct>110 ? 'var(--danger)' : 'var(--accent)';
   document.getElementById('cal-total').style.animation = pct > 110 ? 'cal-pulse 1.2s ease-in-out infinite' : '';
-  _mascot.cals = totalCal;
-  updateMascot();
+  await refreshTodayStats();
   const el = document.getElementById('food-list');
   if (!rows.length) { el.innerHTML = '<div class="empty">Nothing logged yet</div>'; return; }
   el.innerHTML = [...rows].reverse().map(e => {
@@ -2128,8 +2122,7 @@ async function renderActivity() {
   const rows       = dayRes.data  || [];
   const wkSessions = new Set((weekRes.data||[]).map(e => e.date)).size;
   const pct        = workoutGoal ? Math.min(100, Math.round((wkSessions/workoutGoal)*100)) : 0;
-  _mascot.wkSessions = wkSessions;
-  updateMascot();
+  await refreshTodayStats();
   updateXPDisplay();
 
   const wkEl = document.getElementById('activity-week-sessions');
@@ -2525,7 +2518,6 @@ async function deleteItem(id) {
 
 async function renderDaily() {
   const dateKey  = offsetKey(currentDays.daily);
-  const dayLabel = fmt(dateKey);
   renderDailyQuest();
 
   const [itemsRes, compRes] = await Promise.all([
@@ -2553,14 +2545,7 @@ async function renderDaily() {
   const habits  = all.filter(h =>  h.recurring);
   const tasks   = all.filter(h => !h.recurring);
 
-  const doneCnt = habits.filter(h=>doneHabitIds.has(h.id)).length + tasks.filter(t=>t.completed).length;
-  const pct = all.length ? Math.round((doneCnt / all.length)*100) : 0;
-  document.getElementById('daily-pct').textContent = pct+'%';
-  const dayWord = currentDays.daily === 0 ? 'today' : dayLabel === 'Yesterday' ? 'yesterday' : `on ${dayLabel}`;
-  document.getElementById('daily-label').textContent = `${doneCnt} of ${all.length} done ${dayWord}`;
-  _mascot.habitDone = doneCnt;
-  _mascot.habitTotal = all.length;
-  updateMascot();
+  await refreshTodayStats();
 
   if (!all.length) {
     document.getElementById('daily-list').innerHTML = '<div class="card"><div class="empty">Add tasks above</div></div>';
@@ -2575,7 +2560,7 @@ async function renderDaily() {
         <input type="text" id="eh-name-${item.id}" value="${esc(parsed.name)}" style="margin-bottom:8px">
         ${dueField}
         <div class="edit-actions">
-          <button class="btn btn-purple" onclick="saveEditHabit('${item.id}',${item.recurring})">Save</button>
+          <button class="btn btn-green" onclick="saveEditHabit('${item.id}',${item.recurring})">Save</button>
           <button class="btn btn-ghost"  onclick="cancelEditHabit()">Cancel</button>
         </div>
       </div>`;
@@ -3056,18 +3041,29 @@ function popConfetti() {
 // ── Navigation ─────────────────────────────────────────────────────────────
 const DAY_NAV_TABS = ['food', 'activity', 'daily'];
 
+function fmtFullDate(key) {
+  const [y,m,d] = key.split('-');
+  return new Date(+y, +m-1, +d).toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+}
+
 function updateHeaderDayNav() {
   const nav = document.getElementById('header-day-nav');
   if (!nav) return;
-  const show = DAY_NAV_TABS.includes(activeTab);
-  nav.style.display = show ? '' : 'none';
-  if (!show) return;
-  const offset  = currentDays[activeTab];
-  const dateKey = offsetKey(offset);
-  const dateEl  = document.getElementById('hdn-date');
-  const todayEl = document.getElementById('hdn-today');
-  if (dateEl)  dateEl.textContent = fmt(dateKey);
-  if (todayEl) todayEl.style.display = offset === 0 ? 'none' : '';
+  const isDayNav = DAY_NAV_TABS.includes(activeTab);
+  const offset   = isDayNav ? currentDays[activeTab] : 0;
+  const dateKey  = offsetKey(offset);
+  const rel      = fmt(dateKey);
+  const full     = fmtFullDate(dateKey);
+  const dateEl   = document.getElementById('hdn-date');
+  const subEl    = document.getElementById('hdn-subdate');
+  const todayEl  = document.getElementById('hdn-today');
+  const prevEl   = document.getElementById('hdn-prev');
+  const nextEl   = document.getElementById('hdn-next');
+  if (dateEl)  dateEl.textContent = rel;
+  if (subEl)   subEl.textContent  = (rel === 'Today' || rel === 'Yesterday') ? full : '';
+  if (todayEl) todayEl.style.display = (isDayNav && offset !== 0) ? '' : 'none';
+  if (prevEl)  prevEl.classList.toggle('disabled', !isDayNav);
+  if (nextEl)  nextEl.classList.toggle('disabled', !isDayNav);
 }
 
 function changeDayActive(d) { changeDay(activeTab, d); }

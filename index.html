@@ -436,13 +436,11 @@
   .week-day-col { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; overflow: hidden; }
   .task-due { font-size: .72rem; font-weight: 600; color: var(--accent3); margin-top: 2px; }
   .task-due.overdue { color: var(--danger); }
-  .task-add-row { display: flex; gap: 8px; align-items: center; }
-  .task-add-row input[type="text"] { flex: 1; min-width: 0; width: auto; height: 42px; box-sizing: border-box; }
-  .task-add-row .btn { height: 42px; flex-shrink: 0; }
-  .cal-wrap { position: relative; flex-shrink: 0; width: 42px; height: 42px; display: none; }
-  .cal-btn { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: var(--surface); border: 1.5px solid var(--border); border-radius: 10px; cursor: pointer; color: var(--muted); transition: border-color .15s, color .15s, background .15s; pointer-events: none; }
+  .task-add-row { display: flex; gap: 8px; align-items: stretch; }
+  .task-add-row > input[type="text"] { flex: 1; min-width: 0; height: 42px; }
+  .task-add-row > .btn { height: 42px; flex-shrink: 0; align-self: center; }
+  .cal-btn { flex-shrink: 0; width: 42px; height: 42px; display: none; align-items: center; justify-content: center; background: var(--surface); border: 1.5px solid var(--border); border-radius: 10px; cursor: pointer; color: var(--muted); transition: border-color .15s, color .15s, background .15s; align-self: center; }
   .cal-btn:hover, .cal-btn.active { border-color: var(--accent4); color: var(--accent4); background: rgba(74,222,128,.09); }
-  .cal-wrap input[type="date"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; border: none; background: none; padding: 0; }
   /* Onboarding */
   #onboard-screen { position: fixed; inset: 0; z-index: 200; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: flex-start; overflow-y: auto; padding: 32px 20px 60px; }
   .onboard-box { width: 100%; max-width: 400px; }
@@ -708,10 +706,8 @@
       </div>
       <div class="task-add-row">
         <input type="text" id="habit-name" placeholder="Name...">
-        <div class="cal-wrap" id="task-cal-wrap">
-          <button class="cal-btn" id="task-cal-btn"><span id="cal-icon"></span></button>
-          <input type="date" id="task-due" onchange="onDueDatePicked(this.value)">
-        </div>
+        <button id="task-cal-btn" class="cal-btn" onclick="openDuePicker()"><span id="cal-icon"></span></button>
+        <input type="date" id="task-due" onchange="onDueDatePicked(this.value)" style="position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;opacity:.01">
         <button id="habit-add-btn" class="btn btn-purple" onclick="addItem()"><span id="habit-plus"></span>Add</button>
       </div>
     </div>
@@ -1722,6 +1718,11 @@ function onDueDatePicked(val) {
   }
 }
 
+function openDuePicker() {
+  const inp = document.getElementById('task-due');
+  try { inp.showPicker(); } catch(e) { inp.focus(); inp.click(); }
+}
+
 function setAddType(type) {
   addType = type;
   document.getElementById('type-habit-btn').classList.toggle('active', type === 'habit');
@@ -1730,8 +1731,9 @@ function setAddType(type) {
     ? 'Habit name (e.g. Drink water, Exercise...)'
     : 'Task name (e.g. Call dentist, Buy groceries...)';
   const showDue = type === 'task';
-  document.getElementById('task-cal-wrap').style.display = showDue ? 'block' : 'none';
-  document.getElementById('task-cal-btn').classList.remove('active');
+  const calBtn = document.getElementById('task-cal-btn');
+  calBtn.style.display = showDue ? 'flex' : 'none';
+  calBtn.classList.remove('active');
   document.getElementById('task-due').value = '';
 }
 

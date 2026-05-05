@@ -440,7 +440,7 @@
   .task-add-row input[type="text"] { flex: 1; min-width: 0; width: auto; height: 42px; box-sizing: border-box; }
   .task-add-row .btn { height: 42px; flex-shrink: 0; }
   .cal-wrap { position: relative; flex-shrink: 0; width: 42px; height: 42px; display: none; }
-  .cal-btn { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: var(--card); border: 1.5px solid var(--border); border-radius: 10px; cursor: pointer; color: var(--muted); transition: border-color .15s, color .15s, background .15s; pointer-events: none; }
+  .cal-btn { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; background: var(--surface); border: 1.5px solid var(--border); border-radius: 10px; cursor: pointer; color: var(--muted); transition: border-color .15s, color .15s, background .15s; pointer-events: none; }
   .cal-btn:hover, .cal-btn.active { border-color: var(--accent4); color: var(--accent4); background: rgba(74,222,128,.09); }
   .cal-wrap input[type="date"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; border: none; background: none; padding: 0; }
   /* Onboarding */
@@ -457,13 +457,26 @@
   .onboard-habit-list { width: 100%; display: flex; flex-direction: column; gap: 8px; min-height: 8px; }
   .onboard-habit-item { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; }
   .onboard-habit-item span { flex: 1; font-weight: 500; font-size: .92rem; }
-  /* Reset modal */
-  #reset-modal { display: none; position: fixed; inset: 0; z-index: 200; background: rgba(0,0,0,.55); backdrop-filter: blur(4px); align-items: center; justify-content: center; padding: 20px; }
+  /* Reset / Settings modal */
+  #reset-modal { display: none; position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,.6); align-items: center; justify-content: center; padding: 16px; box-sizing: border-box; }
   #reset-modal.open { display: flex; }
-  .reset-box { background: var(--card); border: 1px solid var(--border); border-radius: 18px; padding: 24px; width: 100%; max-width: 400px; max-height: 88vh; overflow-y: auto; }
-  .reset-box h3 { font-size: 1.1rem; font-weight: 800; margin-bottom: 4px; }
-  .reset-sub { font-size: .82rem; color: var(--muted); margin-bottom: 18px; line-height: 1.5; }
-  .core-habit-locked { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 9px 14px; margin-bottom: 6px; }
+  .reset-box {
+    background: var(--surface); border: 1px solid var(--border-light);
+    border-radius: 18px; padding: 24px; width: 100%; max-width: 420px;
+    max-height: calc(100dvh - 40px); overflow-y: auto;
+    box-shadow: 0 24px 60px rgba(0,0,0,.35);
+  }
+  [data-theme="dark"] .reset-box { box-shadow: 0 24px 60px rgba(0,0,0,.7); }
+  .reset-box h3 { font-size: 1.15rem; font-weight: 800; margin-bottom: 4px; color: var(--text); }
+  .reset-sub { font-size: .82rem; color: var(--muted); margin-bottom: 16px; line-height: 1.5; }
+  .modal-section { font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 18px 0 10px; }
+  .modal-section:first-of-type { margin-top: 4px; }
+  .macro-check-item { display: flex; align-items: center; gap: 10px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 11px 14px; cursor: pointer; transition: border-color .15s; }
+  .macro-check-item:hover { border-color: var(--accent); }
+  .macro-check-item input[type="checkbox"] { width: 17px; height: 17px; accent-color: var(--accent); flex-shrink: 0; cursor: pointer; margin: 0; }
+  .macro-check-item .mci-label { font-size: .9rem; font-weight: 500; flex: 1; color: var(--text); }
+  .macro-check-item .mci-unit { font-size: .76rem; color: var(--muted); }
+  .core-habit-locked { display: flex; align-items: center; gap: 10px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 9px 14px; margin-bottom: 6px; }
   .core-habit-locked span { flex: 1; font-size: .88rem; color: var(--muted); }
   /* Core badge in daily list */
   .core-badge { display: inline-flex; align-items: center; gap: 3px; font-size: .67rem; font-weight: 700; color: var(--accent3); background: rgba(251,191,36,.12); border: 1px solid rgba(251,191,36,.3); border-radius: 6px; padding: 2px 7px; flex-shrink: 0; }
@@ -725,27 +738,31 @@
 
   <div id="reset-modal">
     <div class="reset-box">
-      <h3>Reset Goals &amp; Habits</h3>
-      <div class="reset-sub">Update your goals or add new core habits. All existing data and history is kept.</div>
-      <div class="onboard-field" style="margin-bottom:12px">
+      <h3>Settings</h3>
+      <div class="reset-sub">Adjust goals, pick what to track, or add core habits. Your existing data is never deleted.</div>
+
+      <div class="modal-section">Goals</div>
+      <div class="onboard-field" style="margin-bottom:10px">
         <label>Daily calorie goal (kcal)</label>
         <input type="number" id="rm-cal" placeholder="2000">
       </div>
-      <div class="onboard-field" style="margin-bottom:18px">
+      <div class="onboard-field">
         <label>Workout sessions per week</label>
         <input type="number" id="rm-wk" placeholder="3" min="1" max="7">
       </div>
-      <div class="section-title" style="margin-bottom:8px">What to track</div>
-      <div class="reset-sub" style="margin-bottom:10px">Protein, carbs, and fat are always tracked. Pick any extras. <em>Requires running a one-line SQL migration — see console after saving.</em></div>
-      <div id="macro-track-checkboxes" style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px"></div>
-      <div class="section-title" style="margin-bottom:10px">Locked core habits</div>
+
+      <div class="modal-section">What to track</div>
+      <div id="macro-track-checkboxes" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
+
+      <div class="modal-section">Core habits</div>
       <div id="rm-core-locked"></div>
-      <div class="onboard-habit-row" style="margin-top:12px">
+      <div class="onboard-habit-row" style="margin-top:10px">
         <input type="text" id="rm-habit-input" placeholder="Add new core habit..." onkeydown="if(event.key==='Enter')addResetHabit()">
         <button class="btn btn-green" onclick="addResetHabit()">Add</button>
       </div>
       <div class="onboard-habit-list" id="rm-new-habits" style="margin-top:10px"></div>
-      <div style="display:flex;gap:8px;margin-top:20px">
+
+      <div style="display:flex;gap:8px;margin-top:22px">
         <button class="btn btn-green" style="flex:1" onclick="submitReset()">Save</button>
         <button class="btn btn-ghost" style="flex:1" onclick="hideResetModal()">Cancel</button>
       </div>
@@ -1015,10 +1032,10 @@ async function showResetModal() {
   document.getElementById('rm-wk').value  = workoutGoal;
   _rmHabits = [];
   renderRmNewHabits();
-  document.getElementById('macro-track-checkboxes').innerHTML = MACRO_DEFS.filter(m => !m.core).map(m => `
-    <label style="display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:10px 12px;cursor:pointer;font-size:.88rem;font-weight:500">
-      <input type="checkbox" id="mt-${m.key}" ${trackedMacros.includes(m.key)?'checked':''} style="width:16px;height:16px;accent-color:var(--accent);flex-shrink:0">
-      ${m.label} <span style="color:var(--muted);font-size:.75rem">(${m.unit})</span>
+  document.getElementById('macro-track-checkboxes').innerHTML = MACRO_DEFS.filter(m => !m.core).map(m =>
+    `<label class="macro-check-item">
+      <input type="checkbox" id="mt-${m.key}" ${trackedMacros.includes(m.key)?'checked':''}>
+      <span class="mci-label">${m.label}</span><span class="mci-unit">${m.unit}</span>
     </label>`).join('');
   const coreIds = getCoreHabitIds();
   if (coreIds.length) {

@@ -101,7 +101,10 @@
     position: sticky; top: 0;
     background: var(--header-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
-    padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; z-index: 50;
+    z-index: 50;
+  }
+  .header-main {
+    padding: 12px 20px; display: flex; align-items: center; justify-content: space-between;
   }
   .logo-mark {
     display: flex; align-items: center; gap: 8px; cursor: pointer;
@@ -757,6 +760,87 @@
     padding:8px 14px; border-radius:10px; color:#fca5a5;
     font-size:.85rem; font-weight:800;
   }
+
+  /* ── System Status Bar (inside header, always visible) ─────────────────── */
+  #system-status-bar {
+    display: flex; align-items: center; padding: 6px 20px 8px;
+    border-top: 1px solid rgba(255,255,255,.04);
+    gap: 0;
+  }
+  .ssb-item {
+    display: flex; align-items: center; gap: 5px; flex: 1;
+    padding: 3px 5px; border-radius: 6px; cursor: pointer;
+    transition: background .12s; min-width: 0;
+    text-decoration: none;
+  }
+  .ssb-item:hover { background: rgba(255,255,255,.06); }
+  .ssb-lbl {
+    font-size: .58rem; font-weight: 800; letter-spacing: .05em; text-transform: uppercase;
+    color: var(--muted); white-space: nowrap; flex-shrink: 0;
+  }
+  .ssb-bar {
+    flex: 1; height: 3px; background: var(--border); border-radius: 2px;
+    overflow: hidden; margin: 0 5px; min-width: 16px;
+  }
+  .ssb-bar-fill { height: 100%; border-radius: 2px; transition: width .35s ease; }
+  .ssb-val {
+    font-size: .62rem; font-weight: 700; color: var(--text-2); white-space: nowrap;
+    flex-shrink: 0; font-variant-numeric: tabular-nums; min-width: 26px; text-align: right;
+  }
+  .ssb-sep { width: 1px; height: 14px; background: var(--border); flex-shrink: 0; margin: 0 6px; }
+
+  /* ── Mini Quest Widget (Daily tab) ─────────────────────────────────────── */
+  .dqm-card {
+    background: linear-gradient(135deg, #0c0521 0%, #1a0a3a 50%, #0a0a24 100%);
+    border: 1px solid rgba(167,139,250,.45);
+    border-radius: var(--r); padding: 14px 16px; margin-bottom: 12px;
+    position: relative; overflow: hidden;
+    box-shadow: 0 0 24px rgba(167,139,250,.1);
+  }
+  .dqm-card::before {
+    content: ''; position: absolute; inset: 0; pointer-events: none;
+    background: radial-gradient(circle at 0% 0%, rgba(167,139,250,.16) 0%, transparent 60%);
+  }
+  .dqm-header {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 10px; position: relative;
+  }
+  .dqm-title {
+    font-size: .64rem; font-weight: 900; letter-spacing: .22em;
+    color: var(--accent4); text-shadow: 0 0 10px rgba(167,139,250,.5);
+  }
+  .dqm-streak { font-size: .6rem; color: rgba(255,255,255,.45); margin-top: 2px; }
+  .dqm-status {
+    font-size: .66rem; font-weight: 900; letter-spacing: .04em;
+    padding: 3px 8px; border-radius: 6px; flex-shrink: 0; margin-left: 8px;
+  }
+  .dqm-status.complete { color: var(--accent); background: rgba(74,222,128,.1); }
+  .dqm-status.pending  { color: #fca5a5; }
+  .dqm-grid {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 5px; position: relative;
+  }
+  .dqm-item {
+    display: flex; align-items: center; gap: 7px; padding: 7px 9px;
+    background: rgba(255,255,255,.025); border: 1px solid rgba(167,139,250,.14);
+    border-radius: 8px; cursor: pointer; transition: all .14s; user-select: none;
+  }
+  .dqm-item:hover { background: rgba(167,139,250,.07); border-color: rgba(167,139,250,.3); }
+  .dqm-item.done { background: rgba(74,222,128,.05); border-color: rgba(74,222,128,.2); }
+  .dqm-check {
+    width: 15px; height: 15px; border: 1.5px solid rgba(255,255,255,.17); border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; color: transparent; transition: all .15s;
+  }
+  .dqm-check.done { background: var(--accent); border-color: var(--accent); color: #052e16; }
+  .dqm-name {
+    font-size: .73rem; font-weight: 700; color: rgba(255,255,255,.9); flex: 1;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .dqm-item.done .dqm-name { text-decoration: line-through; color: rgba(255,255,255,.35); }
+  .dqm-target {
+    font-size: .64rem; font-weight: 800; color: var(--accent4); white-space: nowrap; flex-shrink: 0;
+  }
+  .dqm-item.done .dqm-target { color: rgba(74,222,128,.5); }
 </style>
 </head>
 <body>
@@ -834,16 +918,37 @@
 <div id="app" style="display:none">
 
   <header>
-    <div class="logo-mark" onclick="switchTab('summary')" title="Home">
-      <span id="mascot-hdr" class="mascot-idle"></span>
-      <span>Froggy</span>
+    <div class="header-main">
+      <div class="logo-mark" onclick="switchTab('summary')" title="Home">
+        <span id="mascot-hdr" class="mascot-idle"></span>
+        <span>Froggy</span>
+      </div>
+      <div class="header-right">
+        <span id="date-display"></span>
+        <span id="level-badge" onclick="switchTab('activity')" title="Your Power Level" style="background:rgba(107,114,128,.12);color:#6b7280;border-color:rgba(107,114,128,.3)">Lv.1</span>
+        <button class="theme-btn" id="settings-btn" onclick="showResetModal()" title="Settings"><span id="settings-icon"></span></button>
+        <button class="theme-btn" id="theme-toggle" onclick="toggleTheme()" title="Toggle theme"></button>
+        <button class="signout-btn" onclick="signOut()">Sign out</button>
+      </div>
     </div>
-    <div class="header-right">
-      <span id="date-display"></span>
-      <span id="level-badge" onclick="switchTab('activity')" title="Your Power Level" style="background:rgba(107,114,128,.12);color:#6b7280;border-color:rgba(107,114,128,.3)">Lv.1</span>
-      <button class="theme-btn" id="settings-btn" onclick="showResetModal()" title="Settings"><span id="settings-icon"></span></button>
-      <button class="theme-btn" id="theme-toggle" onclick="toggleTheme()" title="Toggle theme"></button>
-      <button class="signout-btn" onclick="signOut()">Sign out</button>
+    <div id="system-status-bar">
+      <div class="ssb-item" onclick="switchTab('activity')" title="Daily Quest">
+        <span class="ssb-lbl">⚡ Quest</span>
+        <div class="ssb-bar"><div class="ssb-bar-fill" id="ssb-quest-fill" style="width:0%;background:var(--accent4)"></div></div>
+        <span class="ssb-val" id="ssb-quest-val">0/4</span>
+      </div>
+      <div class="ssb-sep"></div>
+      <div class="ssb-item" onclick="switchTab('daily')" title="Habits & Tasks">
+        <span class="ssb-lbl">✓ Habits</span>
+        <div class="ssb-bar"><div class="ssb-bar-fill" id="ssb-habits-fill" style="width:0%;background:var(--accent4)"></div></div>
+        <span class="ssb-val" id="ssb-habits-val">–</span>
+      </div>
+      <div class="ssb-sep"></div>
+      <div class="ssb-item" onclick="switchTab('food')" title="Calories">
+        <span class="ssb-lbl">🍽 Cals</span>
+        <div class="ssb-bar"><div class="ssb-bar-fill" id="ssb-cals-fill" style="width:0%;background:var(--accent)"></div></div>
+        <span class="ssb-val" id="ssb-cals-val">0</span>
+      </div>
     </div>
   </header>
 
@@ -977,6 +1082,7 @@
 
   <!-- ── DAILY ─────────────────────────────────────── -->
   <div id="section-daily" class="section">
+    <div id="daily-quest-mini"></div>
     <div class="day-nav">
       <button class="nav-arrow" onclick="changeDay('daily',-1)" id="daily-prev"></button>
       <div class="day-nav-center">
@@ -1398,6 +1504,8 @@ function renderDailyQuest() {
     const remaining = items.filter(it => !state[it.key]).length;
     status.innerHTML = `<span class="quest-pending">${remaining} task${remaining!==1?'s':''} remaining · failure costs −${QUEST_PENALTY_XP} XP</span>`;
   }
+  renderDailyQuestMini();
+  updateSystemStatus();
 }
 
 function showPenaltyModal(prevStreak) {
@@ -1408,6 +1516,69 @@ function showPenaltyModal(prevStreak) {
   if (msgEl)   msgEl.textContent   = 'You did not complete yesterday\'s training. The system shows no mercy.';
   if (statsEl) statsEl.innerHTML   = `<div>−${QUEST_PENALTY_XP} XP</div>` + (prevStreak >= 1 ? `<div>Streak Reset (was ${prevStreak})</div>` : '<div>Streak: 0</div>');
   modal.classList.add('open');
+}
+
+// ── System Status Bar ──────────────────────────────────────────────────────
+function updateSystemStatus() {
+  // Quest progress
+  const qState = user?.user_metadata?.quest_state;
+  const qDone  = qState ? (!!qState.pushups + !!qState.situps + !!qState.squats + !!qState.run) : 0;
+  const qPct   = (qDone / 4) * 100;
+  const qFill  = document.getElementById('ssb-quest-fill');
+  const qVal   = document.getElementById('ssb-quest-val');
+  if (qFill) { qFill.style.width = qPct + '%'; qFill.style.background = qDone === 4 ? 'var(--accent)' : 'var(--accent4)'; }
+  if (qVal)  qVal.textContent = `${qDone}/4`;
+
+  // Habits
+  const habPct = _mascot.habitTotal ? Math.min(100, (_mascot.habitDone / _mascot.habitTotal) * 100) : 0;
+  const hFill  = document.getElementById('ssb-habits-fill');
+  const hVal   = document.getElementById('ssb-habits-val');
+  if (hFill) { hFill.style.width = habPct + '%'; hFill.style.background = habPct >= 100 ? 'var(--accent)' : 'var(--accent4)'; }
+  if (hVal)  hVal.textContent = _mascot.habitTotal ? `${_mascot.habitDone}/${_mascot.habitTotal}` : '–';
+
+  // Calories
+  const calPctS = calGoal ? Math.min(110, (_mascot.cals / calGoal) * 100) : 0;
+  const cFill   = document.getElementById('ssb-cals-fill');
+  const cVal    = document.getElementById('ssb-cals-val');
+  if (cFill) { cFill.style.width = Math.min(100, calPctS) + '%'; cFill.style.background = calPctS > 100 ? 'var(--danger)' : 'var(--accent)'; }
+  if (cVal)  cVal.textContent = _mascot.cals > 0 ? _mascot.cals.toLocaleString() : '0';
+}
+
+// ── Mini Quest Widget (Daily tab) ──────────────────────────────────────────
+function renderDailyQuestMini() {
+  const el = document.getElementById('daily-quest-mini');
+  if (!el || !user) return;
+  const state   = getCurrentQuestState();
+  const lvl     = getLevel(totalXP);
+  const targets = getQuestTargets(lvl);
+  const streak  = getQuestStreak();
+  const allDone = questAllDone(state);
+  const items = [
+    { key:'pushups', label:'Push-ups', target: `${targets.pushups}` },
+    { key:'situps',  label:'Sit-ups',  target: `${targets.situps}`  },
+    { key:'squats',  label:'Squats',   target: `${targets.squats}`  },
+    { key:'run',     label:'Run',      target: `${targets.runKm}km` },
+  ];
+  const doneCnt = items.filter(it => !!state[it.key]).length;
+  el.innerHTML = `<div class="dqm-card">
+    <div class="dqm-header">
+      <div>
+        <div class="dqm-title">⚡ DAILY QUEST</div>
+        ${streak >= 1 ? `<div class="dqm-streak">🔥 ${streak}-day streak</div>` : ''}
+      </div>
+      <span class="dqm-status ${allDone ? 'complete' : 'pending'}">${allDone ? '✓ COMPLETE' : `${doneCnt}/4 done`}</span>
+    </div>
+    <div class="dqm-grid">${items.map(it => {
+      const done = !!state[it.key];
+      return `<div class="dqm-item${done ? ' done' : ''}" onclick="toggleQuestItem('${it.key}')">
+        <span class="dqm-check${done ? ' done' : ''}">
+          ${done ? '<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
+        </span>
+        <span class="dqm-name">${it.label}</span>
+        <span class="dqm-target">${it.target}</span>
+      </div>`;
+    }).join('')}</div>
+  </div>`;
 }
 
 // ── Theme ──────────────────────────────────────────────────────────────────
@@ -2438,6 +2609,7 @@ async function renderDaily() {
   const dayLabel = fmt(dateKey);
   document.getElementById('daily-day-label').textContent = dayLabel;
   document.getElementById('daily-today-btn').style.display = currentDays.daily === 0 ? 'none' : '';
+  renderDailyQuestMini();
 
   const [itemsRes, compRes] = await Promise.all([
     dbCall(() => db.from('habits').select('*').eq('user_id',user.id).order('created_at')),
@@ -2703,32 +2875,46 @@ async function renderSummary() {
   _mascot.habitTotal  = totalItems;
   updateMascot();
 
-  // ── Today's Goals card
+  // ── Today's Status card (unified: quest + habits + calories)
   const calPct  = calGoal ? Math.min(100, Math.round((todayCals/calGoal)*100)) : 0;
   const wkPct   = workoutGoal ? Math.min(100, Math.round((thisWeekWk/workoutGoal)*100)) : 0;
   const habPct  = totalItems ? Math.round((todayHabitDone/totalItems)*100) : 0;
+  const qStateS = user?.user_metadata?.quest_state;
+  const qDoneS  = qStateS ? (!!qStateS.pushups + !!qStateS.situps + !!qStateS.squats + !!qStateS.run) : 0;
+  const qPctS   = (qDoneS / 4) * 100;
+  const questStreak = getQuestStreak();
   const todayCard = `<div class="card" style="margin-bottom:12px">
-    <div class="smry-ttl">Today's Goals</div>
+    <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px">
+      <div class="smry-ttl" style="margin:0">Today's Status</div>
+      ${questStreak >= 1 ? `<span style="font-size:.68rem;font-weight:800;color:#f97316">🔥 ${questStreak}-day streak</span>` : ''}
+    </div>
     <div style="margin-bottom:10px">
       <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">
-        <span style="font-size:.85rem;font-weight:600">🍽 Calories</span>
-        <span style="font-size:.78rem;color:var(--muted)">${todayCals.toLocaleString()} / ${calGoal.toLocaleString()} kcal</span>
+        <span style="font-size:.82rem;font-weight:700">⚡ Daily Quest</span>
+        <span style="font-size:.76rem;font-weight:700;color:${qDoneS===4?'var(--accent)':'var(--muted)'}">${qDoneS}/4${qDoneS===4?' · complete':''}</span>
+      </div>
+      <div class="goal-bar"><div class="goal-bar-fill" style="width:${qPctS}%;background:${qDoneS===4?'var(--accent)':'var(--accent4)'}"></div></div>
+    </div>
+    <div style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">
+        <span style="font-size:.82rem;font-weight:700">✓ Habits</span>
+        <span style="font-size:.76rem;color:var(--muted)">${todayHabitDone} / ${totalItems}</span>
+      </div>
+      <div class="goal-bar"><div class="goal-bar-fill" style="width:${habPct}%;background:${habPct>=100?'var(--accent)':'var(--accent4)'}"></div></div>
+    </div>
+    <div style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">
+        <span style="font-size:.82rem;font-weight:700">🍽 Calories</span>
+        <span style="font-size:.76rem;color:var(--muted)">${todayCals.toLocaleString()} / ${calGoal.toLocaleString()} kcal</span>
       </div>
       <div class="goal-bar"><div class="goal-bar-fill" style="width:${calPct}%;background:${calPct>110?'var(--danger)':'var(--accent)'}"></div></div>
     </div>
-    <div style="margin-bottom:10px">
-      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">
-        <span style="font-size:.85rem;font-weight:600">⚡ Activity</span>
-        <span style="font-size:.78rem;color:var(--muted)">${thisWeekWk} / ${workoutGoal} this week</span>
-      </div>
-      <div class="goal-bar"><div class="goal-bar-fill" style="width:${wkPct}%;background:var(--accent4)"></div></div>
-    </div>
     <div>
       <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">
-        <span style="font-size:.85rem;font-weight:600">✓ Habits</span>
-        <span style="font-size:.78rem;color:var(--muted)">${todayHabitDone} / ${totalItems} today</span>
+        <span style="font-size:.82rem;font-weight:700">🏋 Training</span>
+        <span style="font-size:.76rem;color:var(--muted)">${thisWeekWk} / ${workoutGoal} this week</span>
       </div>
-      <div class="goal-bar"><div class="goal-bar-fill" style="width:${habPct}%;background:var(--accent4)"></div></div>
+      <div class="goal-bar"><div class="goal-bar-fill" style="width:${wkPct}%;background:var(--accent4)"></div></div>
     </div>
   </div>`;
 
@@ -2937,6 +3123,7 @@ function updateMascot() {
   }
   if (s>=95 && habitTotal>0 && !_confettiFired) { _confettiFired=true; popConfetti(); }
   if (s<90) _confettiFired = false;
+  updateSystemStatus();
 }
 
 function popConfetti() {

@@ -334,7 +334,7 @@
 
   .add-folder-row { display: flex; gap: 8px; margin-bottom: 16px; }
 
-  /* ── Habits/Tasks ──────────────────────────────── */
+  /* ── Tasks ─────────────────────────────────────── */
   .type-toggle {
     display: flex; background: var(--bg); border: 1px solid var(--border);
     border-radius: 8px; padding: 3px; gap: 3px; margin-bottom: 10px;
@@ -375,8 +375,8 @@
     font-size: .65rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
     padding: 2px 6px; border-radius: 4px; flex-shrink: 0;
   }
-  .badge-habit { background: rgba(167,139,250,.12); color: var(--accent4); }
-  .badge-task  { background: rgba(245,158,11,.12);  color: var(--accent3); }
+  .badge-daily { background: rgba(167,139,250,.12); color: var(--accent4); }
+  .badge-side  { background: rgba(245,158,11,.12);  color: var(--accent3); }
 
   .list-divider {
     font-size: .68rem; text-transform: uppercase; letter-spacing: .08em;
@@ -789,58 +789,20 @@
   }
   .ssb-sep { width: 1px; height: 14px; background: var(--border); flex-shrink: 0; margin: 0 6px; }
 
-  /* ── Mini Quest Widget (Daily tab) ─────────────────────────────────────── */
-  .dqm-card {
-    background: linear-gradient(135deg, #0c0521 0%, #1a0a3a 50%, #0a0a24 100%);
-    border: 1px solid rgba(167,139,250,.45);
-    border-radius: var(--r); padding: 14px 16px; margin-bottom: 12px;
-    position: relative; overflow: hidden;
-    box-shadow: 0 0 24px rgba(167,139,250,.1);
+  /* ── Missions Tab — always dark cinematic ───────────────────────────────── */
+  #section-daily {
+    background: linear-gradient(170deg, #080818 0%, #0e0b22 60%, #080818 100%);
+    --bg: #080818;
+    --surface: #13112a;
+    --surface-2: #1a1830;
+    --border: #272548;
+    --border-light: #363468;
+    --text: #f0f0f8;
+    --text-2: #d0d0e8;
+    --muted: #8080a8;
   }
-  .dqm-card::before {
-    content: ''; position: absolute; inset: 0; pointer-events: none;
-    background: radial-gradient(circle at 0% 0%, rgba(167,139,250,.16) 0%, transparent 60%);
-  }
-  .dqm-header {
-    display: flex; align-items: flex-start; justify-content: space-between;
-    margin-bottom: 10px; position: relative;
-  }
-  .dqm-title {
-    font-size: .64rem; font-weight: 900; letter-spacing: .22em;
-    color: var(--accent4); text-shadow: 0 0 10px rgba(167,139,250,.5);
-  }
-  .dqm-streak { font-size: .6rem; color: rgba(255,255,255,.45); margin-top: 2px; }
-  .dqm-status {
-    font-size: .66rem; font-weight: 900; letter-spacing: .04em;
-    padding: 3px 8px; border-radius: 6px; flex-shrink: 0; margin-left: 8px;
-  }
-  .dqm-status.complete { color: var(--accent); background: rgba(74,222,128,.1); }
-  .dqm-status.pending  { color: #fca5a5; }
-  .dqm-grid {
-    display: grid; grid-template-columns: 1fr 1fr; gap: 5px; position: relative;
-  }
-  .dqm-item {
-    display: flex; align-items: center; gap: 7px; padding: 7px 9px;
-    background: rgba(255,255,255,.025); border: 1px solid rgba(167,139,250,.14);
-    border-radius: 8px; cursor: pointer; transition: all .14s; user-select: none;
-  }
-  .dqm-item:hover { background: rgba(167,139,250,.07); border-color: rgba(167,139,250,.3); }
-  .dqm-item.done { background: rgba(74,222,128,.05); border-color: rgba(74,222,128,.2); }
-  .dqm-check {
-    width: 15px; height: 15px; border: 1.5px solid rgba(255,255,255,.17); border-radius: 4px;
-    display: flex; align-items: center; justify-content: center;
-    flex-shrink: 0; color: transparent; transition: all .15s;
-  }
-  .dqm-check.done { background: var(--accent); border-color: var(--accent); color: #052e16; }
-  .dqm-name {
-    font-size: .73rem; font-weight: 700; color: rgba(255,255,255,.9); flex: 1;
-    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-  }
-  .dqm-item.done .dqm-name { text-decoration: line-through; color: rgba(255,255,255,.35); }
-  .dqm-target {
-    font-size: .64rem; font-weight: 800; color: var(--accent4); white-space: nowrap; flex-shrink: 0;
-  }
-  .dqm-item.done .dqm-target { color: rgba(74,222,128,.5); }
+  #section-daily .day-nav { box-shadow: none; }
+  #section-daily .card:hover { box-shadow: 0 6px 20px rgba(0,0,0,.6); }
 </style>
 </head>
 <body>
@@ -872,7 +834,7 @@
     <div class="onboard-step" id="ob-step-2">
       <span id="ob-mascot-2" style="display:block;margin:4px 0 0"></span>
       <div class="onboard-title">Your Daily System</div>
-      <div class="onboard-sub">Add the habits you <em>must</em> complete every day. These are your core quests — skip them and your frog suffers.</div>
+      <div class="onboard-sub">Add your core daily tasks — the non-negotiables. Skip them and your frog suffers.</div>
       <div class="onboard-habit-row">
         <input type="text" id="ob-habit-input" placeholder="e.g. Drink 2L water" onkeydown="if(event.key==='Enter')addOnboardHabit()">
         <button class="btn btn-green" onclick="addOnboardHabit()">Add</button>
@@ -932,14 +894,14 @@
       </div>
     </div>
     <div id="system-status-bar">
-      <div class="ssb-item" onclick="switchTab('activity')" title="Daily Quest">
+      <div class="ssb-item" onclick="switchTab('daily')" title="Daily Quest">
         <span class="ssb-lbl">⚡ Quest</span>
         <div class="ssb-bar"><div class="ssb-bar-fill" id="ssb-quest-fill" style="width:0%;background:var(--accent4)"></div></div>
         <span class="ssb-val" id="ssb-quest-val">0/4</span>
       </div>
       <div class="ssb-sep"></div>
-      <div class="ssb-item" onclick="switchTab('daily')" title="Habits & Tasks">
-        <span class="ssb-lbl">✓ Habits</span>
+      <div class="ssb-item" onclick="switchTab('daily')" title="Tasks">
+        <span class="ssb-lbl">☑ Tasks</span>
         <div class="ssb-bar"><div class="ssb-bar-fill" id="ssb-habits-fill" style="width:0%;background:var(--accent4)"></div></div>
         <span class="ssb-val" id="ssb-habits-val">–</span>
       </div>
@@ -1002,18 +964,8 @@
   <!-- ── ACTIVITY ──────────────────────────────────── -->
   <div id="section-activity" class="section">
 
-    <!-- HERO: Daily Quest + Power Level (merged) -->
-    <div class="card quest-system-card" id="quest-system-card">
-      <div class="quest-header">
-        <span class="quest-system-label">⚡ DAILY QUEST</span>
-        <span class="quest-streak-badge" id="quest-streak" style="display:none">🔥 0</span>
-      </div>
-      <div class="quest-message">The system has assigned today's mandatory training. Failure costs XP and resets your streak.</div>
-      <div class="quest-items" id="quest-items"></div>
-      <div class="quest-status" id="quest-status"></div>
-
-      <div class="hero-divider"></div>
-
+    <!-- Power Level hero -->
+    <div class="card quest-system-card" id="act-power-hero">
       <div class="hero-power">
         <div class="hero-power-row">
           <span class="hero-power-rank"  id="act-xp-rank">E-RANK</span>
@@ -1080,9 +1032,20 @@
     <div id="info-view"></div>
   </div>
 
-  <!-- ── DAILY ─────────────────────────────────────── -->
+  <!-- ── TASKS ─────────────────────────────────────── -->
   <div id="section-daily" class="section">
-    <div id="daily-quest-mini"></div>
+
+    <!-- System Daily Quest card (cinematic hero) -->
+    <div class="card quest-system-card" id="quest-system-card">
+      <div class="quest-header">
+        <span class="quest-system-label">⚡ DAILY QUEST</span>
+        <span class="quest-streak-badge" id="quest-streak" style="display:none">🔥 0</span>
+      </div>
+      <div class="quest-message">The system has assigned today's mandatory training. Failure costs XP and resets your streak.</div>
+      <div class="quest-items" id="quest-items"></div>
+      <div class="quest-status" id="quest-status"></div>
+    </div>
+
     <div class="day-nav">
       <button class="nav-arrow" onclick="changeDay('daily',-1)" id="daily-prev"></button>
       <div class="day-nav-center">
@@ -1096,10 +1059,10 @@
       <div class="label" id="daily-label">done today</div>
     </div>
     <div class="card">
-      <div class="section-title">Add</div>
+      <div class="section-title">Add Task</div>
       <div class="type-toggle">
-        <button class="type-btn active" id="type-habit-btn" onclick="setAddType('habit')">Habit (recurring)</button>
-        <button class="type-btn"        id="type-task-btn"  onclick="setAddType('task')">Task (one-time)</button>
+        <button class="type-btn active" id="type-habit-btn" onclick="setAddType('habit')">Daily (recurring)</button>
+        <button class="type-btn"        id="type-task-btn"  onclick="setAddType('task')">Side (one-time)</button>
       </div>
       <div class="task-add-row">
         <input type="text" id="habit-name" placeholder="Name...">
@@ -1125,14 +1088,14 @@
     </div>
     <div id="summary-view"></div>
     <div style="padding: 0 0 8px">
-      <button class="btn btn-ghost btn-full" onclick="showResetModal()" style="font-size:.82rem;color:var(--muted)">Reset Goals &amp; Habits</button>
+      <button class="btn btn-ghost btn-full" onclick="showResetModal()" style="font-size:.82rem;color:var(--muted)">Settings &amp; Goals</button>
     </div>
   </div>
 
   <div id="reset-modal">
     <div class="reset-box">
       <h3>Settings</h3>
-      <div class="reset-sub">Adjust goals, pick what to track, or add core habits. Your existing data is never deleted.</div>
+      <div class="reset-sub">Adjust goals, pick what to track, or add core tasks. Your existing data is never deleted.</div>
 
       <div class="modal-section">Profile</div>
       <div class="onboard-field" style="margin-bottom:0">
@@ -1153,10 +1116,10 @@
       <div class="modal-section">What to track</div>
       <div id="macro-track-checkboxes" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
 
-      <div class="modal-section">Core habits <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:.72rem;color:var(--muted)">— tap 🗑 to unlock</span></div>
+      <div class="modal-section">Core tasks <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:.72rem;color:var(--muted)">— tap 🗑 to unlock</span></div>
       <div id="rm-core-locked"></div>
       <div class="onboard-habit-row" style="margin-top:10px">
-        <input type="text" id="rm-habit-input" placeholder="Add new core habit..." onkeydown="if(event.key==='Enter')addResetHabit()">
+        <input type="text" id="rm-habit-input" placeholder="Add new core task..." onkeydown="if(event.key==='Enter')addResetHabit()">
         <button class="btn btn-green" onclick="addResetHabit()">Add</button>
       </div>
       <div class="onboard-habit-list" id="rm-new-habits" style="margin-top:10px"></div>
@@ -1504,7 +1467,6 @@ function renderDailyQuest() {
     const remaining = items.filter(it => !state[it.key]).length;
     status.innerHTML = `<span class="quest-pending">${remaining} task${remaining!==1?'s':''} remaining · failure costs −${QUEST_PENALTY_XP} XP</span>`;
   }
-  renderDailyQuestMini();
   updateSystemStatus();
 }
 
@@ -1545,41 +1507,6 @@ function updateSystemStatus() {
 }
 
 // ── Mini Quest Widget (Daily tab) ──────────────────────────────────────────
-function renderDailyQuestMini() {
-  const el = document.getElementById('daily-quest-mini');
-  if (!el || !user) return;
-  const state   = getCurrentQuestState();
-  const lvl     = getLevel(totalXP);
-  const targets = getQuestTargets(lvl);
-  const streak  = getQuestStreak();
-  const allDone = questAllDone(state);
-  const items = [
-    { key:'pushups', label:'Push-ups', target: `${targets.pushups}` },
-    { key:'situps',  label:'Sit-ups',  target: `${targets.situps}`  },
-    { key:'squats',  label:'Squats',   target: `${targets.squats}`  },
-    { key:'run',     label:'Run',      target: `${targets.runKm}km` },
-  ];
-  const doneCnt = items.filter(it => !!state[it.key]).length;
-  el.innerHTML = `<div class="dqm-card">
-    <div class="dqm-header">
-      <div>
-        <div class="dqm-title">⚡ DAILY QUEST</div>
-        ${streak >= 1 ? `<div class="dqm-streak">🔥 ${streak}-day streak</div>` : ''}
-      </div>
-      <span class="dqm-status ${allDone ? 'complete' : 'pending'}">${allDone ? '✓ COMPLETE' : `${doneCnt}/4 done`}</span>
-    </div>
-    <div class="dqm-grid">${items.map(it => {
-      const done = !!state[it.key];
-      return `<div class="dqm-item${done ? ' done' : ''}" onclick="toggleQuestItem('${it.key}')">
-        <span class="dqm-check${done ? ' done' : ''}">
-          ${done ? '<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
-        </span>
-        <span class="dqm-name">${it.label}</span>
-        <span class="dqm-target">${it.target}</span>
-      </div>`;
-    }).join('')}</div>
-  </div>`;
-}
 
 // ── Theme ──────────────────────────────────────────────────────────────────
 function setTheme(dark) {
@@ -1780,7 +1707,7 @@ async function removeCoreHabit(habitId) {
   const meta   = { ...user.user_metadata, core_habit_ids: newIds };
   await db.auth.updateUser({ data: meta });
   await refreshUser();
-  toast('Habit unlocked — now editable in daily view', 'ok');
+  toast('Task unlocked — now editable', 'ok');
   showResetModal();
 }
 
@@ -1803,9 +1730,9 @@ async function showResetModal() {
         ${icon(IC.lock,13)}<span>${esc(h.name)}</span>
         <button class="icon-btn danger" title="Remove from core" onclick="removeCoreHabit('${h.id}')" style="flex-shrink:0">${icon(IC.trash,14)}</button>
       </div>`
-    ).join('') || '<div style="color:var(--muted);font-size:.85rem;padding:4px 0">No core habits yet.</div>';
+    ).join('') || '<div style="color:var(--muted);font-size:.85rem;padding:4px 0">No core tasks yet.</div>';
   } else {
-    document.getElementById('rm-core-locked').innerHTML = '<div style="color:var(--muted);font-size:.85rem;padding:4px 0">No core habits yet.</div>';
+    document.getElementById('rm-core-locked').innerHTML = '<div style="color:var(--muted);font-size:.85rem;padding:4px 0">No core tasks yet.</div>';
   }
   document.getElementById('reset-modal').classList.add('open');
 }
@@ -2211,7 +2138,6 @@ async function renderActivity() {
   _mascot.wkSessions = wkSessions;
   updateMascot();
   updateXPDisplay();
-  renderDailyQuest();
 
   const wkEl = document.getElementById('activity-week-sessions');
   const gdEl = document.getElementById('activity-goal-display');
@@ -2225,7 +2151,7 @@ async function renderActivity() {
   const listEl = document.getElementById('activity-list');
   if (!listEl) return;
   if (!rows.length) {
-    const emptyMsg = dayLabel === 'Today' ? 'No quests completed yet. Begin your journey!' : `No activity on ${dayLabel}`;
+    const emptyMsg = dayLabel === 'Today' ? 'No training logged yet. Time to begin!' : `No activity on ${dayLabel}`;
     listEl.innerHTML = `<div class="card"><div class="empty">${emptyMsg}</div></div>`;
     return;
   }
@@ -2534,8 +2460,8 @@ function setAddType(type) {
   document.getElementById('type-habit-btn').classList.toggle('active', type === 'habit');
   document.getElementById('type-task-btn').classList.toggle('active',  type === 'task');
   document.getElementById('habit-name').placeholder = type === 'habit'
-    ? 'Habit name (e.g. Drink water, Exercise...)'
-    : 'Task name (e.g. Call dentist, Buy groceries...)';
+    ? 'Daily task name (e.g. Drink water, Exercise...)'
+    : 'Side task name (e.g. Call dentist, Buy groceries...)';
 }
 
 function parseTaskName(raw) {
@@ -2593,7 +2519,7 @@ async function toggleItem(id, isRecurring) {
   if (didComplete) {
     const isCore = isRecurring && getCoreHabitIds().includes(id);
     const xp     = isCore ? 50 : isRecurring ? 25 : 15;
-    const reason = isCore ? 'Core Habit' : isRecurring ? 'Habit' : 'Task';
+    const reason = isCore ? 'Core Task' : isRecurring ? 'Daily Task' : 'Side Task';
     await awardXP(xp, reason);
   }
   await renderDaily();
@@ -2609,7 +2535,7 @@ async function renderDaily() {
   const dayLabel = fmt(dateKey);
   document.getElementById('daily-day-label').textContent = dayLabel;
   document.getElementById('daily-today-btn').style.display = currentDays.daily === 0 ? 'none' : '';
-  renderDailyQuestMini();
+  renderDailyQuest();
 
   const [itemsRes, compRes] = await Promise.all([
     dbCall(() => db.from('habits').select('*').eq('user_id',user.id).order('created_at')),
@@ -2646,7 +2572,7 @@ async function renderDaily() {
   updateMascot();
 
   if (!all.length) {
-    document.getElementById('daily-list').innerHTML = '<div class="card"><div class="empty">Add habits or tasks above</div></div>';
+    document.getElementById('daily-list').innerHTML = '<div class="card"><div class="empty">Add tasks above</div></div>';
     return;
   }
 
@@ -2670,8 +2596,8 @@ async function renderDaily() {
     const badge = isCore
       ? `<span class="core-badge">${icon(IC.lock,11)} Core</span>`
       : item.recurring
-        ? `<span class="habit-badge badge-habit">Habit</span>`
-        : `<span class="habit-badge badge-task">Task</span>`;
+        ? `<span class="habit-badge badge-daily">Daily</span>`
+        : `<span class="habit-badge badge-side">Side</span>`;
     let dueHtml = '';
     if (parsed.due) {
       const isOverdue = !isDone && parsed.due < todayKey();
@@ -2704,11 +2630,11 @@ async function renderDaily() {
   if (incompleteHabits.length || incompleteTasks.length) {
     html += '<div class="card">';
     if (hasHabits && hasTasks && incompleteHabits.length) {
-      html += `<div class="list-divider">Habits</div>`;
+      html += `<div class="list-divider">Daily</div>`;
     }
     incompleteHabits.forEach(h => { html += renderRow(h, false); });
     if (hasHabits && hasTasks && incompleteTasks.length) {
-      html += `<div class="list-divider" style="margin-top:8px">Tasks</div>`;
+      html += `<div class="list-divider" style="margin-top:8px">Side</div>`;
     }
     incompleteTasks.forEach(t => { html += renderRow(t, false); });
     html += '</div>';
@@ -2897,7 +2823,7 @@ async function renderSummary() {
     </div>
     <div style="margin-bottom:10px">
       <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">
-        <span style="font-size:.82rem;font-weight:700">✓ Habits</span>
+        <span style="font-size:.82rem;font-weight:700">☑ Tasks</span>
         <span style="font-size:.76rem;color:var(--muted)">${todayHabitDone} / ${totalItems}</span>
       </div>
       <div class="goal-bar"><div class="goal-bar-fill" style="width:${habPct}%;background:${habPct>=100?'var(--accent)':'var(--accent4)'}"></div></div>

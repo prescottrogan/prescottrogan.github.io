@@ -148,10 +148,10 @@
     content: ''; position: absolute; bottom: 6px; width: 16px; height: 3px;
     border-radius: 2px; background: currentColor; opacity: .6;
   }
-  nav button.active[data-tab="food"]    { color: var(--accent); }
-  nav button.active[data-tab="workout"] { color: var(--accent2); }
-  nav button.active[data-tab="info"]    { color: var(--accent3); }
-  nav button.active[data-tab="daily"]   { color: var(--accent4); }
+  nav button.active[data-tab="food"]     { color: var(--accent); }
+  nav button.active[data-tab="activity"] { color: var(--accent4); }
+  nav button.active[data-tab="info"]     { color: var(--accent3); }
+  nav button.active[data-tab="daily"]    { color: var(--accent4); }
 
   /* ── Sections ──────────────────────────────────── */
   .section { display: none; padding: 16px 20px calc(80px + env(safe-area-inset-bottom)); }
@@ -516,6 +516,91 @@
 
   /* ── Greeting ───────────────────────────────────── */
   .mascot-greeting { font-size:.95rem; font-weight:700; color:var(--text); margin-top:6px; letter-spacing:-.01em; }
+
+  /* ── XP System ──────────────────────────────────── */
+  @keyframes xp-float { 0%{opacity:1;transform:translateY(0) scale(1)} 100%{opacity:0;transform:translateY(-64px) scale(1.18)} }
+  @keyframes levelup-pop { 0%{transform:scale(.7) translateY(30px);opacity:0} 60%{transform:scale(1.06) translateY(-4px);opacity:1} 100%{transform:scale(1) translateY(0);opacity:1} }
+  @keyframes rank-shimmer { 0%,100%{filter:brightness(1)} 50%{filter:brightness(1.35)} }
+  @keyframes xp-bar-grow { from{width:0} }
+
+  .xp-popup {
+    position:fixed; font-size:1.4rem; font-weight:900; color:#4ade80;
+    text-shadow:0 0 20px rgba(74,222,128,.6); pointer-events:none; z-index:9999;
+    animation:xp-float 1.5s ease-out forwards; letter-spacing:-.02em; white-space:nowrap;
+  }
+  #level-badge {
+    display:inline-flex; align-items:center; padding:3px 9px; border-radius:20px;
+    font-size:.72rem; font-weight:800; letter-spacing:.02em; cursor:pointer;
+    transition:filter .2s, transform .15s; border:1px solid currentColor;
+    opacity:.9; flex-shrink:0;
+  }
+  #level-badge:hover { filter:brightness(1.2); transform:scale(1.06); opacity:1; }
+
+  #levelup-modal { display:none; position:fixed; inset:0; z-index:600; background:rgba(0,0,0,.75); align-items:center; justify-content:center; padding:20px; }
+  #levelup-modal.open { display:flex; }
+  .levelup-box {
+    background:var(--surface); border:2px solid var(--accent4); border-radius:24px;
+    padding:36px 28px; text-align:center; max-width:340px; width:100%;
+    animation:levelup-pop .5s cubic-bezier(.34,1.56,.64,1) forwards;
+    box-shadow:0 0 60px rgba(167,139,250,.4);
+  }
+  .levelup-icon  { font-size:3.5rem; margin-bottom:8px; display:block; }
+  .levelup-title { font-size:.75rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); margin-bottom:4px; }
+  .levelup-level { font-size:3rem; font-weight:900; letter-spacing:-.04em; line-height:1; color:var(--text); margin-bottom:4px; }
+  .levelup-rank  { font-size:1.4rem; font-weight:800; letter-spacing:.02em; animation:rank-shimmer 2s ease-in-out infinite; margin-bottom:16px; display:block; }
+  .levelup-msg   { font-size:.88rem; color:var(--muted); margin-bottom:22px; line-height:1.5; }
+
+  .act-power-card {
+    background:linear-gradient(135deg,#0f0c29,#1a1033,#24243e) !important;
+    border-color:#3d2d6e !important; padding:20px !important; text-align:center; position:relative; overflow:hidden;
+  }
+  [data-theme="light"] .act-power-card { background:linear-gradient(135deg,#1a0533,#2d1060,#1a0a4a) !important; }
+  .act-power-card::before { content:''; position:absolute; inset:0; background:radial-gradient(ellipse at 50% 0%,rgba(167,139,250,.25) 0%,transparent 70%); pointer-events:none; }
+  .act-rank-label { font-size:.7rem; font-weight:800; letter-spacing:.18em; text-transform:uppercase; color:var(--accent4); margin-bottom:4px; animation:rank-shimmer 3s ease-in-out infinite; }
+  .act-level-num  { font-size:2rem; font-weight:900; letter-spacing:-.03em; color:#fff; line-height:1.1; margin-bottom:12px; }
+  .act-xp-bar-wrap { height:8px; background:rgba(255,255,255,.1); border-radius:4px; overflow:hidden; margin:0 0 6px; }
+  .act-xp-bar { height:100%; border-radius:4px; background:linear-gradient(90deg,var(--accent4),var(--accent5)); transition:width .5s cubic-bezier(.4,0,.2,1); }
+  .act-xp-pct  { font-size:.72rem; color:rgba(255,255,255,.5); margin-bottom:4px; }
+  .act-total-xp{ font-size:.68rem; color:rgba(255,255,255,.35); font-variant-numeric:tabular-nums; }
+
+  .act-type-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-bottom:14px; }
+  .act-type-btn {
+    display:flex; flex-direction:column; align-items:center; gap:3px;
+    padding:9px 4px; border-radius:10px; border:1.5px solid var(--border);
+    background:var(--bg); cursor:pointer; transition:all .15s; font-family:inherit;
+  }
+  .act-type-btn:hover:not(.active) { border-color:var(--accent4); transform:translateY(-1px); }
+  .act-type-btn .act-emoji { font-size:1.3rem; line-height:1; }
+  .act-type-btn .act-name  { font-size:.62rem; font-weight:700; color:var(--muted); text-align:center; white-space:nowrap; }
+  .act-type-btn.active { background:rgba(167,139,250,.15); border-color:var(--accent4); }
+  .act-type-btn.active .act-name { color:var(--accent4); }
+
+  .act-duration-wrap  { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+  .act-duration-input { flex:1; font-size:2rem !important; font-weight:800 !important; text-align:center; padding:14px !important; margin-bottom:0 !important; border-color:var(--accent4) !important; }
+  .act-duration-unit  { color:var(--muted); font-size:.95rem; font-weight:600; flex-shrink:0; }
+
+  .act-xp-preview {
+    display:flex; align-items:center; justify-content:center; gap:6px;
+    font-size:.82rem; font-weight:700; color:var(--accent4);
+    background:rgba(167,139,250,.1); border:1px solid rgba(167,139,250,.2);
+    border-radius:8px; padding:8px 12px; margin-bottom:10px; min-height:36px;
+    text-align:center; transition:all .2s;
+  }
+  .quest-entry { display:flex; align-items:center; gap:12px; padding:13px 6px; border-bottom:1px solid var(--border); transition:background .15s; border-radius:8px; margin:0 -6px; }
+  .quest-entry:hover { background:var(--surface-2); }
+  .quest-entry:last-child { border-bottom:none; }
+  .quest-entry:first-child { padding-top:6px; }
+  .quest-emoji { font-size:1.6rem; flex-shrink:0; width:36px; text-align:center; line-height:1; }
+  .quest-info  { flex:1; min-width:0; }
+  .quest-name  { font-size:.95rem; font-weight:600; }
+  .quest-meta  { font-size:.74rem; color:var(--muted); margin-top:2px; }
+  .quest-xp-badge { font-size:.68rem; font-weight:800; color:var(--accent4); background:rgba(167,139,250,.12); border:1px solid rgba(167,139,250,.25); border-radius:6px; padding:3px 7px; flex-shrink:0; white-space:nowrap; }
+  .act-quest-title { color:var(--accent4) !important; letter-spacing:.08em; }
+
+  nav button.active[data-tab="food"]     { color: var(--accent); }
+  nav button.active[data-tab="activity"] { color: var(--accent4); }
+  nav button.active[data-tab="info"]     { color: var(--accent3); }
+  nav button.active[data-tab="daily"]    { color: var(--accent4); }
 </style>
 </head>
 <body>
@@ -599,6 +684,7 @@
     </div>
     <div class="header-right">
       <span id="date-display"></span>
+      <span id="level-badge" onclick="switchTab('activity')" title="Your Power Level" style="background:rgba(107,114,128,.12);color:#6b7280;border-color:rgba(107,114,128,.3)">Lv.1</span>
       <button class="theme-btn" id="settings-btn" onclick="showResetModal()" title="Settings"><span id="settings-icon"></span></button>
       <button class="theme-btn" id="theme-toggle" onclick="toggleTheme()" title="Toggle theme"></button>
       <button class="signout-btn" onclick="signOut()">Sign out</button>
@@ -652,50 +738,50 @@
     <div class="card" id="food-list"><div class="empty">Nothing logged yet</div></div>
   </div>
 
-  <!-- ── WORKOUT ────────────────────────────────────── -->
-  <div id="section-workout" class="section">
+  <!-- ── ACTIVITY ──────────────────────────────────── -->
+  <div id="section-activity" class="section">
+    <div class="card act-power-card">
+      <div class="act-rank-label" id="act-xp-rank">E-Rank</div>
+      <div class="act-level-num" id="act-xp-level">Level 1</div>
+      <div class="act-xp-bar-wrap"><div class="act-xp-bar" id="act-xp-bar" style="width:0%"></div></div>
+      <div class="act-xp-pct" id="act-xp-pct">0% to next level</div>
+      <div class="act-total-xp" id="act-total-xp">0 total XP</div>
+    </div>
     <div class="day-nav">
-      <button class="nav-arrow" onclick="changeDay('workout',-1)" id="workout-prev"></button>
+      <button class="nav-arrow" onclick="changeDay('activity',-1)" id="activity-prev"></button>
       <div class="day-nav-center">
-        <span class="day-nav-date" id="workout-day-label"></span>
-        <button class="today-btn" id="workout-today-btn" onclick="goToday('workout')">Today</button>
+        <span class="day-nav-date" id="activity-day-label"></span>
+        <button class="today-btn" id="activity-today-btn" onclick="goToday('activity')">Today</button>
       </div>
-      <button class="nav-arrow" onclick="changeDay('workout',1)" id="workout-next"></button>
+      <button class="nav-arrow" onclick="changeDay('activity',1)" id="activity-next"></button>
     </div>
     <div class="card stat-big">
-      <div class="number" id="workout-week-sessions" style="color:var(--accent2)">0</div>
+      <div class="number" id="activity-week-sessions" style="color:var(--accent4)">0</div>
       <div class="label">sessions this week</div>
-      <div class="goal-bar"><div class="goal-bar-fill" id="workout-goal-bar" style="width:0%;background:var(--accent2)"></div></div>
+      <div class="goal-bar"><div class="goal-bar-fill" id="activity-goal-bar" style="width:0%;background:var(--accent4)"></div></div>
       <div class="goal-text">
-        Goal: <span id="workout-goal-display">3</span>/week
-        <button class="text-link" onclick="toggleWorkoutGoalEdit()">edit</button>
+        Goal: <span id="activity-goal-display">3</span>/week
+        <button class="text-link" onclick="toggleActivityGoalEdit()">edit</button>
       </div>
-      <div id="workout-goal-edit" style="display:none" class="goal-row">
+      <div id="activity-goal-edit" style="display:none" class="goal-row">
         <label>Weekly session goal</label>
-        <input type="number" id="workout-goal-input" placeholder="3" min="1" max="7">
-        <button class="btn btn-blue" style="padding:8px 14px" onclick="saveWorkoutGoal()">Save</button>
+        <input type="number" id="activity-goal-input" placeholder="3" min="1" max="7">
+        <button class="btn btn-purple" style="padding:8px 14px" onclick="saveActivityGoal()">Save</button>
       </div>
     </div>
     <div class="card">
-      <div class="section-title">Log Exercise</div>
-      <div class="wk-type-row">
-        <button class="wk-type-btn active" data-type="Weights"    onclick="selectWkType(this,'ex-type','ex-details')">Weights</button>
-        <button class="wk-type-btn"        data-type="Cardio"     onclick="selectWkType(this,'ex-type','ex-details')">Cardio</button>
-        <button class="wk-type-btn"        data-type="Bodyweight" onclick="selectWkType(this,'ex-type','ex-details')">Bodyweight</button>
-        <button class="wk-type-btn"        data-type="Stretching" onclick="selectWkType(this,'ex-type','ex-details')">Stretching</button>
-        <button class="wk-type-btn"        data-type="Other"      onclick="selectWkType(this,'ex-type','ex-details')">Other</button>
+      <div class="section-title" style="color:var(--accent4);letter-spacing:.1em">⚡ Begin Quest</div>
+      <div class="act-type-grid" id="act-type-grid"></div>
+      <div class="act-duration-wrap">
+        <input type="number" id="act-duration" class="act-duration-input" placeholder="0" min="1" max="600" inputmode="numeric" oninput="updateXPPreview()">
+        <span class="act-duration-unit">minutes</span>
       </div>
-      <input type="hidden" id="ex-type" value="Weights">
-      <div class="form-row">
-        <input type="text" id="ex-name" placeholder="Exercise name (e.g. Bench Press)">
-      </div>
-      <div class="form-row">
-        <input type="text" id="ex-details" placeholder="3×10 @ 135 lbs">
-      </div>
-      <button id="workout-add-btn" class="btn btn-blue btn-full" onclick="addExercise()"><span id="workout-plus"></span>Add Exercise</button>
+      <input type="text" id="act-notes" placeholder="Notes (optional)">
+      <div class="act-xp-preview" id="act-xp-preview">Select an activity to see XP reward</div>
+      <button id="activity-add-btn" class="btn btn-purple btn-full" onclick="addActivity()"><span id="activity-plus"></span>Complete Quest</button>
     </div>
-    <div class="section-title" id="workout-log-title">Workout Log</div>
-    <div class="card workout-entry" id="workout-list"><div class="empty">No exercises logged yet</div></div>
+    <div class="section-title act-quest-title">Quest Log</div>
+    <div id="activity-list"><div class="card"><div class="empty">No quests completed yet. Begin your journey!</div></div></div>
   </div>
 
   <!-- ── INFO ──────────────────────────────────────── -->
@@ -775,7 +861,7 @@
       <div class="modal-section">What to track</div>
       <div id="macro-track-checkboxes" style="display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
 
-      <div class="modal-section">Core habits</div>
+      <div class="modal-section">Core habits <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:.72rem;color:var(--muted)">— tap 🗑 to unlock</span></div>
       <div id="rm-core-locked"></div>
       <div class="onboard-habit-row" style="margin-top:10px">
         <input type="text" id="rm-habit-input" placeholder="Add new core habit..." onkeydown="if(event.key==='Enter')addResetHabit()">
@@ -790,11 +876,23 @@
     </div>
   </div>
 
+  <!-- Level-Up Modal -->
+  <div id="levelup-modal">
+    <div class="levelup-box">
+      <span class="levelup-icon" id="lu-icon">⭐</span>
+      <div class="levelup-title">Power Level Increased!</div>
+      <div class="levelup-level" id="lu-level">Level 2</div>
+      <span class="levelup-rank" id="lu-rank">E-Rank</span>
+      <div class="levelup-msg" id="lu-msg">You grow stronger. Keep pushing your limits.</div>
+      <button class="btn btn-purple btn-full" onclick="document.getElementById('levelup-modal').classList.remove('open')">Continue</button>
+    </div>
+  </div>
+
   <nav>
-    <button data-tab="food"    onclick="switchTab('food')"    id="nav-food"></button>
-    <button data-tab="workout" onclick="switchTab('workout')" id="nav-workout"></button>
-    <button data-tab="daily"   onclick="switchTab('daily')"   id="nav-daily"></button>
-    <button data-tab="info"    onclick="switchTab('info')"    id="nav-info"></button>
+    <button data-tab="food"     onclick="switchTab('food')"     id="nav-food"></button>
+    <button data-tab="activity" onclick="switchTab('activity')" id="nav-activity"></button>
+    <button data-tab="daily"    onclick="switchTab('daily')"    id="nav-daily"></button>
+    <button data-tab="info"     onclick="switchTab('info')"     id="nav-info"></button>
   </nav>
 </div>
 
@@ -808,8 +906,8 @@ const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
 
 let user = null;
 let calGoal = 2000;
-let currentDays = { food: 0, workout: 0, daily: 0 };
-let editing = { food: null, workout: null, info: null, habit: null, folder: null };
+let currentDays = { food: 0, activity: 0, daily: 0 };
+let editing = { food: null, activity: null, info: null, habit: null, folder: null };
 
 // Info state
 let currentFolder = null;  // null=folder list, '__all__'=all items, uuid=folder contents
@@ -868,6 +966,116 @@ let trackedMacros = ['protein','carbs','fat'];
 
 const FOLDER_COLORS = ['#60a5fa','#4ade80','#f59e0b','#a78bfa','#f87171','#34d399','#fb923c','#e879f9'];
 
+// ── Activity types ─────────────────────────────────────────────────────────
+const ACTIVITY_TYPES = [
+  { id:'running',  emoji:'🏃', name:'Running',  xpPerMin:2   },
+  { id:'strength', emoji:'⚔️', name:'Strength', xpPerMin:2   },
+  { id:'cardio',   emoji:'💨', name:'Cardio',   xpPerMin:1.5 },
+  { id:'sport',    emoji:'🏐', name:'Sport',    xpPerMin:1.5 },
+  { id:'cycling',  emoji:'🚴', name:'Cycling',  xpPerMin:1.5 },
+  { id:'swimming', emoji:'🏊', name:'Swimming', xpPerMin:2   },
+  { id:'combat',   emoji:'🥊', name:'Combat',   xpPerMin:2   },
+  { id:'yoga',     emoji:'🧘', name:'Yoga',     xpPerMin:1   },
+  { id:'hiking',   emoji:'🥾', name:'Hiking',   xpPerMin:1.5 },
+  { id:'walking',  emoji:'🚶', name:'Walking',  xpPerMin:1   },
+  { id:'dance',    emoji:'💃', name:'Dance',    xpPerMin:1.5 },
+  { id:'other',    emoji:'⚡', name:'Other',    xpPerMin:1.5 },
+];
+let _selectedActivity = ACTIVITY_TYPES[0];
+
+// ── XP State ───────────────────────────────────────────────────────────────
+let totalXP = 0;
+
+function getXPThreshold(level) {
+  if (level <= 1) return 0;
+  return Math.floor(100 * Math.pow(level - 1, 1.8));
+}
+function getLevel(xp) {
+  let lvl = 1;
+  while (getXPThreshold(lvl + 1) <= xp) lvl++;
+  return lvl;
+}
+function getLevelProgress(xp) {
+  const lvl = getLevel(xp);
+  const cur = getXPThreshold(lvl);
+  const nxt = getXPThreshold(lvl + 1);
+  const needed = nxt - cur;
+  return { level: lvl, current: xp - cur, needed, pct: needed ? Math.round(((xp - cur) / needed) * 100) : 100 };
+}
+function getRankInfo(level) {
+  if (level >= 100) return { rank:'Shadow Monarch', color:'#7c3aed', bg:'rgba(124,58,237,.15)', icon:'👑', msg:'You have reached the pinnacle. None stand above you.' };
+  if (level >= 76)  return { rank:'National',       color:'#dc2626', bg:'rgba(220,38,38,.15)',  icon:'⚔️', msg:'A legend among hunters. Your name is known worldwide.' };
+  if (level >= 51)  return { rank:'S-Rank',         color:'#a855f7', bg:'rgba(168,85,247,.15)', icon:'💜', msg:'Elite. Only a handful in the world match your power.' };
+  if (level >= 36)  return { rank:'A-Rank',         color:'#f59e0b', bg:'rgba(245,158,11,.15)', icon:'⭐', msg:'Top tier. You stand above nearly every hunter.' };
+  if (level >= 21)  return { rank:'B-Rank',         color:'#3b82f6', bg:'rgba(59,130,246,.15)', icon:'🔷', msg:'Skilled hunter. The foundation of your power grows.' };
+  if (level >= 11)  return { rank:'C-Rank',         color:'#22d3ee', bg:'rgba(34,211,238,.15)', icon:'💠', msg:'Capable hunter. You\'re building real momentum.' };
+  if (level >= 6)   return { rank:'D-Rank',         color:'#4ade80', bg:'rgba(74,222,128,.15)', icon:'🟢', msg:'You\'ve proven yourself. Keep grinding.' };
+  return              { rank:'E-Rank',               color:'#6b7280', bg:'rgba(107,114,128,.15)', icon:'⬜', msg:'Every Shadow Monarch starts somewhere. Begin your rise.' };
+}
+
+async function awardXP(amount, reason) {
+  if (!user || amount <= 0) return;
+  const prev    = totalXP;
+  totalXP      += amount;
+  const prevLvl = getLevel(prev);
+  const newLvl  = getLevel(totalXP);
+  db.auth.updateUser({ data: { ...user.user_metadata, total_xp: totalXP } }).then(({ data }) => {
+    if (data?.user) user = data.user;
+  });
+  updateXPDisplay();
+  showXPPopup(amount);
+  if (newLvl > prevLvl) setTimeout(() => showLevelUpModal(newLvl), 700);
+}
+
+function showXPPopup(amount) {
+  const el = document.createElement('div');
+  el.className = 'xp-popup';
+  el.textContent = `+${amount} XP`;
+  const badge = document.getElementById('level-badge');
+  if (badge) {
+    const r = badge.getBoundingClientRect();
+    el.style.position  = 'fixed';
+    el.style.top       = (r.bottom + 12) + 'px';
+    el.style.left      = (r.left + r.width / 2) + 'px';
+    el.style.transform = 'translateX(-50%)';
+  }
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1600);
+}
+
+function showLevelUpModal(newLevel) {
+  const rank = getRankInfo(newLevel);
+  document.getElementById('lu-level').textContent = `Level ${newLevel}`;
+  document.getElementById('lu-rank').textContent  = rank.rank;
+  document.getElementById('lu-rank').style.color  = rank.color;
+  document.getElementById('lu-icon').textContent  = rank.icon;
+  document.getElementById('lu-msg').textContent   = rank.msg;
+  document.getElementById('levelup-modal').classList.add('open');
+  popConfetti();
+}
+
+function updateXPDisplay() {
+  const prog = getLevelProgress(totalXP);
+  const rank = getRankInfo(prog.level);
+  const badge = document.getElementById('level-badge');
+  if (badge) {
+    badge.textContent      = `Lv.${prog.level}`;
+    badge.style.background = rank.bg;
+    badge.style.color      = rank.color;
+    badge.style.borderColor = rank.color;
+  }
+  const xpBar  = document.getElementById('act-xp-bar');
+  const xpPct  = document.getElementById('act-xp-pct');
+  const xpLvl  = document.getElementById('act-xp-level');
+  const xpRank = document.getElementById('act-xp-rank');
+  const xpTot  = document.getElementById('act-total-xp');
+  if (xpBar)  xpBar.style.width  = prog.pct + '%';
+  if (xpPct)  xpPct.textContent  = `${prog.pct}% to next level · ${prog.current} / ${prog.needed} XP`;
+  if (xpLvl)  xpLvl.textContent  = `Level ${prog.level}`;
+  if (xpRank) { xpRank.textContent = rank.rank; xpRank.style.color = rank.color; }
+  if (xpTot)  xpTot.textContent  = `${totalXP.toLocaleString()} total XP`;
+}
+
 // ── Theme ──────────────────────────────────────────────────────────────────
 function setTheme(dark) {
   document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
@@ -881,26 +1089,37 @@ function toggleTheme() {
 
 function injectIcons() {
   const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-  document.getElementById('theme-toggle').innerHTML = icon(isDark ? IC.sun : IC.moon, 18);
-  document.getElementById('nav-food').innerHTML    = icon(IC.food, 22)    + '<span>Food</span>';
-  document.getElementById('nav-workout').innerHTML = icon(IC.workout, 22) + '<span>Workout</span>';
-  document.getElementById('nav-info').innerHTML    = icon(IC.info, 22)    + '<span>Notes</span>';
-  document.getElementById('nav-daily').innerHTML   = icon(IC.daily, 22)   + '<span>Tasks</span>';
+  document.getElementById('theme-toggle').innerHTML  = icon(isDark ? IC.sun : IC.moon, 18);
+  document.getElementById('nav-food').innerHTML      = icon(IC.food, 22)    + '<span>Food</span>';
+  document.getElementById('nav-activity').innerHTML  = icon(IC.workout, 22) + '<span>Activity</span>';
+  document.getElementById('nav-info').innerHTML      = icon(IC.info, 22)    + '<span>Notes</span>';
+  document.getElementById('nav-daily').innerHTML     = icon(IC.daily, 22)   + '<span>Tasks</span>';
 
-  document.getElementById('food-prev').innerHTML    = icon(IC.arrowL);
-  document.getElementById('food-next').innerHTML    = icon(IC.arrowR);
-  document.getElementById('workout-prev').innerHTML = icon(IC.arrowL);
-  document.getElementById('workout-next').innerHTML = icon(IC.arrowR);
-  document.getElementById('daily-prev').innerHTML   = icon(IC.arrowL);
-  document.getElementById('daily-next').innerHTML   = icon(IC.arrowR);
-  document.getElementById('food-plus').innerHTML        = icon(IC.plus, 16);
-  document.getElementById('food-search-icon').innerHTML = icon(IC.search, 18);
-  document.getElementById('workout-plus').innerHTML     = icon(IC.plus, 16);
-  document.getElementById('habit-plus').innerHTML      = icon(IC.plus, 16);
-  document.getElementById('settings-icon').innerHTML  = icon(IC.gear, 18);
+  document.getElementById('food-prev').innerHTML     = icon(IC.arrowL);
+  document.getElementById('food-next').innerHTML     = icon(IC.arrowR);
+  document.getElementById('activity-prev').innerHTML = icon(IC.arrowL);
+  document.getElementById('activity-next').innerHTML = icon(IC.arrowR);
+  document.getElementById('daily-prev').innerHTML    = icon(IC.arrowL);
+  document.getElementById('daily-next').innerHTML    = icon(IC.arrowR);
+  document.getElementById('food-plus').innerHTML         = icon(IC.plus, 16);
+  document.getElementById('food-search-icon').innerHTML  = icon(IC.search, 18);
+  document.getElementById('activity-plus').innerHTML     = icon(IC.plus, 16);
+  document.getElementById('habit-plus').innerHTML        = icon(IC.plus, 16);
+  document.getElementById('settings-icon').innerHTML     = icon(IC.gear, 18);
   document.getElementById('ob-mascot-1').innerHTML  = mascotSVG(80, 80);
   document.getElementById('ob-mascot-2').innerHTML  = mascotSVG(80, 80);
+
+  const grid = document.getElementById('act-type-grid');
+  if (grid) {
+    grid.innerHTML = ACTIVITY_TYPES.map((t, i) =>
+      `<button class="act-type-btn${i===0?' active':''}" onclick="selectActivityType(${i})">
+        <span class="act-emoji">${t.emoji}</span>
+        <span class="act-name">${t.name}</span>
+      </button>`
+    ).join('');
+  }
   updateMascot();
+  updateXPDisplay();
 }
 
 // ── Auth ───────────────────────────────────────────────────────────────────
@@ -970,7 +1189,7 @@ async function showApp() {
   }
 }
 async function renderAll() {
-  await Promise.all([renderFood(), renderWorkout(), renderDaily(), renderInfo()]);
+  await Promise.all([renderFood(), renderActivity(), renderDaily(), renderInfo()]);
   setSummaryPeriod('day');
 }
 
@@ -1051,6 +1270,15 @@ async function submitOnboarding() {
 }
 
 // ── Reset modal ─────────────────────────────────────────────────────────────
+async function removeCoreHabit(habitId) {
+  const newIds = getCoreHabitIds().filter(id => id !== habitId);
+  const meta   = { ...user.user_metadata, core_habit_ids: newIds };
+  await db.auth.updateUser({ data: meta });
+  await refreshUser();
+  toast('Habit unlocked — now editable in daily view', 'ok');
+  showResetModal();
+}
+
 async function showResetModal() {
   document.getElementById('rm-name').value = user?.user_metadata?.display_name || '';
   document.getElementById('rm-cal').value  = calGoal;
@@ -1066,7 +1294,10 @@ async function showResetModal() {
   if (coreIds.length) {
     const { data } = await dbCall(() => db.from('habits').select('id,name').in('id', coreIds));
     document.getElementById('rm-core-locked').innerHTML = (data || []).map(h =>
-      `<div class="core-habit-locked">${icon(IC.lock,13)}<span>${esc(h.name)}</span></div>`
+      `<div class="core-habit-locked">
+        ${icon(IC.lock,13)}<span>${esc(h.name)}</span>
+        <button class="icon-btn danger" title="Remove from core" onclick="removeCoreHabit('${h.id}')" style="flex-shrink:0">${icon(IC.trash,14)}</button>
+      </div>`
     ).join('') || '<div style="color:var(--muted);font-size:.85rem;padding:4px 0">No core habits yet.</div>';
   } else {
     document.getElementById('rm-core-locked').innerHTML = '<div style="color:var(--muted);font-size:.85rem;padding:4px 0">No core habits yet.</div>';
@@ -1132,6 +1363,8 @@ async function loadSettings() {
   if (!trackedMacros.includes('protein')) trackedMacros.unshift('protein');
   if (!trackedMacros.includes('carbs'))   trackedMacros.splice(1,0,'carbs');
   if (!trackedMacros.includes('fat'))     trackedMacros.splice(2,0,'fat');
+  totalXP = user?.user_metadata?.total_xp ?? 0;
+  updateXPDisplay();
 }
 async function saveCalGoal() {
   const v = parseInt(document.getElementById('cal-goal-input').value) || 2000;
@@ -1141,13 +1374,13 @@ async function saveCalGoal() {
   renderFood();
 }
 function toggleGoalEdit() { const el = document.getElementById('cal-goal-edit'); el.style.display = el.style.display === 'none' ? 'flex' : 'none'; }
-function toggleWorkoutGoalEdit() { const el = document.getElementById('workout-goal-edit'); el.style.display = el.style.display === 'none' ? 'flex' : 'none'; }
-async function saveWorkoutGoal() {
-  const v = Math.max(1, Math.min(7, parseInt(document.getElementById('workout-goal-input').value) || 3));
+function toggleActivityGoalEdit() { const el = document.getElementById('activity-goal-edit'); el.style.display = el.style.display === 'none' ? 'flex' : 'none'; }
+async function saveActivityGoal() {
+  const v = Math.max(1, Math.min(7, parseInt(document.getElementById('activity-goal-input').value) || 3));
   workoutGoal = v;
-  document.getElementById('workout-goal-edit').style.display = 'none';
+  document.getElementById('activity-goal-edit').style.display = 'none';
   await dbCall(() => db.from('user_settings').upsert({ user_id: user.id, workout_goal: v }, { onConflict: 'user_id' }));
-  renderWorkout();
+  renderActivity();
 }
 
 // ── Food search (USDA FoodData Central) ────────────────────────────────────
@@ -1299,6 +1532,7 @@ async function addFood() {
     ({ error } = await dbCall(() => db.from('food_entries').insert(row)));
   }
   btnLoad(btn, false); if (error) return;
+  await awardXP(10, 'Food logged');
   document.getElementById('food-name').value = '';
   document.getElementById('food-cal').value  = '';
   MACRO_DEFS.forEach(m => { const el = document.getElementById('food-' + m.key); if (el) el.value = ''; });
@@ -1375,113 +1609,148 @@ async function renderFood() {
   }).join('');
 }
 
-// ── Workout ────────────────────────────────────────────────────────────────
-const WK_PLACEHOLDERS = {Weights:'3×10 @ 135 lbs', Cardio:'30 min · 3 miles', Bodyweight:'3×15', Stretching:'20 min', Other:'Details (optional)'};
-
-function selectWkType(btn, typeId, detailsId) {
-  btn.closest('.wk-type-row').querySelectorAll('.wk-type-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
-  document.getElementById(typeId).value = btn.dataset.type;
-  document.getElementById(detailsId).placeholder = WK_PLACEHOLDERS[btn.dataset.type] || 'Details (optional)';
+// ── Activity ───────────────────────────────────────────────────────────────
+function selectActivityType(idx) {
+  _selectedActivity = ACTIVITY_TYPES[idx];
+  document.querySelectorAll('.act-type-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
+  updateXPPreview();
 }
 
-function parseDetails(str) {
-  const out = { sets:null, reps:null, weight:null, duration:null, notes:null };
-  let s = str.trim();
-  const sxr = s.match(/(\d+)\s*[x×X]\s*(\d+)/);
-  if (sxr) { out.sets = sxr[1]; out.reps = sxr[2]; s = s.replace(sxr[0], ''); }
-  const wt = s.match(/@\s*(\d+\.?\d*)\s*(lbs?|kg)?/i);
-  if (wt)  { out.weight = wt[1]; s = s.replace(wt[0], ''); }
-  const dur = s.match(/(\d+)\s*min/i);
-  if (dur) { out.duration = dur[1]; s = s.replace(dur[0], ''); }
-  const leftover = s.replace(/[·\-,\s]+/g, ' ').trim();
-  if (leftover) out.notes = leftover;
-  return out;
+function calcActivityXP(type, durationMin) {
+  return 30 + Math.min(Math.floor(durationMin * type.xpPerMin), 120);
 }
 
-function buildDetails(e) {
-  const parts = [];
-  if (e.sets && e.reps) parts.push(`${e.sets}×${e.reps}`);
-  else if (e.reps) parts.push(`${e.reps} reps`);
-  if (e.weight)   parts.push(`@ ${e.weight}`);
-  if (e.duration) parts.push(`${e.duration} min`);
-  if (e.notes)    parts.push(e.notes);
-  return parts.join(' · ');
+function updateXPPreview() {
+  const dur     = parseInt(document.getElementById('act-duration')?.value) || 0;
+  const preview = document.getElementById('act-xp-preview');
+  if (!preview) return;
+  if (!dur) { preview.textContent = 'Enter duration to see XP reward'; return; }
+  const xp = calcActivityXP(_selectedActivity, dur);
+  preview.innerHTML = `${_selectedActivity.emoji} ${_selectedActivity.name} · ${dur} min → <strong>+${xp} XP</strong>`;
 }
 
-async function addExercise() {
-  const name = document.getElementById('ex-name').value.trim();
-  if (!name) return flashErr('ex-name', 'Enter exercise name');
-  const btn = document.getElementById('workout-add-btn'); btnLoad(btn, true);
-  const { sets, reps, weight, duration, notes } = parseDetails(document.getElementById('ex-details').value);
+async function addActivity() {
+  const dur = parseInt(document.getElementById('act-duration').value) || 0;
+  if (!dur || dur < 1) return flashErr('act-duration', 'Enter duration in minutes');
+  const btn = document.getElementById('activity-add-btn'); btnLoad(btn, true);
+  const xpEarned = calcActivityXP(_selectedActivity, dur);
   const { error } = await dbCall(() => db.from('workout_entries').insert({
-    user_id: user.id, date: offsetKey(currentDays.workout), name,
-    type: document.getElementById('ex-type').value,
-    sets, reps, weight, duration, notes,
+    user_id:  user.id,
+    date:     offsetKey(currentDays.activity),
+    name:     _selectedActivity.name,
+    type:     _selectedActivity.id,
+    duration: String(dur),
+    notes:    document.getElementById('act-notes').value.trim() || null,
+    sets: null, reps: null, weight: null,
     time: new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})
   }));
   btnLoad(btn, false); if (error) return;
-  document.getElementById('ex-name').value = '';
-  document.getElementById('ex-details').value = '';
-  await renderWorkout();
+  document.getElementById('act-duration').value = '';
+  document.getElementById('act-notes').value    = '';
+  updateXPPreview();
+  await awardXP(xpEarned, _selectedActivity.name);
+  await renderActivity();
+  toast(`Quest complete! +${xpEarned} XP`, 'ok');
 }
-function startEditWorkout(id) { editing.workout=id; renderWorkout(); }
-function cancelEditWorkout()   { editing.workout=null; renderWorkout(); }
-async function saveEditWorkout(id) {
-  const name = document.getElementById('ew-name-'+id).value.trim();
-  if (!name) return toast('Name required','error');
-  const { sets, reps, weight, duration, notes } = parseDetails(document.getElementById('ew-details-'+id).value);
-  const { error } = await dbCall(() => db.from('workout_entries').update({
-    name, type: document.getElementById('ew-type-'+id).value,
-    sets, reps, weight, duration, notes
-  }).eq('id',id).eq('user_id',user.id));
-  if (error) return; editing.workout=null; toast('Updated','ok'); await renderWorkout();
-}
-async function deleteExercise(id) { await dbCall(() => db.from('workout_entries').delete().eq('id',id).eq('user_id',user.id)); await renderWorkout(); }
 
-async function renderWorkout() {
-  const dayKey  = offsetKey(currentDays.workout);
-  const wkStart = weekStartKey();
-  const wkEnd   = todayKey();
+function startEditActivity(id) { editing.activity = id; renderActivity(); }
+function cancelEditActivity()   { editing.activity = null; renderActivity(); }
+
+async function saveEditActivity(id) {
+  const dur   = parseInt(document.getElementById('ea-dur-'+id)?.value) || 0;
+  const notes = document.getElementById('ea-notes-'+id)?.value.trim() || null;
+  const typeId = document.getElementById('ea-type-'+id)?.value || 'other';
+  if (!dur) return toast('Enter duration','error');
+  const { error } = await dbCall(() => db.from('workout_entries').update({
+    duration: String(dur), notes, type: typeId,
+    name: ACTIVITY_TYPES.find(t => t.id === typeId)?.name || typeId
+  }).eq('id',id).eq('user_id',user.id));
+  if (error) return; editing.activity = null; toast('Updated','ok'); await renderActivity();
+}
+
+async function deleteActivity(id) {
+  await dbCall(() => db.from('workout_entries').delete().eq('id',id).eq('user_id',user.id));
+  await renderActivity();
+}
+
+async function renderActivity() {
+  const dayKey   = offsetKey(currentDays.activity);
+  const wkStart  = weekStartKey();
+  const wkEnd    = todayKey();
   const dayLabel = fmt(dayKey);
-  document.getElementById('workout-day-label').textContent = dayLabel;
-  document.getElementById('workout-log-title').textContent = dayLabel === 'Today' ? 'Workout Log' : dayLabel === 'Yesterday' ? "Yesterday's Workout" : `Workout — ${dayLabel}`;
-  document.getElementById('workout-today-btn').style.display = currentDays.workout === 0 ? 'none' : '';
+  const dayEl    = document.getElementById('activity-day-label');
+  const todayEl  = document.getElementById('activity-today-btn');
+  if (dayEl)   dayEl.textContent = dayLabel;
+  if (todayEl) todayEl.style.display = currentDays.activity === 0 ? 'none' : '';
+
   const [dayRes, weekRes] = await Promise.all([
     dbCall(() => db.from('workout_entries').select('*').eq('user_id',user.id).eq('date',dayKey).order('created_at',{ascending:true})),
     dbCall(() => db.from('workout_entries').select('date').eq('user_id',user.id).gte('date',wkStart).lte('date',wkEnd))
   ]);
-  const rows       = dayRes.data || [];
+  const rows       = dayRes.data  || [];
   const wkSessions = new Set((weekRes.data||[]).map(e => e.date)).size;
   const pct        = workoutGoal ? Math.min(100, Math.round((wkSessions/workoutGoal)*100)) : 0;
   _mascot.wkSessions = wkSessions;
   updateMascot();
-  document.getElementById('workout-week-sessions').textContent = wkSessions;
-  document.getElementById('workout-goal-display').textContent  = workoutGoal;
-  document.getElementById('workout-goal-input').value          = workoutGoal;
-  document.getElementById('workout-goal-bar').style.width      = pct + '%';
-  const el = document.getElementById('workout-list');
-  if (!rows.length) { el.innerHTML='<div class="empty">No exercises logged yet</div>'; return; }
-  el.innerHTML = [...rows].reverse().map(e => {
-    if (editing.workout===e.id) {
-      const curType = e.type || 'Weights';
-      const typeBtns = ['Weights','Cardio','Bodyweight','Stretching','Other'].map(t =>
-        `<button class="wk-type-btn${t===curType?' active':''}" data-type="${t}" onclick="selectWkType(this,'ew-type-${e.id}','ew-details-${e.id}')">${t}</button>`).join('');
-      return `
-      <div class="entry-editing">
-        <div class="wk-type-row">${typeBtns}</div>
-        <input type="hidden" id="ew-type-${e.id}" value="${curType}">
-        <div class="form-row"><input type="text" id="ew-name-${e.id}" value="${esc(e.name)}" placeholder="Exercise name"></div>
-        <div class="form-row"><input type="text" id="ew-details-${e.id}" value="${buildDetails(e)}" placeholder="${WK_PLACEHOLDERS[curType]||'Details (optional)'}"></div>
-        <div class="edit-actions"><button class="btn btn-blue" onclick="saveEditWorkout('${e.id}')">Save</button><button class="btn btn-ghost" onclick="cancelEditWorkout()">Cancel</button></div>
+  updateXPDisplay();
+
+  const wkEl = document.getElementById('activity-week-sessions');
+  const gdEl = document.getElementById('activity-goal-display');
+  const giEl = document.getElementById('activity-goal-input');
+  const gbEl = document.getElementById('activity-goal-bar');
+  if (wkEl) wkEl.textContent = wkSessions;
+  if (gdEl) gdEl.textContent = workoutGoal;
+  if (giEl) giEl.value       = workoutGoal;
+  if (gbEl) gbEl.style.width = pct + '%';
+
+  const listEl = document.getElementById('activity-list');
+  if (!listEl) return;
+  if (!rows.length) {
+    const emptyMsg = dayLabel === 'Today' ? 'No quests completed yet. Begin your journey!' : `No activity on ${dayLabel}`;
+    listEl.innerHTML = `<div class="card"><div class="empty">${emptyMsg}</div></div>`;
+    return;
+  }
+
+  listEl.innerHTML = [...rows].reverse().map(e => {
+    const actType = ACTIVITY_TYPES.find(t => t.id === e.type) || ACTIVITY_TYPES[ACTIVITY_TYPES.length - 1];
+    const dur = parseInt(e.duration) || 0;
+    const xp  = calcActivityXP(actType, dur);
+
+    if (editing.activity === e.id) {
+      const typeOpts = ACTIVITY_TYPES.map(t =>
+        `<option value="${t.id}"${t.id===e.type?' selected':''}>${t.emoji} ${t.name}</option>`
+      ).join('');
+      return `<div class="card" style="margin-bottom:8px">
+        <select id="ea-type-${e.id}" style="margin-bottom:8px">${typeOpts}</select>
+        <div class="act-duration-wrap">
+          <input type="number" id="ea-dur-${e.id}" class="act-duration-input" value="${dur}" min="1" inputmode="numeric">
+          <span class="act-duration-unit">minutes</span>
+        </div>
+        <input type="text" id="ea-notes-${e.id}" placeholder="Notes (optional)" value="${esc(e.notes||'')}">
+        <div class="edit-actions">
+          <button class="btn btn-purple" onclick="saveEditActivity('${e.id}')">Save</button>
+          <button class="btn btn-ghost"  onclick="cancelEditActivity()">Cancel</button>
+        </div>
       </div>`;
     }
-    let meta = e.type||'';
-    if (e.sets)     meta+=` · ${e.sets} sets`;
-    if (e.reps)     meta+=` × ${e.reps} reps`;
-    if (e.weight)   meta+=` @ ${e.weight}`;
-    if (e.duration) meta+=` · ${e.duration}min`;
-    return `<div class="entry"><div class="entry-content"><div class="entry-name">${esc(e.name)}</div><div class="entry-meta">${meta}${e.notes?` · ${esc(e.notes)}`:''}</div><div class="entry-meta">${e.time||''}</div></div><div class="entry-right"><button class="icon-btn" onclick="startEditWorkout('${e.id}')">${icon(IC.edit,16)}</button><button class="icon-btn danger" onclick="deleteExercise('${e.id}')">${icon(IC.trash,16)}</button></div></div>`;
+
+    const metaParts = [];
+    if (dur)     metaParts.push(`${dur} min`);
+    if (e.notes) metaParts.push(esc(e.notes));
+    if (e.time)  metaParts.push(e.time);
+
+    return `<div class="card" style="margin-bottom:8px">
+      <div class="quest-entry">
+        <span class="quest-emoji">${actType.emoji}</span>
+        <div class="quest-info">
+          <div class="quest-name">${esc(actType.name)}</div>
+          <div class="quest-meta">${metaParts.join(' · ')}</div>
+        </div>
+        <span class="quest-xp-badge">+${xp} XP</span>
+        <button class="icon-btn" onclick="startEditActivity('${e.id}')">${icon(IC.edit,16)}</button>
+        <button class="icon-btn danger" onclick="deleteActivity('${e.id}')">${icon(IC.trash,16)}</button>
+      </div>
+    </div>`;
   }).join('');
 }
 
@@ -1790,15 +2059,21 @@ async function saveEditHabit(id, isRecurring) {
 }
 
 async function toggleItem(id, isRecurring) {
+  let didComplete = false;
   if (isRecurring) {
     const dateKey = offsetKey(currentDays.daily);
     const { data } = await dbCall(() => db.from('habit_completions').select('id').eq('user_id',user.id).eq('habit_id',id).eq('date',dateKey).maybeSingle());
-    if (data) await dbCall(() => db.from('habit_completions').delete().eq('id',data.id));
-    else      await dbCall(() => db.from('habit_completions').insert({user_id:user.id,habit_id:id,date:dateKey}));
+    if (data) { await dbCall(() => db.from('habit_completions').delete().eq('id',data.id)); }
+    else       { await dbCall(() => db.from('habit_completions').insert({user_id:user.id,habit_id:id,date:dateKey})); didComplete = true; }
   } else {
-    // get current completed state
     const { data } = await dbCall(() => db.from('habits').select('completed').eq('id',id).single());
-    await dbCall(() => db.from('habits').update({ completed: !data?.completed }).eq('id',id).eq('user_id',user.id));
+    const nowDone = !data?.completed;
+    await dbCall(() => db.from('habits').update({ completed: nowDone }).eq('id',id).eq('user_id',user.id));
+    didComplete = nowDone;
+  }
+  if (didComplete) {
+    const isCore = getCoreHabitIds().includes(id);
+    await awardXP(isCore ? 50 : 25, isCore ? 'Core Habit' : 'Habit');
   }
   await renderDaily();
 }
@@ -2093,10 +2368,10 @@ async function renderSummary() {
     </div>
     <div style="margin-bottom:10px">
       <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">
-        <span style="font-size:.85rem;font-weight:600">💪 Workouts</span>
+        <span style="font-size:.85rem;font-weight:600">⚡ Activity</span>
         <span style="font-size:.78rem;color:var(--muted)">${thisWeekWk} / ${workoutGoal} this week</span>
       </div>
-      <div class="goal-bar"><div class="goal-bar-fill" style="width:${wkPct}%;background:var(--accent2)"></div></div>
+      <div class="goal-bar"><div class="goal-bar-fill" style="width:${wkPct}%;background:var(--accent4)"></div></div>
     </div>
     <div>
       <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">
@@ -2141,7 +2416,7 @@ async function renderSummary() {
       return `<div class="week-day-col">
         <div class="week-day-lbl${date===today?' wk-today':''}">${lbl}</div>
         <div class="week-cal-wrap"><div class="week-cal-bar" style="height:${barH}px;background:${barColor}"></div></div>
-        <div class="week-wk-dot" style="background:${hasWk?'var(--accent2)':'var(--border)'}"></div>
+        <div class="week-wk-dot" style="background:${hasWk?'var(--accent4)':'var(--border)'}"></div>
       </div>`;
     }).join('');
     chartHtml = `<div class="card" style="margin-bottom:12px">
@@ -2149,7 +2424,7 @@ async function renderSummary() {
       <div class="week-grid">${cols}</div>
       <div class="week-legend">
         <span><i class="wk-swatch" style="background:var(--accent5);border-radius:2px"></i>Calories</span>
-        <span><i class="wk-swatch" style="background:var(--accent2);border-radius:50%"></i>Workout</span>
+        <span><i class="wk-swatch" style="background:var(--accent4);border-radius:50%"></i>Activity</span>
       </div>
     </div>`;
   }
@@ -2172,18 +2447,29 @@ async function renderSummary() {
     }).join('')}</div>
   </div>`;
 
-  // ── Workouts card
+  // ── Activity & Power Level card
   const activePct  = days ? Math.round((wkDays/days)*100) : 0;
   const wkGoalPct  = workoutGoal ? Math.min(100, Math.round((wkDays/workoutGoal)*100)) : 0;
+  const xpProg     = getLevelProgress(totalXP);
+  const xpRank     = getRankInfo(xpProg.level);
   const workoutsHtml = `<div class="card" style="margin-bottom:12px">
-    <div class="smry-ttl">Workouts</div>
+    <div class="smry-ttl">Activity &amp; Power Level</div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+      <div style="flex:1">
+        <div style="font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:${xpRank.color};margin-bottom:2px">${xpRank.rank}</div>
+        <div style="font-size:1.6rem;font-weight:900;letter-spacing:-.03em;color:var(--text)">Level ${xpProg.level}</div>
+        <div style="font-size:.72rem;color:var(--muted);margin-top:2px">${totalXP.toLocaleString()} XP · ${xpProg.pct}% to next</div>
+      </div>
+      <div style="font-size:2.4rem">${xpRank.icon}</div>
+    </div>
+    <div class="summary-bar" style="margin-bottom:10px"><div class="summary-bar-fill" style="width:${xpProg.pct}%;background:linear-gradient(90deg,var(--accent4),var(--accent5))"></div></div>
     <div style="display:flex;gap:20px;align-items:flex-end">
-      <div><div class="smry-big" style="color:var(--accent2)">${wkDays}</div><div class="smry-sub">session${wkDays!==1?'s':''}</div></div>
-      <div><div class="smry-big" style="color:var(--accent2);font-size:1.5rem">${wks.length}</div><div class="smry-sub">exercise${wks.length!==1?'s':''}</div></div>
+      <div><div class="smry-big" style="color:var(--accent4)">${wkDays}</div><div class="smry-sub">session${wkDays!==1?'s':''}</div></div>
+      <div><div class="smry-big" style="color:var(--accent4);font-size:1.5rem">${wks.length}</div><div class="smry-sub">activit${wks.length!==1?'ies':'y'}</div></div>
       ${days>1 ? `<div style="margin-left:auto;text-align:right"><div style="font-size:1.3rem;font-weight:700;color:var(--text-2)">${activePct}%</div><div class="smry-sub">days active</div></div>` : ''}
     </div>
     ${summaryPeriod === 'week' && workoutGoal ? `
-      <div class="summary-bar" style="margin-top:10px"><div class="summary-bar-fill" style="width:${wkGoalPct}%;background:var(--accent2)"></div></div>
+      <div class="summary-bar" style="margin-top:10px"><div class="summary-bar-fill" style="width:${wkGoalPct}%;background:var(--accent4)"></div></div>
       <div class="smry-sub">${wkDays} of ${workoutGoal} session goal this week${wkGoalPct>=100?' — goal met!':''}</div>
     ` : ''}
   </div>`;
@@ -2311,26 +2597,26 @@ function popConfetti() {
 
 // ── Navigation ─────────────────────────────────────────────────────────────
 function switchTab(tab) {
-  editing = { food: null, workout: null, info: null, habit: null, folder: null };
+  editing = { food: null, activity: null, info: null, habit: null, folder: null };
   hideFoodDropdown();
   document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
   document.getElementById('section-'+tab).classList.add('active');
   document.querySelector(`nav button[data-tab="${tab}"]`)?.classList.add('active');
-  if (tab==='food')    renderFood();
-  if (tab==='workout') renderWorkout();
-  if (tab==='info')    renderInfo();
-  if (tab==='daily')   renderDaily();
-  if (tab==='summary') setSummaryPeriod(summaryPeriod);
+  if (tab==='food')     renderFood();
+  if (tab==='activity') renderActivity();
+  if (tab==='info')     renderInfo();
+  if (tab==='daily')    renderDaily();
+  if (tab==='summary')  setSummaryPeriod(summaryPeriod);
 }
 function changeDay(s,d) {
   currentDays[s]+=d;
   if(s!=='daily' && currentDays[s]>0) currentDays[s]=0;
-  if(s==='food')renderFood(); else if(s==='workout')renderWorkout(); else if(s==='daily')renderDaily();
+  if(s==='food') renderFood(); else if(s==='activity') renderActivity(); else if(s==='daily') renderDaily();
 }
 function goToday(s) {
   currentDays[s]=0;
-  if(s==='food')renderFood(); else if(s==='workout')renderWorkout(); else if(s==='daily')renderDaily();
+  if(s==='food') renderFood(); else if(s==='activity') renderActivity(); else if(s==='daily') renderDaily();
 }
 
 // ── Utils ──────────────────────────────────────────────────────────────────

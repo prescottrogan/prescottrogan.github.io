@@ -282,11 +282,7 @@
   .macro-box .val { font-size: 1.1rem; font-weight: 800; font-variant-numeric: tabular-nums; }
   .macro-box .lbl { font-size: .72rem; color: var(--muted); margin-top: 3px; font-weight: 500; }
 
-  /* ── Day nav ───────────────────────────────────── */
-  .day-nav { display: flex; align-items: center; gap: 8px; margin-bottom: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--r); padding: 8px; box-shadow: 0 1px 4px rgba(0,0,0,.05); }
-  [data-theme="dark"] .day-nav { box-shadow: none; }
-  .day-nav-center { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-  .day-nav-date   { font-weight: 700; font-size: 1rem; }
+  /* ── Calendar month nav ────────────────────────── */
   .nav-arrow {
     background: var(--surface-2); border: none; border-radius: 10px;
     color: var(--text); cursor: pointer; flex-shrink: 0;
@@ -425,13 +421,6 @@
   .food-name-row { display:flex; gap:8px; margin-bottom:10px; align-items:flex-start; }
   .food-name-row input { flex:1; margin-bottom:0; }
   .food-search-btn { flex-shrink:0; padding:9px 13px; }
-  .cal-input-wrap { display:flex; align-items:center; gap:10px; margin-bottom:8px; }
-  .cal-big-input { flex:1; font-size:1.5rem !important; font-weight:700; text-align:center; padding:12px !important; margin-bottom:0 !important; }
-  .cal-unit { color:var(--muted); font-size:.9rem; font-weight:600; flex-shrink:0; }
-  .cal-chips { display:flex; gap:6px; margin-bottom:10px; }
-  .cal-chip { flex:1; padding:8px 4px; border-radius:8px; border:1.5px solid var(--border); background:var(--bg); color:var(--text); font-size:.83rem; font-weight:600; cursor:pointer; transition:background .1s,color .1s,border-color .1s; }
-  .cal-chip:hover { background:var(--accent); color:#052e16; border-color:var(--accent); }
-
   /* ── Summary ───────────────────────────────────────── */
   .smry-period { display: flex; gap: 5px; margin-bottom: 16px; }
   .smry-period-btn { flex: 1; padding: 8px 2px; border: 1px solid var(--border); border-radius: 8px; background: none; color: var(--muted); font-size: .8rem; font-weight: 600; cursor: pointer; transition: all .15s; }
@@ -567,45 +556,6 @@
   .levelup-rank  { font-size:1.4rem; font-weight:800; letter-spacing:.02em; animation:rank-shimmer 2s ease-in-out infinite; margin-bottom:16px; display:block; }
   .levelup-msg   { font-size:.88rem; color:var(--muted); margin-bottom:22px; line-height:1.5; }
 
-  /* Power Level — embedded inside the Quest hero card, compact and inline */
-  .hero-divider {
-    height:1px; margin:18px 0 14px; position:relative;
-    background:linear-gradient(90deg,transparent,rgba(167,139,250,.42),transparent);
-  }
-  .hero-divider::after {
-    content:''; position:absolute; left:50%; top:50%; transform:translate(-50%,-50%);
-    width:6px; height:6px; border-radius:50%; background:var(--accent4);
-    box-shadow:0 0 12px rgba(167,139,250,.7);
-  }
-  .hero-power { position:relative; }
-  .hero-power-row {
-    display:flex; align-items:baseline; gap:10px; margin-bottom:8px;
-  }
-  .hero-power-rank {
-    font-size:.7rem; font-weight:900; letter-spacing:.2em; text-transform:uppercase;
-    color:var(--accent4); text-shadow:0 0 12px rgba(167,139,250,.5);
-    animation:rank-shimmer 3s ease-in-out infinite;
-  }
-  .hero-power-level {
-    font-size:1rem; font-weight:900; color:#fff; letter-spacing:-.01em;
-  }
-  .hero-power-total {
-    margin-left:auto; font-size:.74rem; font-weight:600;
-    color:rgba(255,255,255,.55); font-variant-numeric:tabular-nums;
-  }
-  .hero-power-bar {
-    height:6px; background:rgba(255,255,255,.08); border-radius:3px; overflow:hidden;
-  }
-  .hero-power-bar-fill {
-    height:100%; border-radius:3px;
-    background:linear-gradient(90deg,var(--accent4),var(--accent5));
-    transition:width .5s cubic-bezier(.4,0,.2,1);
-  }
-  .hero-power-pct {
-    font-size:.68rem; color:rgba(255,255,255,.5);
-    margin-top:6px; font-variant-numeric:tabular-nums; letter-spacing:.01em;
-  }
-
   .act-type-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-bottom:14px; }
   .act-type-btn {
     display:flex; flex-direction:column; align-items:center; gap:3px;
@@ -622,13 +572,6 @@
   .act-duration-input { flex:1; font-size:1rem !important; font-weight:600 !important; text-align:center; padding:10px !important; margin-bottom:0 !important; border-color:var(--accent4) !important; }
   .act-duration-unit  { color:var(--muted); font-size:.95rem; font-weight:600; flex-shrink:0; }
 
-  .act-xp-preview {
-    display:flex; align-items:center; justify-content:center; gap:6px;
-    font-size:.82rem; font-weight:700; color:var(--accent4);
-    background:rgba(167,139,250,.1); border:1px solid rgba(167,139,250,.2);
-    border-radius:8px; padding:8px 12px; margin-bottom:10px; min-height:36px;
-    text-align:center; transition:all .2s;
-  }
   .quest-entry { display:flex; align-items:center; gap:12px; padding:13px 6px; border-bottom:1px solid var(--border); transition:background .15s; border-radius:8px; margin:0 -6px; }
   .quest-entry:hover { background:var(--surface-2); }
   .quest-entry:last-child { border-bottom:none; }
@@ -637,13 +580,7 @@
   .quest-info  { flex:1; min-width:0; }
   .quest-name  { font-size:.95rem; font-weight:600; }
   .quest-meta  { font-size:.74rem; color:var(--muted); margin-top:2px; }
-  .quest-xp-badge { font-size:.68rem; font-weight:800; color:var(--accent4); background:rgba(167,139,250,.12); border:1px solid rgba(167,139,250,.25); border-radius:6px; padding:3px 7px; flex-shrink:0; white-space:nowrap; }
   .act-quest-title { color:var(--accent4) !important; letter-spacing:.08em; }
-
-  nav button.active[data-tab="food"]     { color: var(--accent); }
-  nav button.active[data-tab="activity"] { color: var(--accent4); }
-  nav button.active[data-tab="info"]     { color: var(--accent3); }
-  nav button.active[data-tab="daily"]    { color: var(--accent); }
 
   /* ── Daily Quest Hero (Quest + Power Level merged) ─────────────────── */
   .quest-system-card {
@@ -714,52 +651,8 @@
   .act-stat-text { font-size:.8rem; color:var(--muted); display:flex; align-items:baseline; gap:4px; }
   .act-stat-text strong { color:var(--accent4); font-weight:900; font-variant-numeric:tabular-nums; font-size:.95rem; }
   .act-stat-text .act-stat-label { margin-left:6px; }
-  .act-stat-strip .text-link { font-size:.75rem; }
   .act-goal-bar { height:4px; background:var(--border); border-radius:2px; overflow:hidden; margin:0 0 14px; }
   .act-goal-bar-fill { height:100%; background:var(--accent4); border-radius:2px; transition:width .4s ease; }
-  .act-goal-edit-row {
-    display:flex; align-items:center; gap:8px; padding:10px 12px;
-    background:var(--surface-2); border-radius:10px; margin-bottom:14px;
-  }
-  .act-goal-edit-row label { font-size:.78rem; color:var(--muted); flex:1; }
-  .act-goal-edit-row input { width:84px; margin:0; }
-
-  /* ── Log Training (collapsible) ─────────────────── */
-  .log-training-card { overflow:hidden; }
-  .log-training-trigger {
-    display:flex; align-items:center; justify-content:space-between; gap:10px;
-    width:100%; padding:14px 18px;
-    background:transparent; border:none; cursor:pointer; font-family:inherit;
-    color:inherit; transition:background .15s ease;
-    text-align:left;
-  }
-  .log-training-trigger:hover { background:var(--surface-2); }
-  .log-training-trigger .lt-left { display:flex; align-items:center; gap:8px; }
-  .log-training-trigger .lt-icon {
-    width:24px; height:24px; border-radius:7px;
-    background:rgba(167,139,250,.14); color:var(--accent4);
-    display:inline-flex; align-items:center; justify-content:center;
-    font-size:1.05rem; font-weight:800; line-height:1;
-    transition:transform .25s ease;
-  }
-  .log-training-trigger.expanded .lt-icon { transform:rotate(45deg); }
-  .log-training-trigger .lt-label {
-    font-size:.92rem; font-weight:700; color:var(--text); letter-spacing:-.005em;
-  }
-  .log-training-trigger .lt-hint {
-    font-size:.7rem; color:var(--muted); font-weight:500;
-    text-align:right; line-height:1.3;
-  }
-  .log-training-body {
-    padding:0 18px 18px;
-    border-top:1px solid var(--border);
-    padding-top:14px;
-    animation:lt-expand .28s ease;
-  }
-  @keyframes lt-expand {
-    from { opacity:0; transform:translateY(-4px); }
-    to   { opacity:1; transform:translateY(0); }
-  }
 
   /* ── Penalty Modal ──────────────────────────────── */
   #penalty-modal { display:none; position:fixed; inset:0; z-index:650; background:rgba(0,0,0,.88); align-items:center; justify-content:center; padding:20px; }
@@ -784,7 +677,7 @@
   /* ── System Status Bar (inside header, always visible) ─────────────────── */
   #system-status-bar {
     display: flex; align-items: center; padding: 6px 20px 8px;
-    border-top: 1px solid rgba(255,255,255,.04);
+    border-top: 1px solid var(--border);
     gap: 0;
   }
   .ssb-item {
@@ -793,7 +686,7 @@
     transition: background .12s; min-width: 0;
     text-decoration: none;
   }
-  .ssb-item:hover { background: rgba(255,255,255,.06); }
+  .ssb-item:hover { background: var(--surface-2); }
   .ssb-lbl {
     font-size: .58rem; font-weight: 800; letter-spacing: .05em; text-transform: uppercase;
     color: var(--muted); white-space: nowrap; flex-shrink: 0;
@@ -980,16 +873,15 @@
     <div class="act-goal-bar"><div class="act-goal-bar-fill" id="activity-goal-bar" style="width:0%"></div></div>
 
     <!-- Log Activity -->
-    <div class="card log-training-card">
-      <div class="log-training-body" id="log-training-body">
-        <div class="act-type-grid" id="act-type-grid"></div>
-        <div class="act-duration-wrap">
-          <input type="number" id="act-duration" class="act-duration-input" placeholder="0" max="600" inputmode="numeric">
-          <span class="act-duration-unit">minutes</span>
-        </div>
-        <input type="text" id="act-notes" placeholder="Notes (optional)">
-        <button id="activity-add-btn" class="btn btn-purple btn-full" onclick="addActivity()"><span id="activity-plus"></span>Log Activity</button>
+    <div class="card">
+      <div class="section-title">Log Activity</div>
+      <div class="act-type-grid" id="act-type-grid"></div>
+      <div class="act-duration-wrap">
+        <input type="number" id="act-duration" class="act-duration-input" placeholder="0" max="600" inputmode="numeric">
+        <span class="act-duration-unit">minutes</span>
       </div>
+      <input type="text" id="act-notes" placeholder="Notes (optional)">
+      <button id="activity-add-btn" class="btn btn-purple btn-full" onclick="addActivity()"><span id="activity-plus"></span>Log Activity</button>
     </div>
 
     <!-- Activity Log -->
@@ -1150,7 +1042,7 @@ let workoutGoal = 3; // weekly session goal
 // Summary state
 let summaryPeriod = 'day';
 let _calMonth = new Date();
-let _mascot = { cals: 0, habitDone: 0, habitTotal: 0, wkSessions: 0 };
+let _mascot = { cals: 0, habitDone: 0, habitTotal: 0, actMins: 0 };
 let _confettiFired = false;
 
 // ── Icons ──────────────────────────────────────────────────────────────────
@@ -1189,18 +1081,16 @@ let trackedMacros = ['protein','sugar'];
 const FOLDER_COLORS = ['#60a5fa','#4ade80','#f59e0b','#a78bfa','#f87171','#34d399','#fb923c','#e879f9'];
 
 // ── Activity types ─────────────────────────────────────────────────────────
-// Min 20 minutes. No "easy" categories. The system has standards.
 const ACTIVITY_TYPES = [
-  { id:'running',  emoji:'🏃', name:'Running',  xpPerMin:1.5 },
-  { id:'strength', emoji:'⚔️', name:'Strength', xpPerMin:1.5 },
-  { id:'hiit',     emoji:'🔥', name:'HIIT',     xpPerMin:2   },
-  { id:'combat',   emoji:'🥊', name:'Combat',   xpPerMin:1.5 },
-  { id:'cycling',  emoji:'🚴', name:'Cycling',  xpPerMin:1   },
-  { id:'swimming', emoji:'🏊', name:'Swimming', xpPerMin:1.5 },
-  { id:'sport',    emoji:'🏐', name:'Sport',    xpPerMin:1   },
-  { id:'hiking',   emoji:'🥾', name:'Hiking',   xpPerMin:1   },
+  { id:'running',  emoji:'🏃', name:'Running'  },
+  { id:'strength', emoji:'⚔️', name:'Strength' },
+  { id:'hiit',     emoji:'🔥', name:'HIIT'     },
+  { id:'combat',   emoji:'🥊', name:'Combat'   },
+  { id:'cycling',  emoji:'🚴', name:'Cycling'  },
+  { id:'swimming', emoji:'🏊', name:'Swimming' },
+  { id:'sport',    emoji:'🏐', name:'Sport'    },
+  { id:'hiking',   emoji:'🥾', name:'Hiking'   },
 ];
-const ACTIVITY_MIN_DUR = 0;
 let _selectedActivity = ACTIVITY_TYPES[0];
 
 // ── Daily Quest tiers (Solo Leveling-style mandatory training) ────────────
@@ -1302,16 +1192,6 @@ function updateXPDisplay() {
     badge.style.color      = rank.color;
     badge.style.borderColor = rank.color;
   }
-  const xpBar  = document.getElementById('act-xp-bar');
-  const xpPct  = document.getElementById('act-xp-pct');
-  const xpLvl  = document.getElementById('act-xp-level');
-  const xpRank = document.getElementById('act-xp-rank');
-  const xpTot  = document.getElementById('act-total-xp');
-  if (xpBar)  xpBar.style.width  = prog.pct + '%';
-  if (xpPct)  xpPct.textContent  = `${prog.pct}% · ${prog.current.toLocaleString()} / ${prog.needed.toLocaleString()} XP to next`;
-  if (xpLvl)  xpLvl.textContent  = `Lv.${prog.level}`;
-  if (xpRank) { xpRank.textContent = rank.rank; xpRank.style.color = rank.color; }
-  if (xpTot)  xpTot.textContent  = `${totalXP.toLocaleString()} XP`;
 }
 
 // ── Daily Quest System ─────────────────────────────────────────────────────
@@ -1440,12 +1320,11 @@ function showPenaltyModal(prevStreak) {
 async function refreshTodayStats() {
   if (!user) return;
   const today = todayKey();
-  const wkStart = weekStartKey();
   const [foodRes, habRes, compRes, wkRes] = await Promise.all([
     dbCall(() => db.from('food_entries').select('calories').eq('user_id',user.id).eq('date',today)),
     dbCall(() => db.from('habits').select('id,recurring,completed').eq('user_id',user.id)),
     dbCall(() => db.from('habit_completions').select('habit_id').eq('user_id',user.id).eq('date',today)),
-    dbCall(() => db.from('workout_entries').select('date').eq('user_id',user.id).gte('date',wkStart).lte('date',today)),
+    dbCall(() => db.from('workout_entries').select('duration').eq('user_id',user.id).eq('date',today)),
   ]);
   const foods   = foodRes.data || [];
   const items   = habRes.data  || [];
@@ -1457,7 +1336,7 @@ async function refreshTodayStats() {
   _mascot.cals       = foods.reduce((s,f) => s + (f.calories||0), 0);
   _mascot.habitDone  = habits.filter(h => doneIds.has(h.id)).length + tasks.filter(t => t.completed).length;
   _mascot.habitTotal = items.length;
-  _mascot.wkSessions = new Set(wks.map(e => e.date)).size;
+  _mascot.actMins    = wks.reduce((s,w) => s + (parseInt(w.duration)||0), 0);
   updateMascot();
 }
 
@@ -1795,11 +1674,6 @@ function triggerFoodSearch() {
   searchFoodUSDA(q);
 }
 
-function addCal(n) {
-  const el = document.getElementById('food-cal');
-  el.value = (parseInt(el.value) || 0) + n;
-}
-
 async function searchFoodUSDA(query) {
   if (_foodSearchController) _foodSearchController.abort();
   _foodSearchController = new AbortController();
@@ -2118,6 +1992,7 @@ async function renderActivity() {
 // ══════════════════════════════════════════════════════════════════════════
 async function renderInfo() {
   const view = document.getElementById('info-view');
+  refreshTodayStats();
 
   if (currentFolder === null) {
     await renderFolderList(view);
@@ -2674,12 +2549,12 @@ async function renderSummary() {
   const today   = todayKey();
   const wkStart = weekStartKey();
 
-  const [foodRes, wkRes, habRes, compRes, wkWeekRes, todayFoodRes, todayCompRes] = await Promise.all([
+  const [foodRes, wkRes, habRes, compRes, todayWkRes, todayFoodRes, todayCompRes] = await Promise.all([
     dbCall(() => db.from('food_entries').select('calories,protein,carbs,fat,date').eq('user_id',user.id).gte('date',start).lte('date',end)),
-    dbCall(() => db.from('workout_entries').select('id,date,type').eq('user_id',user.id).gte('date',start).lte('date',end)),
+    dbCall(() => db.from('workout_entries').select('id,date,type,duration').eq('user_id',user.id).gte('date',start).lte('date',end)),
     dbCall(() => db.from('habits').select('id,recurring,completed').eq('user_id',user.id)),
     dbCall(() => db.from('habit_completions').select('habit_id,date').eq('user_id',user.id).gte('date',start).lte('date',end)),
-    dbCall(() => db.from('workout_entries').select('date').eq('user_id',user.id).gte('date',wkStart).lte('date',today)),
+    dbCall(() => db.from('workout_entries').select('duration').eq('user_id',user.id).eq('date',today)),
     dbCall(() => db.from('food_entries').select('calories').eq('user_id',user.id).eq('date',today)),
     dbCall(() => db.from('habit_completions').select('habit_id').eq('user_id',user.id).eq('date',today)),
   ]);
@@ -2693,21 +2568,21 @@ async function renderSummary() {
 
   // Today's goal data (for mascot + today card)
   const todayCals      = (todayFoodRes.data||[]).reduce((s,f)=>s+(f.calories||0),0);
-  const thisWeekWk     = new Set((wkWeekRes.data||[]).map(e=>e.date)).size;
+  const todayActMins   = (todayWkRes.data||[]).reduce((s,w)=>s+(parseInt(w.duration)||0),0);
   const todayDoneIds   = new Set((todayCompRes.data||[]).map(c=>c.habit_id));
   const todayHabitDone = habits.filter(h=>todayDoneIds.has(h.id)).length + tasks.filter(t=>t.completed).length;
   const totalItems     = allItems.length;
 
   // Update mascot state
   _mascot.cals        = todayCals;
-  _mascot.wkSessions  = thisWeekWk;
+  _mascot.actMins     = todayActMins;
   _mascot.habitDone   = todayHabitDone;
   _mascot.habitTotal  = totalItems;
   updateMascot();
 
-  // ── Today's Status card (unified: quest + habits + calories)
+  // ── Today's Status card (unified: quest + habits + calories + activity)
   const calPct  = calGoal ? Math.min(100, Math.round((todayCals/calGoal)*100)) : 0;
-  const wkPct   = workoutGoal ? Math.min(100, Math.round((thisWeekWk/workoutGoal)*100)) : 0;
+  const actPct  = Math.min(100, Math.round((todayActMins / 30) * 100));
   const habPct  = totalItems ? Math.round((todayHabitDone/totalItems)*100) : 0;
   const qStateS = user?.user_metadata?.quest_state;
   const qDoneS  = qStateS ? (!!qStateS.pushups + !!qStateS.situps + !!qStateS.squats + !!qStateS.run) : 0;
@@ -2742,9 +2617,9 @@ async function renderSummary() {
     <div>
       <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">
         <span style="font-size:.82rem;font-weight:700">🏋 Activity</span>
-        <span style="font-size:.76rem;color:var(--muted)">${thisWeekWk} / ${workoutGoal} this week</span>
+        <span style="font-size:.76rem;color:var(--muted)">${todayActMins} / 30 min</span>
       </div>
-      <div class="goal-bar"><div class="goal-bar-fill" style="width:${wkPct}%;background:var(--accent4)"></div></div>
+      <div class="goal-bar"><div class="goal-bar-fill" style="width:${actPct}%;background:var(--accent4)"></div></div>
     </div>
   </div>`;
 
@@ -2927,11 +2802,11 @@ function mascotMsg(score) {
 }
 
 function updateMascot() {
-  const { cals, habitDone, habitTotal, wkSessions } = _mascot;
+  const { cals, habitDone, habitTotal, actMins } = _mascot;
   const calPct = calGoal > 0 ? (cals / calGoal) * 100 : 0;
   const calS   = calPct <= 100 ? calPct : Math.max(0, 100 - (calPct - 100) * 2);
   const habS   = habitTotal > 0 ? (habitDone / habitTotal) * 100 : 0;
-  const wkS    = workoutGoal > 0 ? Math.min(100, (wkSessions / workoutGoal) * 100) : 0;
+  const wkS    = Math.min(100, ((actMins||0) / 30) * 100);
   // Daily quest factors heavily into mood — the system demands it.
   const qState = user?.user_metadata?.quest_state;
   const qCount = qState ? (!!qState.pushups + !!qState.situps + !!qState.squats + !!qState.run) : 0;

@@ -194,7 +194,7 @@
   .wk-type-row::-webkit-scrollbar { display:none; }
   .wk-type-btn { flex-shrink:0; padding:7px 13px; border-radius:20px; border:1.5px solid var(--border); background:var(--bg); color:var(--muted); font-size:.82rem; font-weight:600; cursor:pointer; transition:all .15s; }
   .wk-type-btn:hover:not(.active) { border-color:var(--accent2); color:var(--accent2); transform:scale(1.04); }
-  .wk-type-btn.active { background:var(--blue); color:#fff; border-color:var(--blue); }
+  .wk-type-btn.active { background:var(--accent2); color:#061e3a; border-color:var(--accent2); }
   textarea { resize: vertical; min-height: 80px; }
   input[type="text"], input[type="number"], input[type="date"] { margin-bottom: 8px; }
   input[type="date"]::-webkit-calendar-picker-indicator { opacity: .5; cursor: pointer; filter: var(--cal-icon-filter, none); }
@@ -436,11 +436,9 @@
   .week-day-col { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; overflow: hidden; }
   .task-due { font-size: .72rem; font-weight: 600; color: var(--accent3); margin-top: 2px; }
   .task-due.overdue { color: var(--danger); }
-  .task-add-row { display: flex; gap: 8px; align-items: stretch; }
-  .task-add-row > input[type="text"] { flex: 1; min-width: 0; height: 42px; }
-  .task-add-row > .btn { height: 42px; flex-shrink: 0; align-self: center; }
-  .cal-btn { flex-shrink: 0; width: 42px; height: 42px; display: none; align-items: center; justify-content: center; background: var(--surface); border: 1.5px solid var(--border); border-radius: 10px; cursor: pointer; color: var(--muted); transition: border-color .15s, color .15s, background .15s; align-self: center; }
-  .cal-btn:hover, .cal-btn.active { border-color: var(--accent4); color: var(--accent4); background: rgba(74,222,128,.09); }
+  .task-add-row { display: flex; gap: 8px; align-items: center; }
+  .task-add-row > input[type="text"] { flex: 1; min-width: 0; height: 42px; margin-bottom: 0; }
+  .task-add-row > .btn { height: 42px; flex-shrink: 0; }
   /* Onboarding */
   #onboard-screen { position: fixed; inset: 0; z-index: 200; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: flex-start; overflow-y: auto; padding: 32px 20px 60px; }
   .onboard-box { width: 100%; max-width: 400px; }
@@ -868,8 +866,8 @@ function injectIcons() {
   document.getElementById('food-plus').innerHTML        = icon(IC.plus, 16);
   document.getElementById('food-search-icon').innerHTML = icon(IC.search, 18);
   document.getElementById('workout-plus').innerHTML     = icon(IC.plus, 16);
-  document.getElementById('habit-plus').innerHTML   = icon(IC.plus, 16);
-document.getElementById('settings-icon').innerHTML = icon(IC.gear, 18);
+  document.getElementById('habit-plus').innerHTML      = icon(IC.plus, 16);
+  document.getElementById('settings-icon').innerHTML  = icon(IC.gear, 18);
   document.getElementById('ob-mascot-1').innerHTML  = mascotSVG(80, 80);
   document.getElementById('ob-mascot-2').innerHTML  = mascotSVG(80, 80);
   updateMascot();

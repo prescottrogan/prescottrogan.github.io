@@ -706,8 +706,6 @@
       </div>
       <div class="task-add-row">
         <input type="text" id="habit-name" placeholder="Name...">
-        <button id="task-cal-btn" class="cal-btn" onclick="openDuePicker()"><span id="cal-icon"></span></button>
-        <input type="date" id="task-due" onchange="onDueDatePicked(this.value)" style="position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;opacity:.01">
         <button id="habit-add-btn" class="btn btn-purple" onclick="addItem()"><span id="habit-plus"></span>Add</button>
       </div>
     </div>
@@ -871,8 +869,7 @@ function injectIcons() {
   document.getElementById('food-search-icon').innerHTML = icon(IC.search, 18);
   document.getElementById('workout-plus').innerHTML     = icon(IC.plus, 16);
   document.getElementById('habit-plus').innerHTML   = icon(IC.plus, 16);
-  document.getElementById('cal-icon').innerHTML     = icon(IC.clock, 18);
-  document.getElementById('settings-icon').innerHTML = icon(IC.gear, 18);
+document.getElementById('settings-icon').innerHTML = icon(IC.gear, 18);
   document.getElementById('ob-mascot-1').innerHTML  = mascotSVG(80, 80);
   document.getElementById('ob-mascot-2').innerHTML  = mascotSVG(80, 80);
   updateMascot();
@@ -1707,22 +1704,6 @@ async function deleteInfo(id) {
 // ══════════════════════════════════════════════════════════════════════════
 // DAILY — HABITS + TASKS
 // ══════════════════════════════════════════════════════════════════════════
-function onDueDatePicked(val) {
-  const btn = document.getElementById('task-cal-btn');
-  if (val) {
-    btn.classList.add('active');
-    btn.title = formatDue(val);
-  } else {
-    btn.classList.remove('active');
-    btn.title = 'Set due date';
-  }
-}
-
-function openDuePicker() {
-  const inp = document.getElementById('task-due');
-  try { inp.showPicker(); } catch(e) { inp.focus(); inp.click(); }
-}
-
 function setAddType(type) {
   addType = type;
   document.getElementById('type-habit-btn').classList.toggle('active', type === 'habit');
@@ -1730,11 +1711,6 @@ function setAddType(type) {
   document.getElementById('habit-name').placeholder = type === 'habit'
     ? 'Habit name (e.g. Drink water, Exercise...)'
     : 'Task name (e.g. Call dentist, Buy groceries...)';
-  const showDue = type === 'task';
-  const calBtn = document.getElementById('task-cal-btn');
-  calBtn.style.display = showDue ? 'flex' : 'none';
-  calBtn.classList.remove('active');
-  document.getElementById('task-due').value = '';
 }
 
 function parseTaskName(raw) {
@@ -1755,15 +1731,11 @@ async function addItem() {
   const name = document.getElementById('habit-name').value.trim();
   if (!name) return flashErr('habit-name', 'Enter a name');
   const btn = document.getElementById('habit-add-btn'); btnLoad(btn, true);
-  const due = addType === 'task' ? (document.getElementById('task-due').value || '') : '';
-  const storedName = due ? `${name} [${due}]` : name;
   const { error } = await dbCall(() => db.from('habits').insert({
-    user_id: user.id, name: storedName, recurring: addType === 'habit', completed: false
+    user_id: user.id, name, recurring: addType === 'habit', completed: false
   }));
   btnLoad(btn, false); if (error) return;
   document.getElementById('habit-name').value = '';
-  document.getElementById('task-due').value = '';
-  document.getElementById('task-cal-btn').classList.remove('active');
   await renderDaily();
 }
 

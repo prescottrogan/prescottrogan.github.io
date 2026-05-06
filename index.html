@@ -903,7 +903,7 @@
     <!-- Log Activity -->
     <div class="card">
       <div class="section-title">Log Activity</div>
-      <input type="text" id="act-name-input" placeholder="Activity name…" list="act-name-list" autocomplete="off" style="margin-bottom:10px" onkeydown="if(event.key==='Enter')document.getElementById('act-duration').focus()">
+      <input type="text" id="act-name-input" placeholder="Activity name…" list="act-name-list" autocomplete="off" style="margin-bottom:10px" oninput="updateActDatalist()" onkeydown="if(event.key==='Enter')document.getElementById('act-duration').focus()">
       <datalist id="act-name-list"></datalist>
       <div class="act-duration-wrap">
         <input type="number" id="act-duration" class="act-duration-input" placeholder="0" max="600" inputmode="numeric" onkeydown="if(event.key==='Enter')addActivity()" aria-label="Duration in minutes">
@@ -1151,7 +1151,6 @@ const ACTIVITY_TYPES = [
   { id:'swimming', emoji:'🏊', name:'Swimming' },
   { id:'sport',    emoji:'🏐', name:'Sport'    },
   { id:'hiking',   emoji:'🥾', name:'Hiking'   },
-  { id:'other',    emoji:'⭐', name:'Other'    },
 ];
 
 // ── Daily Quest tiers (Solo Leveling-style mandatory training) ────────────
@@ -1963,15 +1962,20 @@ async function renderFood() {
 }
 
 // ── Activity ───────────────────────────────────────────────────────────────
+let _actHistory = [];
 async function loadActivityHistory() {
-  const dl = document.getElementById('act-name-list');
-  if (!dl || !user) return;
+  if (!user) return;
   const { data } = await dbCall(() =>
     db.from('workout_entries').select('name').eq('user_id', user.id).order('created_at', { ascending: false }).limit(200)
   );
   const seen = new Set();
-  const names = (data || []).map(r => r.name).filter(n => n && !seen.has(n) && seen.add(n));
-  dl.innerHTML = names.map(n => `<option value="${esc(n)}">`).join('');
+  _actHistory = (data || []).map(r => r.name).filter(n => n && !seen.has(n) && seen.add(n));
+}
+function updateActDatalist() {
+  const dl  = document.getElementById('act-name-list');
+  const val = document.getElementById('act-name-input')?.value || '';
+  if (!dl) return;
+  dl.innerHTML = val.length >= 1 ? _actHistory.map(n => `<option value="${esc(n)}">`).join('') : '';
 }
 
 async function addActivity() {
@@ -1981,7 +1985,7 @@ async function addActivity() {
   if (!name) return flashErr('act-name-input', 'Enter activity');
   if (!dur)  return flashErr('act-duration',   'Enter duration');
   const matched = ACTIVITY_TYPES.find(t => t.name.toLowerCase() === name.toLowerCase());
-  const type    = matched?.id || 'other';
+  const type    = matched?.id || '';
   const btn = document.getElementById('activity-add-btn'); btnLoad(btn, true);
   const { error } = await dbCall(() => db.from('workout_entries').insert({
     user_id:  user.id,
@@ -1997,7 +2001,7 @@ async function addActivity() {
   if (nameEl) nameEl.value = '';
   document.getElementById('act-duration').value = '';
   document.getElementById('act-notes').value    = '';
-  loadActivityHistory();
+  await loadActivityHistory();
   await renderActivity();
   toast('Activity logged', 'ok');
 }
@@ -2050,7 +2054,7 @@ async function renderActivity() {
   }
 
   listEl.innerHTML = [...rows].reverse().map(e => {
-    const actType = ACTIVITY_TYPES.find(t => t.id === e.type) || ACTIVITY_TYPES[0];
+    const actType = ACTIVITY_TYPES.find(t => t.id === e.type);
     const dur = parseInt(e.duration) || 0;
 
     if (editing.activity === e.id) {
@@ -2078,7 +2082,7 @@ async function renderActivity() {
 
     return `<div class="card" style="margin-bottom:8px">
       <div class="quest-entry">
-        <span class="quest-emoji">${esc(actType.emoji)}</span>
+        ${actType ? `<span class="quest-emoji">${esc(actType.emoji)}</span>` : ''}
         <div class="quest-info">
           <div class="quest-name">${esc(e.name)}</div>
           <div class="quest-meta">${metaParts.join(' · ')}</div>

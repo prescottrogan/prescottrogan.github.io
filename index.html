@@ -443,6 +443,7 @@
   /* ── Summary ───────────────────────────────────────── */
   .smry-period { display: flex; gap: 5px; margin-bottom: 16px; }
   .smry-period-btn { flex: 1; padding: 8px 2px; border: 1px solid var(--border); border-radius: 8px; background: none; color: var(--muted); font-size: .8rem; font-weight: 600; cursor: pointer; transition: all .15s; }
+  .smry-period-btn:hover:not(.active) { border-color: var(--border-light); color: var(--text-2); background: var(--surface-2); }
   .smry-period-btn.active { border-color: var(--text); background: var(--text); color: var(--bg); }
   .smry-ttl { font-size: .67rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 10px; }
   .smry-stat-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 2px; }
@@ -477,7 +478,7 @@
   .onboard-habit-item { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; }
   .onboard-habit-item span { flex: 1; font-weight: 500; font-size: .92rem; }
   /* Reset / Settings modal */
-  #reset-modal { display: none; position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,.6); align-items: center; justify-content: center; padding: 16px; box-sizing: border-box; }
+  #reset-modal { display: none; position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,.75); align-items: center; justify-content: center; padding: 16px; box-sizing: border-box; }
   #reset-modal.open { display: flex; }
   .reset-box {
     background: var(--surface); border: 1px solid var(--border-light);
@@ -518,6 +519,7 @@
   .mascot-bounce    { animation:m-bounce 1.1s ease-in-out infinite; display:inline-block; }
   .mascot-celebrate { animation:m-celebrate .44s ease-in-out infinite; display:inline-block; }
   .mascot-card  { text-align:center; padding:28px 16px 20px; }
+  .mascot-card.card:hover, .stat-big.card:hover { transform:none; box-shadow:0 1px 4px rgba(0,0,0,.05); border-color:var(--border); }
   .mascot-pct   { font-size:3.2rem; font-weight:800; color:var(--accent4); letter-spacing:-.04em; margin-top:8px; font-variant-numeric:tabular-nums; }
   .mascot-lbl   { font-size:.82rem; color:var(--muted); margin-top:4px; font-weight:500; }
   .mascot-msg   { font-size:.88rem; color:var(--text-2); margin-top:12px; font-weight:500; min-height:1.3em; }
@@ -575,9 +577,8 @@
   .levelup-rank  { font-size:1.4rem; font-weight:800; letter-spacing:.02em; animation:rank-shimmer 2s ease-in-out infinite; margin-bottom:16px; display:block; }
   .levelup-msg   { font-size:.88rem; color:var(--muted); margin-bottom:22px; line-height:1.5; }
 
-
   .act-duration-wrap  { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
-  .act-duration-input { flex:1; font-size:1rem !important; font-weight:600 !important; text-align:center; padding:10px !important; margin-bottom:0 !important; border-color:var(--accent4) !important; }
+  .act-duration-wrap #act-duration { flex:1; font-size:1rem; font-weight:600; text-align:center; padding:10px; margin-bottom:0; border-color:var(--accent4); }
   .act-duration-unit  { color:var(--muted); font-size:.95rem; font-weight:600; flex-shrink:0; }
 
   .quest-entry { display:flex; align-items:center; gap:12px; padding:13px 6px; border-bottom:1px solid var(--border); transition:background .15s; border-radius:8px; margin:0 -6px; }
@@ -588,7 +589,7 @@
   .quest-info  { flex:1; min-width:0; }
   .quest-name  { font-size:.95rem; font-weight:600; }
   .quest-meta  { font-size:.74rem; color:var(--muted); margin-top:2px; }
-  .act-quest-title { color:var(--accent4) !important; letter-spacing:.08em; }
+  .section-title.act-quest-title { color:var(--accent4); letter-spacing:.08em; }
 
   /* ── Daily Quest Card ───────────────────────────────────────────────── */
   .quest-system-card {
@@ -733,7 +734,7 @@
     <div class="onboard-step active" id="ob-step-1">
       <span id="ob-mascot-1" style="display:block;margin:4px 0 0"></span>
       <div class="onboard-title">Welcome to Froggy</div>
-      <div class="onboard-sub">Set your daily goals. These lock in — use <strong>Reset Goals</strong> in the summary later if you need to update them.</div>
+      <div class="onboard-sub">Set your daily goals. You can update them any time in <strong>Settings</strong>.</div>
       <div class="onboard-field">
         <label>Your name</label>
         <input type="text" id="ob-name" placeholder="What should we call you?">
@@ -894,8 +895,7 @@
     <div class="act-stat-strip">
       <div class="act-stat-text">
         <strong id="activity-mins-today">0</strong>
-        <span style="opacity:.6">/ 30</span>
-        <span class="act-stat-label">min today</span>
+        <span class="act-stat-label">/ 30 min today</span>
       </div>
     </div>
     <div class="act-goal-bar"><div class="act-goal-bar-fill" id="activity-goal-bar" style="width:0%"></div></div>
@@ -906,7 +906,7 @@
       <input type="text" id="act-name-input" placeholder="Activity name…" list="act-name-list" autocomplete="off" style="margin-bottom:10px" oninput="updateActDatalist()" onkeydown="if(event.key==='Enter')document.getElementById('act-duration').focus()">
       <datalist id="act-name-list"></datalist>
       <div class="act-duration-wrap">
-        <input type="number" id="act-duration" class="act-duration-input" placeholder="0" max="600" inputmode="numeric" onkeydown="if(event.key==='Enter')addActivity()" aria-label="Duration in minutes">
+        <input type="number" id="act-duration" placeholder="0" max="600" inputmode="numeric" onkeydown="if(event.key==='Enter')addActivity()" aria-label="Duration in minutes">
         <span class="act-duration-unit">minutes</span>
       </div>
       <input type="text" id="act-notes" placeholder="Notes (optional)">
@@ -1336,7 +1336,7 @@ function renderDailyQuest() {
   const streak   = getQuestStreak();
 
   const streakEl = document.getElementById('quest-streak');
-  if (streakEl) streakEl.style.display = streak >= 1 ? '' : 'none';
+  if (streakEl) streakEl.style.display = streak >= 1 ? 'inline-flex' : 'none';
   if (streakEl) streakEl.innerHTML     = `🔥 ${streak}`;
 
   const items = [
@@ -1931,7 +1931,7 @@ async function renderFood() {
   // Food filter
   const foodQ = document.getElementById('food-filter')?.value.trim().toLowerCase() || '';
   const foodFilterWrap = document.getElementById('food-filter-wrap');
-  if (foodFilterWrap) foodFilterWrap.style.display = rows.length > 4 ? '' : 'none';
+  if (foodFilterWrap) foodFilterWrap.style.display = rows.length > 4 ? 'block' : 'none';
   const displayRows = foodQ ? rows.filter(r => r.name.toLowerCase().includes(foodQ)) : rows;
   const el = document.getElementById('food-list');
   if (!displayRows.length) { el.innerHTML = foodQ ? '<div class="empty">No matching entries</div>' : '<div class="empty">Nothing logged yet</div>'; return; }
@@ -2190,6 +2190,10 @@ async function renderFolderList(view) {
       <div class="folder-info"><div class="folder-name" style="color:var(--muted)">No Folder</div><div class="folder-count">${uncatCount} item${uncatCount!==1?'s':''}</div></div>
       <div class="folder-chevron">${icon(IC.chevronR, 16)}</div>
     </div>`;
+  }
+
+  if (infoQ && filteredFolders.length === 0) {
+    html += `<div class="empty">No folders match "${esc(infoQ)}"</div>`;
   }
 
   html += '</div>';
@@ -2460,7 +2464,7 @@ async function renderDaily() {
   // Task filter
   const taskQ = document.getElementById('task-filter')?.value.trim().toLowerCase() || '';
   const filterWrap = document.getElementById('task-filter-wrap');
-  if (filterWrap) filterWrap.style.display = all.length > 4 ? '' : 'none';
+  if (filterWrap) filterWrap.style.display = all.length > 4 ? 'block' : 'none';
   const filteredAll = taskQ ? all.filter(h => h.name.toLowerCase().includes(taskQ)) : all;
   const doneHabitIds = new Set(allComps.filter(c => c.date === dateKey).map(c => c.habit_id));
 

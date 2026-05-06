@@ -524,7 +524,7 @@ body.modal-open{overflow:hidden;}
       <button class="fbtn" data-af="critical" onclick="setAF('critical',this)">Critical</button>
     </div>
     <input class="srch" type="text" id="asrch" placeholder="Search by name, city or county..." oninput="renderApiaries();if(S.mapMode)updateMap();">
-    <div class="map-toggle"><button class="mtbtn active" id="mt-grid" onclick="setMapToggle('grid')">Grid View</button><button class="mtbtn" id="mt-map" onclick="setMapToggle('map')">Map View</button></div>
+    <div class="map-toggle"><button class="mtbtn active" id="mt-grid" onclick="setMapToggle('grid')">Grid View</button><button class="mtbtn" id="mt-map" onclick="setMapToggle('map')">Map View</button><button class="mtbtn" id="mt-sat" onclick="toggleSat()" style="display:none;">Satellite</button></div>
     <div id="apiary-grid" class="agrid"></div>
     <div class="map-wrap" id="map-wrap" style="display:none;">
       <div id="apiary-map"></div>
@@ -569,7 +569,7 @@ body.modal-open{overflow:hidden;}
   </div>
 
   <div id="view-reports" class="view">
-    <div class="st" style="margin-bottom:16px;">Operations Overview</div>
+    <div class="sh" style="margin-bottom:16px;"><div class="st">Operations Overview</div><button class="btn btn-ghost btn-sm" onclick="exportCSV()">Export CSV</button></div>
     <div class="rgrid" id="rstats"></div>
     <div class="rpt-chart-row">
       <div class="rcard"><div class="rtitle">Days Since Inspection — Most Overdue Apiaries</div><div id="rchart"></div></div>
@@ -593,8 +593,8 @@ body.modal-open{overflow:hidden;}
 
 <!-- MODALS -->
 <div class="mover" id="mdetail"><div class="modal"><button class="mclose" onclick="closeModal('mdetail')">&#10005;</button><div class="mtitle" id="md-title"></div><div id="md-body"></div></div></div>
-<div class="mover" id="mlog-insp"><div class="modal"><button class="mclose" onclick="closeModal('mlog-insp')">&#10005;</button><div class="mtitle">Log Inspection</div><input type="hidden" id="li-aid"><input type="hidden" id="li-taskid"><div class="fg"><div class="fl">Apiary</div><div id="li-aname" style="font-weight:700;padding:6px 0;font-size:.92rem;color:var(--gold);"></div></div><div class="fg"><div class="fl">Date</div><input type="hidden" id="li-date"><button type="button" class="date-btn" id="li-date-btn" onclick="cal.open('li-date')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="3" width="12" height="12" rx="2"/><path d="M5 1v4M11 1v4M2 7h12"/></svg><span class="dv">Select date</span></button></div><div class="frow"><div class="fg"><div class="fl">Active Colonies (#)</div><input type="number" id="li-col" placeholder="e.g. 500"></div><div class="fg"><div class="fl">Dead-outs (DO)</div><input type="number" id="li-do" placeholder="0" min="0"></div></div><div class="frow"><div class="fg"><div class="fl">Re-Queens (Re-Q)</div><input type="number" id="li-req" placeholder="0" min="0"></div><div class="fg"><div class="fl">Feed</div><select id="li-feed"><option value="none">None</option><option value="pollen/syrup">Pollen / Syrup</option><option value="syrup">Syrup only</option><option value="pollen">Pollen only</option><option value="other">Other</option></select></div></div><div class="fg"><div class="fl">Treatment Applied</div><select id="li-treat"><option value="none">None</option><option value="oxalic">Oxalic Acid</option><option value="apivar">Apivar</option><option value="tactic">Tactic</option><option value="miteaway">Mite Away</option><option value="hopguard">HopGuard</option><option value="efb">EFB Treatment</option><option value="other">Other</option></select></div><div class="fg"><div class="fl">Comments</div><textarea id="li-notes" placeholder="Observations, colony strength, concerns, follow-up needed..."></textarea></div><button class="btn btn-gold" style="width:100%;" onclick="submitInsp()">Save Inspection</button></div></div>
-<div class="mover" id="madd-apiary"><div class="modal"><button class="mclose" onclick="closeModal('madd-apiary')">&#10005;</button><div class="mtitle" id="af-title">Add Apiary</div><input type="hidden" id="af-id"><div class="fg"><div class="fl">Apiary Name</div><input type="text" id="af-name" placeholder="e.g. Rogue Valley South"></div><div class="frow"><div class="fg"><div class="fl">State</div><select id="af-state"><option value="OR">Oregon (OR)</option><option value="CA">California (CA)</option></select></div><div class="fg"><div class="fl">County</div><input type="text" id="af-county" placeholder="e.g. Jackson County"></div></div><div class="frow"><div class="fg"><div class="fl">City</div><input type="text" id="af-city" placeholder="e.g. Medford"></div><div class="fg"><div class="fl">Total Hives</div><input type="number" id="af-hives" placeholder="e.g. 500"></div></div><div class="frow"><div class="fg"><div class="fl">Move-In Date</div><input type="hidden" id="af-movein"><button type="button" class="date-btn" id="af-movein-btn" onclick="cal.open('af-movein')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="3" width="12" height="12" rx="2"/><path d="M5 1v4M11 1v4M2 7h12"/></svg><span class="dv">Select date</span></button></div><div class="fg"><div class="fl">Key / Reference</div><input type="text" id="af-key" placeholder="e.g. Alves · Block 4"></div></div><div class="frow"><div class="fg"><div class="fl">Latitude</div><input type="text" id="af-lat" placeholder="e.g. 42.326" oninput="updGM('af')"></div><div class="fg"><div class="fl">Longitude</div><input type="text" id="af-lng" placeholder="e.g. -122.875" oninput="updGM('af')"></div></div><div class="gmlink" id="af-gmlink"><a id="af-gma" href="#" target="_blank" rel="noopener">Open in Google Maps</a></div><div class="fg"><div class="fl">Notes / Contract Info</div><textarea id="af-notes" placeholder="Pollination contracts, crop types, access notes..."></textarea></div><button class="btn btn-gold" style="width:100%;margin-top:4px;" onclick="submitApiary()">Save Apiary</button></div></div>
+<div class="mover" id="mlog-insp"><div class="modal"><button class="mclose" onclick="closeModal('mlog-insp')">&#10005;</button><div class="mtitle">Log Inspection</div><input type="hidden" id="li-aid"><input type="hidden" id="li-taskid"><div class="fg"><div class="fl">Apiary</div><div id="li-aname" style="font-weight:700;padding:6px 0;font-size:.92rem;color:var(--gold);"></div></div><div class="fg"><div class="fl">Date</div><input type="hidden" id="li-date"><button type="button" class="date-btn" id="li-date-btn" onclick="cal.open('li-date')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="3" width="12" height="12" rx="2"/><path d="M5 1v4M11 1v4M2 7h12"/></svg><span class="dv">Select date</span></button></div><div class="frow"><div class="fg"><div class="fl">Active Colonies (#)</div><input type="number" id="li-col" placeholder="e.g. 500"></div><div class="fg"><div class="fl">Dead-outs (DO)</div><input type="number" id="li-do" placeholder="0" min="0"></div></div><div class="fg"><div class="fl">Colony Strength</div><select id="li-str"><option value="">— Not rated —</option><option value="5">5 — Excellent</option><option value="4">4 — Strong</option><option value="3">3 — Average</option><option value="2">2 — Weak</option><option value="1">1 — Poor / Failing</option></select></div><div class="frow"><div class="fg"><div class="fl">Re-Queens (Re-Q)</div><input type="number" id="li-req" placeholder="0" min="0"></div><div class="fg"><div class="fl">Feed</div><select id="li-feed"><option value="none">None</option><option value="pollen/syrup">Pollen / Syrup</option><option value="syrup">Syrup only</option><option value="pollen">Pollen only</option><option value="other">Other</option></select></div></div><div class="fg"><div class="fl">Treatment Applied</div><select id="li-treat"><option value="none">None</option><option value="oxalic">Oxalic Acid</option><option value="apivar">Apivar</option><option value="tactic">Tactic</option><option value="miteaway">Mite Away</option><option value="hopguard">HopGuard</option><option value="efb">EFB Treatment</option><option value="other">Other</option></select></div><div class="fg"><div class="fl">Comments</div><textarea id="li-notes" placeholder="Observations, colony strength, concerns, follow-up needed..."></textarea></div><button class="btn btn-gold" style="width:100%;" onclick="submitInsp()">Save Inspection</button></div></div>
+<div class="mover" id="madd-apiary"><div class="modal"><button class="mclose" onclick="closeModal('madd-apiary')">&#10005;</button><div class="mtitle" id="af-title">Add Apiary</div><input type="hidden" id="af-id"><div class="fg"><div class="fl">Apiary Name</div><input type="text" id="af-name" placeholder="e.g. Rogue Valley South"></div><div class="frow"><div class="fg"><div class="fl">State</div><select id="af-state"><option value="OR">Oregon (OR)</option><option value="CA">California (CA)</option></select></div><div class="fg"><div class="fl">County</div><input type="text" id="af-county" placeholder="e.g. Jackson County"></div></div><div class="frow"><div class="fg"><div class="fl">City</div><input type="text" id="af-city" placeholder="e.g. Medford"></div><div class="fg"><div class="fl">Total Hives</div><input type="number" id="af-hives" placeholder="e.g. 500"></div></div><div class="fg"><div class="fl">Inspection Cycle (days)</div><input type="number" id="af-cycle" placeholder="14" min="1" max="90"></div><div class="frow"><div class="fg"><div class="fl">Move-In Date</div><input type="hidden" id="af-movein"><button type="button" class="date-btn" id="af-movein-btn" onclick="cal.open('af-movein')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="3" width="12" height="12" rx="2"/><path d="M5 1v4M11 1v4M2 7h12"/></svg><span class="dv">Select date</span></button></div><div class="fg"><div class="fl">Key / Reference</div><input type="text" id="af-key" placeholder="e.g. Alves · Block 4"></div></div><div class="frow"><div class="fg"><div class="fl">Latitude</div><input type="text" id="af-lat" placeholder="e.g. 42.326" oninput="updGM('af')"></div><div class="fg"><div class="fl">Longitude</div><input type="text" id="af-lng" placeholder="e.g. -122.875" oninput="updGM('af')"></div></div><div class="gmlink" id="af-gmlink"><a id="af-gma" href="#" target="_blank" rel="noopener">Open in Google Maps</a></div><div class="fg"><div class="fl">Notes / Contract Info</div><textarea id="af-notes" placeholder="Pollination contracts, crop types, general notes..."></textarea></div><div class="fg"><div class="fl">Access Notes</div><textarea id="af-access" placeholder="Gate codes, access road conditions, landowner contacts..." style="min-height:55px;"></textarea></div><button class="btn btn-gold" style="width:100%;margin-top:4px;" onclick="submitApiary()">Save Apiary</button></div></div>
 <div class="mover" id="madd-task"><div class="modal"><button class="mclose" onclick="closeModal('madd-task')">&#10005;</button><div class="mtitle" id="ta-title">Add Task</div><input type="hidden" id="ta-id"><div class="fg"><div class="fl">Task Type</div><select id="ta-type"><option value="inspection">Inspection</option><option value="treatment">Varroa Treatment</option><option value="equipment">Equipment / Maintenance</option><option value="supering">Add / Pull Honey Supers</option><option value="queen">Queen Check / Replace</option><option value="feeding">Feeding / Supplements</option><option value="water">Water Source Check</option><option value="other">Other</option></select></div><div class="fg"><div class="fl">Description</div><input type="text" id="ta-desc" placeholder="Brief description"></div><div class="frow"><div class="fg"><div class="fl">Apiary</div><select id="ta-ap"></select></div><div class="fg"><div class="fl">Assign To</div><select id="ta-assignee"></select></div></div><div class="frow"><div class="fg"><div class="fl">Due Date</div><input type="hidden" id="ta-due"><button type="button" class="date-btn" id="ta-due-btn" onclick="cal.open('ta-due')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="3" width="12" height="12" rx="2"/><path d="M5 1v4M11 1v4M2 7h12"/></svg><span class="dv">Select date</span></button></div><div class="fg"><div class="fl">Priority</div><select id="ta-pri"><option value="high">High</option><option value="medium" selected>Medium</option><option value="low">Low</option></select></div></div><div class="fg" id="ta-status-wrap" style="display:none;"><div class="fl">Status</div><select id="ta-status"><option value="open">To Do</option><option value="in-progress">In Progress</option><option value="done">Done</option></select></div><div class="fg"><div class="fl">Notes</div><textarea id="ta-notes" placeholder="Additional details..." style="min-height:60px;"></textarea></div><button class="btn btn-gold" style="width:100%;" onclick="submitTask()">Save Task</button><div id="ta-del-wrap" style="margin-top:10px;display:none;"><button class="btn btn-red" style="width:100%;" onclick="deleteTask()">Delete Task</button></div></div></div>
 <div class="mover" id="madd-employee"><div class="modal"><button class="mclose" onclick="closeModal('madd-employee')">&#10005;</button><div class="mtitle" id="ef-title">Add Team Member</div><input type="hidden" id="ef-id"><div class="fg"><div class="fl">Full Name</div><input type="text" id="ef-name" placeholder="Full name"></div><div class="fg"><div class="fl">Email</div><input type="email" id="ef-email" placeholder="name@prescotthoney.com"></div><div class="frow"><div class="fg"><div class="fl">Role</div><select id="ef-role"><option value="manager">Manager</option><option value="employee">Field Worker</option></select></div><div class="fg"><div class="fl">Phone</div><input type="tel" id="ef-phone" placeholder="(555) 000-0000"></div></div><div class="fg" id="ef-pass-wrap"><div class="fl">Login Password</div><input type="text" id="ef-pass" placeholder="Leave blank to keep current"></div><button class="btn btn-gold" style="width:100%;margin-top:4px;" onclick="submitEmployee()">Save</button><div id="ef-del-wrap" style="margin-top:10px;display:none;"><button class="btn btn-red" style="width:100%;" onclick="deleteEmployee()">Remove Team Member</button></div></div></div>
 <div class="mover" id="madd-move"><div class="modal"><button class="mclose" onclick="closeModal('madd-move')">&#10005;</button><div class="mtitle" id="mf-title">Log Hive Movement</div><input type="hidden" id="mf-id"><div class="frow"><div class="fg"><div class="fl">Date</div><input type="hidden" id="mf-date"><button type="button" class="date-btn" id="mf-date-btn" onclick="cal.open('mf-date')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="3" width="12" height="12" rx="2"/><path d="M5 1v4M11 1v4M2 7h12"/></svg><span class="dv">Select date</span></button></div><div class="fg"><div class="fl">Status</div><select id="mf-status"><option value="completed">Completed</option><option value="planned">Planned</option></select></div></div><div class="frow"><div class="fg"><div class="fl">From Apiary</div><select id="mf-from"></select></div><div class="fg"><div class="fl">To Apiary</div><select id="mf-to"></select></div></div><div class="fg"><div class="fl">Hive Count</div><input type="number" id="mf-hives" placeholder="e.g. 40" min="1"></div><div class="fg"><div class="fl">Driver / Worker</div><select id="mf-driver"></select></div><div class="fg"><div class="fl">Notes</div><textarea id="mf-notes" placeholder="Contract details, drop point, load info..." style="min-height:60px;"></textarea></div><button class="btn btn-gold" style="width:100%;" onclick="submitMovement()">Save Movement</button><div id="mf-del-wrap" style="margin-top:10px;display:none;"><button class="btn btn-red" style="width:100%;" onclick="deleteMovement()">Delete Movement</button></div></div></div>
@@ -789,7 +789,7 @@ const SEED_MOVES=[
   {id:'mv09',date:ahead(21),fromApiaryId:'a09',toApiaryId:'a07',hiveCount:40,driverId:'u7',truckInfo:'Truck 3',purpose:'consolidate',status:'planned',notes:'Consolidate eastern Oregon colonies before fall'},
   {id:'mv10',date:ahead(60),fromApiaryId:'a01',toApiaryId:null,hiveCount:120,driverId:'u3',truckInfo:'Trucks 1+2',purpose:'pollination',status:'planned',notes:'Willamette Valley colonies to CA for almond season — depart late Dec'},
 ];
-const S={user:null,apiaries:[],inspections:[],tasks:[],movements:[],employees:[],mapMode:false,leafMap:null,tileLayer:null,markerGroup:null};
+const S={user:null,apiaries:[],inspections:[],tasks:[],movements:[],employees:[],mapMode:false,satMode:false,leafMap:null,tileLayer:null,markerGroup:null};
 function loadData(){
   S.apiaries=JSON.parse(localStorage.getItem('phf_ap'))||JSON.parse(JSON.stringify(SEED_AP));
   S.inspections=JSON.parse(localStorage.getItem('phf_ins'))||JSON.parse(JSON.stringify(SEED_INSPS));
@@ -922,7 +922,7 @@ function toggleTheme(){
   document.documentElement.setAttribute('data-theme',next);
   localStorage.setItem('phf_theme',next);
   updateThemeIcon(next);
-  if(S.leafMap&&S.tileLayer){
+  if(S.leafMap&&S.tileLayer&&!S.satMode){
     S.leafMap.removeLayer(S.tileLayer);
     S.tileLayer=L.tileLayer(getTileUrl(),{attribution:'&copy; OpenStreetMap &copy; CARTO',maxZoom:19,subdomains:'abcd'}).addTo(S.leafMap);
   }
@@ -988,8 +988,8 @@ const getEmp=id=>S.employees.find(e=>e.id===id);
 const getAP=id=>S.apiaries.find(a=>a.id===id);
 const lastInsp=id=>[...S.inspections].filter(i=>i.apiaryId===id).sort((a,b)=>b.date.localeCompare(a.date))[0]||null;
 const daysSince=id=>{const l=lastInsp(id);return l?Math.floor((new Date(TODAY)-new Date(l.date))/86400000):999;};
-const apStatus=id=>{const d=daysSince(id);return d>17?'critical':d>12?'attention':'good';};
-const nextDue=id=>{const l=lastInsp(id);if(!l)return null;const d=new Date(l.date);d.setDate(d.getDate()+14);return d.toISOString().split('T')[0];};
+const apStatus=id=>{const d=daysSince(id),c=getAP(id)?.cycleDays||14;return d>c+3?'critical':d>c-2?'attention':'good';};
+const nextDue=id=>{const l=lastInsp(id);if(!l)return null;const d=new Date(l.date);d.setDate(d.getDate()+(getAP(id)?.cycleDays||14));return d.toISOString().split('T')[0];};
 const myAPs=()=>S.apiaries;
 const tlbl=t=>({inspection:'INSPECT',treatment:'TREAT',equipment:'MAINT',supering:'SUPERS',queen:'QUEEN',transport:'MOVE',feeding:'FEED',water:'WATER',other:'OTHER'}[t]||'OTHER');
 const tcls=t=>({inspection:'tl-ins',treatment:'tl-tr',equipment:'tl-ma',supering:'tl-su',queen:'tl-qu',transport:'tl-mv',feeding:'tl-fe',water:'tl-wa',other:'tl-ot'}[t]||'tl-ot');
@@ -1001,7 +1001,7 @@ function switchView(v){
 }
 function renderDash(){
   const u=S.user,om=isOM(),aps=myAPs();
-  const over=aps.filter(a=>daysSince(a.id)>14);
+  const over=aps.filter(a=>daysSince(a.id)>(a.cycleDays||14));
   const todT=S.tasks.filter(t=>t.status!=='done'&&t.dueDate<=TODAY&&(om||t.assignedTo===u.id));
   const hr=new Date().getHours();
   document.getElementById('wgreet').textContent=(hr<12?'Good morning':hr<17?'Good afternoon':'Good evening')+', '+u.name.split(' ')[0]+'!';
@@ -1018,7 +1018,7 @@ function renderDash(){
     <div class="scard ${over.length?'sc-red':'sc-grn'}"><div class="snum" style="color:${over.length?'var(--red)':'var(--grn)'}">${over.length}</div><div class="slbl">Need Inspection</div></div>
     <div class="scard ${todT.length?'sc-org':'sc-grn'}"><div class="snum" style="color:${todT.length?'var(--org)':'var(--grn)'}">${todT.length}</div><div class="slbl">My Tasks Today</div></div>
     <div class="scard sc-grn"><div class="snum" style="color:var(--grn)">${S.tasks.filter(t=>t.assignedTo===u.id&&t.status==='done').length}</div><div class="slbl">Completed</div></div>`;
-  const prio=aps.map(a=>({...a,ds:daysSince(a.id)})).filter(a=>a.ds>=10).sort((a,b)=>b.ds-a.ds).slice(0,6);
+  const prio=aps.map(a=>({...a,ds:daysSince(a.id)})).filter(a=>a.ds>=(a.cycleDays||14)-4).sort((a,b)=>b.ds-a.ds).slice(0,6);
   document.getElementById('dprio').innerHTML=prio.length?prio.map(a=>{const st=apStatus(a.id);const cls=st==='critical'?'io':st==='attention'?'iw':'ig';const dc=st==='critical'?'db-r':st==='attention'?'db-w':'db-g';const li=lastInsp(a.id);return`<div class="iitem ${cls}" onclick="openAPDetail('${a.id}')"><div class="iinfo"><div class="iname">${esc(a.name)}</div><div class="imeta">${a.city}, ${a.state} · ${a.hives.toLocaleString()} hives · Last: ${fmtD(li?.date)}</div></div><span class="dbadge ${dc}">${a.ds}d</span><button class="ibtn" onclick="event.stopPropagation();openInsp('${a.id}')">Log</button></div>`;}).join(''):`<div class="alert alert-b">All apiaries are current on inspections.</div>`;
   document.getElementById('dtask-lbl').textContent=om?'Tasks Due Today':'My Tasks Today';
   document.getElementById('dtasks').innerHTML=todT.length?todT.slice(0,6).map(t=>tCard(t,false)).join(''):`<div class="empty">No tasks due today.</div>`;
@@ -1031,7 +1031,22 @@ function setMapToggle(mode){
   document.getElementById('mt-map').classList.toggle('active',S.mapMode);
   document.getElementById('apiary-grid').style.display=S.mapMode?'none':'';
   document.getElementById('map-wrap').style.display=S.mapMode?'block':'none';
+  const satBtn=document.getElementById('mt-sat');
+  if(satBtn)satBtn.style.display=S.mapMode?'':'none';
+  if(!S.mapMode&&S.satMode){S.satMode=false;if(satBtn)satBtn.classList.remove('active');}
   if(S.mapMode){if(!S.leafMap)initMap();else{updateMap();setTimeout(()=>S.leafMap.invalidateSize(),50);}}
+}
+function toggleSat(){
+  S.satMode=!S.satMode;
+  const btn=document.getElementById('mt-sat');
+  if(btn)btn.classList.toggle('active',S.satMode);
+  if(!S.leafMap)return;
+  if(S.tileLayer)S.leafMap.removeLayer(S.tileLayer);
+  if(S.satMode){
+    S.tileLayer=L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',{attribution:'&copy; Esri World Imagery',maxZoom:19}).addTo(S.leafMap);
+  }else{
+    S.tileLayer=L.tileLayer(getTileUrl(),{attribution:'&copy; OpenStreetMap &copy; CARTO',maxZoom:19,subdomains:'abcd'}).addTo(S.leafMap);
+  }
 }
 function getFilteredApiaries(){
   const q=(document.getElementById('asrch')?.value||'').toLowerCase();
@@ -1117,25 +1132,30 @@ function openAPDetail(id){
   const bc=st==='critical'?'bc':st==='attention'?'ba':'bg';
   const hasCoords=a.lat&&a.lng&&Math.abs(a.lat)>0.01;
   // Group inspections by year
-  const histHTML=allInsps.length?`<table class="insp-tbl"><thead><tr><th>Date</th><th>Inspector</th><th>Colonies</th><th>Treatments</th><th>Notes</th></tr></thead><tbody>${allInsps.map(i=>{const dt=new Date(i.date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});const tags=[];if(i.treatment&&i.treatment!=='none')tags.push(`<span class="hpill">${esc(i.treatment)}</span>`);if(i.feed&&i.feed!=='none')tags.push(`<span class="hpill">${esc(i.feed)}</span>`);if(i.requeens)tags.push(`<span class="hpill hp-red">Re-Q: ${i.requeens}</span>`);if(i.deadouts)tags.push(`<span class="hpill hp-red">DO: ${i.deadouts}</span>`);return`<tr><td class="itd-date">${dt}</td><td class="itd-who">${esc(i.inspector||'—')}</td><td class="itd-cols">${i.colonies?Number(i.colonies).toLocaleString():'—'}</td><td><div class="itd-tags">${tags.join('')||'<span style="color:var(--mut)">—</span>'}</div></td><td class="itd-note">${i.notes?esc(i.notes):'—'}</td></tr>`;}).join('')}</tbody></table>`:`<div class="empty" style="padding:20px 0;">No inspections logged yet.</div>`;
+  const strColor=s=>!s?'var(--mut)':s>=4?'var(--grn)':s>=3?'var(--org)':'var(--red)';
+  const histHTML=allInsps.length?`<table class="insp-tbl"><thead><tr><th>Date</th><th>Inspector</th><th>Colonies</th><th>Str</th><th>Treatments</th><th>Notes</th></tr></thead><tbody>${allInsps.map(i=>{const dt=new Date(i.date+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});const tags=[];if(i.treatment&&i.treatment!=='none')tags.push(`<span class="hpill">${esc(i.treatment)}</span>`);if(i.feed&&i.feed!=='none')tags.push(`<span class="hpill">${esc(i.feed)}</span>`);if(i.requeens)tags.push(`<span class="hpill hp-red">Re-Q: ${i.requeens}</span>`);if(i.deadouts)tags.push(`<span class="hpill hp-red">DO: ${i.deadouts}</span>`);return`<tr><td class="itd-date">${dt}</td><td class="itd-who">${esc(i.inspector||'—')}</td><td class="itd-cols">${i.colonies?Number(i.colonies).toLocaleString():'—'}</td><td style="font-weight:700;text-align:center;color:${strColor(i.strength)}">${i.strength||'—'}</td><td><div class="itd-tags">${tags.join('')||'<span style="color:var(--mut)">—</span>'}</div></td><td class="itd-note">${i.notes?esc(i.notes):'—'}</td></tr>`;}).join('')}</tbody></table>`:`<div class="empty" style="padding:20px 0;">No inspections logged yet.</div>`;
   document.getElementById('md-title').textContent=a.name;
   document.getElementById('md-body').innerHTML=`
     <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px;">
       <span class="badge ${bc}">${st.toUpperCase()}</span>
       <span class="badge bt">${a.state==='OR'?'Oregon':'California'}</span>
       <span class="badge bt">${a.hives.toLocaleString()} hives</span>
+      <span class="badge bt">${a.cycleDays||14}d cycle</span>
       ${a.moveIn?`<span class="badge bt">Move-in: ${fmtD(a.moveIn)}</span>`:''}
       ${a.key?`<span class="badge bt">${esc(a.key)}</span>`:''}
       ${dps.length?`<span class="badge bt">${dps.length} drop pts</span>`:''}
     </div>
+    ${hasCoords?`<div id="ap-wx" style="font-size:.76rem;color:var(--tdim);margin-bottom:12px;display:flex;align-items:center;gap:8px;background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:8px 12px;"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="8" cy="6" r="3"/><path d="M3 12c0-1.5 1.5-2.5 5-2.5s5 1 5 2.5" stroke-linecap="round"/></svg><span id="ap-wx-txt" style="color:var(--mut)">Loading conditions…</span></div>`:''}
     <div style="background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:0;margin-bottom:14px;">
       <div class="drow"><span class="dk">Location</span><span class="dv">${esc(a.city)}, ${esc(a.county)}, ${a.state}</span></div>
       ${hasCoords?`<div class="drow"><span class="dk">GPS</span><span class="dv"><a href="https://www.google.com/maps?q=${a.lat},${a.lng}" target="_blank" rel="noopener">${a.lat}, ${a.lng} ↗</a></span></div>`:''}
       <div class="drow"><span class="dk">Total Hives</span><span class="dv" style="color:var(--gold)">${a.hives.toLocaleString()}</span></div>
       <div class="drow"><span class="dk">Last Inspection</span><span class="dv">${li?fmtD(li.date)+' ('+ds+'d ago)':'Never inspected'}</span></div>
-      <div class="drow" style="border:none;"><span class="dk">Next Due</span><span class="dv" style="color:${st!=='good'?'var(--red)':'var(--grn)'}">${nd?fmtD(nd):'N/A'}${ds>14?' — OVERDUE':''}</span></div>
+      <div class="drow"><span class="dk">Inspection Cycle</span><span class="dv">${a.cycleDays||14} days</span></div>
+      <div class="drow" style="border:none;"><span class="dk">Next Due</span><span class="dv" style="color:${st!=='good'?'var(--red)':'var(--grn)'}">${nd?fmtD(nd):'N/A'}${ds>(a.cycleDays||14)?' — OVERDUE':''}</span></div>
     </div>
     ${a.notes?`<div style="font-size:.82rem;color:var(--tdim);background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:12px;margin-bottom:14px;">${esc(a.notes)}</div>`:''}
+    ${a.accessNotes?`<div style="background:var(--orgd);border:1px solid var(--org);border-radius:var(--r);padding:12px 14px;margin-bottom:14px;"><div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--org);margin-bottom:5px;">Access Notes</div><div style="font-size:.82rem;">${esc(a.accessNotes)}</div></div>`:''}
     ${dps.length?`<div class="st" style="margin-bottom:8px;">Drop Points (${dps.length})</div><div style="background:var(--card);border:1px solid var(--brd);border-radius:var(--r);margin-bottom:14px;padding:0;">${dps.map(dp=>`<div class="dprow"><div><div class="dpname">${esc(dp.name)}</div><div class="dpmeta">${dp.hives} hives${dp.notes?' · '+esc(dp.notes):''}</div></div>${dp.lat&&dp.lng?`<a style="font-size:.75rem;flex-shrink:0;" href="https://www.google.com/maps?q=${dp.lat},${dp.lng}" target="_blank" rel="noopener">Maps ↗</a>`:''}</div>`).join('')}</div>`:''}
     ${(()=>{const apMoves=(S.movements||[]).filter(m=>m.fromApiaryId===id||m.toApiaryId===id).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);return apMoves.length?`<div class="st" style="margin-bottom:8px;">Hive Movements (${apMoves.length} recent)</div><div style="background:var(--card);border:1px solid var(--brd);border-radius:var(--r);margin-bottom:14px;padding:0;">${apMoves.map(m=>{const fAP=m.fromApiaryId?getAP(m.fromApiaryId):null;const tAP=m.toApiaryId?getAP(m.toApiaryId):null;const isOut=m.fromApiaryId===id;return`<div class="drow" style="padding:8px 12px;gap:10px;"><span style="font-size:.73rem;font-weight:700;color:${isOut?'var(--red)':'var(--grn)'};flex-shrink:0;">${isOut?'OUT':'IN'}</span><span style="flex:1;font-size:.8rem;">${m.hiveCount} hives ${isOut?(tAP?'&#8594; '+esc(tAP.name):'&#8594; External'):(fAP?'&#8592; '+esc(fAP.name):'&#8592; External')}</span><span style="font-size:.72rem;color:var(--tdim);flex-shrink:0;">${fmtD(m.date)}</span></div>`;}).join('')}</div>`:''})()}
     ${otasks.length?`<div class="st" style="margin-bottom:8px;">Open Tasks (${otasks.length})</div><div style="background:var(--card);border:1px solid var(--brd);border-radius:var(--r);margin-bottom:14px;padding:0;">${otasks.map(t=>`<div class="drow drow-link" style="padding:8px 12px;gap:8px;" onclick="closeModal('mdetail');_highlightTask='${t.id}';switchView('tasks')" title="Go to task"><span class="tlbl ${tcls(t.type)}">${tlbl(t.type)}</span><span style="flex:1;font-size:.82rem;">${esc(t.desc)}</span><span style="font-size:.73rem;color:${diffD(t.dueDate)<0?'var(--red)':'var(--tdim)'}">${relD(t.dueDate)}</span><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;opacity:.4;"><path d="M6 3l5 5-5 5"/></svg></div>`).join('')}</div>`:''}
@@ -1152,8 +1172,21 @@ function openAPDetail(id){
       ${om?`<button class="btn btn-ghost" onclick="closeModal('mdetail');openAddTask('${id}')">+ Task</button>`:''}
     </div>`;
   openModal('mdetail');
+  if(hasCoords){
+    fetch(`https://api.open-meteo.com/v1/forecast?latitude=${a.lat}&longitude=${a.lng}&current=temperature_2m,precipitation&temperature_unit=fahrenheit&timezone=auto`)
+      .then(r=>r.json())
+      .then(d=>{
+        const wx=d.current,el=document.getElementById('ap-wx-txt');
+        if(!el||!wx)return;
+        const t=Math.round(wx.temperature_2m);
+        const rain=wx.precipitation>0.1?` · ${wx.precipitation.toFixed(1)}mm rain`:'';
+        el.textContent=t+'°F'+rain;
+        el.style.color='var(--txt)';
+      })
+      .catch(()=>{const el=document.getElementById('ap-wx');if(el)el.style.display='none';});
+  }
 }
-function openAddApiary(){document.getElementById('af-title').textContent='Add Apiary';document.getElementById('af-id').value='';document.getElementById('af-name').value='';document.getElementById('af-state').value='OR';document.getElementById('af-county').value='';document.getElementById('af-city').value='';document.getElementById('af-hives').value='';document.getElementById('af-lat').value='';document.getElementById('af-lng').value='';document.getElementById('af-notes').value='';setDateField('af-movein','');document.getElementById('af-key').value='';document.getElementById('af-gmlink').classList.remove('show');openModal('madd-apiary');}
+function openAddApiary(){document.getElementById('af-title').textContent='Add Apiary';document.getElementById('af-id').value='';document.getElementById('af-name').value='';document.getElementById('af-state').value='OR';document.getElementById('af-county').value='';document.getElementById('af-city').value='';document.getElementById('af-hives').value='';document.getElementById('af-cycle').value='';document.getElementById('af-lat').value='';document.getElementById('af-lng').value='';document.getElementById('af-notes').value='';document.getElementById('af-access').value='';setDateField('af-movein','');document.getElementById('af-key').value='';document.getElementById('af-gmlink').classList.remove('show');openModal('madd-apiary');}
 function openEditAP(id){
   const a=getAP(id);if(!a)return;
   document.getElementById('af-title').textContent='Edit Apiary';
@@ -1166,6 +1199,8 @@ function openEditAP(id){
   document.getElementById('af-lat').value=a.lat||'';
   document.getElementById('af-lng').value=a.lng||'';
   document.getElementById('af-notes').value=a.notes||'';
+  document.getElementById('af-access').value=a.accessNotes||'';
+  document.getElementById('af-cycle').value=a.cycleDays||14;
   setDateField('af-movein',a.moveIn||'');
   document.getElementById('af-key').value=a.key||'';
   updGM('af');
@@ -1177,7 +1212,7 @@ function submitApiary(){
   if(!name){alert('Please enter an apiary name.');return;}
   const lat=parseFloat(document.getElementById('af-lat').value)||0;
   const lng=parseFloat(document.getElementById('af-lng').value)||0;
-  const data={name,state:document.getElementById('af-state').value,county:document.getElementById('af-county').value.trim(),city:document.getElementById('af-city').value.trim(),hives:parseInt(document.getElementById('af-hives').value)||0,lat,lng,notes:document.getElementById('af-notes').value.trim(),moveIn:document.getElementById('af-movein').value||'',key:document.getElementById('af-key').value.trim()};
+  const data={name,state:document.getElementById('af-state').value,county:document.getElementById('af-county').value.trim(),city:document.getElementById('af-city').value.trim(),hives:parseInt(document.getElementById('af-hives').value)||0,lat,lng,notes:document.getElementById('af-notes').value.trim(),accessNotes:document.getElementById('af-access').value.trim(),cycleDays:parseInt(document.getElementById('af-cycle').value)||14,moveIn:document.getElementById('af-movein').value||'',key:document.getElementById('af-key').value.trim()};
   if(id){const ex=getAP(id);if(ex){Object.assign(ex,data);}}
   else{S.apiaries.push({id:'a'+Date.now(),...data,assignedTo:[],dropPoints:[]});}
   save();closeModal('madd-apiary');renderApiaries();if(S.leafMap)updateMap();
@@ -1202,6 +1237,7 @@ function openInsp(aid,taskId){
   document.getElementById('li-feed').value='none';
   document.getElementById('li-req').value='';
   document.getElementById('li-do').value='';
+  document.getElementById('li-str').value='';
   document.getElementById('li-notes').value='';
   openModal('mlog-insp');
 }
@@ -1210,7 +1246,7 @@ function submitInsp(){
   if(!date){alert('Please select a date.');return;}
   const req=parseInt(document.getElementById('li-req').value)||0;
   const dead=parseInt(document.getElementById('li-do').value)||0;
-  S.inspections.push({id:'i'+Date.now(),apiaryId:aid,date,inspector:S.user.name,inspectorId:S.user.id,colonies:parseInt(document.getElementById('li-col').value)||0,requeens:req,deadouts:dead,feed:document.getElementById('li-feed').value,treatment:document.getElementById('li-treat').value,notes:document.getElementById('li-notes').value.trim()});
+  S.inspections.push({id:'i'+Date.now(),apiaryId:aid,date,inspector:S.user.name,inspectorId:S.user.id,colonies:parseInt(document.getElementById('li-col').value)||0,strength:parseInt(document.getElementById('li-str').value)||null,requeens:req,deadouts:dead,feed:document.getElementById('li-feed').value,treatment:document.getElementById('li-treat').value,notes:document.getElementById('li-notes').value.trim()});
   const taskId=document.getElementById('li-taskid').value;
   if(taskId){const t=S.tasks.find(x=>x.id===taskId);if(t)t.status='done';}
   save();closeModal('mlog-insp');
@@ -1560,6 +1596,15 @@ function renderReports(){
 }
 function openModal(id){document.getElementById(id).classList.add('open');document.body.classList.add('modal-open');}
 function closeModal(id){document.getElementById(id).classList.remove('open');if(!document.querySelector('.mover.open'))document.body.classList.remove('modal-open');}
+function exportCSV(){
+  const cols=['Date','Apiary','State','City','Inspector','Colonies','Strength','Treatment','Feed','Re-Queens','Dead-outs','Notes'];
+  const rows=[...S.inspections].sort((a,b)=>b.date.localeCompare(a.date)).map(i=>{
+    const ap=getAP(i.apiaryId)||{};
+    return[i.date,ap.name||'',ap.state||'',ap.city||'',i.inspector||'',i.colonies||'',i.strength||'',i.treatment||'',i.feed||'',i.requeens||'',i.deadouts||'',i.notes||''].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',');
+  });
+  const csv=[cols.join(','),...rows].join('\n');
+  const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='phf_inspections_'+TODAY+'.csv';document.body.appendChild(a);a.click();document.body.removeChild(a);
+}
 init();
 </script>
 </body>

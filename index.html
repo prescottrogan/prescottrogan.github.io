@@ -21,7 +21,7 @@
     --accent5: #22d3ee;
     --text: #171717;
     --text-2: #404040;
-    --muted: #6b7280;
+    --muted: #52596b;
     --danger: #ef4444;
     --header-bg: rgba(247,247,248,.92);
     --nav-bg: rgba(255,255,255,.95);
@@ -35,7 +35,7 @@
     --border-light: #333;
     --text: #f5f5f5;
     --text-2: #d4d4d4;
-    --muted: #737373;
+    --muted: #9ca3af;
     --header-bg: rgba(10,10,10,.88);
     --nav-bg: rgba(22,22,22,.92);
   }
@@ -155,7 +155,7 @@
   /* ── Nav ───────────────────────────────────────── */
   nav {
     position: fixed; bottom: 0; left: 0; right: 0; max-width: 640px; margin: 0 auto;
-    display: grid; grid-template-columns: repeat(4, 1fr);
+    display: grid; grid-template-columns: repeat(5, 1fr);
     background: var(--nav-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
     border-top: 1px solid var(--border); z-index: 100;
     padding-bottom: env(safe-area-inset-bottom);
@@ -177,6 +177,28 @@
   nav button.active[data-tab="activity"] { color: var(--accent4); }
   nav button.active[data-tab="info"]     { color: var(--accent3); }
   nav button.active[data-tab="daily"]    { color: var(--accent); }
+  nav button.active[data-tab="summary"]  { color: var(--accent2); }
+
+  /* ── Offline banner ─────────────────────────────── */
+  #offline-banner { display:none; position:fixed; top:0; left:0; right:0; z-index:1100; background:#dc2626; color:#fff; text-align:center; padding:7px 16px; font-size:.78rem; font-weight:700; letter-spacing:.03em; }
+  #offline-banner.show { display:block; }
+
+  /* ── Toast undo button ──────────────────────────── */
+  .toast-undo-btn { background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.35); color:inherit; border-radius:6px; padding:3px 10px; margin-left:10px; cursor:pointer; font-size:.82rem; font-weight:700; font-family:inherit; vertical-align:middle; }
+  .toast-undo-btn:hover { background:rgba(255,255,255,.28); }
+
+  /* ── List search / filter ───────────────────────── */
+  .list-filter { width:100%; background:var(--bg); border:1px solid var(--border); border-radius:8px; color:var(--text); padding:8px 12px 8px 32px; font-size:.88rem; font-family:inherit; outline:none; margin-bottom:8px; }
+  .list-filter:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(74,222,128,.12); }
+  .list-filter-wrap { position:relative; margin-bottom:4px; }
+  .list-filter-wrap::before { content:'🔍'; position:absolute; left:10px; top:50%; transform:translateY(-50%); font-size:.78rem; pointer-events:none; opacity:.5; }
+
+  /* ── Calorie status line ────────────────────────── */
+  #cal-status { font-size:.78rem; text-align:center; margin-top:6px; font-weight:600; min-height:16px; transition:color .25s; }
+
+  /* ── Swipe-to-delete ────────────────────────────── */
+  .swipeable { touch-action:pan-y; user-select:none; transition:transform .18s ease, opacity .18s ease; }
+  .swipeable.swiping { transition:none; }
 
   /* ── Sections ──────────────────────────────────── */
   .section { display: none; padding: 16px 20px calc(80px + env(safe-area-inset-bottom)); }
@@ -799,6 +821,8 @@
 </div>
 
 <!-- ══ MAIN APP ══════════════════════════════════════ -->
+<div id="offline-banner" role="alert" aria-live="assertive">⚡ No connection — changes will not be saved</div>
+
 <div id="app" style="display:none">
 
   <header>
@@ -853,6 +877,7 @@
       <div class="number" id="cal-total" style="color:var(--accent)">0</div>
       <div class="label" id="cal-day-label">calories today</div>
       <div class="goal-bar"><div class="goal-bar-fill" id="cal-bar" style="width:0%;background:var(--accent)"></div></div>
+      <div id="cal-status" aria-live="polite"></div>
       <div class="goal-text">
         Goal: <span id="cal-goal-display">2000</span> kcal
         <button class="text-link" onclick="toggleGoalEdit()">edit</button>
@@ -883,7 +908,10 @@
       <button id="food-add-btn" class="btn btn-green btn-full" onclick="addFood()"><span id="food-plus"></span>Add</button>
     </div>
     <div class="section-title" id="food-log-title">Today's Log</div>
-    <div class="card" id="food-list"><div class="empty">Nothing logged yet</div></div>
+    <div class="list-filter-wrap" id="food-filter-wrap" style="display:none">
+      <input class="list-filter" id="food-filter" placeholder="Filter log…" oninput="renderFood()" aria-label="Filter food log">
+    </div>
+    <div id="food-list"><div class="empty">Nothing logged yet</div></div>
   </div>
 
   <!-- ── ACTIVITY ──────────────────────────────────── -->
@@ -914,7 +942,7 @@
         </div>
       </div>
       <div class="act-duration-wrap">
-        <input type="number" id="act-duration" class="act-duration-input" placeholder="0" max="600" inputmode="numeric">
+        <input type="number" id="act-duration" class="act-duration-input" placeholder="0" max="600" inputmode="numeric" onkeydown="if(event.key==='Enter')addActivity()" aria-label="Duration in minutes">
         <span class="act-duration-unit">minutes</span>
       </div>
       <input type="text" id="act-notes" placeholder="Notes (optional)">
@@ -928,6 +956,9 @@
 
   <!-- ── INFO ──────────────────────────────────────── -->
   <div id="section-info" class="section">
+    <div class="list-filter-wrap" id="info-search-wrap">
+      <input class="list-filter" id="info-search" placeholder="Search notes…" oninput="renderInfo()" aria-label="Search notes">
+    </div>
     <div id="info-view"></div>
   </div>
 
@@ -941,9 +972,12 @@
         <button class="type-btn"        id="type-task-btn"  onclick="setAddType('task')">Side (one-time)</button>
       </div>
       <div class="task-add-row">
-        <input type="text" id="habit-name" placeholder="Name...">
+        <input type="text" id="habit-name" placeholder="Name..." onkeydown="if(event.key==='Enter')addItem()">
         <button id="habit-add-btn" class="btn btn-green" onclick="addItem()"><span id="habit-plus"></span>Add</button>
       </div>
+    </div>
+    <div class="list-filter-wrap" id="task-filter-wrap" style="display:none">
+      <input class="list-filter" id="task-filter" placeholder="Filter tasks…" oninput="renderDaily()" aria-label="Filter tasks">
     </div>
     <div id="daily-list"></div>
   </div>
@@ -953,7 +987,7 @@
     <div class="card mascot-card">
       <div id="mascot-face" class="mascot-idle"></div>
       <div class="mascot-greeting" id="mascot-greeting"></div>
-      <div class="mascot-msg" id="mascot-msg">Loading…</div>
+      <div class="mascot-msg" id="mascot-msg" aria-live="polite">Loading…</div>
     </div>
     <div class="smry-period">
       <button class="smry-period-btn active" id="sp-day"   onclick="setSummaryPeriod('day')">Day</button>
@@ -1049,11 +1083,12 @@
     </div>
   </div>
 
-  <nav>
-    <button data-tab="food"     onclick="switchTab('food')"     id="nav-food"></button>
-    <button data-tab="activity" onclick="switchTab('activity')" id="nav-activity"></button>
-    <button data-tab="daily"    onclick="switchTab('daily')"    id="nav-daily"></button>
-    <button data-tab="info"     onclick="switchTab('info')"     id="nav-info"></button>
+  <nav role="navigation" aria-label="Main navigation">
+    <button data-tab="food"     onclick="switchTab('food')"     id="nav-food"     aria-label="Food log"></button>
+    <button data-tab="activity" onclick="switchTab('activity')" id="nav-activity" aria-label="Activity log"></button>
+    <button data-tab="daily"    onclick="switchTab('daily')"    id="nav-daily"    aria-label="Tasks"></button>
+    <button data-tab="info"     onclick="switchTab('info')"     id="nav-info"     aria-label="Notes"></button>
+    <button data-tab="summary"  onclick="switchTab('summary')"  id="nav-summary"  aria-label="Stats"></button>
   </nav>
 </div>
 
@@ -1086,6 +1121,27 @@ let summaryPeriod = 'day';
 let _calMonth = new Date();
 let _mascot = { cals: 0, habitDone: 0, habitTotal: 0, actMins: 0 };
 let _confettiFired = false;
+
+// ── In-memory cache ────────────────────────────────────────────────────────
+const _cache = new Map();
+const CACHE_TTL = 45000;
+function cacheGet(key) { const e = _cache.get(key); if (!e || Date.now() - e.ts > CACHE_TTL) { _cache.delete(key); return null; } return e.val; }
+function cacheSet(key, val) { _cache.set(key, { val, ts: Date.now() }); }
+function cacheInvalidate(...prefixes) { for (const k of _cache.keys()) if (prefixes.some(p => k.startsWith(p))) _cache.delete(k); }
+
+// ── Undo toast ─────────────────────────────────────────────────────────────
+let _undoFn = null, _undoTimer = null;
+function toastUndo(msg, fn) {
+  const el = document.getElementById('toast');
+  el.innerHTML = `${esc(msg)}<button class="toast-undo-btn" onclick="execUndo()">Undo</button>`;
+  el.className = 'show ok'; clearTimeout(_tt); clearTimeout(_undoTimer);
+  _undoFn = fn;
+  _undoTimer = setTimeout(() => { el.className = ''; _undoFn = null; el.textContent = ''; }, 3500);
+}
+function execUndo() {
+  if (_undoFn) { const f = _undoFn; _undoFn = null; f(); }
+  clearTimeout(_undoTimer); document.getElementById('toast').className = '';
+}
 
 // ── Icons ──────────────────────────────────────────────────────────────────
 const icon = (path, size = 18) =>
@@ -1156,9 +1212,9 @@ function getXPThreshold(level) {
   return Math.floor(100 * Math.pow(level - 1, 1.8));
 }
 function getLevel(xp) {
-  let lvl = 1;
-  while (getXPThreshold(lvl + 1) <= xp) lvl++;
-  return lvl;
+  let lo = 1, hi = 200;
+  while (lo < hi) { const mid = (lo + hi + 1) >> 1; if (getXPThreshold(mid) <= xp) lo = mid; else hi = mid - 1; }
+  return lo;
 }
 function getLevelProgress(xp) {
   const lvl = getLevel(xp);
@@ -1444,6 +1500,7 @@ function injectIcons() {
   document.getElementById('nav-activity').innerHTML  = icon(IC.workout, 22) + '<span>Activity</span>';
   document.getElementById('nav-info').innerHTML      = icon(IC.info, 22)    + '<span>Notes</span>';
   document.getElementById('nav-daily').innerHTML     = icon(IC.daily, 22)   + '<span>Tasks</span>';
+  document.getElementById('nav-summary').innerHTML   = icon(IC.summary, 22) + '<span>Stats</span>';
 
   document.getElementById('hdn-prev').innerHTML = icon(IC.arrowL);
   document.getElementById('hdn-next').innerHTML = icon(IC.arrowR);
@@ -1466,6 +1523,21 @@ async function init() {
   document.addEventListener('click', e => {
     if (!e.target.closest('#food-dropdown') && !e.target.closest('#food-search-btn') && e.target.id !== 'food-name') hideFoodDropdown();
   });
+  // Keyboard: Escape closes any open modal / dropdown
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    closeQuestModal();
+    ['penalty-modal','levelup-modal','reset-modal'].forEach(id => document.getElementById(id)?.classList.remove('open'));
+    hideFoodDropdown();
+  });
+  // Offline banner
+  const _offlineBanner = document.getElementById('offline-banner');
+  const _updateOffline = () => _offlineBanner?.classList.toggle('show', !navigator.onLine);
+  window.addEventListener('offline', _updateOffline);
+  window.addEventListener('online',  _updateOffline);
+  _updateOffline();
+  // Swipe-to-delete
+  initSwipeToDelete();
   const { data: { session } } = await db.auth.getSession();
   if (session?.user) { user = session.user; await showApp(); } else showAuth();
 
@@ -1892,10 +1964,23 @@ async function renderFood() {
   document.getElementById('cal-bar').style.width = pct+'%';
   document.getElementById('cal-bar').style.background = rawPct > 100 ? 'var(--danger)' : 'var(--accent)';
   document.getElementById('cal-total').style.animation = rawPct > 100 ? 'cal-pulse 1.2s ease-in-out infinite' : '';
+  // Calorie status message
+  const calStatusEl = document.getElementById('cal-status');
+  if (calStatusEl && calGoal) {
+    if (rawPct > 100) { calStatusEl.textContent = `${totalCal - calGoal} kcal over goal`; calStatusEl.style.color = 'var(--danger)'; }
+    else if (rawPct >= 80) { calStatusEl.textContent = `${calGoal - totalCal} kcal left · looking good`; calStatusEl.style.color = 'var(--accent)'; }
+    else if (rawPct > 0) { calStatusEl.textContent = `${calGoal - totalCal} kcal remaining`; calStatusEl.style.color = 'var(--muted)'; }
+    else { calStatusEl.textContent = ''; }
+  }
   await refreshTodayStats();
+  // Food filter
+  const foodQ = document.getElementById('food-filter')?.value.trim().toLowerCase() || '';
+  const foodFilterWrap = document.getElementById('food-filter-wrap');
+  if (foodFilterWrap) foodFilterWrap.style.display = rows.length > 4 ? '' : 'none';
+  const displayRows = foodQ ? rows.filter(r => r.name.toLowerCase().includes(foodQ)) : rows;
   const el = document.getElementById('food-list');
-  if (!rows.length) { el.innerHTML = '<div class="empty">Nothing logged yet</div>'; return; }
-  el.innerHTML = [...rows].reverse().map(e => {
+  if (!displayRows.length) { el.innerHTML = foodQ ? '<div class="empty">No matching entries</div>' : '<div class="empty">Nothing logged yet</div>'; return; }
+  el.innerHTML = [...displayRows].reverse().map(e => {
     if (editing.food === e.id) {
       const editMacros = MACRO_DEFS.filter(m => trackedMacros.includes(m.key));
       const editRows = [];
@@ -1917,7 +2002,7 @@ async function renderFood() {
       const v = m.core ? (+e[m.key]||0) : (+macroMeta[m.key]||0);
       return v ? `${m.label.slice(0,1)} ${v}${m.unit}` : '';
     }).filter(Boolean).join(' · ');
-    return `<div class="entry"><div class="entry-content"><div class="entry-name">${esc(e.name)}</div><div class="entry-meta">${esc(e.time||'')}${macroStr?' · '+macroStr:''}</div></div><div class="entry-right"><span class="entry-cal">${e.calories}</span><button class="icon-btn" onclick="startEditFood('${e.id}')">${icon(IC.edit,16)}</button><button class="icon-btn danger" onclick="deleteFood('${e.id}')">${icon(IC.trash,16)}</button></div></div>`;
+    return `<div class="entry swipeable" data-delete-id="${e.id}" data-delete-type="food"><div class="entry-content"><div class="entry-name">${esc(e.name)}</div><div class="entry-meta">${esc(e.time||'')}${macroStr?' · '+macroStr:''}</div></div><div class="entry-right"><span class="entry-cal">${e.calories}</span><button class="icon-btn" onclick="startEditFood('${e.id}')" aria-label="Edit ${esc(e.name)}">${icon(IC.edit,16)}</button><button class="icon-btn danger" onclick="deleteFood('${e.id}')" aria-label="Delete ${esc(e.name)}">${icon(IC.trash,16)}</button></div></div>`;
   }).join('');
 }
 
@@ -2069,15 +2154,15 @@ async function renderActivity() {
     if (e.notes) metaParts.push(esc(e.notes));
     if (e.time)  metaParts.push(esc(e.time));
 
-    return `<div class="card" style="margin-bottom:8px">
+    return `<div class="card swipeable" style="margin-bottom:8px" data-delete-id="${e.id}" data-delete-type="activity">
       <div class="quest-entry">
         <span class="quest-emoji">${esc(actType.emoji)}</span>
         <div class="quest-info">
           <div class="quest-name">${esc(actType.name)}</div>
           <div class="quest-meta">${metaParts.join(' · ')}</div>
         </div>
-        <button class="icon-btn" onclick="startEditActivity('${e.id}')">${icon(IC.edit,16)}</button>
-        <button class="icon-btn danger" onclick="deleteActivity('${e.id}')">${icon(IC.trash,16)}</button>
+        <button class="icon-btn" onclick="startEditActivity('${e.id}')" aria-label="Edit activity">${icon(IC.edit,16)}</button>
+        <button class="icon-btn danger" onclick="deleteActivity('${e.id}')" aria-label="Delete activity">${icon(IC.trash,16)}</button>
       </div>
     </div>`;
   }).join('');
@@ -2109,6 +2194,8 @@ async function renderFolderList(view) {
   ]);
   _folderCache = foldersRes.data || [];
   const allItems = itemsRes.data || [];
+  const infoQ = document.getElementById('info-search')?.value.trim().toLowerCase() || '';
+  const filteredFolders = infoQ ? _folderCache.filter(f => f.name.toLowerCase().includes(infoQ)) : _folderCache;
 
   // Count items per folder
   const counts = {};
@@ -2144,7 +2231,7 @@ async function renderFolderList(view) {
     </div>`;
 
   // Folder cards
-  _folderCache.forEach((f, i) => {
+  filteredFolders.forEach((f, i) => {
     const color = FOLDER_COLORS[i % FOLDER_COLORS.length];
     const count = counts[f.id] || 0;
     if (editing.folder === f.id) {
@@ -2222,10 +2309,13 @@ async function renderFolderContents(view, folderId, title) {
   }
   html += `</div>`;
 
-  if (!_infoCache.length) {
-    html += '<div class="empty">Nothing here yet</div>';
+  const infoQ2 = document.getElementById('info-search')?.value.trim().toLowerCase() || '';
+  const filteredInfo = infoQ2 ? _infoCache.filter(e => (e.title||'').toLowerCase().includes(infoQ2) || (e.body||'').toLowerCase().includes(infoQ2)) : _infoCache;
+
+  if (!filteredInfo.length) {
+    html += infoQ2 ? '<div class="empty">No matching notes</div>' : '<div class="empty">Nothing here yet</div>';
   } else {
-    html += _infoCache.map(e => {
+    html += filteredInfo.map(e => {
       if (editing.info === e.id) {
         const folderSel = `<select id="ei-folder-${e.id}" style="width:100%;margin-bottom:8px;padding:10px 12px;font-size:.9rem">
           <option value="">No folder</option>
@@ -2372,6 +2462,7 @@ async function addItem() {
   }));
   btnLoad(btn, false); if (error) return;
   document.getElementById('habit-name').value = '';
+  cacheInvalidate('habits', 'completions');
   await renderDaily();
 }
 
@@ -2385,10 +2476,17 @@ async function saveEditHabit(id, isRecurring) {
     if (due) name = `${name} [${due}]`;
   }
   const { error } = await dbCall(() => db.from('habits').update({ name }).eq('id',id).eq('user_id',user.id));
-  if (error) return; editing.habit = null; toast('Updated','ok'); await renderDaily();
+  if (error) return; editing.habit = null; cacheInvalidate('habits'); toast('Updated','ok'); await renderDaily();
 }
 
 async function toggleItem(id, isRecurring) {
+  // Optimistic: flip DOM immediately
+  const rowEl   = document.querySelector(`.habit-row[data-id="${id}"]`);
+  const checkEl = rowEl?.querySelector('.habit-check');
+  if (rowEl)   rowEl.classList.toggle('done-row');
+  if (checkEl) checkEl.classList.toggle('done');
+
+  cacheInvalidate('habits', 'completions');
   let didComplete = false;
   if (isRecurring) {
     const dateKey = offsetKey(currentDays.daily);
@@ -2406,11 +2504,13 @@ async function toggleItem(id, isRecurring) {
     const xp     = isCore ? 50 : isRecurring ? 25 : 15;
     const reason = isCore ? 'Core Task' : isRecurring ? 'Daily Task' : 'Side Task';
     await awardXP(xp, reason);
+    toastUndo('Task done!', () => toggleItem(id, isRecurring));
   }
   await renderDaily();
 }
 
 async function deleteItem(id) {
+  cacheInvalidate('habits', 'completions');
   await dbCall(() => db.from('habits').delete().eq('id',id).eq('user_id',user.id));
   await renderDaily();
 }
@@ -2419,13 +2519,23 @@ async function renderDaily() {
   const dateKey  = offsetKey(currentDays.daily);
   renderDailyQuest();
 
-  const [itemsRes, compRes] = await Promise.all([
-    dbCall(() => db.from('habits').select('*').eq('user_id',user.id).order('created_at')),
-    dbCall(() => db.from('habit_completions').select('habit_id,date').eq('user_id',user.id).gte('date', offsetKey(-90)))
-  ]);
+  let all      = cacheGet('habits');
+  let allComps = cacheGet('completions');
+  if (!all || !allComps) {
+    const [itemsRes, compRes] = await Promise.all([
+      dbCall(() => db.from('habits').select('*').eq('user_id',user.id).order('created_at')),
+      dbCall(() => db.from('habit_completions').select('habit_id,date').eq('user_id',user.id).gte('date', offsetKey(-90)))
+    ]);
+    all      = itemsRes.data || [];
+    allComps = compRes.data || [];
+    cacheSet('habits', all); cacheSet('completions', allComps);
+  }
 
-  const all      = itemsRes.data || [];
-  const allComps = compRes.data || [];
+  // Task filter
+  const taskQ = document.getElementById('task-filter')?.value.trim().toLowerCase() || '';
+  const filterWrap = document.getElementById('task-filter-wrap');
+  if (filterWrap) filterWrap.style.display = all.length > 4 ? '' : 'none';
+  const filteredAll = taskQ ? all.filter(h => h.name.toLowerCase().includes(taskQ)) : all;
   const doneHabitIds = new Set(allComps.filter(c => c.date === dateKey).map(c => c.habit_id));
 
   // Precompute streaks for all recurring habits
@@ -2441,13 +2551,15 @@ async function renderDaily() {
     streakMap[h.id] = streak;
   });
 
-  const habits  = all.filter(h =>  h.recurring);
-  const tasks   = all.filter(h => !h.recurring);
+  const habits  = filteredAll.filter(h =>  h.recurring);
+  const tasks   = filteredAll.filter(h => !h.recurring);
 
   await refreshTodayStats();
 
-  if (!all.length) {
-    document.getElementById('daily-list').innerHTML = '<div class="card"><div class="empty">Add tasks above</div></div>';
+  if (!filteredAll.length) {
+    document.getElementById('daily-list').innerHTML = taskQ
+      ? '<div class="card"><div class="empty">No matching tasks</div></div>'
+      : '<div class="card"><div class="empty">Add tasks above</div></div>';
     return;
   }
 
@@ -2478,8 +2590,8 @@ async function renderDaily() {
       const isOverdue = !isDone && parsed.due < todayKey();
       dueHtml = `<div class="task-due${isOverdue?' overdue':''}">due ${formatDue(parsed.due)}</div>`;
     }
-    return `<div class="habit-row ${isDone?'done-row':''}">
-      <button class="habit-check ${shape} ${isDone?'done':''}" onclick="toggleItem('${item.id}',${item.recurring})">${icon(IC.check,14)}</button>
+    return `<div class="habit-row swipeable ${isDone?'done-row':''}" data-id="${item.id}" data-delete-id="${item.id}" data-delete-type="habit">
+      <button class="habit-check ${shape} ${isDone?'done':''}" onclick="toggleItem('${item.id}',${item.recurring})" aria-label="${isDone?'Mark incomplete':'Mark complete'}: ${esc(parsed.name)}">${icon(IC.check,14)}</button>
       <div style="flex:1;min-width:0">
         <div class="habit-name">${esc(parsed.name)}</div>
         ${dueHtml}
@@ -2991,6 +3103,44 @@ function goToday(s) {
   currentDays[s]=0;
   if(s==='food') renderFood(); else if(s==='activity') renderActivity(); else if(s==='daily') renderDaily();
   updateHeaderDayNav();
+}
+
+// ── Swipe-to-delete ────────────────────────────────────────────────────────
+function initSwipeToDelete() {
+  let tx = 0, ty = 0, el = null;
+  document.addEventListener('touchstart', e => {
+    tx = e.touches[0].clientX; ty = e.touches[0].clientY; el = null;
+  }, { passive: true });
+  document.addEventListener('touchmove', e => {
+    const dx = e.touches[0].clientX - tx;
+    const dy = e.touches[0].clientY - ty;
+    if (Math.abs(dx) < 8 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
+    const card = e.target.closest('.swipeable');
+    if (!card) return;
+    if (!el) el = card;
+    if (el !== card) return;
+    el.classList.add('swiping');
+    const offset = Math.max(-96, Math.min(0, dx));
+    el.style.transform = `translateX(${offset}px)`;
+  }, { passive: true });
+  document.addEventListener('touchend', e => {
+    if (!el) return;
+    const card = el; el = null;
+    card.classList.remove('swiping');
+    const dx = e.changedTouches[0].clientX - tx;
+    if (dx < -64) {
+      card.style.transform = 'translateX(-110%)';
+      card.style.opacity = '0';
+      setTimeout(() => {
+        const id = card.dataset.deleteId, type = card.dataset.deleteType;
+        if (type === 'food')     deleteFood(id);
+        else if (type === 'activity') deleteActivity(id);
+        else if (type === 'habit')    deleteItem(id);
+      }, 180);
+    } else {
+      card.style.transform = '';
+    }
+  }, { passive: true });
 }
 
 // ── Utils ──────────────────────────────────────────────────────────────────

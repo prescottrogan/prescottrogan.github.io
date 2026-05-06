@@ -196,10 +196,6 @@
   /* ── Calorie status line ────────────────────────── */
   #cal-status { font-size:.78rem; text-align:center; margin-top:6px; font-weight:600; min-height:16px; transition:color .25s; }
 
-  /* ── Swipe-to-delete ────────────────────────────── */
-  .swipeable { touch-action:pan-y; user-select:none; transition:transform .18s ease, opacity .18s ease; }
-  .swipeable.swiping { transition:none; }
-
   /* ── Sections ──────────────────────────────────── */
   .section { display: none; padding: 16px 20px calc(80px + env(safe-area-inset-bottom)); }
   .section.active { display: block; animation: fadeIn .22s cubic-bezier(.22,1,.36,1); }
@@ -580,26 +576,16 @@
   .levelup-rank  { font-size:1.4rem; font-weight:800; letter-spacing:.02em; animation:rank-shimmer 2s ease-in-out infinite; margin-bottom:16px; display:block; }
   .levelup-msg   { font-size:.88rem; color:var(--muted); margin-bottom:22px; line-height:1.5; }
 
-  .act-type-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:6px; margin-bottom:14px; }
-  .act-type-btn {
-    display:flex; flex-direction:column; align-items:center; gap:3px;
-    padding:9px 4px; border-radius:10px; border:1.5px solid var(--border);
-    background:var(--bg); cursor:pointer; transition:all .15s; font-family:inherit;
-  }
-  .act-type-btn:hover:not(.active) { border-color:var(--accent4); transform:translateY(-1px); }
-  .act-type-btn .act-emoji { font-size:1.3rem; line-height:1; }
-  .act-type-btn .act-name  { font-size:.62rem; font-weight:700; color:var(--muted); text-align:center; white-space:nowrap; }
-  .act-type-btn.active { background:rgba(167,139,250,.15); border-color:var(--accent4); }
-  .act-type-btn.active .act-name { color:var(--accent4); }
-  .act-type-btn.add-act-btn { border-style:dashed; }
-  .act-type-btn.add-act-btn:hover { border-color:var(--accent4); border-style:solid; }
-  .act-type-btn.add-act-btn .act-emoji { font-size:1.5rem; font-weight:300; color:var(--muted); }
-  .act-type-btn.custom-type { position:relative; }
-  .custom-del-btn { position:absolute; top:3px; right:3px; width:14px; height:14px; border-radius:50%; background:var(--danger); color:#fff; border:none; cursor:pointer; font-size:.6rem; line-height:1; display:flex; align-items:center; justify-content:center; padding:0; opacity:0; transition:opacity .15s; }
-  .act-type-btn.custom-type:hover .custom-del-btn { opacity:1; }
-  .act-custom-form { display:none; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; padding:10px; margin-bottom:10px; gap:8px; flex-direction:column; }
-  .act-custom-form.open { display:flex; }
-  .act-custom-form-row { display:flex; gap:8px; }
+  .act-saved-strip { display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-bottom:10px; min-height:0; }
+  .act-saved-chip { display:flex; align-items:center; gap:5px; padding:5px 8px 5px 12px; border-radius:20px; border:1.5px solid var(--border); background:var(--bg); cursor:pointer; font-size:.82rem; font-weight:600; transition:border-color .15s; font-family:inherit; color:var(--text); }
+  .act-saved-chip:hover { border-color:var(--accent4); }
+  .act-chip-del { width:16px; height:16px; border-radius:50%; background:var(--surface-2); color:var(--muted); border:none; cursor:pointer; font-size:.72rem; line-height:16px; text-align:center; padding:0; transition:background .15s, color .15s; font-family:inherit; flex-shrink:0; }
+  .act-chip-del:hover { background:var(--danger); color:#fff; }
+  .act-saved-add { display:flex; align-items:center; gap:4px; padding:5px 12px; border-radius:20px; border:1.5px dashed var(--border); background:transparent; cursor:pointer; font-size:.82rem; color:var(--muted); transition:all .15s; font-family:inherit; }
+  .act-saved-add:hover { border-color:var(--accent4); color:var(--accent4); border-style:solid; }
+  .act-add-form { display:none; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; padding:10px; margin-bottom:10px; gap:8px; }
+  .act-add-form.open { display:flex; flex-direction:column; }
+  .act-add-form-row { display:flex; gap:8px; }
   #act-custom-emoji { flex:0 0 52px !important; text-align:center; font-size:1.3rem; padding:8px 4px !important; }
   #act-custom-name  { flex:1; }
 
@@ -930,14 +916,16 @@
     <!-- Log Activity -->
     <div class="card">
       <div class="section-title">Log Activity</div>
-      <div class="act-type-grid" id="act-type-grid"></div>
-      <div class="act-custom-form" id="act-custom-form">
-        <div class="act-custom-form-row">
+      <input type="text" id="act-name-input" placeholder="Activity name…" list="act-name-list" autocomplete="off" style="margin-bottom:10px" onkeydown="if(event.key==='Enter')document.getElementById('act-duration').focus()">
+      <datalist id="act-name-list"></datalist>
+      <div id="act-saved-strip"></div>
+      <div class="act-add-form" id="act-add-form">
+        <div class="act-add-form-row">
           <input type="text" id="act-custom-emoji" placeholder="🏋️" maxlength="4">
-          <input type="text" id="act-custom-name"  placeholder="Activity name...">
+          <input type="text" id="act-custom-name"  placeholder="Activity name…">
         </div>
-        <div class="act-custom-form-row">
-          <button class="btn btn-purple" onclick="addCustomActivity()">Add</button>
+        <div class="act-add-form-row">
+          <button class="btn btn-purple" onclick="addCustomActivity()">Save</button>
           <button class="btn btn-ghost"  onclick="toggleCustomActivityForm()">Cancel</button>
         </div>
       </div>
@@ -1188,9 +1176,9 @@ const ACTIVITY_TYPES = [
   { id:'swimming', emoji:'🏊', name:'Swimming' },
   { id:'sport',    emoji:'🏐', name:'Sport'    },
   { id:'hiking',   emoji:'🥾', name:'Hiking'   },
+  { id:'other',    emoji:'⭐', name:'Other'    },
 ];
-let _selectedActivity = ACTIVITY_TYPES[0];
-let customActivities  = [];
+let customActivities = [];
 function getAllActivityTypes() { return [...ACTIVITY_TYPES, ...customActivities]; }
 
 // ── Daily Quest tiers (Solo Leveling-style mandatory training) ────────────
@@ -1512,7 +1500,7 @@ function injectIcons() {
   document.getElementById('ob-mascot-1').innerHTML  = mascotSVG(80, 80);
   document.getElementById('ob-mascot-2').innerHTML  = mascotSVG(80, 80);
 
-  renderActivityTypeGrid();
+  renderActivityUI();
   updateMascot();
   updateXPDisplay();
 }
@@ -1536,8 +1524,6 @@ async function init() {
   window.addEventListener('offline', _updateOffline);
   window.addEventListener('online',  _updateOffline);
   _updateOffline();
-  // Swipe-to-delete
-  initSwipeToDelete();
   const { data: { session } } = await db.auth.getSession();
   if (session?.user) { user = session.user; await showApp(); } else showAuth();
 
@@ -2002,39 +1988,34 @@ async function renderFood() {
       const v = m.core ? (+e[m.key]||0) : (+macroMeta[m.key]||0);
       return v ? `${m.label.slice(0,1)} ${v}${m.unit}` : '';
     }).filter(Boolean).join(' · ');
-    return `<div class="entry swipeable" data-delete-id="${e.id}" data-delete-type="food"><div class="entry-content"><div class="entry-name">${esc(e.name)}</div><div class="entry-meta">${esc(e.time||'')}${macroStr?' · '+macroStr:''}</div></div><div class="entry-right"><span class="entry-cal">${e.calories}</span><button class="icon-btn" onclick="startEditFood('${e.id}')" aria-label="Edit ${esc(e.name)}">${icon(IC.edit,16)}</button><button class="icon-btn danger" onclick="deleteFood('${e.id}')" aria-label="Delete ${esc(e.name)}">${icon(IC.trash,16)}</button></div></div>`;
+    return `<div class="entry"><div class="entry-content"><div class="entry-name">${esc(e.name)}</div><div class="entry-meta">${esc(e.time||'')}${macroStr?' · '+macroStr:''}</div></div><div class="entry-right"><span class="entry-cal">${e.calories}</span><button class="icon-btn" onclick="startEditFood('${e.id}')" aria-label="Edit ${esc(e.name)}">${icon(IC.edit,16)}</button><button class="icon-btn danger" onclick="deleteFood('${e.id}')" aria-label="Delete ${esc(e.name)}">${icon(IC.trash,16)}</button></div></div>`;
   }).join('');
 }
 
 // ── Activity ───────────────────────────────────────────────────────────────
-function renderActivityTypeGrid() {
-  const grid = document.getElementById('act-type-grid');
-  if (!grid) return;
-  const all = getAllActivityTypes();
-  const selIdx = all.findIndex(t => t.id === _selectedActivity?.id);
-  grid.innerHTML = all.map((t, i) => {
-    const isCustom = customActivities.some(c => c.id === t.id);
-    return `<button class="act-type-btn${i===selIdx?' active':''}${isCustom?' custom-type':''}" onclick="selectActivityType(${i})">
-      ${isCustom ? `<button class="custom-del-btn" onclick="event.stopPropagation();removeCustomActivity('${esc(t.id)}')">×</button>` : ''}
-      <span class="act-emoji">${esc(t.emoji)}</span>
-      <span class="act-name">${esc(t.name)}</span>
-    </button>`;
-  }).join('') + `<button class="act-type-btn add-act-btn" onclick="toggleCustomActivityForm()" title="Add custom activity">
-    <span class="act-emoji">+</span>
-    <span class="act-name">Custom</span>
-  </button>`;
+function renderActivityUI() {
+  const dl = document.getElementById('act-name-list');
+  if (dl) dl.innerHTML = getAllActivityTypes().map(t => `<option value="${esc(t.name)}">`).join('');
+
+  const strip = document.getElementById('act-saved-strip');
+  if (!strip) return;
+  const chips = customActivities.map(a =>
+    `<button class="act-saved-chip" onclick="fillActivityName('${esc(a.name)}')">${esc(a.emoji)} ${esc(a.name)}<button class="act-chip-del" onclick="event.stopPropagation();removeCustomActivity('${esc(a.id)}')">×</button></button>`
+  ).join('');
+  strip.innerHTML = chips + `<button class="act-saved-add" onclick="toggleCustomActivityForm()">+ Save</button>`;
+  if (!customActivities.length) strip.innerHTML = `<button class="act-saved-add" onclick="toggleCustomActivityForm()">+ Save activity</button>`;
 }
 
-function selectActivityType(idx) {
-  _selectedActivity = getAllActivityTypes()[idx];
-  document.querySelectorAll('.act-type-btn:not(.add-act-btn)').forEach((b, i) => b.classList.toggle('active', i === idx));
+function fillActivityName(name) {
+  const el = document.getElementById('act-name-input');
+  if (el) { el.value = name; el.focus(); }
 }
 
 function toggleCustomActivityForm() {
-  const form = document.getElementById('act-custom-form');
+  const form = document.getElementById('act-add-form');
   if (!form) return;
   const open = form.classList.toggle('open');
-  if (open) document.getElementById('act-custom-emoji').focus();
+  if (open) document.getElementById('act-custom-name').focus();
 }
 
 async function addCustomActivity() {
@@ -2047,33 +2028,39 @@ async function addCustomActivity() {
   await refreshUser();
   document.getElementById('act-custom-emoji').value = '';
   document.getElementById('act-custom-name').value  = '';
-  document.getElementById('act-custom-form').classList.remove('open');
-  renderActivityTypeGrid();
+  document.getElementById('act-add-form').classList.remove('open');
+  renderActivityUI();
 }
 
 async function removeCustomActivity(id) {
   customActivities = customActivities.filter(a => a.id !== id);
-  if (!getAllActivityTypes().find(t => t.id === _selectedActivity?.id)) _selectedActivity = ACTIVITY_TYPES[0];
   await db.auth.updateUser({ data: { ...user.user_metadata, custom_activities: customActivities } });
   await refreshUser();
-  renderActivityTypeGrid();
+  renderActivityUI();
 }
 
 async function addActivity() {
-  const dur = parseInt(document.getElementById('act-duration').value) || 0;
-  if (!dur) return flashErr('act-duration', 'Enter duration');
+  const nameEl  = document.getElementById('act-name-input');
+  const name    = nameEl?.value.trim() || '';
+  const dur     = parseInt(document.getElementById('act-duration').value) || 0;
+  if (!name) return flashErr('act-name-input', 'Enter activity');
+  if (!dur)  return flashErr('act-duration',   'Enter duration');
+  const all     = getAllActivityTypes();
+  const matched = all.find(t => t.name.toLowerCase() === name.toLowerCase());
+  const type    = matched?.id || 'other';
   const btn = document.getElementById('activity-add-btn'); btnLoad(btn, true);
   const { error } = await dbCall(() => db.from('workout_entries').insert({
     user_id:  user.id,
     date:     offsetKey(currentDays.activity),
-    name:     _selectedActivity.name,
-    type:     _selectedActivity.id,
+    name,
+    type,
     duration: String(dur),
     notes:    document.getElementById('act-notes').value.trim() || null,
     sets: null, reps: null, weight: null,
     time: new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})
   }));
   btnLoad(btn, false); if (error) return;
+  if (nameEl) nameEl.value = '';
   document.getElementById('act-duration').value = '';
   document.getElementById('act-notes').value    = '';
   await renderActivity();
@@ -2154,11 +2141,11 @@ async function renderActivity() {
     if (e.notes) metaParts.push(esc(e.notes));
     if (e.time)  metaParts.push(esc(e.time));
 
-    return `<div class="card swipeable" style="margin-bottom:8px" data-delete-id="${e.id}" data-delete-type="activity">
+    return `<div class="card" style="margin-bottom:8px">
       <div class="quest-entry">
         <span class="quest-emoji">${esc(actType.emoji)}</span>
         <div class="quest-info">
-          <div class="quest-name">${esc(actType.name)}</div>
+          <div class="quest-name">${esc(e.name)}</div>
           <div class="quest-meta">${metaParts.join(' · ')}</div>
         </div>
         <button class="icon-btn" onclick="startEditActivity('${e.id}')" aria-label="Edit activity">${icon(IC.edit,16)}</button>
@@ -2590,7 +2577,7 @@ async function renderDaily() {
       const isOverdue = !isDone && parsed.due < todayKey();
       dueHtml = `<div class="task-due${isOverdue?' overdue':''}">due ${formatDue(parsed.due)}</div>`;
     }
-    return `<div class="habit-row swipeable ${isDone?'done-row':''}" data-id="${item.id}" data-delete-id="${item.id}" data-delete-type="habit">
+    return `<div class="habit-row ${isDone?'done-row':''}" data-id="${item.id}">
       <button class="habit-check ${shape} ${isDone?'done':''}" onclick="toggleItem('${item.id}',${item.recurring})" aria-label="${isDone?'Mark incomplete':'Mark complete'}: ${esc(parsed.name)}">${icon(IC.check,14)}</button>
       <div style="flex:1;min-width:0">
         <div class="habit-name">${esc(parsed.name)}</div>
@@ -3106,43 +3093,6 @@ function goToday(s) {
 }
 
 // ── Swipe-to-delete ────────────────────────────────────────────────────────
-function initSwipeToDelete() {
-  let tx = 0, ty = 0, el = null;
-  document.addEventListener('touchstart', e => {
-    tx = e.touches[0].clientX; ty = e.touches[0].clientY; el = null;
-  }, { passive: true });
-  document.addEventListener('touchmove', e => {
-    const dx = e.touches[0].clientX - tx;
-    const dy = e.touches[0].clientY - ty;
-    if (Math.abs(dx) < 8 || Math.abs(dx) < Math.abs(dy) * 1.5) return;
-    const card = e.target.closest('.swipeable');
-    if (!card) return;
-    if (!el) el = card;
-    if (el !== card) return;
-    el.classList.add('swiping');
-    const offset = Math.max(-96, Math.min(0, dx));
-    el.style.transform = `translateX(${offset}px)`;
-  }, { passive: true });
-  document.addEventListener('touchend', e => {
-    if (!el) return;
-    const card = el; el = null;
-    card.classList.remove('swiping');
-    const dx = e.changedTouches[0].clientX - tx;
-    if (dx < -64) {
-      card.style.transform = 'translateX(-110%)';
-      card.style.opacity = '0';
-      setTimeout(() => {
-        const id = card.dataset.deleteId, type = card.dataset.deleteType;
-        if (type === 'food')     deleteFood(id);
-        else if (type === 'activity') deleteActivity(id);
-        else if (type === 'habit')    deleteItem(id);
-      }, 180);
-    } else {
-      card.style.transform = '';
-    }
-  }, { passive: true });
-}
-
 // ── Utils ──────────────────────────────────────────────────────────────────
 const localDateStr = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
 const todayKey     = () => localDateStr();

@@ -155,7 +155,7 @@
   /* ── Nav ───────────────────────────────────────── */
   nav {
     position: fixed; bottom: 0; left: 0; right: 0; max-width: 640px; margin: 0 auto;
-    display: grid; grid-template-columns: repeat(5, 1fr);
+    display: grid; grid-template-columns: repeat(4, 1fr);
     background: var(--nav-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
     border-top: 1px solid var(--border); z-index: 100;
     padding-bottom: env(safe-area-inset-bottom);
@@ -177,7 +177,6 @@
   nav button.active[data-tab="activity"] { color: var(--accent4); }
   nav button.active[data-tab="info"]     { color: var(--accent3); }
   nav button.active[data-tab="daily"]    { color: var(--accent); }
-  nav button.active[data-tab="summary"]  { color: var(--accent2); }
 
   /* ── Offline banner ─────────────────────────────── */
   #offline-banner { display:none; position:fixed; top:0; left:0; right:0; z-index:1100; background:#dc2626; color:#fff; text-align:center; padding:7px 16px; font-size:.78rem; font-weight:700; letter-spacing:.03em; }
@@ -576,18 +575,6 @@
   .levelup-rank  { font-size:1.4rem; font-weight:800; letter-spacing:.02em; animation:rank-shimmer 2s ease-in-out infinite; margin-bottom:16px; display:block; }
   .levelup-msg   { font-size:.88rem; color:var(--muted); margin-bottom:22px; line-height:1.5; }
 
-  .act-saved-strip { display:flex; flex-wrap:wrap; align-items:center; gap:6px; margin-bottom:10px; min-height:0; }
-  .act-saved-chip { display:flex; align-items:center; gap:5px; padding:5px 8px 5px 12px; border-radius:20px; border:1.5px solid var(--border); background:var(--bg); cursor:pointer; font-size:.82rem; font-weight:600; transition:border-color .15s; font-family:inherit; color:var(--text); }
-  .act-saved-chip:hover { border-color:var(--accent4); }
-  .act-chip-del { width:16px; height:16px; border-radius:50%; background:var(--surface-2); color:var(--muted); border:none; cursor:pointer; font-size:.72rem; line-height:16px; text-align:center; padding:0; transition:background .15s, color .15s; font-family:inherit; flex-shrink:0; }
-  .act-chip-del:hover { background:var(--danger); color:#fff; }
-  .act-saved-add { display:flex; align-items:center; gap:4px; padding:5px 12px; border-radius:20px; border:1.5px dashed var(--border); background:transparent; cursor:pointer; font-size:.82rem; color:var(--muted); transition:all .15s; font-family:inherit; }
-  .act-saved-add:hover { border-color:var(--accent4); color:var(--accent4); border-style:solid; }
-  .act-add-form { display:none; background:var(--surface-2); border:1px solid var(--border); border-radius:10px; padding:10px; margin-bottom:10px; gap:8px; }
-  .act-add-form.open { display:flex; flex-direction:column; }
-  .act-add-form-row { display:flex; gap:8px; }
-  #act-custom-emoji { flex:0 0 52px !important; text-align:center; font-size:1.3rem; padding:8px 4px !important; }
-  #act-custom-name  { flex:1; }
 
   .act-duration-wrap  { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
   .act-duration-input { flex:1; font-size:1rem !important; font-weight:600 !important; text-align:center; padding:10px !important; margin-bottom:0 !important; border-color:var(--accent4) !important; }
@@ -918,17 +905,6 @@
       <div class="section-title">Log Activity</div>
       <input type="text" id="act-name-input" placeholder="Activity name…" list="act-name-list" autocomplete="off" style="margin-bottom:10px" onkeydown="if(event.key==='Enter')document.getElementById('act-duration').focus()">
       <datalist id="act-name-list"></datalist>
-      <div id="act-saved-strip"></div>
-      <div class="act-add-form" id="act-add-form">
-        <div class="act-add-form-row">
-          <input type="text" id="act-custom-emoji" placeholder="🏋️" maxlength="4">
-          <input type="text" id="act-custom-name"  placeholder="Activity name…">
-        </div>
-        <div class="act-add-form-row">
-          <button class="btn btn-purple" onclick="addCustomActivity()">Save</button>
-          <button class="btn btn-ghost"  onclick="toggleCustomActivityForm()">Cancel</button>
-        </div>
-      </div>
       <div class="act-duration-wrap">
         <input type="number" id="act-duration" class="act-duration-input" placeholder="0" max="600" inputmode="numeric" onkeydown="if(event.key==='Enter')addActivity()" aria-label="Duration in minutes">
         <span class="act-duration-unit">minutes</span>
@@ -1076,7 +1052,6 @@
     <button data-tab="activity" onclick="switchTab('activity')" id="nav-activity" aria-label="Activity log"></button>
     <button data-tab="daily"    onclick="switchTab('daily')"    id="nav-daily"    aria-label="Tasks"></button>
     <button data-tab="info"     onclick="switchTab('info')"     id="nav-info"     aria-label="Notes"></button>
-    <button data-tab="summary"  onclick="switchTab('summary')"  id="nav-summary"  aria-label="Stats"></button>
   </nav>
 </div>
 
@@ -1178,8 +1153,6 @@ const ACTIVITY_TYPES = [
   { id:'hiking',   emoji:'🥾', name:'Hiking'   },
   { id:'other',    emoji:'⭐', name:'Other'    },
 ];
-let customActivities = [];
-function getAllActivityTypes() { return [...ACTIVITY_TYPES, ...customActivities]; }
 
 // ── Daily Quest tiers (Solo Leveling-style mandatory training) ────────────
 const QUEST_TIERS = [
@@ -1488,7 +1461,6 @@ function injectIcons() {
   document.getElementById('nav-activity').innerHTML  = icon(IC.workout, 22) + '<span>Activity</span>';
   document.getElementById('nav-info').innerHTML      = icon(IC.info, 22)    + '<span>Notes</span>';
   document.getElementById('nav-daily').innerHTML     = icon(IC.daily, 22)   + '<span>Tasks</span>';
-  document.getElementById('nav-summary').innerHTML   = icon(IC.summary, 22) + '<span>Stats</span>';
 
   document.getElementById('hdn-prev').innerHTML = icon(IC.arrowL);
   document.getElementById('hdn-next').innerHTML = icon(IC.arrowR);
@@ -1500,7 +1472,6 @@ function injectIcons() {
   document.getElementById('ob-mascot-1').innerHTML  = mascotSVG(80, 80);
   document.getElementById('ob-mascot-2').innerHTML  = mascotSVG(80, 80);
 
-  renderActivityUI();
   updateMascot();
   updateXPDisplay();
 }
@@ -1574,6 +1545,7 @@ async function showApp() {
   document.getElementById('auth-screen').style.display = 'none';
   await loadSettings();
   injectIcons();
+  loadActivityHistory();
   updateHeaderDayNav();
   if (!user?.user_metadata?.setup_complete) {
     document.getElementById('app').style.display = 'none';
@@ -1746,8 +1718,6 @@ async function loadSettings() {
   workoutGoal = data?.workout_goal ?? 3;
   trackedMacros = ['protein','sugar'];
   totalXP = user?.user_metadata?.total_xp ?? 0;
-  const raw = user?.user_metadata?.custom_activities;
-  customActivities = Array.isArray(raw) ? raw : [];
   updateXPDisplay();
   await checkDailyQuestPenalty();
 }
@@ -1993,60 +1963,24 @@ async function renderFood() {
 }
 
 // ── Activity ───────────────────────────────────────────────────────────────
-function renderActivityUI() {
+async function loadActivityHistory() {
   const dl = document.getElementById('act-name-list');
-  if (dl) dl.innerHTML = getAllActivityTypes().map(t => `<option value="${esc(t.name)}">`).join('');
-
-  const strip = document.getElementById('act-saved-strip');
-  if (!strip) return;
-  const chips = customActivities.map(a =>
-    `<button class="act-saved-chip" onclick="fillActivityName('${esc(a.name)}')">${esc(a.emoji)} ${esc(a.name)}<button class="act-chip-del" onclick="event.stopPropagation();removeCustomActivity('${esc(a.id)}')">×</button></button>`
-  ).join('');
-  strip.innerHTML = chips + `<button class="act-saved-add" onclick="toggleCustomActivityForm()">+ Save</button>`;
-  if (!customActivities.length) strip.innerHTML = `<button class="act-saved-add" onclick="toggleCustomActivityForm()">+ Save activity</button>`;
-}
-
-function fillActivityName(name) {
-  const el = document.getElementById('act-name-input');
-  if (el) { el.value = name; el.focus(); }
-}
-
-function toggleCustomActivityForm() {
-  const form = document.getElementById('act-add-form');
-  if (!form) return;
-  const open = form.classList.toggle('open');
-  if (open) document.getElementById('act-custom-name').focus();
-}
-
-async function addCustomActivity() {
-  const emoji = document.getElementById('act-custom-emoji').value.trim() || '⭐';
-  const name  = document.getElementById('act-custom-name').value.trim();
-  if (!name) return flashErr('act-custom-name', 'Enter a name');
-  const id = 'custom_' + Date.now();
-  customActivities.push({ id, emoji, name });
-  await db.auth.updateUser({ data: { ...user.user_metadata, custom_activities: customActivities } });
-  await refreshUser();
-  document.getElementById('act-custom-emoji').value = '';
-  document.getElementById('act-custom-name').value  = '';
-  document.getElementById('act-add-form').classList.remove('open');
-  renderActivityUI();
-}
-
-async function removeCustomActivity(id) {
-  customActivities = customActivities.filter(a => a.id !== id);
-  await db.auth.updateUser({ data: { ...user.user_metadata, custom_activities: customActivities } });
-  await refreshUser();
-  renderActivityUI();
+  if (!dl || !user) return;
+  const { data } = await dbCall(() =>
+    db.from('workout_entries').select('name').eq('user_id', user.id).order('created_at', { ascending: false }).limit(200)
+  );
+  const seen = new Set();
+  const names = (data || []).map(r => r.name).filter(n => n && !seen.has(n) && seen.add(n));
+  dl.innerHTML = names.map(n => `<option value="${esc(n)}">`).join('');
 }
 
 async function addActivity() {
-  const nameEl  = document.getElementById('act-name-input');
-  const name    = nameEl?.value.trim() || '';
-  const dur     = parseInt(document.getElementById('act-duration').value) || 0;
+  const nameEl = document.getElementById('act-name-input');
+  const name   = nameEl?.value.trim() || '';
+  const dur    = parseInt(document.getElementById('act-duration').value) || 0;
   if (!name) return flashErr('act-name-input', 'Enter activity');
   if (!dur)  return flashErr('act-duration',   'Enter duration');
-  const all     = getAllActivityTypes();
-  const matched = all.find(t => t.name.toLowerCase() === name.toLowerCase());
+  const matched = ACTIVITY_TYPES.find(t => t.name.toLowerCase() === name.toLowerCase());
   const type    = matched?.id || 'other';
   const btn = document.getElementById('activity-add-btn'); btnLoad(btn, true);
   const { error } = await dbCall(() => db.from('workout_entries').insert({
@@ -2063,6 +1997,7 @@ async function addActivity() {
   if (nameEl) nameEl.value = '';
   document.getElementById('act-duration').value = '';
   document.getElementById('act-notes').value    = '';
+  loadActivityHistory();
   await renderActivity();
   toast('Activity logged', 'ok');
 }
@@ -2077,7 +2012,7 @@ async function saveEditActivity(id) {
   if (!dur) return toast('Enter duration','error');
   const { error } = await dbCall(() => db.from('workout_entries').update({
     duration: String(dur), notes, type: typeId,
-    name: getAllActivityTypes().find(t => t.id === typeId)?.name || typeId
+    name: ACTIVITY_TYPES.find(t => t.id === typeId)?.name || typeId
   }).eq('id',id).eq('user_id',user.id));
   if (error) return; editing.activity = null; toast('Updated','ok'); await renderActivity();
 }
@@ -2115,11 +2050,11 @@ async function renderActivity() {
   }
 
   listEl.innerHTML = [...rows].reverse().map(e => {
-    const actType = getAllActivityTypes().find(t => t.id === e.type) || ACTIVITY_TYPES[0];
+    const actType = ACTIVITY_TYPES.find(t => t.id === e.type) || ACTIVITY_TYPES[0];
     const dur = parseInt(e.duration) || 0;
 
     if (editing.activity === e.id) {
-      const typeOpts = getAllActivityTypes().map(t =>
+      const typeOpts = ACTIVITY_TYPES.map(t =>
         `<option value="${esc(t.id)}"${t.id===e.type?' selected':''}>${esc(t.emoji)} ${esc(t.name)}</option>`
       ).join('');
       return `<div class="card" style="margin-bottom:8px">

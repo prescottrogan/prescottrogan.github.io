@@ -945,8 +945,8 @@
       <input type="text" id="act-name-input" placeholder="Metric (e.g. Water, Miles, Creatine)…" list="act-name-list" autocomplete="off" style="margin-bottom:10px" oninput="updateActDatalist()" onkeydown="if(event.key==='Enter')document.getElementById('act-duration').focus()">
       <datalist id="act-name-list"></datalist>
       <div class="tracker-amount-wrap">
-        <input type="number" id="act-duration" placeholder="Amount" inputmode="decimal" onkeydown="if(event.key==='Enter')document.getElementById('act-unit').focus()" aria-label="Amount" style="flex:1">
-        <input type="text" id="act-unit" class="tracker-unit-input" placeholder="Unit (oz, g, mi…)" autocomplete="off" onkeydown="if(event.key==='Enter')addActivity()">
+        <input type="number" id="act-duration" placeholder="Amount" inputmode="decimal" onkeydown="if(event.key==='Enter')document.getElementById('act-unit').focus()" aria-label="Amount" style="width:50%;flex:none">
+        <input type="text" id="act-unit" class="tracker-unit-input" placeholder="Unit (oz, g, mi…)" autocomplete="off" onkeydown="if(event.key==='Enter')addActivity()" style="width:50%;flex:none">
       </div>
       <button id="activity-add-btn" class="btn btn-purple btn-full" onclick="addActivity()"><span id="activity-plus"></span>Log Metric</button>
     </div>

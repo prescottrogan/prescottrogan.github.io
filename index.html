@@ -32,9 +32,7 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
 #login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:var(--bg);}
 .lbox{background:var(--surf);border:1px solid var(--brd);border-radius:var(--r);padding:44px 36px;width:100%;max-width:420px;box-shadow:var(--shadow);}
 .llogo{text-align:center;margin-bottom:30px;}
-.llogo-hex{display:block;margin:0 auto 14px;}
-.lname{font-size:2rem;font-weight:900;letter-spacing:4px;color:var(--gold);}
-.lsub{font-size:.72rem;letter-spacing:5px;color:var(--gold);opacity:.75;margin-top:4px;}
+.llogo-img{width:200px;height:auto;display:block;margin:0 auto;}
 .lline{border:none;border-top:1px solid var(--brd);margin:20px 0;}
 .demo-lbl{font-size:.68rem;text-transform:uppercase;letter-spacing:1.2px;color:var(--mut);margin-bottom:8px;}
 .demo-btns{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px;}
@@ -53,9 +51,8 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
 /* APP SHELL */
 #app{display:none;}
 header{background:var(--surf);border-bottom:1px solid var(--brd);padding:0 14px;display:flex;align-items:center;gap:0;height:var(--nav-h);position:sticky;top:0;z-index:200;box-shadow:var(--shadow);}
-.hlogo{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0;margin-right:12px;}
-.hlogo-txt .hname{font-size:.88rem;font-weight:900;letter-spacing:2px;color:var(--gold);}
-.hlogo-txt .hsub{font-size:.52rem;letter-spacing:3.5px;color:var(--gold);opacity:.7;display:none;}
+.hlogo{display:flex;align-items:center;text-decoration:none;flex-shrink:0;margin-right:12px;}
+.hnav-logo{height:34px;width:auto;display:block;}
 .topnav{display:none;align-items:center;gap:2px;flex:1;}
 .tnav-btn{background:none;border:none;color:var(--mut);padding:9px 12px;font-size:.82rem;font-weight:600;letter-spacing:.3px;cursor:pointer;border-radius:5px;display:flex;align-items:center;gap:6px;transition:color .15s,background .18s;white-space:nowrap;min-height:40px;}
 .tnav-btn svg{opacity:.7;transition:opacity .15s;}
@@ -380,8 +377,7 @@ body.modal-open{overflow:hidden;}
 @media(min-width:900px){
   header{padding:0 24px;}
   .hlogo{margin-right:28px;}
-  .hlogo-txt .hname{font-size:.95rem;letter-spacing:2.5px;}
-  .hlogo-txt .hsub{display:block;}
+  .hnav-logo{height:38px;}
   .topnav{display:flex;}
   nav.bottomnav{display:none;}
   .view{padding:26px 32px;}
@@ -466,12 +462,7 @@ body.modal-open{overflow:hidden;}
 <div id="login-screen" style="display:none;">
   <div class="lbox">
     <div class="llogo">
-      <svg class="llogo-hex" width="60" height="64" viewBox="0 0 60 64" fill="none">
-        <polygon points="30,3 55,17 55,47 30,61 5,47 5,17" stroke="#F5A623" stroke-width="3" fill="none"/>
-        <path d="M30 61 C29 65 28 67 30 69 C32 67 31 65 30 61Z" fill="#F5A623"/>
-      </svg>
-      <div class="lname">PRESCOTT</div>
-      <div class="lsub">HONEY &nbsp; FARMS</div>
+      <img src="phf-logo.png" alt="Prescott Honey Farms" class="llogo-img">
     </div>
     <hr class="lline">
     <div class="demo-lbl">Quick demo login</div>
@@ -491,8 +482,7 @@ body.modal-open{overflow:hidden;}
 <div id="app">
   <header>
     <a class="hlogo" href="#">
-      <svg width="26" height="28" viewBox="0 0 60 64" fill="none"><polygon points="30,3 55,17 55,47 30,61 5,47 5,17" stroke="#F5A623" stroke-width="3" fill="none"/><path d="M30 61 C29 65 28 67 30 69 C32 67 31 65 30 61Z" fill="#F5A623"/></svg>
-      <div class="hlogo-txt"><div class="hname">PRESCOTT</div><div class="hsub">HONEY FARMS</div></div>
+      <img src="phf-logo.png" alt="Prescott Honey Farms" class="hnav-logo">
     </a>
     <nav class="topnav" id="topnav">
       <button class="tnav-btn active" data-v="dashboard" onclick="switchView('dashboard')">

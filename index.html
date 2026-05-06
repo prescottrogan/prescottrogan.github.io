@@ -602,7 +602,7 @@ body.modal-open{overflow:hidden;}
 <div class="mover" id="madd-task"><div class="modal"><button class="mclose" onclick="closeModal('madd-task')">&#10005;</button><div class="mtitle" id="ta-title">Add Task</div><input type="hidden" id="ta-id"><div class="fg"><div class="fl">Task Type</div><select id="ta-type"><option value="inspection">Inspection</option><option value="treatment">Varroa Treatment</option><option value="equipment">Equipment / Maintenance</option><option value="supering">Add / Pull Honey Supers</option><option value="queen">Queen Check / Replace</option><option value="feeding">Feeding / Supplements</option><option value="water">Water Source Check</option><option value="other">Other</option></select></div><div class="fg"><div class="fl">Description</div><input type="text" id="ta-desc" placeholder="Brief description"></div><div class="frow"><div class="fg"><div class="fl">Apiary</div><select id="ta-ap"></select></div><div class="fg"><div class="fl">Assign To</div><select id="ta-assignee"></select></div></div><div class="frow"><div class="fg"><div class="fl">Due Date</div><input type="hidden" id="ta-due"><button type="button" class="date-btn" id="ta-due-btn" onclick="cal.open('ta-due')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="3" width="12" height="12" rx="2"/><path d="M5 1v4M11 1v4M2 7h12"/></svg><span class="dv">Select date</span></button></div><div class="fg"><div class="fl">Priority</div><select id="ta-pri"><option value="high">High</option><option value="medium" selected>Medium</option><option value="low">Low</option></select></div></div><div class="fg" id="ta-status-wrap" style="display:none;"><div class="fl">Status</div><select id="ta-status"><option value="open">To Do</option><option value="in-progress">In Progress</option><option value="done">Done</option></select></div><div class="fg"><div class="fl">Notes</div><textarea id="ta-notes" placeholder="Additional details..." style="min-height:60px;"></textarea></div><button class="btn btn-gold" style="width:100%;" onclick="submitTask()">Save Task</button><div id="ta-del-wrap" style="margin-top:10px;display:none;"><button class="btn btn-red" style="width:100%;" onclick="deleteTask()">Delete Task</button></div></div></div>
 <div class="mover" id="madd-employee"><div class="modal"><button class="mclose" onclick="closeModal('madd-employee')">&#10005;</button><div class="mtitle" id="ef-title">Add Team Member</div><input type="hidden" id="ef-id"><div class="fg"><div class="fl">Full Name</div><input type="text" id="ef-name" placeholder="Full name"></div><div class="fg"><div class="fl">Email</div><input type="email" id="ef-email" placeholder="name@prescotthoney.com"></div><div class="frow"><div class="fg"><div class="fl">Role</div><select id="ef-role"><option value="manager">Manager</option><option value="employee">Field Worker</option></select></div><div class="fg"><div class="fl">Phone</div><input type="tel" id="ef-phone" placeholder="(555) 000-0000"></div></div><div class="fg" id="ef-pass-wrap"><div class="fl">Login Password</div><input type="text" id="ef-pass" placeholder="Leave blank to keep current"></div><button class="btn btn-gold" style="width:100%;margin-top:4px;" onclick="submitEmployee()">Save</button><div id="ef-del-wrap" style="margin-top:10px;display:none;"><button class="btn btn-red" style="width:100%;" onclick="deleteEmployee()">Remove Team Member</button></div></div></div>
 <div class="mover" id="madd-move"><div class="modal"><button class="mclose" onclick="closeModal('madd-move')">&#10005;</button><div class="mtitle" id="mf-title">Log Hive Movement</div><input type="hidden" id="mf-id"><div class="frow"><div class="fg"><div class="fl">Date</div><input type="hidden" id="mf-date"><button type="button" class="date-btn" id="mf-date-btn" onclick="cal.open('mf-date')"><svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="3" width="12" height="12" rx="2"/><path d="M5 1v4M11 1v4M2 7h12"/></svg><span class="dv">Select date</span></button></div><div class="fg"><div class="fl">Status</div><select id="mf-status"><option value="completed">Completed</option><option value="planned">Planned</option></select></div></div><div class="frow"><div class="fg"><div class="fl">From Apiary</div><select id="mf-from"></select></div><div class="fg"><div class="fl">To Apiary</div><select id="mf-to"></select></div></div><div class="fg"><div class="fl">Hive Count</div><input type="number" id="mf-hives" placeholder="e.g. 40" min="1"></div><div class="fg"><div class="fl">Driver / Worker</div><select id="mf-driver"></select></div><div class="fg"><div class="fl">Notes</div><textarea id="mf-notes" placeholder="Contract details, drop point, load info..." style="min-height:60px;"></textarea></div><button class="btn btn-gold" style="width:100%;" onclick="submitMovement()">Save Movement</button><div id="mf-del-wrap" style="margin-top:10px;display:none;"><button class="btn btn-red" style="width:100%;" onclick="deleteMovement()">Delete Movement</button></div></div></div>
-<div class="mover" id="madd-dp"><div class="modal"><button class="mclose" onclick="closeModal('madd-dp')">&#10005;</button><div class="mtitle">Add Drop Point</div><input type="hidden" id="dp-aid"><div class="fg"><div class="fl">Name</div><input type="text" id="dp-name" placeholder="e.g. North Clover Field"></div><div class="frow"><div class="fg"><div class="fl">Latitude</div><input type="text" id="dp-lat" placeholder="e.g. 44.948" oninput="updGM('dp')"></div><div class="fg"><div class="fl">Longitude</div><input type="text" id="dp-lng" placeholder="e.g. -122.869" oninput="updGM('dp')"></div></div><div class="gmlink" id="dp-gmlink"><a id="dp-gma" href="#" target="_blank" rel="noopener">Open in Google Maps</a></div><div class="fg"><div class="fl">Hives</div><input type="number" id="dp-hives" placeholder="e.g. 120"></div><div class="fg"><div class="fl">Notes</div><input type="text" id="dp-notes" placeholder="Access info, landmarks..."></div><div class="fg" id="dp-photos-wrap" style="display:none;"><div class="fl">Photos</div><div class="photo-grid" id="dp-photo-grid"></div><label class="photo-upload-area"><input type="file" id="dp-photo-input" accept="image/*" multiple onchange="previewPhotos('dp',this.files)"><span class="photo-upload-lbl">+ Tap to add photos</span></label></div><button class="btn btn-gold" id="dp-save-btn" style="width:100%;" onclick="submitDP()">Add Drop Point</button></div></div>
+<div class="mover" id="madd-dp"><div class="modal"><button class="mclose" onclick="closeModal('madd-dp')">&#10005;</button><div class="mtitle" id="dp-title">Add Drop Point</div><input type="hidden" id="dp-aid"><input type="hidden" id="dp-id"><div class="fg"><div class="fl">Name</div><input type="text" id="dp-name" placeholder="e.g. North Clover Field"></div><div class="frow"><div class="fg"><div class="fl">Latitude</div><input type="text" id="dp-lat" placeholder="e.g. 44.948" oninput="updGM('dp')"></div><div class="fg"><div class="fl">Longitude</div><input type="text" id="dp-lng" placeholder="e.g. -122.869" oninput="updGM('dp')"></div></div><div class="gmlink" id="dp-gmlink"><a id="dp-gma" href="#" target="_blank" rel="noopener">Open in Google Maps</a></div><div class="fg"><div class="fl">Hives</div><input type="number" id="dp-hives" placeholder="e.g. 120"></div><div class="fg"><div class="fl">Notes</div><input type="text" id="dp-notes" placeholder="Access info, landmarks..."></div><div class="fg" id="dp-photos-wrap"><div class="fl" id="dp-photos-lbl">Photos</div><div class="photo-grid" id="dp-existing-grid" style="margin-bottom:6px;"></div><div class="photo-grid" id="dp-photo-grid"></div><label class="photo-upload-area"><input type="file" id="dp-photo-input" accept="image/*" multiple onchange="previewPhotos('dp',this.files)"><span class="photo-upload-lbl">+ Add photos</span></label></div><button class="btn btn-gold" id="dp-save-btn" style="width:100%;margin-top:4px;" onclick="submitDP()">Add Drop Point</button><div id="dp-del-wrap" style="margin-top:10px;display:none;"><button class="btn btn-red" style="width:100%;" onclick="deleteDP()">Delete Drop Point</button></div></div></div>
 
 <div id="cal-pop"></div>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -1160,8 +1160,8 @@ function openAPDetail(id){
     </div>
     ${a.notes?`<div style="font-size:.82rem;color:var(--tdim);background:var(--card);border:1px solid var(--brd);border-radius:var(--r);padding:12px;margin-bottom:14px;">${esc(a.notes)}</div>`:''}
     ${a.accessNotes?`<div style="background:var(--orgd);border:1px solid var(--org);border-radius:var(--r);padding:12px 14px;margin-bottom:14px;"><div style="font-size:.62rem;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--org);margin-bottom:5px;">Access Notes</div><div style="font-size:.82rem;">${esc(a.accessNotes)}</div></div>`:''}
-    ${dps.length?`<div class="st" style="margin-bottom:8px;">Drop Points (${dps.length})</div><div style="background:var(--card);border:1px solid var(--brd);border-radius:var(--r);margin-bottom:14px;padding:0;">${dps.map(dp=>`<div class="dprow"><div style="flex:1;min-width:0;"><div class="dpname">${esc(dp.name)}</div><div class="dpmeta">${dp.hives} hives${dp.notes?' · '+esc(dp.notes):''}</div>${dp.photos&&dp.photos.length?`<div class="insp-photos" style="margin-top:6px;">${dp.photos.map(url=>`<a href="${url}" target="_blank" rel="noopener"><img class="insp-photo-thumb" src="${url}" loading="lazy"></a>`).join('')}</div>`:''}</div>${dp.lat&&dp.lng?`<a style="font-size:.75rem;flex-shrink:0;" href="https://www.google.com/maps?q=${dp.lat},${dp.lng}" target="_blank" rel="noopener">Maps ↗</a>`:''}</div>`).join('')}</div>`:''}
-    ${(()=>{const apMoves=(S.movements||[]).filter(m=>m.fromApiaryId===id||m.toApiaryId===id).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);return apMoves.length?`<div class="st" style="margin-bottom:8px;">Hive Movements (${apMoves.length} recent)</div><div style="background:var(--card);border:1px solid var(--brd);border-radius:var(--r);margin-bottom:14px;padding:0;">${apMoves.map(m=>{const fAP=m.fromApiaryId?getAP(m.fromApiaryId):null;const tAP=m.toApiaryId?getAP(m.toApiaryId):null;const isOut=m.fromApiaryId===id;return`<div class="drow" style="padding:8px 12px;gap:10px;"><span style="font-size:.73rem;font-weight:700;color:${isOut?'var(--red)':'var(--grn)'};flex-shrink:0;">${isOut?'OUT':'IN'}</span><span style="flex:1;font-size:.8rem;">${m.hiveCount} hives ${isOut?(tAP?'&#8594; '+esc(tAP.name):'&#8594; External'):(fAP?'&#8592; '+esc(fAP.name):'&#8592; External')}</span><span style="font-size:.72rem;color:var(--tdim);flex-shrink:0;">${fmtD(m.date)}</span></div>`;}).join('')}</div>`:''})()}
+    ${dps.length?`<div class="st" style="margin-bottom:8px;">Drop Points (${dps.length})</div><div style="background:var(--card);border:1px solid var(--brd);border-radius:var(--r);margin-bottom:14px;padding:0;">${dps.map(dp=>`<div class="dprow"><div style="flex:1;min-width:0;"><div class="dpname">${esc(dp.name)}</div><div class="dpmeta">${dp.hives} hives${dp.notes?' · '+esc(dp.notes):''}</div>${dp.photos&&dp.photos.length?`<div class="insp-photos" style="margin-top:6px;">${dp.photos.map(url=>`<a href="${url}" target="_blank" rel="noopener"><img class="insp-photo-thumb" src="${url}" loading="lazy"></a>`).join('')}</div>`:''}</div><div style="display:flex;gap:6px;align-items:center;flex-shrink:0;">${dp.lat&&dp.lng?`<a style="font-size:.75rem;" href="https://www.google.com/maps?q=${dp.lat},${dp.lng}" target="_blank" rel="noopener">Maps ↗</a>`:''} ${om?`<button class="tedit-btn" style="font-size:.72rem;padding:5px 10px;min-height:30px;" onclick="closeModal('mdetail');openEditDP('${id}','${dp.id}')">Edit</button>`:''}</div></div>`).join('')}</div>`:''}
+    ${(()=>{const apMoves=(S.movements||[]).filter(m=>m.fromApiaryId===id||m.toApiaryId===id).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);return apMoves.length?`<div class="st" style="margin-bottom:8px;">Hive Movements (${apMoves.length} recent)</div><div style="background:var(--card);border:1px solid var(--brd);border-radius:var(--r);margin-bottom:14px;padding:0;">${apMoves.map(m=>{const fAP=m.fromApiaryId?getAP(m.fromApiaryId):null;const tAP=m.toApiaryId?getAP(m.toApiaryId):null;const fName=fAP?fAP.name:(m.fromApiaryName||null);const tName=tAP?tAP.name:(m.toApiaryName||null);const isOut=m.fromApiaryId===id;return`<div class="drow" style="padding:8px 12px;gap:10px;"><span style="font-size:.73rem;font-weight:700;color:${isOut?'var(--red)':'var(--grn)'};flex-shrink:0;">${isOut?'OUT':'IN'}</span><span style="flex:1;font-size:.8rem;">${m.hiveCount} hives ${isOut?(tName?'&#8594; '+esc(tName):'&#8594; External'):(fName?'&#8592; '+esc(fName):'&#8592; External')}</span><span style="font-size:.72rem;color:var(--tdim);flex-shrink:0;">${fmtD(m.date)}</span></div>`;}).join('')}</div>`:''})()}
     ${otasks.length?`<div class="st" style="margin-bottom:8px;">Open Tasks (${otasks.length})</div><div style="background:var(--card);border:1px solid var(--brd);border-radius:var(--r);margin-bottom:14px;padding:0;">${otasks.map(t=>`<div class="drow drow-link" style="padding:8px 12px;gap:8px;" onclick="closeModal('mdetail');_highlightTask='${t.id}';switchView('tasks')" title="Go to task"><span class="tlbl ${tcls(t.type)}">${tlbl(t.type)}</span><span style="flex:1;font-size:.82rem;">${esc(t.desc)}</span><span style="font-size:.73rem;color:${diffD(t.dueDate)<0?'var(--red)':'var(--tdim)'}">${relD(t.dueDate)}</span><svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0;opacity:.4;"><path d="M6 3l5 5-5 5"/></svg></div>`).join('')}</div>`:''}
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
       <div class="st">Inspection History <span style="color:var(--mut);font-weight:400;">(${allInsps.length} total)</span></div>
@@ -1174,6 +1174,7 @@ function openAPDetail(id){
       ${om?`<button class="btn btn-ghost" onclick="closeModal('mdetail');openEditAP('${id}')">Edit</button>`:''}
       ${om?`<button class="btn btn-ghost" onclick="closeModal('mdetail');openAddDP('${id}')">+ Drop Point</button>`:''}
       ${om?`<button class="btn btn-ghost" onclick="closeModal('mdetail');openAddTask('${id}')">+ Task</button>`:''}
+      ${om?`<button class="btn btn-red" style="margin-left:auto;" onclick="deleteApiary('${id}')">Delete Apiary</button>`:''}
     </div>`;
   openModal('mdetail');
   if(hasCoords){
@@ -1265,21 +1266,106 @@ async function submitInsp(){
   const av=document.querySelector('.view.active')?.id?.replace('view-','');
   if(av==='dashboard')renderDash();else if(av==='apiaries')renderApiaries();else if(av==='tasks')renderTasks();
 }
-function openAddDP(aid){document.getElementById('dp-aid').value=aid;['dp-name','dp-lat','dp-lng','dp-notes'].forEach(id=>document.getElementById(id).value='');document.getElementById('dp-hives').value='';document.getElementById('dp-gmlink').classList.remove('show');clearPendingPhotos('dp');document.getElementById('dp-photos-wrap').style.display=phfDB.enabled?'':'none';openModal('madd-dp');}
+function openAddDP(aid){
+  document.getElementById('dp-title').textContent='Add Drop Point';
+  document.getElementById('dp-aid').value=aid;
+  document.getElementById('dp-id').value='';
+  ['dp-name','dp-lat','dp-lng','dp-notes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('dp-hives').value='';
+  document.getElementById('dp-gmlink').classList.remove('show');
+  clearPendingPhotos('dp');
+  document.getElementById('dp-existing-grid').innerHTML='';
+  document.getElementById('dp-photos-wrap').style.display='';
+  document.getElementById('dp-photos-lbl').textContent='Photos';
+  document.getElementById('dp-save-btn').textContent='Add Drop Point';
+  document.getElementById('dp-del-wrap').style.display='none';
+  openModal('madd-dp');
+}
+function openEditDP(aid,dpId){
+  const a=getAP(aid);if(!a)return;
+  const dp=(a.dropPoints||[]).find(d=>d.id===dpId);if(!dp)return;
+  document.getElementById('dp-title').textContent='Edit Drop Point';
+  document.getElementById('dp-aid').value=aid;
+  document.getElementById('dp-id').value=dpId;
+  document.getElementById('dp-name').value=dp.name;
+  document.getElementById('dp-lat').value=dp.lat||'';
+  document.getElementById('dp-lng').value=dp.lng||'';
+  document.getElementById('dp-hives').value=dp.hives||'';
+  document.getElementById('dp-notes').value=dp.notes||'';
+  updGM('dp');
+  clearPendingPhotos('dp');
+  const eg=document.getElementById('dp-existing-grid');
+  eg.innerHTML=dp.photos&&dp.photos.length?dp.photos.map((url,i)=>`<div class="photo-thumb"><img src="${url}" loading="lazy"><button class="photo-del" type="button" onclick="removeDPExistingPhoto('${aid}','${dpId}',${i},this)">✕</button></div>`).join(''):'';
+  document.getElementById('dp-photos-wrap').style.display='';
+  document.getElementById('dp-photos-lbl').textContent=dp.photos&&dp.photos.length?'Current Photos / Add More':'Photos';
+  document.getElementById('dp-save-btn').textContent='Save Changes';
+  document.getElementById('dp-del-wrap').style.display='block';
+  openModal('madd-dp');
+}
+function removeDPExistingPhoto(aid,dpId,idx,btn){
+  const a=getAP(aid);if(!a)return;
+  const dp=(a.dropPoints||[]).find(d=>d.id===dpId);if(!dp||!dp.photos)return;
+  dp.photos.splice(idx,1);
+  save();
+  btn.closest('.photo-thumb').remove();
+}
 async function submitDP(){
-  const aid=document.getElementById('dp-aid').value,name=document.getElementById('dp-name').value.trim();
+  const aid=document.getElementById('dp-aid').value;
+  const dpId=document.getElementById('dp-id').value;
+  const name=document.getElementById('dp-name').value.trim();
   if(!name){alert('Enter a drop point name.');return;}
   const a=getAP(aid);if(!a)return;
   if(!a.dropPoints)a.dropPoints=[];
-  const dpId='dp'+Date.now();
   const btn=document.getElementById('dp-save-btn');
   if(btn){btn.disabled=true;btn.textContent='Saving…';}
-  const photos=await uploadPhotos('dp',`droppoints/${aid}/${dpId}`);
+  if(dpId){
+    const dp=a.dropPoints.find(d=>d.id===dpId);
+    if(dp){
+      dp.name=name;
+      dp.lat=parseFloat(document.getElementById('dp-lat').value)||0;
+      dp.lng=parseFloat(document.getElementById('dp-lng').value)||0;
+      dp.hives=parseInt(document.getElementById('dp-hives').value)||0;
+      dp.notes=document.getElementById('dp-notes').value.trim();
+      const newPhotos=await uploadPhotos('dp',`droppoints/${aid}/${dpId}`);
+      if(newPhotos.length)dp.photos=[...(dp.photos||[]),...newPhotos];
+    }
+  }else{
+    const newId='dp'+Date.now();
+    const photos=await uploadPhotos('dp',`droppoints/${aid}/${newId}`);
+    a.dropPoints.push({id:newId,name,lat:parseFloat(document.getElementById('dp-lat').value)||0,lng:parseFloat(document.getElementById('dp-lng').value)||0,hives:parseInt(document.getElementById('dp-hives').value)||0,notes:document.getElementById('dp-notes').value.trim(),photos:photos.length?photos:undefined});
+  }
   clearPendingPhotos('dp');
-  a.dropPoints.push({id:dpId,name,lat:parseFloat(document.getElementById('dp-lat').value)||0,lng:parseFloat(document.getElementById('dp-lng').value)||0,hives:parseInt(document.getElementById('dp-hives').value)||0,notes:document.getElementById('dp-notes').value.trim(),photos:photos.length?photos:undefined});
   save();closeModal('madd-dp');
-  if(btn){btn.disabled=false;btn.textContent='Add Drop Point';}
+  if(btn){btn.disabled=false;btn.textContent=dpId?'Save Changes':'Add Drop Point';}
   if(S.leafMap)updateMap();openAPDetail(aid);
+}
+function deleteDP(){
+  const aid=document.getElementById('dp-aid').value;
+  const dpId=document.getElementById('dp-id').value;
+  if(!dpId||!confirm('Delete this drop point?'))return;
+  const a=getAP(aid);if(!a)return;
+  a.dropPoints=(a.dropPoints||[]).filter(d=>d.id!==dpId);
+  save();closeModal('madd-dp');
+  if(S.leafMap)updateMap();openAPDetail(aid);
+}
+function deleteApiary(id){
+  const a=getAP(id);if(!a)return;
+  const taskCount=S.tasks.filter(t=>t.apiaryId===id).length;
+  const dpCount=(a.dropPoints||[]).length;
+  const mvCount=(S.movements||[]).filter(m=>m.fromApiaryId===id||m.toApiaryId===id).length;
+  const lines=[`Delete "${a.name}"?\n\nThis will permanently remove:`];
+  if(dpCount)lines.push(`• ${dpCount} drop point${dpCount!==1?'s':''}`);
+  if(taskCount)lines.push(`• ${taskCount} task${taskCount!==1?'s':''}`);
+  lines.push(`\n${mvCount?mvCount+' movement record'+( mvCount!==1?'s':'')+' will be kept and will still show this apiary\'s name.':''}`);
+  if(!confirm(lines.join('\n')))return;
+  (S.movements||[]).forEach(m=>{
+    if(m.fromApiaryId===id){m.fromApiaryName=a.name;m.fromApiaryId=null;}
+    if(m.toApiaryId===id){m.toApiaryName=a.name;m.toApiaryId=null;}
+  });
+  S.tasks=S.tasks.filter(t=>t.apiaryId!==id);
+  S.apiaries=S.apiaries.filter(ap=>ap.id!==id);
+  save();closeModal('mdetail');renderApiaries();
+  if(S.leafMap)updateMap();
 }
 function setTF(f,btn){_tf=f;document.querySelectorAll('[data-tf]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderTasks();}
 function renderTasks(){
@@ -1416,6 +1502,8 @@ function renderMovements(){
     ${moves.map(m=>{
       const fromAP=m.fromApiaryId?getAP(m.fromApiaryId):null;
       const toAP=m.toApiaryId?getAP(m.toApiaryId):null;
+      const fromName=fromAP?fromAP.name:(m.fromApiaryName||null);
+      const toName=toAP?toAP.name:(m.toApiaryName||null);
       const driver=m.driverId?getEmp(m.driverId):null;
       const done=m.status==='completed';
       return`<div class="mvcard mv-${done?'done':'plan'}">
@@ -1423,9 +1511,9 @@ function renderMovements(){
           <div>
             <div class="mv-route">${m.hiveCount.toLocaleString()} hives</div>
             <div class="mv-from-to">
-              <span style="font-weight:600;color:var(--txt);">${fromAP?esc(fromAP.name):'External / New Stock'}</span>
+              <span style="font-weight:600;color:var(--txt);">${fromName?esc(fromName)+(fromAP?'':'<span style="font-size:.65rem;color:var(--mut);margin-left:3px;">(deleted)</span>'):'External / New Stock'}</span>
               <span class="mv-arrow">&#8594;</span>
-              <span style="font-weight:600;color:var(--txt);">${toAP?esc(toAP.name):'External / Sold'}</span>
+              <span style="font-weight:600;color:var(--txt);">${toName?esc(toName)+(toAP?'':'<span style="font-size:.65rem;color:var(--mut);margin-left:3px;">(deleted)</span>'):'External / Sold'}</span>
             </div>
           </div>
           <span class="badge ${done?'bg':'bp'}" style="flex-shrink:0;">${done?'Completed':'Planned'}</span>

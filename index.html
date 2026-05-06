@@ -30,7 +30,7 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
 
 /* LOGIN */
 #login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:20px;background:var(--bg);}
-.lbox{background:var(--surf);border:1px solid var(--brd);border-radius:8px;padding:44px 36px;width:100%;max-width:420px;box-shadow:var(--shadow);}
+.lbox{background:var(--surf);border:1px solid var(--brd);border-radius:var(--r);padding:44px 36px;width:100%;max-width:420px;box-shadow:var(--shadow);}
 .llogo{text-align:center;margin-bottom:30px;}
 .llogo-hex{display:block;margin:0 auto 14px;}
 .lname{font-size:2rem;font-weight:900;letter-spacing:4px;color:var(--gold);}
@@ -73,7 +73,7 @@ header{background:var(--surf);border-bottom:1px solid var(--brd);padding:0 14px;
 .soBtn:hover{border-color:var(--red);color:var(--red);background:var(--redd);}
 .soBtn:focus-visible{outline:none;box-shadow:0 0 0 3px rgba(192,57,43,.22);}
 nav.bottomnav{display:flex;position:fixed;bottom:0;left:0;right:0;background:var(--surf);border-top:1px solid var(--brd);z-index:200;padding-bottom:env(safe-area-inset-bottom,0px);}
-nav.bottomnav button{flex:1;background:none;border:none;color:var(--mut);padding:7px 4px 5px;font-size:.55rem;font-weight:700;letter-spacing:.4px;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;transition:color .2s var(--ease);min-height:56px;-webkit-tap-highlight-color:transparent;}
+nav.bottomnav button{flex:1;background:none;border:none;color:var(--mut);padding:7px 4px 5px;font-size:.6rem;font-weight:700;letter-spacing:.4px;text-transform:uppercase;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer;transition:color .2s var(--ease);min-height:56px;-webkit-tap-highlight-color:transparent;}
 nav.bottomnav button.active{color:var(--gold);}
 nav.bottomnav button:active .bnav-icon{transform:scale(.92);}
 .bnav-icon{display:flex;align-items:center;justify-content:center;width:48px;height:28px;border-radius:6px;transition:background .22s var(--ease-out),transform .12s;}
@@ -352,7 +352,7 @@ body.modal-open{overflow:hidden;}
 
 /* HOVER EFFECTS — clickable rows */
 .drow-link{cursor:pointer;transition:background .12s;}
-.drow-link:hover{background:var(--brd);border-radius:6px;}
+.drow-link:hover{background:var(--brd);border-radius:var(--r);}
 
 /* TASK HIGHLIGHT FLASH */
 @keyframes task-flash{0%,100%{background:var(--card);}40%{background:var(--gd);border-color:var(--gold);}}

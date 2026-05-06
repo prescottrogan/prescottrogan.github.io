@@ -525,9 +525,38 @@
   @keyframes m-celebrate { 0%,100%{transform:rotate(-12deg) scale(1.1)} 50%{transform:rotate(12deg) scale(1.12)} }
   @keyframes confetti-fall { to { transform:translateY(110vh) rotate(720deg); opacity:0; } }
   @keyframes cal-pulse   { 0%,100%{opacity:1} 50%{opacity:.5} }
+  @keyframes m-tap  { 0%{transform:scale(1) rotate(0)} 25%{transform:scale(1.3) rotate(15deg)} 60%{transform:scale(0.88) rotate(-10deg)} 80%{transform:scale(1.08) rotate(4deg)} 100%{transform:scale(1) rotate(0)} }
+  @keyframes m-jump { 0%{transform:translateY(0) scale(1)} 30%{transform:translateY(-22px) scale(1.05,0.95)} 55%{transform:translateY(-30px) scale(0.95,1.05)} 75%{transform:translateY(-8px) scale(1.02,0.98)} 100%{transform:translateY(0) scale(1)} }
   .mascot-idle      { animation:m-idle 2.8s ease-in-out infinite; display:inline-block; }
   .mascot-bounce    { animation:m-bounce 1.1s ease-in-out infinite; display:inline-block; }
   .mascot-celebrate { animation:m-celebrate .44s ease-in-out infinite; display:inline-block; }
+  .mascot-tap       { animation:m-tap .5s cubic-bezier(.36,.07,.19,.97) forwards; display:inline-block; }
+  .mascot-jump-once { animation:m-jump .65s cubic-bezier(.36,.07,.19,.97) forwards; display:inline-block; }
+  #mascot-face      { cursor:pointer; }
+
+  /* ── FAB (Quick Log) ── */
+  .fab { position:fixed; bottom:calc(72px + env(safe-area-inset-bottom) + 12px); right:16px; width:52px; height:52px; border-radius:50%; background:var(--accent); color:#fff; border:none; font-size:1.6rem; display:flex; align-items:center; justify-content:center; box-shadow:0 4px 16px rgba(0,0,0,.25); cursor:pointer; z-index:900; transition:transform .15s,box-shadow .15s; }
+  .fab:active { transform:scale(.92); }
+  .fab-menu { position:fixed; bottom:calc(136px + env(safe-area-inset-bottom)); right:16px; display:flex; flex-direction:column; gap:8px; align-items:flex-end; z-index:900; }
+  .fab-menu-item { display:flex; align-items:center; gap:10px; background:var(--card); border:1px solid var(--border); border-radius:24px; padding:10px 16px; font-size:.88rem; font-weight:600; color:var(--text); box-shadow:0 2px 12px rgba(0,0,0,.12); cursor:pointer; white-space:nowrap; opacity:0; transform:translateY(10px) scale(.95); transition:opacity .18s,transform .18s; pointer-events:none; }
+  .fab-menu.open .fab-menu-item { opacity:1; transform:none; pointer-events:auto; }
+  .fab-menu.open .fab-menu-item:nth-child(1) { transition-delay:.04s; }
+  .fab-menu.open .fab-menu-item:nth-child(2) { transition-delay:.08s; }
+  .fab-menu.open .fab-menu-item:nth-child(3) { transition-delay:.12s; }
+  .fab-overlay { position:fixed; inset:0; z-index:899; display:none; }
+  .fab-overlay.open { display:block; }
+
+  /* ── Task time + notes ── */
+  .task-meta-row { display:flex; gap:8px; margin-top:8px; }
+  .task-time-input { width:120px; }
+  .task-notes-input { flex:1; }
+  .task-inline-note { font-size:.74rem; color:var(--muted); margin-top:2px; }
+  .task-inline-time { font-size:.74rem; color:var(--accent4); font-weight:600; }
+
+  /* ── Tracker tab ── */
+  .tracker-amount-wrap { display:flex; gap:8px; align-items:center; margin-bottom:10px; }
+  .tracker-unit-input  { width:90px; }
+
   .mascot-card  { text-align:center; padding:28px 16px 20px; }
   .mascot-card.card:hover, .stat-big.card:hover { transform:none; box-shadow:0 1px 4px rgba(0,0,0,.05); border-color:var(--border); }
   .mascot-pct   { font-size:3.2rem; font-weight:800; color:var(--accent4); letter-spacing:-.04em; margin-top:8px; font-variant-numeric:tabular-nums; }
@@ -898,34 +927,33 @@
     <div id="food-list"><div class="empty">Nothing logged yet</div></div>
   </div>
 
-  <!-- ── ACTIVITY ──────────────────────────────────── -->
+  <!-- ── TRACKER ──────────────────────────────────── -->
   <div id="section-activity" class="section">
 
-    <!-- Daily activity goal strip -->
+    <!-- Tracker stat strip -->
     <div class="act-stat-strip">
       <div class="act-stat-text">
         <strong id="activity-mins-today">0</strong>
-        <span class="act-stat-label">/ 30 min today</span>
+        <span class="act-stat-label" id="tracker-stat-label"> entries today</span>
       </div>
     </div>
     <div class="act-goal-bar"><div class="act-goal-bar-fill" id="activity-goal-bar" style="width:0%"></div></div>
 
-    <!-- Log Activity -->
+    <!-- Log Metric -->
     <div class="card">
-      <div class="section-title">Log Activity</div>
-      <input type="text" id="act-name-input" placeholder="Activity name…" list="act-name-list" autocomplete="off" style="margin-bottom:10px" oninput="updateActDatalist()" onkeydown="if(event.key==='Enter')document.getElementById('act-duration').focus()">
+      <div class="section-title">Log Metric</div>
+      <input type="text" id="act-name-input" placeholder="Metric (e.g. Water, Miles, Creatine)…" list="act-name-list" autocomplete="off" style="margin-bottom:10px" oninput="updateActDatalist()" onkeydown="if(event.key==='Enter')document.getElementById('act-duration').focus()">
       <datalist id="act-name-list"></datalist>
-      <div class="act-duration-wrap">
-        <input type="number" id="act-duration" placeholder="0" max="600" inputmode="numeric" onkeydown="if(event.key==='Enter')addActivity()" aria-label="Duration in minutes">
-        <span class="act-duration-unit">minutes</span>
+      <div class="tracker-amount-wrap">
+        <input type="number" id="act-duration" placeholder="Amount" inputmode="decimal" onkeydown="if(event.key==='Enter')document.getElementById('act-unit').focus()" aria-label="Amount" style="flex:1">
+        <input type="text" id="act-unit" class="tracker-unit-input" placeholder="Unit (oz, g, mi…)" autocomplete="off" onkeydown="if(event.key==='Enter')addActivity()">
       </div>
-      <input type="text" id="act-notes" placeholder="Notes (optional)">
-      <button id="activity-add-btn" class="btn btn-purple btn-full" onclick="addActivity()"><span id="activity-plus"></span>Log Activity</button>
+      <button id="activity-add-btn" class="btn btn-purple btn-full" onclick="addActivity()"><span id="activity-plus"></span>Log Metric</button>
     </div>
 
-    <!-- Activity Log -->
-    <div class="section-title act-quest-title">Activity Log</div>
-    <div id="activity-list"><div class="card"><div class="empty">No activity logged yet</div></div></div>
+    <!-- Tracker Log -->
+    <div class="section-title act-quest-title">Tracker Log</div>
+    <div id="activity-list"><div class="card"><div class="empty">No entries logged yet</div></div></div>
   </div>
 
   <!-- ── INFO ──────────────────────────────────────── -->
@@ -949,6 +977,11 @@
         <input type="text" id="habit-name" placeholder="Name..." onkeydown="if(event.key==='Enter')addItem()">
         <button id="habit-add-btn" class="btn btn-green" onclick="addItem()"><span id="habit-plus"></span>Add</button>
       </div>
+      <div class="task-meta-row" id="task-side-fields" style="display:none">
+        <input type="date" id="task-due" class="task-time-input" style="width:140px">
+        <input type="time" id="task-time" class="task-time-input">
+      </div>
+      <input type="text" id="task-notes-input" placeholder="Notes (optional)" style="margin-top:8px">
     </div>
     <div class="list-filter-wrap" id="task-filter-wrap" style="display:none">
       <input class="list-filter" id="task-filter" placeholder="Filter tasks…" oninput="renderDaily()" aria-label="Filter tasks">
@@ -959,7 +992,7 @@
   <!-- ── SUMMARY ────────────────────────────────────── -->
   <div id="section-summary" class="section active">
     <div class="card mascot-card">
-      <div id="mascot-face" class="mascot-idle"></div>
+      <div id="mascot-face" class="mascot-idle" onclick="tapMascot()" role="button" aria-label="Poke the frog"></div>
       <div class="mascot-greeting" id="mascot-greeting"></div>
       <div class="mascot-msg" id="mascot-msg" aria-live="polite">Loading…</div>
     </div>
@@ -1002,6 +1035,14 @@
         <span id="rm-theme-icon"></span>
         <span id="rm-theme-label">Switch to Dark Mode</span>
       </button>
+
+      <div class="modal-section">Notifications</div>
+      <button class="btn btn-ghost btn-full" id="rm-notif-btn" onclick="requestNotifPermission()" style="justify-content:flex-start;gap:8px">🔔 Enable Notifications</button>
+      <div id="rm-notif-time-row" style="display:none;align-items:center;gap:10px;margin-top:8px">
+        <label style="font-size:.82rem;color:var(--muted);white-space:nowrap">Daily reminder</label>
+        <input type="time" id="rm-notif-time" value="09:00" style="flex:1">
+        <button class="btn btn-green" style="padding:8px 14px" onclick="saveNotifTime()">Set</button>
+      </div>
 
       <div class="modal-section">Core tasks <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:.72rem;color:var(--muted)">— tap 🗑 to unlock</span></div>
       <div id="rm-core-locked"></div>
@@ -1057,9 +1098,18 @@
     </div>
   </div>
 
+  <!-- Quick Log FAB -->
+  <div class="fab-overlay" id="fab-overlay" onclick="closeFabMenu()"></div>
+  <div class="fab-menu" id="fab-menu">
+    <div class="fab-menu-item" onclick="fabQuickLog('food')">🍽️ Log Food</div>
+    <div class="fab-menu-item" onclick="fabQuickLog('tracker')">📊 Log Metric</div>
+    <div class="fab-menu-item" onclick="fabQuickLog('task')">✅ Add Task</div>
+  </div>
+  <button class="fab" id="fab-btn" onclick="toggleFabMenu()" aria-label="Quick log">+</button>
+
   <nav role="navigation" aria-label="Main navigation">
     <button data-tab="food"     onclick="switchTab('food')"     id="nav-food"     aria-label="Food log"></button>
-    <button data-tab="activity" onclick="switchTab('activity')" id="nav-activity" aria-label="Activity log"></button>
+    <button data-tab="activity" onclick="switchTab('activity')" id="nav-activity" aria-label="Tracker"></button>
     <button data-tab="daily"    onclick="switchTab('daily')"    id="nav-daily"    aria-label="Tasks"></button>
     <button data-tab="info"     onclick="switchTab('info')"     id="nav-info"     aria-label="Notes"></button>
   </nav>
@@ -1164,12 +1214,22 @@ const ACTIVITY_TYPES = [
 ];
 
 // ── Daily Quest tiers (Solo Leveling-style mandatory training) ────────────
-const QUEST_TIERS = [
-  { range:[1,3],   pushups:30,  situps:30,  squats:30,  runKm:1  },
-  { range:[4,9],   pushups:50,  situps:50,  squats:50,  runKm:2  },
-  { range:[10,19], pushups:80,  situps:80,  squats:80,  runKm:5  },
-  { range:[20,39], pushups:100, situps:100, squats:100, runKm:10 },  // the original Sung Jin-Woo set
-  { range:[40,99], pushups:150, situps:150, squats:150, runKm:15 },
+// Exercise pool for daily quest rotation — 5 tiers matching level brackets [1-3,4-9,10-19,20-39,40+]
+const EXERCISE_POOL = [
+  { key:'pushups',        label:'Push-ups',          tiers:[30,  50,  80,  100, 150], unit:'reps' },
+  { key:'situps',         label:'Sit-ups',           tiers:[30,  50,  80,  100, 150], unit:'reps' },
+  { key:'squats',         label:'Squats',            tiers:[30,  50,  80,  100, 150], unit:'reps' },
+  { key:'pullups',        label:'Pull-ups',          tiers:[5,   10,  15,  20,  30],  unit:'reps' },
+  { key:'dips',           label:'Tricep Dips',       tiers:[15,  25,  40,  50,  75],  unit:'reps' },
+  { key:'lunges',         label:'Lunges',            tiers:[15,  25,  40,  50,  75],  unit:'each leg' },
+  { key:'burpees',        label:'Burpees',           tiers:[10,  15,  25,  30,  50],  unit:'reps' },
+  { key:'mountainclimbers',label:'Mountain Climbers',tiers:[20,  40,  60,  80,  120], unit:'reps' },
+  { key:'plank',          label:'Plank',             tiers:[30,  60,  90,  120, 180], unit:'sec' },
+  { key:'pikepushups',    label:'Pike Push-ups',     tiers:[10,  20,  30,  40,  60],  unit:'reps' },
+  { key:'jumpingjacks',   label:'Jumping Jacks',     tiers:[30,  50,  80,  100, 150], unit:'reps' },
+  { key:'highknees',      label:'High Knees',        tiers:[30,  50,  80,  100, 150], unit:'reps' },
+  { key:'run',            label:'Run',               tiers:[1,   2,   5,   10,  15],  unit:'km' },
+  { key:'calfraizes',     label:'Calf Raises',       tiers:[20,  40,  60,  80,  120], unit:'reps' },
 ];
 const QUEST_BONUS_XP    = 200;
 const QUEST_PENALTY_XP  = 100;
@@ -1264,21 +1324,48 @@ function updateXPDisplay() {
 }
 
 // ── Daily Quest System ─────────────────────────────────────────────────────
-function getQuestTargets(level) {
-  for (const t of QUEST_TIERS) {
-    if (level >= t.range[0] && level <= t.range[1]) return t;
-  }
-  return QUEST_TIERS[QUEST_TIERS.length - 1];
+function getQuestTierIdx(level) {
+  if (level <= 3)  return 0;
+  if (level <= 9)  return 1;
+  if (level <= 19) return 2;
+  if (level <= 39) return 3;
+  return 4;
 }
+
+// Deterministic daily exercise selection using date as seed
+function selectDailyExercises(date, level) {
+  const tierIdx = getQuestTierIdx(level);
+  // Simple seeded shuffle: derive seed from date digits
+  let seed = date.replace(/-/g,'').split('').reduce((a,c,i) => a + c.charCodeAt(0) * (i+1), 0);
+  const lcg = () => { seed = (seed * 1664525 + 1013904223) & 0x7fffffff; return seed / 0x7fffffff; };
+  const pool = [...EXERCISE_POOL];
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(lcg() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  return pool.slice(0, 4).map(ex => ({
+    key: ex.key,
+    label: ex.label,
+    target: `${ex.tiers[tierIdx]} ${ex.unit}`,
+    done: false
+  }));
+}
+
 function makeNewQuestState(date) {
-  return { date, pushups:false, situps:false, squats:false, run:false, bonus_awarded:false };
+  const level = getLevel(totalXP);
+  const exercises = selectDailyExercises(date, level);
+  return { date, exercises, bonus_awarded: false };
 }
 function getCurrentQuestState() {
   const s = user?.user_metadata?.quest_state;
   if (s && s.date === todayKey()) return s;
   return makeNewQuestState(todayKey());
 }
-function questAllDone(s) { return s.pushups && s.situps && s.squats && s.run; }
+function questAllDone(s) {
+  if (s.exercises) return s.exercises.every(e => e.done);
+  // backwards-compat: old format
+  return s.pushups && s.situps && s.squats && s.run;
+}
 function getQuestStreak() { return user?.user_metadata?.quest_streak || 0; }
 
 // Called once on app load: penalize if yesterday was incomplete; roll to today.
@@ -1314,11 +1401,19 @@ async function checkDailyQuestPenalty() {
   showPenaltyModal(prevStreak);
 }
 
-async function toggleQuestItem(key) {
+async function toggleQuestItem(idx) {
   if (!user) return;
   const cur = getCurrentQuestState();
-  const next = { ...cur, [key]: !cur[key] };
-  // If this completes the quest for the first time, award bonus + bump streak.
+  let next;
+  if (cur.exercises) {
+    const exs = cur.exercises.map((e, i) => i === idx ? { ...e, done: !e.done } : e);
+    next = { ...cur, exercises: exs };
+  } else {
+    // backwards-compat old format — shouldn't happen after today rolls over
+    const keys = ['pushups','situps','squats','run'];
+    const k = keys[idx];
+    next = { ...cur, [k]: !cur[k] };
+  }
   if (questAllDone(next) && !next.bonus_awarded) {
     next.bonus_awarded = true;
     const newStreak = getQuestStreak() + 1;
@@ -1327,10 +1422,9 @@ async function toggleQuestItem(key) {
       quest_streak: newStreak,
     });
   } else {
-    // Just save the toggle.
     const meta = { ...user.user_metadata, quest_state: next };
     db.auth.updateUser({ data: meta }).then(({ data }) => { if (data?.user) user = data.user; });
-    user.user_metadata = meta; // optimistic local update so re-render is instant
+    user.user_metadata = meta;
   }
   renderDailyQuest();
   updateMascot();
@@ -1339,37 +1433,43 @@ async function toggleQuestItem(key) {
 function renderDailyQuest() {
   const card = document.getElementById('quest-system-card');
   if (!card) return;
-  const state    = getCurrentQuestState();
-  const lvl      = getLevel(totalXP);
-  const targets  = getQuestTargets(lvl);
-  const allDone  = questAllDone(state);
-  const streak   = getQuestStreak();
+  const state   = getCurrentQuestState();
+  const allDone = questAllDone(state);
+  const streak  = getQuestStreak();
 
   const streakEl = document.getElementById('quest-streak');
   if (streakEl) streakEl.style.display = streak >= 1 ? 'inline-flex' : 'none';
   if (streakEl) streakEl.innerHTML     = `🔥 ${streak}`;
 
-  const items = [
-    { key:'pushups', label:'Push-ups', target:`${targets.pushups} reps` },
-    { key:'situps',  label:'Sit-ups',  target:`${targets.situps} reps`  },
-    { key:'squats',  label:'Squats',   target:`${targets.squats} reps`  },
-    { key:'run',     label:'Run',      target:`${targets.runKm} km`     },
-  ];
+  // Build items list from new or old state format
+  let items;
+  if (state.exercises) {
+    items = state.exercises.map((e, i) => ({ idx: i, label: e.label, target: e.target, done: e.done }));
+  } else {
+    // old format fallback
+    const tierIdx = getQuestTierIdx(getLevel(totalXP));
+    const tiers = [30,50,80,100,150];
+    items = [
+      { idx:0, label:'Push-ups', target:`${tiers[tierIdx]} reps`, done:!!state.pushups },
+      { idx:1, label:'Sit-ups',  target:`${tiers[tierIdx]} reps`, done:!!state.situps  },
+      { idx:2, label:'Squats',   target:`${tiers[tierIdx]} reps`, done:!!state.squats  },
+      { idx:3, label:'Run',      target:'? km',                   done:!!state.run     },
+    ];
+  }
 
-  document.getElementById('quest-items').innerHTML = items.map(it => {
-    const done = !!state[it.key];
-    return `<div class="quest-item${done?' done':''}" onclick="toggleQuestItem('${it.key}')">
-      <span class="quest-check${done?' done':''}">${done ? icon(IC.check, 14) : ''}</span>
+  document.getElementById('quest-items').innerHTML = items.map(it =>
+    `<div class="quest-item${it.done?' done':''}" onclick="toggleQuestItem(${it.idx})">
+      <span class="quest-check${it.done?' done':''}">${it.done ? icon(IC.check, 14) : ''}</span>
       <span class="quest-item-name">${it.label}</span>
       <span class="quest-item-target">${it.target}</span>
-    </div>`;
-  }).join('');
+    </div>`
+  ).join('');
 
   const status = document.getElementById('quest-status');
   if (allDone) {
     status.innerHTML = `<span class="quest-complete">✓ QUEST COMPLETE${state.bonus_awarded ? ` · +${QUEST_BONUS_XP} XP` : ''}</span>`;
   } else {
-    const remaining = items.filter(it => !state[it.key]).length;
+    const remaining = items.filter(it => !it.done).length;
     status.innerHTML = `<span class="quest-pending">${remaining} task${remaining!==1?'s':''} remaining · failure costs −${QUEST_PENALTY_XP} XP</span>`;
   }
   updateSystemStatus();
@@ -1393,19 +1493,17 @@ async function refreshTodayStats() {
     dbCall(() => db.from('food_entries').select('calories').eq('user_id',user.id).eq('date',today)),
     dbCall(() => db.from('habits').select('id,recurring,completed').eq('user_id',user.id)),
     dbCall(() => db.from('habit_completions').select('habit_id').eq('user_id',user.id).eq('date',today)),
-    dbCall(() => db.from('workout_entries').select('duration').eq('user_id',user.id).eq('date',today)),
+    dbCall(() => db.from('workout_entries').select('id').eq('user_id',user.id).eq('date',today)),
   ]);
   const foods   = foodRes.data || [];
   const items   = habRes.data  || [];
   const comps   = compRes.data || [];
-  const wks     = wkRes.data   || [];
   const doneIds = new Set(comps.map(c => c.habit_id));
   const habits  = items.filter(h => h.recurring);
   const tasks   = items.filter(h => !h.recurring);
   _mascot.cals       = foods.reduce((s,f) => s + (f.calories||0), 0);
   _mascot.habitDone  = habits.filter(h => doneIds.has(h.id)).length + tasks.filter(t => t.completed).length;
   _mascot.habitTotal = items.length;
-  _mascot.actMins    = wks.reduce((s,w) => s + (parseInt(w.duration)||0), 0);
   updateMascot();
 }
 
@@ -1420,16 +1518,22 @@ function closeQuestModal() {
 
 // ── System Status Bar ──────────────────────────────────────────────────────
 function updateSystemStatus() {
-  // Quest progress
+  // Quest progress — handle both new (exercises array) and old format
   const qState = user?.user_metadata?.quest_state;
-  const qDone  = qState ? (!!qState.pushups + !!qState.situps + !!qState.squats + !!qState.run) : 0;
-  const qPct   = (qDone / 4) * 100;
+  let qDone = 0, qTotal = 4;
+  if (qState?.exercises) {
+    qTotal = qState.exercises.length;
+    qDone  = qState.exercises.filter(e => e.done).length;
+  } else if (qState) {
+    qDone = (!!qState.pushups + !!qState.situps + !!qState.squats + !!qState.run);
+  }
+  const qPct   = (qDone / qTotal) * 100;
   const qFill  = document.getElementById('ssb-quest-fill');
   const qVal   = document.getElementById('ssb-quest-val');
   const qItem  = document.getElementById('ssb-quest-item');
-  if (qFill) { qFill.style.width = qPct + '%'; qFill.style.background = qDone === 4 ? 'var(--accent)' : 'var(--accent4)'; }
-  if (qVal)  qVal.textContent = `${qDone}/4`;
-  if (qItem) qItem.classList.toggle('quest-alert', qDone < 4);
+  if (qFill) { qFill.style.width = qPct + '%'; qFill.style.background = qDone === qTotal ? 'var(--accent)' : 'var(--accent4)'; }
+  if (qVal)  qVal.textContent = `${qDone}/${qTotal}`;
+  if (qItem) qItem.classList.toggle('quest-alert', qDone < qTotal);
 
   // Habits
   const habPct = _mascot.habitTotal ? Math.min(100, (_mascot.habitDone / _mascot.habitTotal) * 100) : 0;
@@ -1467,7 +1571,7 @@ function updateThemeButton() {
 
 function injectIcons() {
   document.getElementById('nav-food').innerHTML      = icon(IC.food, 22)    + '<span>Food</span>';
-  document.getElementById('nav-activity').innerHTML  = icon(IC.workout, 22) + '<span>Activity</span>';
+  document.getElementById('nav-activity').innerHTML  = icon(IC.workout, 22) + '<span>Tracker</span>';
   document.getElementById('nav-info').innerHTML      = icon(IC.info, 22)    + '<span>Notes</span>';
   document.getElementById('nav-daily').innerHTML     = icon(IC.daily, 22)   + '<span>Tasks</span>';
 
@@ -1488,13 +1592,19 @@ function injectIcons() {
 // ── Auth ───────────────────────────────────────────────────────────────────
 async function init() {
   injectIcons();
+  // Register service worker for PWA
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  }
   document.addEventListener('click', e => {
     if (!e.target.closest('#food-dropdown') && !e.target.closest('#food-search-btn') && e.target.id !== 'food-name') hideFoodDropdown();
+    if (!e.target.closest('#fab-btn') && !e.target.closest('#fab-menu')) closeFabMenu();
   });
   // Keyboard: Escape closes any open modal / dropdown
   document.addEventListener('keydown', e => {
     if (e.key !== 'Escape') return;
     closeQuestModal();
+    closeFabMenu();
     ['penalty-modal','levelup-modal','reset-modal'].forEach(id => document.getElementById(id)?.classList.remove('open'));
     hideFoodDropdown();
   });
@@ -1556,6 +1666,7 @@ async function showApp() {
   injectIcons();
   loadActivityHistory();
   updateHeaderDayNav();
+  initNotifications();
   if (!user?.user_metadata?.setup_complete) {
     document.getElementById('app').style.display = 'none';
     document.getElementById('onboard-screen').style.display = 'flex';
@@ -1676,6 +1787,7 @@ async function showResetModal() {
     document.getElementById('rm-core-locked').innerHTML = '<div style="color:var(--muted);font-size:.85rem;padding:4px 0">No core tasks yet.</div>';
   }
   document.getElementById('reset-modal').classList.add('open');
+  updateNotifUI();
 }
 function hideResetModal() { document.getElementById('reset-modal').classList.remove('open'); }
 
@@ -1991,42 +2103,40 @@ function updateActDatalist() {
 async function addActivity() {
   const nameEl = document.getElementById('act-name-input');
   const name   = nameEl?.value.trim() || '';
-  const dur    = parseInt(document.getElementById('act-duration').value) || 0;
-  if (!name) return flashErr('act-name-input', 'Enter activity');
-  if (!dur)  return flashErr('act-duration',   'Enter duration');
-  const matched = ACTIVITY_TYPES.find(t => t.name.toLowerCase() === name.toLowerCase());
-  const type    = matched?.id || '';
+  const amount = document.getElementById('act-duration').value.trim();
+  const unit   = document.getElementById('act-unit')?.value.trim() || '';
+  if (!name)   return flashErr('act-name-input', 'Enter metric name');
+  if (!amount) return flashErr('act-duration',   'Enter amount');
   const btn = document.getElementById('activity-add-btn'); btnLoad(btn, true);
   const { error } = await dbCall(() => db.from('workout_entries').insert({
     user_id:  user.id,
     date:     offsetKey(currentDays.activity),
     name,
-    type,
-    duration: String(dur),
-    notes:    document.getElementById('act-notes').value.trim() || null,
+    type:     'tracker',
+    duration: amount,
+    notes:    unit || null,
     sets: null, reps: null, weight: null,
     time: new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})
   }));
   btnLoad(btn, false); if (error) return;
   if (nameEl) nameEl.value = '';
   document.getElementById('act-duration').value = '';
-  document.getElementById('act-notes').value    = '';
+  if (document.getElementById('act-unit')) document.getElementById('act-unit').value = '';
   await loadActivityHistory();
   await renderActivity();
-  toast('Activity logged', 'ok');
+  toast('Logged!', 'ok');
 }
 
 function startEditActivity(id) { editing.activity = id; renderActivity(); }
 function cancelEditActivity()   { editing.activity = null; renderActivity(); }
 
 async function saveEditActivity(id) {
-  const dur   = parseInt(document.getElementById('ea-dur-'+id)?.value) || 0;
-  const notes = document.getElementById('ea-notes-'+id)?.value.trim() || null;
-  const typeId = document.getElementById('ea-type-'+id)?.value || 'other';
-  if (!dur) return toast('Enter duration','error');
+  const amount = document.getElementById('ea-dur-'+id)?.value.trim();
+  const unit   = document.getElementById('ea-notes-'+id)?.value.trim() || null;
+  const name   = document.getElementById('ea-name-'+id)?.value.trim() || null;
+  if (!amount) return toast('Enter amount','error');
   const { error } = await dbCall(() => db.from('workout_entries').update({
-    duration: String(dur), notes, type: typeId,
-    name: ACTIVITY_TYPES.find(t => t.id === typeId)?.name || typeId
+    duration: amount, notes: unit, ...(name ? {name} : {})
   }).eq('id',id).eq('user_id',user.id));
   if (error) return; editing.activity = null; toast('Updated','ok'); await renderActivity();
 }
@@ -2037,47 +2147,40 @@ async function deleteActivity(id) {
 }
 
 async function renderActivity() {
-  const dayKey   = offsetKey(currentDays.activity);
+  const dayKey    = offsetKey(currentDays.activity);
   const todayKey_ = todayKey();
-  const dayLabel = fmt(dayKey);
+  const dayLabel  = fmt(dayKey);
 
   const [dayRes, todayRes] = await Promise.all([
     dbCall(() => db.from('workout_entries').select('*').eq('user_id',user.id).eq('date',dayKey).order('created_at',{ascending:true})),
-    dbCall(() => db.from('workout_entries').select('duration').eq('user_id',user.id).eq('date',todayKey_))
+    dbCall(() => db.from('workout_entries').select('id').eq('user_id',user.id).eq('date',todayKey_))
   ]);
-  const rows      = dayRes.data   || [];
-  const todayMins = (todayRes.data||[]).reduce((s,e) => s + (parseInt(e.duration)||0), 0);
-  const pct       = Math.min(100, Math.round((todayMins / 30) * 100));
+  const rows         = dayRes.data  || [];
+  const todayCount   = (todayRes.data||[]).length;
+  const pct          = Math.min(100, Math.round((todayCount / 5) * 100));
   await refreshTodayStats();
 
   const minsEl = document.getElementById('activity-mins-today');
   const gbEl   = document.getElementById('activity-goal-bar');
-  if (minsEl) minsEl.textContent = todayMins;
+  if (minsEl) minsEl.textContent = todayCount;
   if (gbEl)   gbEl.style.width   = pct + '%';
 
   const listEl = document.getElementById('activity-list');
   if (!listEl) return;
   if (!rows.length) {
-    const emptyMsg = dayLabel === 'Today' ? 'No activity logged yet' : `No activity on ${dayLabel}`;
+    const emptyMsg = dayLabel === 'Today' ? 'No entries logged yet' : `No entries on ${dayLabel}`;
     listEl.innerHTML = `<div class="card"><div class="empty">${emptyMsg}</div></div>`;
     return;
   }
 
   listEl.innerHTML = [...rows].reverse().map(e => {
-    const actType = ACTIVITY_TYPES.find(t => t.id === e.type);
-    const dur = parseInt(e.duration) || 0;
-
     if (editing.activity === e.id) {
-      const typeOpts = ACTIVITY_TYPES.map(t =>
-        `<option value="${esc(t.id)}"${t.id===e.type?' selected':''}>${esc(t.emoji)} ${esc(t.name)}</option>`
-      ).join('');
       return `<div class="card" style="margin-bottom:8px">
-        <select id="ea-type-${e.id}" style="margin-bottom:8px">${typeOpts}</select>
-        <div class="act-duration-wrap">
-          <input type="number" id="ea-dur-${e.id}" class="act-duration-input" value="${dur}" min="1" inputmode="numeric">
-          <span class="act-duration-unit">minutes</span>
+        <input type="text" id="ea-name-${e.id}" value="${esc(e.name)}" placeholder="Metric name" style="margin-bottom:8px">
+        <div class="tracker-amount-wrap">
+          <input type="number" id="ea-dur-${e.id}" value="${esc(e.duration||'')}" inputmode="decimal" placeholder="Amount" style="flex:1">
+          <input type="text" id="ea-notes-${e.id}" value="${esc(e.notes||'')}" placeholder="Unit" class="tracker-unit-input">
         </div>
-        <input type="text" id="ea-notes-${e.id}" placeholder="Notes (optional)" value="${esc(e.notes||'')}">
         <div class="edit-actions">
           <button class="btn btn-purple" onclick="saveEditActivity('${e.id}')">Save</button>
           <button class="btn btn-ghost"  onclick="cancelEditActivity()">Cancel</button>
@@ -2086,19 +2189,29 @@ async function renderActivity() {
     }
 
     const metaParts = [];
-    if (dur)     metaParts.push(`${dur} min`);
-    if (e.notes) metaParts.push(esc(e.notes));
-    if (e.time)  metaParts.push(esc(e.time));
+    if (e.duration) metaParts.push(`${esc(e.duration)}${e.notes ? ' ' + esc(e.notes) : ''}`);
+    if (e.time) metaParts.push(esc(e.time));
+
+    // Pick a display emoji based on metric name
+    const nameLower = (e.name||'').toLowerCase();
+    const emoji = nameLower.includes('water') ? '💧'
+      : nameLower.includes('miles') || nameLower.includes('run') || nameLower.includes('km') ? '🏃'
+      : nameLower.includes('creatine') || nameLower.includes('supplement') ? '💊'
+      : nameLower.includes('sleep') ? '😴'
+      : nameLower.includes('step') ? '👟'
+      : nameLower.includes('calor') ? '🔥'
+      : nameLower.includes('protein') ? '🥩'
+      : '📊';
 
     return `<div class="card" style="margin-bottom:8px">
       <div class="quest-entry">
-        ${actType ? `<span class="quest-emoji">${esc(actType.emoji)}</span>` : ''}
+        <span class="quest-emoji">${emoji}</span>
         <div class="quest-info">
           <div class="quest-name">${esc(e.name)}</div>
           <div class="quest-meta">${metaParts.join(' · ')}</div>
         </div>
-        <button class="icon-btn" onclick="startEditActivity('${e.id}')" aria-label="Edit activity">${icon(IC.edit,16)}</button>
-        <button class="icon-btn danger" onclick="deleteActivity('${e.id}')" aria-label="Delete activity">${icon(IC.trash,16)}</button>
+        <button class="icon-btn" onclick="startEditActivity('${e.id}')" aria-label="Edit entry">${icon(IC.edit,16)}</button>
+        <button class="icon-btn danger" onclick="deleteActivity('${e.id}')" aria-label="Delete entry">${icon(IC.trash,16)}</button>
       </div>
     </div>`;
   }).join('');
@@ -2370,18 +2483,20 @@ async function deleteInfo(id) {
 // ══════════════════════════════════════════════════════════════════════════
 // DAILY — HABITS + TASKS
 // ══════════════════════════════════════════════════════════════════════════
-function setAddType(type) {
-  addType = type;
-  document.getElementById('type-habit-btn').classList.toggle('active', type === 'habit');
-  document.getElementById('type-task-btn').classList.toggle('active',  type === 'task');
-  document.getElementById('habit-name').placeholder = type === 'habit'
-    ? 'Daily task name (e.g. Drink water, Exercise...)'
-    : 'Side task name (e.g. Call dentist, Buy groceries...)';
-}
 
 function parseTaskName(raw) {
-  const m = (raw || '').match(/^(.*?)\s*\[(\d{4}-\d{2}-\d{2})\]$/);
-  return m ? { name: m[1].trim(), due: m[2] } : { name: raw || '', due: null };
+  const s = raw || '';
+  const dueM   = s.match(/\[(\d{4}-\d{2}-\d{2})\]/);
+  const timeM  = s.match(/\[TIME:(\d{2}:\d{2})\]/);
+  const notesM = s.match(/\[NOTES:([^\]]*)\]/);
+  const name   = s.replace(/\s*\[\d{4}-\d{2}-\d{2}\]|\s*\[TIME:[^\]]*\]|\s*\[NOTES:[^\]]*\]/g, '').trim();
+  return { name, due: dueM?.[1] || null, time: timeM?.[1] || null, notes: notesM?.[1] || null };
+}
+function formatTime12(t) {
+  if (!t) return '';
+  const [h, m] = t.split(':').map(Number);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  return `${h % 12 || 12}:${String(m).padStart(2,'0')} ${ampm}`;
 }
 
 function formatDue(dateStr) {
@@ -2393,15 +2508,34 @@ function formatDue(dateStr) {
   return new Date(+y,+m-1,+d).toLocaleDateString('en-US',{month:'short',day:'numeric'});
 }
 
+function setAddType(t) {
+  addType = t;
+  document.getElementById('type-habit-btn')?.classList.toggle('active', t === 'habit');
+  document.getElementById('type-task-btn')?.classList.toggle('active', t === 'task');
+  const sideFields = document.getElementById('task-side-fields');
+  if (sideFields) sideFields.style.display = t === 'task' ? 'flex' : 'none';
+}
+
 async function addItem() {
-  const name = document.getElementById('habit-name').value.trim();
+  let name = document.getElementById('habit-name').value.trim();
   if (!name) return flashErr('habit-name', 'Enter a name');
+  if (addType === 'task') {
+    const due   = document.getElementById('task-due')?.value;
+    const time  = document.getElementById('task-time')?.value;
+    const notes = document.getElementById('task-notes-input')?.value.trim();
+    if (due)   name += ` [${due}]`;
+    if (time)  name += ` [TIME:${time}]`;
+    if (notes) name += ` [NOTES:${notes}]`;
+  }
   const btn = document.getElementById('habit-add-btn'); btnLoad(btn, true);
   const { error } = await dbCall(() => db.from('habits').insert({
     user_id: user.id, name, recurring: addType === 'habit', completed: false
   }));
   btnLoad(btn, false); if (error) return;
   document.getElementById('habit-name').value = '';
+  if (document.getElementById('task-due'))   document.getElementById('task-due').value = '';
+  if (document.getElementById('task-time'))  document.getElementById('task-time').value = '';
+  if (document.getElementById('task-notes-input')) document.getElementById('task-notes-input').value = '';
   cacheInvalidate('habits', 'completions');
   await renderDaily();
 }
@@ -2412,8 +2546,12 @@ async function saveEditHabit(id, isRecurring) {
   let name = document.getElementById('eh-name-'+id)?.value.trim();
   if (!name) return toast('Name required','error');
   if (!isRecurring) {
-    const due = document.getElementById('eh-due-'+id)?.value;
-    if (due) name = `${name} [${due}]`;
+    const due   = document.getElementById('eh-due-'+id)?.value;
+    const time  = document.getElementById('eh-time-'+id)?.value;
+    const notes = document.getElementById('eh-notes-'+id)?.value.trim();
+    if (due)   name += ` [${due}]`;
+    if (time)  name += ` [TIME:${time}]`;
+    if (notes) name += ` [NOTES:${notes}]`;
   }
   const { error } = await dbCall(() => db.from('habits').update({ name }).eq('id',id).eq('user_id',user.id));
   if (error) return; editing.habit = null; cacheInvalidate('habits'); toast('Updated','ok'); await renderDaily();
@@ -2504,12 +2642,17 @@ async function renderDaily() {
   }
 
   function renderRow(item, isDone) {
-    const parsed = item.recurring ? { name: item.name, due: null } : parseTaskName(item.name);
+    const parsed = item.recurring ? { name: item.name, due: null, time: null, notes: null } : parseTaskName(item.name);
     if (editing.habit === item.id) {
-      const dueField = item.recurring ? '' : `<input type="date" id="eh-due-${item.id}" value="${parsed.due||''}">`;
+      const sideFields = item.recurring ? '' : `
+        <div class="task-meta-row" style="margin-bottom:8px">
+          <input type="date" id="eh-due-${item.id}" value="${parsed.due||''}" style="width:140px">
+          <input type="time" id="eh-time-${item.id}" value="${parsed.time||''}" class="task-time-input">
+        </div>
+        <input type="text" id="eh-notes-${item.id}" placeholder="Notes (optional)" value="${esc(parsed.notes||'')}" style="margin-bottom:8px">`;
       return `<div class="entry-editing">
         <input type="text" id="eh-name-${item.id}" value="${esc(parsed.name)}" style="margin-bottom:8px">
-        ${dueField}
+        ${sideFields}
         <div class="edit-actions">
           <button class="btn btn-green" onclick="saveEditHabit('${item.id}',${item.recurring})">Save</button>
           <button class="btn btn-ghost"  onclick="cancelEditHabit()">Cancel</button>
@@ -2519,22 +2662,24 @@ async function renderDaily() {
     const isCore = item.recurring && getCoreHabitIds().includes(item.id);
     const shape  = item.recurring ? 'round' : 'square';
     const streak = item.recurring ? (streakMap[item.id] || 0) : 0;
-    const streakBadge = streak >= 2 ? `<span class="streak-badge">🔥 ${streak}</span>` : '';
+    const streakBadge = streak >= 1 ? `<span class="streak-badge">🔥 ${streak}</span>` : '';
     const badge = isCore
       ? `<span class="core-badge">${icon(IC.lock,11)} Core</span>`
       : item.recurring
         ? `<span class="habit-badge badge-daily">Daily</span>`
         : `<span class="habit-badge badge-side">Side</span>`;
-    let dueHtml = '';
+    let metaHtml = '';
     if (parsed.due) {
       const isOverdue = !isDone && parsed.due < todayKey();
-      dueHtml = `<div class="task-due${isOverdue?' overdue':''}">due ${formatDue(parsed.due)}</div>`;
+      const timeStr = parsed.time ? ` at ${formatTime12(parsed.time)}` : '';
+      metaHtml += `<div class="task-due${isOverdue?' overdue':''}">due ${formatDue(parsed.due)}${timeStr}</div>`;
     }
+    if (parsed.notes) metaHtml += `<div class="task-inline-note">${esc(parsed.notes)}</div>`;
     return `<div class="habit-row ${isDone?'done-row':''}" data-id="${item.id}">
       <button class="habit-check ${shape} ${isDone?'done':''}" onclick="toggleItem('${item.id}',${item.recurring})" aria-label="${isDone?'Mark incomplete':'Mark complete'}: ${esc(parsed.name)}">${icon(IC.check,14)}</button>
       <div style="flex:1;min-width:0">
         <div class="habit-name">${esc(parsed.name)}</div>
-        ${dueHtml}
+        ${metaHtml}
       </div>
       ${streakBadge}${badge}
       ${isCore ? '' : `<button class="icon-btn" onclick="startEditHabit('${item.id}')">${icon(IC.edit,16)}</button>`}
@@ -2578,6 +2723,11 @@ async function renderDaily() {
   }
 
   document.getElementById('daily-list').innerHTML = html;
+
+  // #4: Frog jump when ALL daily tasks are complete (only fires once per "all done" transition)
+  const allDoneNow = filteredAll.length > 0 && incompleteHabits.length === 0 && incompleteTasks.length === 0;
+  if (allDoneNow && !_jumpFired) { _jumpFired = true; mascotJump(); }
+  if (!allDoneNow) _jumpFired = false;
 }
 
 // ══════════════════════════════════════════════════════════════════════════
@@ -2700,7 +2850,7 @@ async function renderSummary() {
     dbCall(() => db.from('workout_entries').select('id,date,type,duration').eq('user_id',user.id).gte('date',start).lte('date',end)),
     dbCall(() => db.from('habits').select('id,recurring,completed').eq('user_id',user.id)),
     dbCall(() => db.from('habit_completions').select('habit_id,date').eq('user_id',user.id).gte('date',start).lte('date',end)),
-    dbCall(() => db.from('workout_entries').select('duration').eq('user_id',user.id).eq('date',today)),
+    dbCall(() => db.from('workout_entries').select('id').eq('user_id',user.id).eq('date',today)),
     dbCall(() => db.from('food_entries').select('calories').eq('user_id',user.id).eq('date',today)),
     dbCall(() => db.from('habit_completions').select('habit_id').eq('user_id',user.id).eq('date',today)),
   ]);
@@ -2714,25 +2864,26 @@ async function renderSummary() {
 
   // Today's goal data (for mascot + today card)
   const todayCals      = (todayFoodRes.data||[]).reduce((s,f)=>s+(f.calories||0),0);
-  const todayActMins   = (todayWkRes.data||[]).reduce((s,w)=>s+(parseInt(w.duration)||0),0);
+  const todayTracked   = (todayWkRes.data||[]).length;
   const todayDoneIds   = new Set((todayCompRes.data||[]).map(c=>c.habit_id));
   const todayHabitDone = habits.filter(h=>todayDoneIds.has(h.id)).length + tasks.filter(t=>t.completed).length;
   const totalItems     = allItems.length;
 
   // Update mascot state
-  _mascot.cals        = todayCals;
-  _mascot.actMins     = todayActMins;
-  _mascot.habitDone   = todayHabitDone;
-  _mascot.habitTotal  = totalItems;
+  _mascot.cals       = todayCals;
+  _mascot.habitDone  = todayHabitDone;
+  _mascot.habitTotal = totalItems;
   updateMascot();
 
-  // ── Today's Status card (unified: quest + habits + calories + activity)
+  // ── Today's Status card
   const calPct  = calGoal ? Math.min(100, Math.round((todayCals/calGoal)*100)) : 0;
-  const actPct  = Math.min(100, Math.round((todayActMins / 30) * 100));
+  const trkPct  = Math.min(100, Math.round((todayTracked / 5) * 100));
   const habPct  = totalItems ? Math.round((todayHabitDone/totalItems)*100) : 0;
   const qStateS = user?.user_metadata?.quest_state;
-  const qDoneS  = qStateS ? (!!qStateS.pushups + !!qStateS.situps + !!qStateS.squats + !!qStateS.run) : 0;
-  const qPctS   = (qDoneS / 4) * 100;
+  let qDoneS = 0, qTotalS = 4;
+  if (qStateS?.exercises) { qTotalS = qStateS.exercises.length; qDoneS = qStateS.exercises.filter(e=>e.done).length; }
+  else if (qStateS) { qDoneS = (!!qStateS.pushups + !!qStateS.situps + !!qStateS.squats + !!qStateS.run); }
+  const qPctS   = qTotalS > 0 ? (qDoneS / qTotalS) * 100 : 0;
   const questStreak = getQuestStreak();
   const todayCard = `<div class="card" style="margin-bottom:12px">
     <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px">
@@ -2742,9 +2893,9 @@ async function renderSummary() {
     <div style="margin-bottom:10px">
       <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">
         <span style="font-size:.82rem;font-weight:700">⚡ Daily Quest</span>
-        <span style="font-size:.76rem;font-weight:700;color:${qDoneS===4?'var(--accent)':'var(--muted)'}">${qDoneS}/4${qDoneS===4?' · complete':''}</span>
+        <span style="font-size:.76rem;font-weight:700;color:${qDoneS===qTotalS?'var(--accent)':'var(--muted)'}">${qDoneS}/${qTotalS}${qDoneS===qTotalS?' · complete':''}</span>
       </div>
-      <div class="goal-bar"><div class="goal-bar-fill" style="width:${qPctS}%;background:${qDoneS===4?'var(--accent)':'var(--accent4)'}"></div></div>
+      <div class="goal-bar"><div class="goal-bar-fill" style="width:${qPctS}%;background:${qDoneS===qTotalS?'var(--accent)':'var(--accent4)'}"></div></div>
     </div>
     <div style="margin-bottom:10px">
       <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">
@@ -2762,10 +2913,10 @@ async function renderSummary() {
     </div>
     <div>
       <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">
-        <span style="font-size:.82rem;font-weight:700">🏋 Activity</span>
-        <span style="font-size:.76rem;color:var(--muted)">${todayActMins} / 30 min</span>
+        <span style="font-size:.82rem;font-weight:700">📊 Tracker</span>
+        <span style="font-size:.76rem;color:var(--muted)">${todayTracked} entries</span>
       </div>
-      <div class="goal-bar"><div class="goal-bar-fill" style="width:${actPct}%;background:var(--accent4)"></div></div>
+      <div class="goal-bar"><div class="goal-bar-fill" style="width:${trkPct}%;background:var(--accent4)"></div></div>
     </div>
   </div>`;
 
@@ -2811,7 +2962,7 @@ async function renderSummary() {
       <div class="week-grid">${cols}</div>
       <div class="week-legend">
         <span><i class="wk-swatch" style="background:var(--accent5);border-radius:2px"></i>Calories</span>
-        <span><i class="wk-swatch" style="background:var(--accent4);border-radius:50%"></i>Activity</span>
+        <span><i class="wk-swatch" style="background:var(--accent4);border-radius:50%"></i>Tracker</span>
       </div>
     </div>`;
   }
@@ -2834,13 +2985,13 @@ async function renderSummary() {
     }).join('')}</div>
   </div>`;
 
-  // ── Activity & Power Level card
-  const activePct  = days ? Math.round((wkDays/days)*100) : 0;
-  const wkGoalPct  = workoutGoal ? Math.min(100, Math.round((wkDays/workoutGoal)*100)) : 0;
-  const xpProg     = getLevelProgress(totalXP);
-  const xpRank     = getRankInfo(xpProg.level);
+  // ── Tracker & Power Level card
+  const trackedDays = wkDaysSet.size;
+  const trkDayPct   = days ? Math.round((trackedDays/days)*100) : 0;
+  const xpProg      = getLevelProgress(totalXP);
+  const xpRank      = getRankInfo(xpProg.level);
   const workoutsHtml = `<div class="card" style="margin-bottom:12px">
-    <div class="smry-ttl">Activity &amp; Power Level</div>
+    <div class="smry-ttl">Tracker &amp; Power Level</div>
     <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
       <div style="flex:1">
         <div style="font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:${xpRank.color};margin-bottom:2px">${xpRank.rank}</div>
@@ -2851,14 +3002,10 @@ async function renderSummary() {
     </div>
     <div class="summary-bar" style="margin-bottom:10px"><div class="summary-bar-fill" style="width:${xpProg.pct}%;background:linear-gradient(90deg,var(--accent4),var(--accent5))"></div></div>
     <div style="display:flex;gap:20px;align-items:flex-end">
-      <div><div class="smry-big" style="color:var(--accent4)">${wkDays}</div><div class="smry-sub">session${wkDays!==1?'s':''}</div></div>
-      <div><div class="smry-big" style="color:var(--accent4);font-size:1.5rem">${wks.length}</div><div class="smry-sub">activit${wks.length!==1?'ies':'y'}</div></div>
-      ${days>1 ? `<div style="margin-left:auto;text-align:right"><div style="font-size:1.3rem;font-weight:700;color:var(--text-2)">${activePct}%</div><div class="smry-sub">days active</div></div>` : ''}
+      <div><div class="smry-big" style="color:var(--accent4)">${trackedDays}</div><div class="smry-sub">day${trackedDays!==1?'s':''} tracked</div></div>
+      <div><div class="smry-big" style="color:var(--accent4);font-size:1.5rem">${wks.length}</div><div class="smry-sub">entr${wks.length!==1?'ies':'y'}</div></div>
+      ${days>1 ? `<div style="margin-left:auto;text-align:right"><div style="font-size:1.3rem;font-weight:700;color:var(--text-2)">${trkDayPct}%</div><div class="smry-sub">days logged</div></div>` : ''}
     </div>
-    ${summaryPeriod === 'week' && workoutGoal ? `
-      <div class="summary-bar" style="margin-top:10px"><div class="summary-bar-fill" style="width:${wkGoalPct}%;background:var(--accent4)"></div></div>
-      <div class="smry-sub">${wkDays} of ${workoutGoal} session goal this week${wkGoalPct>=100?' — goal met!':''}</div>
-    ` : ''}
   </div>`;
 
   // ── Daily card
@@ -2948,24 +3095,26 @@ function mascotMsg(score) {
 }
 
 function updateMascot() {
-  const { cals, habitDone, habitTotal, actMins } = _mascot;
+  const { cals, habitDone, habitTotal } = _mascot;
   const calPct = calGoal > 0 ? (cals / calGoal) * 100 : 0;
   const calS   = calPct <= 100 ? calPct : Math.max(0, 100 - (calPct - 100) * 2);
   const habS   = habitTotal > 0 ? (habitDone / habitTotal) * 100 : 0;
-  const wkS    = Math.min(100, ((actMins||0) / 30) * 100);
-  // Daily quest factors heavily into mood — the system demands it.
   const qState = user?.user_metadata?.quest_state;
-  const qCount = qState ? (!!qState.pushups + !!qState.situps + !!qState.squats + !!qState.run) : 0;
-  const qS     = (qCount / 4) * 100;
-  const s      = Math.round((calS + habS + wkS + qS) / 4);
+  let qDone = 0, qTotal = 4;
+  if (qState?.exercises) { qTotal = qState.exercises.length; qDone = qState.exercises.filter(e => e.done).length; }
+  else if (qState) { qDone = (!!qState.pushups + !!qState.situps + !!qState.squats + !!qState.run); }
+  const qS = qTotal > 0 ? (qDone / qTotal) * 100 : 0;
+  const s  = Math.round((calS + habS + qS) / 3);
   const cls = s>=90?'mascot-celebrate':s>=55?'mascot-bounce':'mascot-idle';
   const face = document.getElementById('mascot-face');
   const msg  = document.getElementById('mascot-msg');
   const hdr  = document.getElementById('mascot-hdr');
   const greet = document.getElementById('mascot-greeting');
-  if (face) { face.innerHTML=mascotSVG(s,72); face.className=cls; }
+  if (face && !face.classList.contains('mascot-tap') && !face.classList.contains('mascot-jump-once')) {
+    face.innerHTML = mascotSVG(s, 72); face.className = cls;
+  }
   if (msg)  msg.textContent = mascotMsg(s);
-  if (hdr)  { hdr.innerHTML=mascotSVG(s,34); hdr.className=cls; }
+  if (hdr)  { hdr.innerHTML = mascotSVG(s, 34); hdr.className = cls; }
   if (greet) {
     const name = user?.user_metadata?.display_name;
     const h = new Date().getHours();
@@ -2975,6 +3124,42 @@ function updateMascot() {
   if (s>=95 && habitTotal>0 && !_confettiFired) { _confettiFired=true; popConfetti(); }
   if (s<90) _confettiFired = false;
   updateSystemStatus();
+}
+
+// #10 — Mascot tap reaction
+const MASCOT_TAPS = [
+  "Ribbit! 🐸", "You got this!", "Stay consistent!", "Every rep counts!",
+  "One day at a time.", "Discipline beats motivation.", "You showed up. That's everything.",
+  "Don't quit when it gets hard.", "Progress > perfection.", "I believe in you! 💚",
+  "The grind never stops 💪", "Hydrate or diedrate 💧", "Rest is part of the process.",
+  "You're stronger than yesterday.", "Keep stacking those habits!", "Ribbit ribbit! 🐸🐸",
+];
+let _tapIdx = -1;
+function tapMascot() {
+  const face = document.getElementById('mascot-face');
+  const msg  = document.getElementById('mascot-msg');
+  if (!face) return;
+  face.classList.remove('mascot-tap', 'mascot-jump-once');
+  void face.offsetWidth; // reflow to restart animation
+  face.classList.add('mascot-tap');
+  _tapIdx = (_tapIdx + 1) % MASCOT_TAPS.length;
+  if (msg) msg.textContent = MASCOT_TAPS[_tapIdx];
+  setTimeout(() => {
+    face.classList.remove('mascot-tap');
+    updateMascot();
+  }, 600);
+}
+
+// #4 — Frog jump animation when all daily tasks complete
+let _jumpFired = false;
+function mascotJump() {
+  const face = document.getElementById('mascot-face');
+  if (!face) return;
+  face.classList.remove('mascot-jump-once', 'mascot-tap');
+  void face.offsetWidth;
+  face.classList.add('mascot-jump-once');
+  popConfetti();
+  setTimeout(() => { face.classList.remove('mascot-jump-once'); updateMascot(); }, 800);
 }
 
 function popConfetti() {
@@ -3043,6 +3228,87 @@ function goToday(s) {
   currentDays[s]=0;
   if(s==='food') renderFood(); else if(s==='activity') renderActivity(); else if(s==='daily') renderDaily();
   updateHeaderDayNav();
+}
+
+// ── FAB (Quick Log) ────────────────────────────────────────────────────────
+let _fabOpen = false;
+function toggleFabMenu() {
+  _fabOpen = !_fabOpen;
+  document.getElementById('fab-menu')?.classList.toggle('open', _fabOpen);
+  document.getElementById('fab-overlay')?.classList.toggle('open', _fabOpen);
+  const btn = document.getElementById('fab-btn');
+  if (btn) btn.style.transform = _fabOpen ? 'rotate(45deg)' : '';
+}
+function closeFabMenu() {
+  _fabOpen = false;
+  document.getElementById('fab-menu')?.classList.remove('open');
+  document.getElementById('fab-overlay')?.classList.remove('open');
+  const btn = document.getElementById('fab-btn');
+  if (btn) btn.style.transform = '';
+}
+function fabQuickLog(type) {
+  closeFabMenu();
+  if (type === 'food') {
+    switchTab('food');
+    setTimeout(() => document.getElementById('food-name')?.focus(), 200);
+  } else if (type === 'tracker') {
+    switchTab('activity');
+    setTimeout(() => document.getElementById('act-name-input')?.focus(), 200);
+  } else if (type === 'task') {
+    switchTab('daily');
+    setTimeout(() => document.getElementById('habit-name')?.focus(), 200);
+  }
+}
+
+// ── Push Notifications (#9) ────────────────────────────────────────────────
+function initNotifications() {
+  if (!('Notification' in window)) return;
+  scheduleAppNotification();
+}
+function scheduleAppNotification() {
+  const time  = localStorage.getItem('froggy-notif-time');
+  const today = todayKey();
+  if (!time || localStorage.getItem('froggy-notif-last') === today) return;
+  const [h, m] = time.split(':').map(Number);
+  const now = new Date();
+  const target = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0);
+  const ms = target - now;
+  if (ms < 0 || ms > 24 * 60 * 60 * 1000) return; // only same-day upcoming reminders
+  setTimeout(() => {
+    if (Notification.permission === 'granted') {
+      new Notification('Froggy 🐸', { body: "Time to check in on your goals!", icon: '/icon.svg', badge: '/icon.svg' });
+      localStorage.setItem('froggy-notif-last', todayKey());
+    }
+  }, ms);
+}
+async function requestNotifPermission() {
+  if (!('Notification' in window)) return toast('Notifications not supported', 'error');
+  const result = await Notification.requestPermission();
+  if (result === 'granted') {
+    toast('Notifications enabled! 🔔', 'ok');
+    scheduleAppNotification();
+    updateNotifUI();
+  } else {
+    toast('Permission denied', 'error');
+  }
+}
+function saveNotifTime() {
+  const t = document.getElementById('rm-notif-time')?.value;
+  if (t) {
+    localStorage.setItem('froggy-notif-time', t);
+    toast('Reminder set!', 'ok');
+    scheduleAppNotification();
+  }
+}
+function updateNotifUI() {
+  const perm = ('Notification' in window) ? Notification.permission : 'unsupported';
+  const btn = document.getElementById('rm-notif-btn');
+  const timeRow = document.getElementById('rm-notif-time-row');
+  if (btn) btn.textContent = perm === 'granted' ? '🔔 Notifications On' : '🔔 Enable Notifications';
+  if (timeRow) timeRow.style.display = perm === 'granted' ? 'flex' : 'none';
+  const saved = localStorage.getItem('froggy-notif-time') || '09:00';
+  const timeEl = document.getElementById('rm-notif-time');
+  if (timeEl) timeEl.value = saved;
 }
 
 // ── Swipe-to-delete ────────────────────────────────────────────────────────

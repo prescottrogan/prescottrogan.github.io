@@ -232,7 +232,7 @@
   /* ── Forms ─────────────────────────────────────── */
   .form-row { display: flex; gap: 8px; margin-bottom: 10px; }
   .form-row input, .form-row select,
-  input[type="text"], input[type="number"], input[type="date"], textarea, select {
+  input[type="text"], input[type="number"], input[type="date"], input[type="time"], textarea, select {
     background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
     color: var(--text); padding: 10px 12px; font-size: .95rem; outline: none;
     transition: border-color .15s; font-family: inherit; width: 100%;
@@ -241,8 +241,9 @@
   .form-row input { flex: 1; min-width: 0; }
   .form-row input.narrow { flex: 0 0 76px; }
   textarea { resize: vertical; min-height: 80px; }
-  input[type="text"], input[type="number"], input[type="date"] { margin-bottom: 8px; }
-  input[type="date"]::-webkit-calendar-picker-indicator { opacity: .5; cursor: pointer; filter: var(--cal-icon-filter, none); }
+  input[type="text"], input[type="number"], input[type="date"], input[type="time"] { margin-bottom: 8px; }
+  input[type="date"]::-webkit-calendar-picker-indicator,
+  input[type="time"]::-webkit-calendar-picker-indicator { opacity: .5; cursor: pointer; filter: var(--cal-icon-filter, none); }
   [data-theme="dark"] { --cal-icon-filter: invert(1); }
 
   /* ── Buttons ───────────────────────────────────── */
@@ -977,11 +978,13 @@
         <input type="text" id="habit-name" placeholder="Name..." onkeydown="if(event.key==='Enter')addItem()">
         <button id="habit-add-btn" class="btn btn-green" onclick="addItem()"><span id="habit-plus"></span>Add</button>
       </div>
-      <div class="task-meta-row" id="task-side-fields" style="display:none">
-        <input type="date" id="task-due" class="task-time-input" style="width:140px">
-        <input type="time" id="task-time" class="task-time-input">
+      <div id="task-side-fields" style="display:none">
+        <div class="task-meta-row" style="margin-top:8px;margin-bottom:0">
+          <input type="date" id="task-due" style="flex:1;min-width:0;margin-bottom:0">
+          <input type="time" id="task-time" style="width:130px;flex:none;margin-bottom:0">
+        </div>
+        <input type="text" id="task-notes-input" placeholder="Notes (optional)" style="margin-top:8px">
       </div>
-      <input type="text" id="task-notes-input" placeholder="Notes (optional)" style="margin-top:8px">
     </div>
     <div class="list-filter-wrap" id="task-filter-wrap" style="display:none">
       <input class="list-filter" id="task-filter" placeholder="Filter tasks…" oninput="renderDaily()" aria-label="Filter tasks">
@@ -2513,7 +2516,7 @@ function setAddType(t) {
   document.getElementById('type-habit-btn')?.classList.toggle('active', t === 'habit');
   document.getElementById('type-task-btn')?.classList.toggle('active', t === 'task');
   const sideFields = document.getElementById('task-side-fields');
-  if (sideFields) sideFields.style.display = t === 'task' ? 'flex' : 'none';
+  if (sideFields) sideFields.style.display = t === 'task' ? 'block' : 'none';
 }
 
 async function addItem() {
@@ -2645,9 +2648,9 @@ async function renderDaily() {
     const parsed = item.recurring ? { name: item.name, due: null, time: null, notes: null } : parseTaskName(item.name);
     if (editing.habit === item.id) {
       const sideFields = item.recurring ? '' : `
-        <div class="task-meta-row" style="margin-bottom:8px">
-          <input type="date" id="eh-due-${item.id}" value="${parsed.due||''}" style="width:140px">
-          <input type="time" id="eh-time-${item.id}" value="${parsed.time||''}" class="task-time-input">
+        <div class="task-meta-row" style="margin-bottom:0">
+          <input type="date" id="eh-due-${item.id}" value="${parsed.due||''}" style="flex:1;min-width:0;margin-bottom:0">
+          <input type="time" id="eh-time-${item.id}" value="${parsed.time||''}" style="width:130px;flex:none;margin-bottom:0">
         </div>
         <input type="text" id="eh-notes-${item.id}" placeholder="Notes (optional)" value="${esc(parsed.notes||'')}" style="margin-bottom:8px">`;
       return `<div class="entry-editing">
@@ -2670,9 +2673,12 @@ async function renderDaily() {
         : `<span class="habit-badge badge-side">Side</span>`;
     let metaHtml = '';
     if (parsed.due) {
-      const isOverdue = !isDone && parsed.due < todayKey();
+      const isOverdue = !isDone && parsed.due < dateKey;
+      const isFuture  = parsed.due > dateKey;
       const timeStr = parsed.time ? ` at ${formatTime12(parsed.time)}` : '';
-      metaHtml += `<div class="task-due${isOverdue?' overdue':''}">due ${formatDue(parsed.due)}${timeStr}</div>`;
+      const dueLabel = isFuture ? `<div class="task-due" style="color:var(--accent2)">scheduled ${formatDue(parsed.due)}${timeStr}</div>`
+                                : `<div class="task-due${isOverdue?' overdue':''}">due ${formatDue(parsed.due)}${timeStr}</div>`;
+      metaHtml += dueLabel;
     }
     if (parsed.notes) metaHtml += `<div class="task-inline-note">${esc(parsed.notes)}</div>`;
     return `<div class="habit-row ${isDone?'done-row':''}" data-id="${item.id}">
@@ -2689,26 +2695,48 @@ async function renderDaily() {
 
   let html = '';
 
-  // Incomplete habits
   const incompleteHabits = habits.filter(h => !doneHabitIds.has(h.id));
   const completedHabits  = habits.filter(h =>  doneHabitIds.has(h.id));
-  const incompleteTasks  = tasks.filter(t => !t.completed);
-  const completedTasks   = tasks.filter(t =>  t.completed);
+
+  // Split side tasks: due today/overdue/no-date vs scheduled future
+  const incompleteTasks = tasks.filter(t => {
+    if (t.completed) return false;
+    const p = parseTaskName(t.name);
+    return !p.due || p.due <= dateKey;
+  });
+  const futureTasks = tasks.filter(t => {
+    if (t.completed) return false;
+    const p = parseTaskName(t.name);
+    return p.due && p.due > dateKey;
+  }).sort((a, b) => {
+    const da = parseTaskName(a.name).due;
+    const db2 = parseTaskName(b.name).due;
+    return da < db2 ? -1 : da > db2 ? 1 : 0;
+  });
+  const completedTasks = tasks.filter(t => t.completed);
 
   const hasHabits = habits.length > 0;
-  const hasTasks  = tasks.length  > 0;
+  const hasTasks  = incompleteTasks.length + completedTasks.length > 0;
 
-  // Open card
+  // Open card — due/overdue/no-date tasks + daily habits
   if (incompleteHabits.length || incompleteTasks.length) {
     html += '<div class="card">';
     if (hasHabits && hasTasks && incompleteHabits.length) {
       html += `<div class="list-divider">Daily</div>`;
     }
     incompleteHabits.forEach(h => { html += renderRow(h, false); });
-    if (hasHabits && hasTasks && incompleteTasks.length) {
+    if (hasHabits && incompleteTasks.length) {
       html += `<div class="list-divider" style="margin-top:8px">Side</div>`;
     }
     incompleteTasks.forEach(t => { html += renderRow(t, false); });
+    html += '</div>';
+  }
+
+  // Upcoming card — future scheduled tasks (not yet due)
+  if (futureTasks.length) {
+    html += '<div class="card" style="opacity:.7">';
+    html += `<div class="list-divider" style="margin-bottom:4px">Upcoming</div>`;
+    futureTasks.forEach(t => { html += renderRow(t, false); });
     html += '</div>';
   }
 
@@ -2724,8 +2752,9 @@ async function renderDaily() {
 
   document.getElementById('daily-list').innerHTML = html;
 
-  // #4: Frog jump when ALL daily tasks are complete (only fires once per "all done" transition)
-  const allDoneNow = filteredAll.length > 0 && incompleteHabits.length === 0 && incompleteTasks.length === 0;
+  // Frog jump when all current (non-future) items are complete
+  const currentCount = incompleteHabits.length + incompleteTasks.length + completedHabits.length + completedTasks.length;
+  const allDoneNow = currentCount > 0 && incompleteHabits.length === 0 && incompleteTasks.length === 0;
   if (allDoneNow && !_jumpFired) { _jumpFired = true; mascotJump(); }
   if (!allDoneNow) _jumpFired = false;
 }

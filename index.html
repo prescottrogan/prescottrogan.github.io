@@ -1011,7 +1011,7 @@ function renderDash(){
   document.getElementById('wgreet').textContent=(hr<12?'Good morning':hr<17?'Good afternoon':'Good evening')+', '+u.name.split(' ')[0]+'!';
   document.getElementById('wsub').textContent=om?`${over.length} apiar${over.length!==1?'ies':'y'} overdue for inspection  ·  ${todT.length} tasks due today`:`${over.length} of your apiaries need inspection  ·  ${todT.length} tasks due today`;
   const crit=aps.filter(a=>daysSince(a.id)>17);
-  document.getElementById('dalerts').innerHTML=crit.length?`<div class="alert alert-r"><strong>${crit.length} apiar${crit.length!==1?'ies':'y'} critically overdue (17+ days):</strong> ${crit.map(a=>esc(a.name)).join(', ')}</div>`:over.length?`<div class="alert alert-o"><strong>${over.length} apiar${over.length!==1?'ies':'y'} overdue</strong> for their 14-day inspection cycle.</div>`:'';
+  document.getElementById('dalerts').innerHTML=crit.length?`<div class="alert alert-r"><strong>${crit.length} apiar${crit.length!==1?'ies':'y'} critically overdue (17+ days):</strong> ${crit.map(a=>esc(a.name)).join(', ')}</div>`:over.length?`<div class="alert alert-o"><strong>${over.length} apiar${over.length!==1?'ies':'y'} overdue</strong> for inspection.</div>`:'';
   const tot=aps.reduce((s,a)=>s+a.hives,0);
   document.getElementById('dstats').innerHTML=om?`
     <div class="scard sc-gold"><div class="snum" style="color:var(--gold)">${tot.toLocaleString()}</div><div class="slbl">Total Hives</div><div class="ssub">${aps.length} apiaries</div></div>
@@ -1258,7 +1258,8 @@ async function submitInsp(){
   if(btn){btn.disabled=true;btn.textContent='Saving…';}
   const photos=await uploadPhotos('li',`inspections/${aid}/${insId}`);
   clearPendingPhotos('li');
-  S.inspections.push({id:insId,apiaryId:aid,date,inspector:S.user.name,inspectorId:S.user.id,colonies:parseInt(document.getElementById('li-col').value)||0,strength:parseInt(document.getElementById('li-str').value)||null,requeens:req,deadouts:dead,feed:document.getElementById('li-feed').value,treatment:document.getElementById('li-treat').value,notes:document.getElementById('li-notes').value.trim(),photos:photos.length?photos:undefined});
+  const inspAP=getAP(aid);
+  S.inspections.push({id:insId,apiaryId:aid,apiaryName:inspAP?inspAP.name:undefined,date,inspector:S.user.name,inspectorId:S.user.id,colonies:parseInt(document.getElementById('li-col').value)||0,strength:parseInt(document.getElementById('li-str').value)||null,requeens:req,deadouts:dead,feed:document.getElementById('li-feed').value,treatment:document.getElementById('li-treat').value,notes:document.getElementById('li-notes').value.trim(),photos:photos.length?photos:undefined});
   const taskId=document.getElementById('li-taskid').value;
   if(taskId){const t=S.tasks.find(x=>x.id===taskId);if(t)t.status='done';}
   save();closeModal('mlog-insp');
@@ -1307,7 +1308,8 @@ function removeDPExistingPhoto(aid,dpId,idx,btn){
   const dp=(a.dropPoints||[]).find(d=>d.id===dpId);if(!dp||!dp.photos)return;
   dp.photos.splice(idx,1);
   save();
-  btn.closest('.photo-thumb').remove();
+  const eg=document.getElementById('dp-existing-grid');
+  if(eg)eg.innerHTML=dp.photos.map((url,i)=>`<div class="photo-thumb"><img src="${url}" loading="lazy"><button class="photo-del" type="button" onclick="removeDPExistingPhoto('${aid}','${dpId}',${i},this)">✕</button></div>`).join('');
 }
 async function submitDP(){
   const aid=document.getElementById('dp-aid').value;
@@ -1364,7 +1366,9 @@ function deleteApiary(id){
   });
   S.tasks=S.tasks.filter(t=>t.apiaryId!==id);
   S.apiaries=S.apiaries.filter(ap=>ap.id!==id);
-  save();closeModal('mdetail');renderApiaries();
+  save();closeModal('mdetail');
+  const _av=document.querySelector('.view.active')?.id?.replace('view-','');
+  if(_av==='dashboard')renderDash();else renderApiaries();
   if(S.leafMap)updateMap();
 }
 function setTF(f,btn){_tf=f;document.querySelectorAll('[data-tf]').forEach(b=>b.classList.remove('active'));btn.classList.add('active');renderTasks();}
@@ -1579,13 +1583,12 @@ function submitMovement(){
     const m=S.movements.find(x=>x.id===id);
     if(m){
       const oldApplied=m.applied===true;
-      const wasCompleted=m.status==='completed';
       if(oldApplied)applyMoveHives(m.fromApiaryId,m.toApiaryId,m.hiveCount,true);
       Object.assign(m,data);
-      if(newStatus==='completed'&&(oldApplied||!wasCompleted)){
+      if(newStatus==='completed'){
         applyMoveHives(fromId,toId,hives,false);
         m.applied=true;
-      } else if(newStatus==='planned'){
+      } else {
         m.applied=false;
       }
     }
@@ -1703,6 +1706,7 @@ function renderReports(){
 }
 const _pending={li:[],dp:[]};
 function previewPhotos(pfx,files){
+  if(!_pending[pfx])_pending[pfx]=[];
   const grid=document.getElementById(pfx+'-photo-grid');
   Array.from(files).forEach(f=>{
     const idx=_pending[pfx].length;
@@ -1745,7 +1749,7 @@ function exportCSV(){
   const cols=['Date','Apiary','State','City','Inspector','Colonies','Strength','Treatment','Feed','Re-Queens','Dead-outs','Notes'];
   const rows=[...S.inspections].sort((a,b)=>b.date.localeCompare(a.date)).map(i=>{
     const ap=getAP(i.apiaryId)||{};
-    return[i.date,ap.name||'',ap.state||'',ap.city||'',i.inspector||'',i.colonies||'',i.strength||'',i.treatment||'',i.feed||'',i.requeens||'',i.deadouts||'',i.notes||''].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',');
+    return[i.date,ap.name||(i.apiaryName||''),ap.state||'',ap.city||'',i.inspector||'',i.colonies||'',i.strength||'',i.treatment||'',i.feed||'',i.requeens||'',i.deadouts||'',i.notes||''].map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',');
   });
   const csv=[cols.join(','),...rows].join('\n');
   const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download='phf_inspections_'+TODAY+'.csv';document.body.appendChild(a);a.click();document.body.removeChild(a);

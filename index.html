@@ -471,6 +471,7 @@
   .week-day-col { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; overflow: hidden; }
   .task-due { font-size: .72rem; font-weight: 600; color: var(--accent3); margin-top: 2px; }
   .task-due.overdue { color: var(--danger); }
+  .task-due.scheduled { color: var(--accent2); }
   .task-add-row { display: flex; gap: 8px; align-items: center; }
   .task-add-row > input[type="text"] { flex: 1; min-width: 0; height: 42px; margin-bottom: 0; }
   .task-add-row > .btn { height: 42px; flex-shrink: 0; }
@@ -2674,11 +2675,10 @@ async function renderDaily() {
     let metaHtml = '';
     if (parsed.due) {
       const isOverdue = !isDone && parsed.due < dateKey;
-      const isFuture  = parsed.due > dateKey;
       const timeStr = parsed.time ? ` at ${formatTime12(parsed.time)}` : '';
-      const dueLabel = isFuture ? `<div class="task-due" style="color:var(--accent2)">scheduled ${formatDue(parsed.due)}${timeStr}</div>`
-                                : `<div class="task-due${isOverdue?' overdue':''}">due ${formatDue(parsed.due)}${timeStr}</div>`;
-      metaHtml += dueLabel;
+      const cls   = isOverdue ? ' overdue' : parsed.due > dateKey ? ' scheduled' : '';
+      const label = parsed.due > dateKey ? 'scheduled' : 'due';
+      metaHtml += `<div class="task-due${cls}">${label} ${formatDue(parsed.due)}${timeStr}</div>`;
     }
     if (parsed.notes) metaHtml += `<div class="task-inline-note">${esc(parsed.notes)}</div>`;
     return `<div class="habit-row ${isDone?'done-row':''}" data-id="${item.id}">
@@ -2704,15 +2704,12 @@ async function renderDaily() {
     const p = parseTaskName(t.name);
     return !p.due || p.due <= dateKey;
   });
-  const futureTasks = tasks.filter(t => {
-    if (t.completed) return false;
-    const p = parseTaskName(t.name);
-    return p.due && p.due > dateKey;
-  }).sort((a, b) => {
-    const da = parseTaskName(a.name).due;
-    const db2 = parseTaskName(b.name).due;
-    return da < db2 ? -1 : da > db2 ? 1 : 0;
-  });
+  const futureTasks = tasks
+    .filter(t => !t.completed)
+    .map(t => ({ t, due: parseTaskName(t.name).due }))
+    .filter(({ due }) => due && due > dateKey)
+    .sort((a, b) => a.due < b.due ? -1 : a.due > b.due ? 1 : 0)
+    .map(({ t }) => t);
   const completedTasks = tasks.filter(t => t.completed);
 
   const hasHabits = habits.length > 0;

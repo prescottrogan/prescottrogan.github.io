@@ -557,7 +557,7 @@
 
   /* ── Tracker tab ── */
   .tracker-amount-wrap { display:flex; gap:8px; align-items:center; margin-bottom:10px; }
-  .tracker-unit-input  { width:90px; }
+  .tracker-amount-wrap input { flex:1; min-width:0; margin-bottom:0; }
 
   .mascot-card  { text-align:center; padding:28px 16px 20px; }
   .mascot-card.card:hover, .stat-big.card:hover { transform:none; box-shadow:0 1px 4px rgba(0,0,0,.05); border-color:var(--border); }
@@ -947,8 +947,8 @@
       <input type="text" id="act-name-input" placeholder="Metric (e.g. Water, Miles, Creatine)…" list="act-name-list" autocomplete="off" style="margin-bottom:10px" oninput="updateActDatalist()" onkeydown="if(event.key==='Enter')document.getElementById('act-duration').focus()">
       <datalist id="act-name-list"></datalist>
       <div class="tracker-amount-wrap">
-        <input type="number" id="act-duration" placeholder="Amount" inputmode="decimal" onkeydown="if(event.key==='Enter')document.getElementById('act-unit').focus()" aria-label="Amount" style="width:50%;flex:none">
-        <input type="text" id="act-unit" class="tracker-unit-input" placeholder="Unit (oz, g, mi…)" autocomplete="off" onkeydown="if(event.key==='Enter')addActivity()" style="width:50%;flex:none">
+        <input type="number" id="act-duration" placeholder="Amount" inputmode="decimal" onkeydown="if(event.key==='Enter')document.getElementById('act-unit').focus()" aria-label="Amount">
+        <input type="text" id="act-unit" placeholder="Unit (oz, g, mi…)" autocomplete="off" onkeydown="if(event.key==='Enter')addActivity()">
       </div>
       <button id="activity-add-btn" class="btn btn-purple btn-full" onclick="addActivity()"><span id="activity-plus"></span>Log Metric</button>
     </div>
@@ -2182,8 +2182,8 @@ async function renderActivity() {
       return `<div class="card" style="margin-bottom:8px">
         <input type="text" id="ea-name-${e.id}" value="${esc(e.name)}" placeholder="Metric name" style="margin-bottom:8px">
         <div class="tracker-amount-wrap">
-          <input type="number" id="ea-dur-${e.id}" value="${esc(e.duration||'')}" inputmode="decimal" placeholder="Amount" style="flex:1">
-          <input type="text" id="ea-notes-${e.id}" value="${esc(e.notes||'')}" placeholder="Unit" class="tracker-unit-input">
+          <input type="number" id="ea-dur-${e.id}" value="${esc(e.duration||'')}" inputmode="decimal" placeholder="Amount">
+          <input type="text" id="ea-notes-${e.id}" value="${esc(e.notes||'')}" placeholder="Unit">
         </div>
         <div class="edit-actions">
           <button class="btn btn-purple" onclick="saveEditActivity('${e.id}')">Save</button>

@@ -13,3 +13,3086 @@
 <meta name="apple-mobile-web-app-title" content="Froggy">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <script>(function(){document.documentElement.setAttribute('data-theme',localStorage.getItem('froggy-theme')||'light')})();</script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    color-scheme: light;
+    --bg: #f7f7f8;
+    --surface: #ffffff;
+    --surface-2: #f0f0f2;
+    --border: #e5e5e7;
+    --border-light: #d1d1d6;
+    --accent: #4ade80;
+    --accent2: #60a5fa;
+    --accent3: #f59e0b;
+    --accent4: #a78bfa;
+    --accent5: #22d3ee;
+    --text: #171717;
+    --text-2: #404040;
+    --muted: #52596b;
+    --danger: #ef4444;
+    --header-bg: rgba(247,247,248,.92);
+    --nav-bg: rgba(255,255,255,.95);
+    --r: 14px;
+  }
+  [data-theme="dark"] {
+    color-scheme: dark;
+    --bg: #0a0a0a;
+    --surface: #161616;
+    --surface-2: #1f1f1f;
+    --border: #262626;
+    --border-light: #333;
+    --text: #f5f5f5;
+    --text-2: #d4d4d4;
+    --muted: #9ca3af;
+    --header-bg: rgba(10,10,10,.88);
+    --nav-bg: rgba(22,22,22,.92);
+  }
+
+  html, body { height: 100%; }
+  html { overflow-y: scroll; } /* always show scrollbar track — prevents layout shift on tab switch */
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 0;
+    min-height: 100vh;
+  }
+  svg { display: block; }
+  button { font-family: inherit; }
+
+  #loading-bar {
+    position: fixed; top: 0; left: 0;
+    height: 2px; width: 0%;
+    background: var(--accent);
+    transition: width .25s ease, opacity .3s ease;
+    z-index: 9999; opacity: 0;
+  }
+  #toast {
+    position: fixed; top: 16px; left: 50%;
+    transform: translateX(-50%) translateY(-80px);
+    background: var(--surface-2); border: 1px solid var(--border-light);
+    color: var(--text); padding: 10px 16px; border-radius: 8px;
+    font-size: .85rem; z-index: 9000; transition: transform .25s ease;
+    max-width: 90%; box-shadow: 0 4px 16px rgba(0,0,0,.4);
+  }
+  #toast.show { transform: translateX(-50%) translateY(0); }
+  #toast.error { border-color: var(--danger); color: var(--danger); }
+  #toast.ok    { border-color: var(--accent); }
+
+  /* ── Auth ──────────────────────────────────────── */
+  #auth-screen {
+    min-height: 100vh; display: flex;
+    align-items: center; justify-content: center;
+    padding: calc(24px + env(safe-area-inset-top)) 24px calc(24px + env(safe-area-inset-bottom));
+  }
+  .auth-box {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 36px 28px; width: 100%; max-width: 380px;
+  }
+  .auth-logo-wrap { display: flex; flex-direction: column; align-items: center; gap: 10px; margin-bottom: 28px; }
+  .auth-brand { font-size: 1.7rem; font-weight: 800; letter-spacing: -.05em; color: var(--text); }
+  .auth-sub  { color: var(--muted); font-size: .85rem; margin-top: 2px; }
+  .auth-input {
+    display: block; width: 100%; background: var(--bg);
+    border: 1px solid var(--border); border-radius: 8px;
+    color: var(--text); padding: 12px 14px; font-size: 1rem;
+    margin-bottom: 10px; outline: none; transition: border-color .15s; font-family: inherit;
+  }
+  .auth-input:focus { border-color: var(--accent); }
+  .auth-btns { display: flex; gap: 8px; margin-top: 6px; }
+  #auth-msg  { font-size: .85rem; margin-top: 12px; line-height: 1.4; min-height: 18px; }
+
+  /* ── Header ────────────────────────────────────── */
+  header {
+    position: sticky; top: 0;
+    background: var(--header-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    z-index: 50;
+    padding-top: env(safe-area-inset-top);
+  }
+  .header-main {
+    padding: 12px 20px; display: flex; align-items: center; justify-content: space-between;
+  }
+  .logo-mark {
+    display: flex; align-items: center; gap: 8px; cursor: pointer;
+    padding: 5px 10px; margin: -5px -10px; border-radius: 12px;
+    transition: background .18s ease, transform .18s ease;
+    user-select: none;
+  }
+  .logo-mark:hover { background: rgba(74,222,128,.13); transform: scale(1.05); }
+  .logo-mark:active { transform: scale(.96); }
+  .logo-mark span { font-size: 1.05rem; font-weight: 800; letter-spacing: -.04em; }
+  .header-right { display: flex; align-items: center; gap: 10px; }
+  .signout-btn {
+    background: transparent; border: 1px solid var(--border); border-radius: 6px;
+    color: var(--muted); padding: 5px 10px; font-size: .75rem; cursor: pointer;
+    transition: border-color .15s, color .15s;
+  }
+  .signout-btn:hover { border-color: var(--danger); color: var(--danger); }
+  .theme-btn {
+    background: transparent; border: 1px solid var(--border); border-radius: 6px;
+    color: var(--muted); padding: 5px; cursor: pointer; line-height: 0;
+    transition: border-color .15s, color .15s; display: flex; align-items: center;
+  }
+  .theme-btn:hover { border-color: var(--border-light); color: var(--text); }
+
+  /* ── Nav ───────────────────────────────────────── */
+  nav {
+    position: fixed; bottom: 0; left: 0; right: 0; max-width: 640px; margin: 0 auto;
+    display: grid; grid-template-columns: repeat(4, 1fr);
+    background: var(--nav-bg); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border); z-index: 100;
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  nav button {
+    background: none; border: none; color: var(--muted);
+    padding: 10px 4px 8px; cursor: pointer; font-size: .66rem; font-weight: 600;
+    display: flex; flex-direction: column; align-items: center; gap: 4px;
+    transition: color .15s; position: relative;
+  }
+  nav button:hover:not(.active) { color: var(--text-2); }
+  nav button svg { width: 22px; height: 22px; stroke-width: 2; transition: transform .15s ease; }
+  nav button:hover svg { transform: scale(1.15) translateY(-1px); }
+  nav button.active::after {
+    content: ''; position: absolute; bottom: 6px; width: 16px; height: 3px;
+    border-radius: 2px; background: currentColor; opacity: .6;
+  }
+  nav button.active[data-tab="food"]     { color: var(--accent); }
+  nav button.active[data-tab="activity"] { color: var(--accent4); }
+  nav button.active[data-tab="info"]     { color: var(--accent3); }
+  nav button.active[data-tab="daily"]    { color: var(--accent); }
+
+  /* ── Offline banner ─────────────────────────────── */
+  #offline-banner { display:none; position:fixed; top:0; left:0; right:0; z-index:1100; background:#dc2626; color:#fff; text-align:center; padding:7px 16px; font-size:.78rem; font-weight:700; letter-spacing:.03em; }
+  #offline-banner.show { display:block; }
+
+  /* ── Toast undo button ──────────────────────────── */
+  .toast-undo-btn { background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.35); color:inherit; border-radius:6px; padding:3px 10px; margin-left:10px; cursor:pointer; font-size:.82rem; font-weight:700; font-family:inherit; vertical-align:middle; }
+  .toast-undo-btn:hover { background:rgba(255,255,255,.28); }
+
+  /* ── List search / filter ───────────────────────── */
+  .list-filter { width:100%; background:var(--bg); border:1px solid var(--border); border-radius:8px; color:var(--text); padding:8px 12px 8px 32px; font-size:.88rem; font-family:inherit; outline:none; margin-bottom:8px; }
+  .list-filter:focus { border-color:var(--accent); box-shadow:0 0 0 3px rgba(74,222,128,.12); }
+  .list-filter-wrap { position:relative; margin-bottom:4px; }
+  .list-filter-wrap::before { content:'🔍'; position:absolute; left:10px; top:50%; transform:translateY(-50%); font-size:.78rem; pointer-events:none; opacity:.5; }
+
+  /* ── Calorie status line ────────────────────────── */
+  #cal-status { font-size:.78rem; text-align:center; margin-top:6px; font-weight:600; min-height:16px; transition:color .25s; }
+
+  /* ── Sections ──────────────────────────────────── */
+  .section { display: none; padding: 16px 20px calc(80px + env(safe-area-inset-bottom)); }
+  .section.active { display: block; animation: fadeIn .22s cubic-bezier(.22,1,.36,1); }
+  @keyframes fadeIn { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:none; } }
+
+  /* ── Cards ─────────────────────────────────────── */
+  .card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r); padding: 16px; margin-bottom: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,.05);
+    transition: box-shadow .2s ease, transform .2s ease, border-color .2s ease;
+  }
+  [data-theme="dark"] .card { box-shadow: none; }
+  .card:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(0,0,0,.09); border-color: var(--border-light); }
+  [data-theme="dark"] .card:hover { box-shadow: 0 6px 20px rgba(0,0,0,.45); }
+
+  /* ── Stat ──────────────────────────────────────── */
+  .stat-big { text-align: center; padding: 26px 16px; }
+  .stat-big .number { font-size: 3.8rem; font-weight: 800; line-height: 1; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+  .stat-big .label  { color: var(--muted); font-size: .82rem; margin-top: 8px; font-weight: 500; }
+  .goal-bar      { height: 8px; background: var(--border); border-radius: 4px; margin-top: 16px; overflow: hidden; }
+  .goal-bar-fill { height: 100%; border-radius: 4px; transition: width .4s cubic-bezier(.4,0,.2,1), background .25s ease; }
+  .goal-text     { font-size: .76rem; color: var(--muted); margin-top: 10px; }
+
+  /* ── Forms ─────────────────────────────────────── */
+  .form-row { display: flex; gap: 8px; margin-bottom: 10px; }
+  .form-row input, .form-row select,
+  input[type="text"], input[type="number"], input[type="date"], input[type="time"], textarea, select {
+    background: var(--bg); border: 1px solid var(--border); border-radius: 8px;
+    color: var(--text); padding: 10px 12px; font-size: .95rem; outline: none;
+    transition: border-color .15s; font-family: inherit; width: 100%;
+  }
+  input:focus, textarea:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(74,222,128,.13); }
+  .form-row input { flex: 1; min-width: 0; }
+  .form-row input.narrow { flex: 0 0 76px; }
+  textarea { resize: vertical; min-height: 80px; }
+  input[type="text"], input[type="number"], input[type="date"], input[type="time"] { margin-bottom: 8px; }
+  input[type="date"]::-webkit-calendar-picker-indicator,
+  input[type="time"]::-webkit-calendar-picker-indicator { opacity: .5; cursor: pointer; filter: var(--cal-icon-filter, none); }
+  [data-theme="dark"] { --cal-icon-filter: invert(1); }
+
+  /* ── Buttons ───────────────────────────────────── */
+  .btn {
+    border: none; border-radius: 8px; padding: 10px 16px; font-size: .9rem; font-weight: 600;
+    cursor: pointer; transition: opacity .15s, transform .12s, filter .15s, box-shadow .15s; white-space: nowrap;
+    display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  }
+  .btn:active:not(:disabled) { transform: scale(.96) !important; box-shadow: none !important; }
+  .btn:disabled { opacity: .5; cursor: not-allowed; }
+  .btn svg { width: 16px; height: 16px; }
+  .btn-green  { background: var(--accent);  color: #052e16; }
+  .btn-blue   { background: var(--accent2); color: #061e3a; }
+  .btn-yellow { background: var(--accent3); color: #2c1903; }
+  .btn-purple { background: var(--accent4); color: #1d0e3e; }
+  .btn-green:not(:disabled):hover  { filter: brightness(1.09); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(74,222,128,.35); }
+  .btn-blue:not(:disabled):hover   { filter: brightness(1.09); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(96,165,250,.3); }
+  .btn-yellow:not(:disabled):hover { filter: brightness(1.09); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(245,158,11,.3); }
+  .btn-purple:not(:disabled):hover { filter: brightness(1.09); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(167,139,250,.3); }
+  .btn-ghost  { background: transparent; border: 1px solid var(--border); color: var(--text-2); padding: 8px 12px; font-size: .85rem; font-weight: 500; }
+  .btn-ghost:hover { border-color: var(--border-light); background: var(--surface-2); }
+  .btn-full { width: 100%; margin-top: 4px; }
+
+  .icon-btn {
+    background: transparent; border: none; color: var(--muted);
+    width: 30px; height: 30px; border-radius: 6px; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center;
+    transition: background .12s, color .12s, transform .12s;
+  }
+  .icon-btn svg { width: 16px; height: 16px; stroke-width: 2; }
+  .icon-btn:hover { background: var(--border); color: var(--text); transform: scale(1.12); }
+  .icon-btn.danger:hover { color: var(--danger); background: rgba(239,68,68,.1); transform: scale(1.12); }
+
+  /* ── Section title ─────────────────────────────── */
+  .section-title {
+    font-size: .72rem; text-transform: uppercase; letter-spacing: .08em;
+    color: var(--muted); margin: 16px 0 8px; font-weight: 600;
+  }
+  .section-title:first-child { margin-top: 0; }
+
+  /* ── Entries ───────────────────────────────────── */
+  .entry {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 12px 6px; border-bottom: 1px solid var(--border); gap: 8px;
+    transition: background .15s ease; border-radius: 8px; margin: 0 -6px;
+  }
+  .entry:hover { background: var(--surface-2); }
+  .entry:last-child  { border-bottom: none; }
+  .entry:first-child { padding-top: 4px; }
+  .entry-content { flex: 1; min-width: 0; }
+  .entry-name { font-size: .95rem; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .entry-cal  { font-weight: 700; font-size: .95rem; color: var(--accent); font-variant-numeric: tabular-nums; }
+  .entry-meta { font-size: .76rem; color: var(--muted); margin-top: 3px; }
+  .entry-right { display: flex; align-items: center; gap: 4px; flex-shrink: 0; }
+  .entry-editing {
+    background: var(--surface-2); margin: 4px -8px; padding: 12px;
+    border-radius: 8px; border-bottom: none;
+  }
+  .edit-actions { display: flex; gap: 8px; margin-top: 8px; }
+  .edit-actions .btn { flex: 1; padding: 8px 12px; font-size: .85rem; }
+
+  /* ── Macros ────────────────────────────────────── */
+  .macros-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(72px, 1fr)); gap: 8px; }
+  .macro-box  { background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 12px 8px; text-align: center; transition: transform .15s ease, box-shadow .15s ease; }
+  .macro-box:hover { transform: scale(1.05); box-shadow: 0 4px 14px rgba(0,0,0,.09); }
+  .macro-box .val { font-size: 1.1rem; font-weight: 800; font-variant-numeric: tabular-nums; }
+  .macro-box .lbl { font-size: .72rem; color: var(--muted); margin-top: 3px; font-weight: 500; }
+
+  /* ── Calendar month nav ────────────────────────── */
+  .nav-arrow {
+    background: var(--surface-2); border: none; border-radius: 10px;
+    color: var(--text); cursor: pointer; flex-shrink: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 42px; height: 42px; transition: background .12s, transform .08s;
+  }
+  .nav-arrow:hover { background: var(--border); }
+  .nav-arrow:active { transform: scale(.88); }
+  .nav-arrow svg { width: 18px; height: 18px; }
+  .today-btn {
+    font-size: .7rem; color: var(--accent); font-weight: 700;
+    background: rgba(74,222,128,.15); border: none;
+    cursor: pointer; padding: 3px 10px; border-radius: 20px;
+    transition: background .12s;
+  }
+  .today-btn:hover { background: rgba(74,222,128,.25); }
+  .goal-row { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+  .goal-row label { font-size: .8rem; color: var(--muted); flex: 1; text-align: left; }
+  .goal-row input { width: 90px; margin: 0; }
+
+  /* ── Info / Folders ────────────────────────────── */
+  .folder-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px; }
+  .folder-card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: var(--r);
+    padding: 14px 16px; display: flex; align-items: center; gap: 12px; cursor: pointer;
+    transition: border-color .15s, transform .15s ease, box-shadow .15s;
+  }
+  .folder-card:hover { border-color: var(--border-light); transform: translateX(4px); box-shadow: 0 4px 14px rgba(0,0,0,.07); }
+  .folder-icon {
+    width: 36px; height: 36px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .folder-icon svg { width: 18px; height: 18px; }
+  .folder-info { flex: 1; min-width: 0; }
+  .folder-name  { font-size: .95rem; font-weight: 600; }
+  .folder-count { font-size: .76rem; color: var(--muted); margin-top: 2px; }
+  .folder-actions { display: flex; gap: 4px; }
+  .folder-chevron { color: var(--muted); flex-shrink: 0; }
+
+  .folder-header {
+    display: flex; align-items: center; gap: 10px; margin-bottom: 16px;
+  }
+  .folder-back {
+    background: transparent; border: 1px solid var(--border); border-radius: 8px;
+    color: var(--text-2); padding: 8px; cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .folder-back svg { width: 16px; height: 16px; }
+  .folder-title { font-size: 1.1rem; font-weight: 700; flex: 1; }
+
+  .info-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--r); padding: 14px 16px; margin-bottom: 10px;
+    transition: transform .15s ease, box-shadow .15s, border-color .15s;
+  }
+  .info-card:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(0,0,0,.07); border-color: var(--border-light); }
+  .info-card-title {
+    font-weight: 600; font-size: 1rem; margin-bottom: 6px;
+    display: flex; justify-content: space-between; align-items: flex-start; gap: 8px;
+  }
+  .info-card-title span { flex: 1; }
+  .info-card-actions { display: flex; gap: 4px; flex-shrink: 0; }
+  .info-card-body { font-size: .88rem; color: var(--text-2); line-height: 1.5; white-space: pre-wrap; word-break: break-word; }
+  .info-card-meta { font-size: .72rem; color: var(--muted); margin-top: 8px; }
+
+  .add-folder-row { display: flex; gap: 8px; margin-bottom: 16px; }
+
+  /* ── Tasks ─────────────────────────────────────── */
+  .type-toggle {
+    display: flex; background: var(--bg); border: 1px solid var(--border);
+    border-radius: 8px; padding: 3px; gap: 3px; margin-bottom: 10px;
+  }
+  .type-btn {
+    flex: 1; background: transparent; border: none; border-radius: 6px;
+    color: var(--muted); padding: 7px 12px; font-size: .85rem; font-weight: 600;
+    cursor: pointer; transition: background .15s, color .15s;
+  }
+  .type-btn.active { background: var(--surface-2); color: var(--text); }
+
+  .habit-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 6px; border-bottom: 1px solid var(--border);
+    transition: background .15s ease; border-radius: 8px; margin: 0 -6px;
+  }
+  .habit-row:hover { background: var(--surface-2); }
+  .habit-row:last-child  { border-bottom: none; }
+  .habit-row:first-child { padding-top: 4px; }
+  .habit-row.done-row .habit-name { text-decoration: line-through; color: var(--muted); }
+
+  .habit-check {
+    width: 26px; height: 26px; border: 2px solid var(--border-light); background: transparent;
+    cursor: pointer; display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: all .18s cubic-bezier(.34,1.56,.64,1);
+  }
+  .habit-check:hover { transform: scale(1.15); border-color: var(--accent); }
+  .habit-check.round  { border-radius: 50%; }
+  .habit-check.square { border-radius: 5px; }
+  .habit-check svg { width: 14px; height: 14px; stroke-width: 3; opacity: 0; transition: opacity .15s; }
+  .habit-check.done { color: #fff; }
+  .habit-check.round.done  { background: var(--accent); border-color: var(--accent); }
+  .habit-check.square.done { background: var(--accent3); border-color: var(--accent3); }
+  .habit-check.done svg { opacity: 1; }
+
+  .habit-name { flex: 1; font-size: .95rem; font-weight: 500; }
+  .habit-badge {
+    font-size: .65rem; font-weight: 600; letter-spacing: .04em; text-transform: uppercase;
+    padding: 2px 6px; border-radius: 4px; flex-shrink: 0;
+  }
+  .badge-daily { background: rgba(74,222,128,.12); color: var(--accent); }
+  .badge-side  { background: rgba(245,158,11,.12);  color: var(--accent3); }
+
+  .list-divider {
+    font-size: .68rem; text-transform: uppercase; letter-spacing: .08em;
+    color: var(--muted); font-weight: 600; padding: 8px 0 4px;
+    border-bottom: 1px solid var(--border); margin-bottom: 0;
+  }
+  .list-divider:not(:first-child) { margin-top: 4px; }
+
+  /* ── Misc ──────────────────────────────────────── */
+  .chip { display: inline-flex; align-items: center; background: var(--border); border-radius: 4px; padding: 2px 8px; font-size: .72rem; color: var(--text-2); }
+  .empty { text-align: center; color: var(--muted); padding: 32px 0; font-size: .9rem; }
+  .text-link { color: var(--accent2); background: none; border: none; cursor: pointer; font-size: .8rem; padding: 0; margin-left: 6px; }
+
+  /* ── Food search dropdown ───────────────────────── */
+  #food-dropdown { background: var(--surface); border: 1px solid var(--border-light); border-radius: 8px; overflow: hidden; margin: -4px 0 8px; box-shadow: 0 4px 16px rgba(0,0,0,.07); }
+  [data-theme="dark"] #food-dropdown { box-shadow: 0 4px 16px rgba(0,0,0,.35); }
+  .fd-item { padding: 10px 14px; font-size: .88rem; cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 8px; border-bottom: 1px solid var(--border); transition: background .1s; }
+  .fd-item:last-child { border-bottom: none; }
+  .fd-item:not(.fd-msg) { transition: background .1s, padding-left .12s; }
+  .fd-item:not(.fd-msg):hover { background: var(--surface-2); padding-left: 18px; }
+  .fd-name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-weight: 500; }
+  .fd-meta { font-size: .75rem; color: var(--muted); flex-shrink: 0; font-variant-numeric: tabular-nums; }
+  .fd-msg { color: var(--muted); cursor: default; font-size: .84rem; }
+  .fd-portion { display: flex; align-items: center; gap: 8px; margin: -4px 0 8px; padding: 8px 12px; background: var(--surface-2); border-radius: 8px; font-size: .85rem; color: var(--muted); }
+  .fd-portion input { width: 72px; padding: 6px 10px; }
+  .food-name-row { display:flex; gap:8px; margin-bottom:10px; align-items:flex-start; }
+  .food-name-row input { flex:1; margin-bottom:0; }
+  .food-search-btn { flex-shrink:0; padding:9px 13px; }
+  /* ── Summary ───────────────────────────────────────── */
+  .smry-period { display: flex; gap: 5px; margin-bottom: 16px; }
+  .smry-period-btn { flex: 1; padding: 8px 2px; border: 1px solid var(--border); border-radius: 8px; background: none; color: var(--muted); font-size: .8rem; font-weight: 600; cursor: pointer; transition: all .15s; }
+  .smry-period-btn:hover:not(.active) { border-color: var(--border-light); color: var(--text-2); background: var(--surface-2); }
+  .smry-period-btn.active { border-color: var(--text); background: var(--text); color: var(--bg); }
+  .smry-ttl { font-size: .67rem; font-weight: 700; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); margin-bottom: 10px; }
+  .smry-stat-row { display: flex; align-items: baseline; gap: 8px; margin-bottom: 2px; }
+  .smry-big { font-size: 2.2rem; font-weight: 700; letter-spacing: -.03em; font-variant-numeric: tabular-nums; line-height: 1; }
+  .smry-lbl { font-size: .82rem; color: var(--muted); }
+  .smry-sub { font-size: .78rem; color: var(--muted); margin-top: 4px; line-height: 1.4; }
+  .summary-bar { height: 5px; background: var(--border); border-radius: 3px; margin: 8px 0; overflow: hidden; }
+  .summary-bar-fill { height: 100%; border-radius: 3px; transition: width .4s ease; }
+  .smry-macros { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .smry-mac { flex: 1 1 60px; background: var(--surface-2); border-radius: 8px; padding: 8px 10px; }
+  .smry-mac-val { font-size: 1.1rem; font-weight: 700; line-height: 1; }
+  .smry-mac-lbl { font-size: .72rem; color: var(--muted); margin-top: 3px; }
+  .week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 5px; margin-top: 8px; }
+  .week-day-col { display: flex; flex-direction: column; align-items: center; gap: 4px; min-width: 0; overflow: hidden; }
+  .task-due { font-size: .72rem; font-weight: 600; color: var(--accent3); margin-top: 2px; }
+  .task-due.overdue { color: var(--danger); }
+  .task-due.scheduled { color: var(--accent2); }
+  .task-add-row { display: flex; gap: 8px; align-items: center; }
+  .task-add-row > input[type="text"] { flex: 1; min-width: 0; height: 42px; margin-bottom: 0; }
+  .task-add-row > .btn { height: 42px; flex-shrink: 0; }
+  /* Onboarding */
+  #onboard-screen { position: fixed; inset: 0; z-index: 200; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: flex-start; overflow-y: auto; padding: calc(32px + env(safe-area-inset-top)) 20px calc(60px + env(safe-area-inset-bottom)); }
+  .onboard-box { width: 100%; max-width: 400px; }
+  .onboard-step { display: none; flex-direction: column; align-items: center; gap: 18px; }
+  .onboard-step.active { display: flex; }
+  .onboard-title { font-size: 1.5rem; font-weight: 800; letter-spacing: -.04em; color: var(--text); text-align: center; }
+  .onboard-sub { font-size: .88rem; color: var(--muted); text-align: center; line-height: 1.55; }
+  .onboard-field { width: 100%; }
+  .onboard-field label { display: block; font-size: .78rem; font-weight: 600; color: var(--muted); margin-bottom: 6px; letter-spacing: .02em; text-transform: uppercase; }
+  .onboard-habit-row { display: flex; gap: 8px; width: 100%; align-items: center; }
+  .onboard-habit-row input { flex: 1; margin-bottom: 0; }
+  .onboard-habit-list { width: 100%; display: flex; flex-direction: column; gap: 8px; min-height: 8px; }
+  .onboard-habit-item { display: flex; align-items: center; gap: 10px; background: var(--surface); border: 1px solid var(--border); border-radius: 10px; padding: 10px 14px; }
+  .onboard-habit-item span { flex: 1; font-weight: 500; font-size: .92rem; }
+  /* Reset / Settings modal */
+  #reset-modal { display: none; position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,.75); align-items: center; justify-content: center; padding: 16px; box-sizing: border-box; }
+  #reset-modal.open { display: flex; }
+  .reset-box {
+    background: var(--surface); border: 1px solid var(--border-light);
+    border-radius: 18px; padding: 24px; width: 100%; max-width: 420px;
+    max-height: calc(100dvh - 40px); overflow-y: auto;
+    box-shadow: 0 24px 60px rgba(0,0,0,.35);
+  }
+  [data-theme="dark"] .reset-box { box-shadow: 0 24px 60px rgba(0,0,0,.7); }
+  .reset-box h3 { font-size: 1.15rem; font-weight: 800; margin-bottom: 4px; color: var(--text); }
+  .reset-sub { font-size: .82rem; color: var(--muted); margin-bottom: 16px; line-height: 1.5; }
+  .modal-section { font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 18px 0 10px; }
+  .modal-section:first-of-type { margin-top: 4px; }
+  .macro-check-item { display: flex; align-items: center; gap: 10px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 11px 14px; cursor: pointer; transition: border-color .15s; }
+  .macro-check-item:hover { border-color: var(--accent); }
+  .macro-check-item input[type="checkbox"] { width: 17px; height: 17px; accent-color: var(--accent); flex-shrink: 0; cursor: pointer; margin: 0; }
+  .macro-check-item .mci-label { font-size: .9rem; font-weight: 500; flex: 1; color: var(--text); }
+  .macro-check-item .mci-unit { font-size: .76rem; color: var(--muted); }
+  .core-habit-locked { display: flex; align-items: center; gap: 10px; background: var(--surface-2); border: 1px solid var(--border); border-radius: 10px; padding: 9px 14px; margin-bottom: 6px; }
+  .core-habit-locked span { flex: 1; font-size: .88rem; color: var(--muted); }
+  /* Core badge in daily list */
+  .core-badge { display: inline-flex; align-items: center; gap: 3px; font-size: .67rem; font-weight: 700; color: var(--accent3); background: rgba(251,191,36,.12); border: 1px solid rgba(251,191,36,.3); border-radius: 6px; padding: 2px 7px; flex-shrink: 0; }
+  .week-day-lbl { font-size: .62rem; font-weight: 600; color: var(--muted); }
+  .wk-today { color: var(--accent5) !important; }
+  .week-cal-wrap { width: 100%; height: 42px; background: var(--border); border-radius: 3px; display: flex; align-items: flex-end; overflow: hidden; }
+  .week-cal-bar { width: 100%; border-radius: 2px 2px 0 0; }
+  .week-wk-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .week-legend { display: flex; gap: 12px; font-size: .72rem; color: var(--muted); margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--border); align-items: center; }
+  .week-legend span { display: flex; align-items: center; gap: 4px; }
+  .wk-swatch { display: inline-block; width: 8px; height: 8px; flex-shrink: 0; }
+
+  /* ── Mascot ─────────────────────────────────────── */
+  @keyframes m-idle      { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-5px)} }
+  @keyframes m-bounce    { 0%,100%{transform:translateY(0) scale(1)} 40%{transform:translateY(-9px) scale(1.06)} }
+  @keyframes m-celebrate { 0%,100%{transform:rotate(-12deg) scale(1.1)} 50%{transform:rotate(12deg) scale(1.12)} }
+  @keyframes confetti-fall { to { transform:translateY(110vh) rotate(720deg); opacity:0; } }
+  @keyframes cal-pulse   { 0%,100%{opacity:1} 50%{opacity:.5} }
+  @keyframes m-tap  { 0%{transform:scale(1) rotate(0)} 25%{transform:scale(1.3) rotate(15deg)} 60%{transform:scale(0.88) rotate(-10deg)} 80%{transform:scale(1.08) rotate(4deg)} 100%{transform:scale(1) rotate(0)} }
+  @keyframes m-jump { 0%{transform:translateY(0) scale(1)} 30%{transform:translateY(-22px) scale(1.05,0.95)} 55%{transform:translateY(-30px) scale(0.95,1.05)} 75%{transform:translateY(-8px) scale(1.02,0.98)} 100%{transform:translateY(0) scale(1)} }
+  .mascot-idle      { animation:m-idle 2.8s ease-in-out infinite; display:inline-block; }
+  .mascot-bounce    { animation:m-bounce 1.1s ease-in-out infinite; display:inline-block; }
+  .mascot-celebrate { animation:m-celebrate .44s ease-in-out infinite; display:inline-block; }
+  .mascot-tap       { animation:m-tap .5s cubic-bezier(.36,.07,.19,.97) forwards; display:inline-block; }
+  .mascot-jump-once { animation:m-jump .65s cubic-bezier(.36,.07,.19,.97) forwards; display:inline-block; }
+  #mascot-face      { cursor:pointer; }
+
+  /* ── Task notes ── */
+  .task-meta-row { display:flex; gap:8px; margin-top:8px; }
+  .task-inline-note { font-size:.74rem; color:var(--muted); margin-top:2px; }
+  .task-inline-time { font-size:.74rem; color:var(--accent4); font-weight:600; }
+
+  /* ── Tracker tab ── */
+  .tracker-amount-wrap { display:flex; gap:8px; align-items:center; margin-bottom:10px; }
+  .tracker-amount-wrap input { flex:1 1 0%; width:0; min-width:0; margin-bottom:0; }
+
+  .mascot-card  { text-align:center; padding:28px 16px 20px; }
+  .mascot-card.card:hover, .stat-big.card:hover { transform:none; box-shadow:0 1px 4px rgba(0,0,0,.05); border-color:var(--border); }
+  .mascot-pct   { font-size:3.2rem; font-weight:800; color:var(--accent4); letter-spacing:-.04em; margin-top:8px; font-variant-numeric:tabular-nums; }
+  .mascot-lbl   { font-size:.82rem; color:var(--muted); margin-top:4px; font-weight:500; }
+  .mascot-msg   { font-size:.88rem; color:var(--text-2); margin-top:12px; font-weight:500; min-height:1.3em; }
+  #mascot-hdr   { line-height:0; cursor:pointer; }
+
+  /* ── Calendar view ──────────────────────────────── */
+  .cal-month-nav { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
+  .cal-month-label { font-weight:700; font-size:1rem; }
+  .cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:3px; }
+  .cal-hdr  { font-size:.62rem; font-weight:700; color:var(--muted); text-align:center; padding:0 0 6px; text-transform:uppercase; letter-spacing:.04em; }
+  .cal-cell { display:flex; flex-direction:column; align-items:center; gap:3px; padding:5px 2px; border-radius:8px; min-height:46px; transition:background .12s; }
+  .cal-cell.has-data { cursor:pointer; }
+  .cal-cell.has-data:hover { background:var(--surface-2); }
+  .cal-num  { font-size:.78rem; font-weight:600; color:var(--text-2); width:24px; height:24px; display:flex; align-items:center; justify-content:center; border-radius:50%; }
+  .cal-cell.cal-today .cal-num { background:var(--accent5); color:#fff; font-weight:800; }
+  .cal-cell.cal-other .cal-num { color:var(--border); }
+  .cal-dot  { width:10px; height:10px; border-radius:50%; }
+
+  /* ── Streak badge ───────────────────────────────── */
+  .streak-badge { font-size:.65rem; font-weight:700; color:#f97316; background:rgba(249,115,22,.12); border:1px solid rgba(249,115,22,.25); border-radius:6px; padding:2px 5px; flex-shrink:0; }
+
+  /* ── Greeting ───────────────────────────────────── */
+  .mascot-greeting { font-size:.95rem; font-weight:700; color:var(--text); margin-top:6px; letter-spacing:-.01em; }
+
+  /* ── XP System ──────────────────────────────────── */
+  @keyframes xp-float { 0%{opacity:1;transform:translateY(0) scale(1)} 100%{opacity:0;transform:translateY(-64px) scale(1.18)} }
+  @keyframes levelup-pop { 0%{transform:scale(.7) translateY(30px);opacity:0} 60%{transform:scale(1.06) translateY(-4px);opacity:1} 100%{transform:scale(1) translateY(0);opacity:1} }
+  @keyframes rank-shimmer { 0%,100%{filter:brightness(1)} 50%{filter:brightness(1.35)} }
+  @keyframes xp-bar-grow { from{width:0} }
+
+  .xp-popup {
+    position:fixed; font-size:1.4rem; font-weight:900; color:#4ade80;
+    text-shadow:0 0 20px rgba(74,222,128,.6); pointer-events:none; z-index:9999;
+    animation:xp-float 1.5s ease-out forwards; letter-spacing:-.02em; white-space:nowrap;
+  }
+  #level-badge {
+    display:inline-flex; align-items:center; padding:3px 9px; border-radius:20px;
+    font-size:.72rem; font-weight:800; letter-spacing:.02em; cursor:pointer;
+    transition:filter .2s, transform .15s; border:1px solid currentColor;
+    opacity:.9; flex-shrink:0;
+  }
+  #level-badge:hover { filter:brightness(1.2); transform:scale(1.06); opacity:1; }
+
+  #levelup-modal { display:none; position:fixed; inset:0; z-index:600; background:rgba(0,0,0,.75); align-items:center; justify-content:center; padding:20px; }
+  #levelup-modal.open { display:flex; }
+  .levelup-box {
+    background:var(--surface); border:2px solid var(--accent4); border-radius:24px;
+    padding:36px 28px; text-align:center; max-width:340px; width:100%;
+    animation:levelup-pop .5s cubic-bezier(.34,1.56,.64,1) forwards;
+    box-shadow:0 0 60px rgba(167,139,250,.4);
+  }
+  .levelup-icon  { font-size:3.5rem; margin-bottom:8px; display:block; }
+  .levelup-title { font-size:.75rem; font-weight:700; text-transform:uppercase; letter-spacing:.1em; color:var(--muted); margin-bottom:4px; }
+  .levelup-level { font-size:3rem; font-weight:900; letter-spacing:-.04em; line-height:1; color:var(--text); margin-bottom:4px; }
+  .levelup-rank  { font-size:1.4rem; font-weight:800; letter-spacing:.02em; animation:rank-shimmer 2s ease-in-out infinite; margin-bottom:16px; display:block; }
+  .levelup-msg   { font-size:.88rem; color:var(--muted); margin-bottom:22px; line-height:1.5; }
+
+  .act-duration-wrap  { display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+  .act-duration-wrap #act-duration { flex:1; font-size:1rem; font-weight:600; text-align:center; padding:10px; margin-bottom:0; border-color:var(--accent4); }
+  .act-duration-unit  { color:var(--muted); font-size:.95rem; font-weight:600; flex-shrink:0; }
+
+  .quest-entry { display:flex; align-items:center; gap:12px; padding:13px 6px; border-bottom:1px solid var(--border); transition:background .15s; border-radius:8px; margin:0 -6px; }
+  .quest-entry:hover { background:var(--surface-2); }
+  .quest-entry:last-child { border-bottom:none; }
+  .quest-entry:first-child { padding-top:6px; }
+  .quest-emoji { font-size:1.6rem; flex-shrink:0; width:36px; text-align:center; line-height:1; }
+  .quest-info  { flex:1; min-width:0; }
+  .quest-name  { font-size:.95rem; font-weight:600; }
+  .quest-meta  { font-size:.74rem; color:var(--muted); margin-top:2px; }
+  .section-title.act-quest-title { color:var(--accent4); letter-spacing:.08em; }
+
+  /* ── Daily Quest Card ───────────────────────────────────────────────── */
+  .quest-system-card {
+    background: linear-gradient(135deg, #0c0521 0%, #1a0a3a 50%, #0a0a24 100%) !important;
+    border: 1.5px solid var(--accent4) !important;
+    position: relative; overflow: hidden;
+    box-shadow:
+      0 0 36px rgba(167,139,250,.22),
+      inset 0 1px 0 rgba(255,255,255,.06);
+    padding: 22px !important;
+  }
+  /* ── Quest modal overlay ─────── */
+  #quest-modal { display:none; position:fixed; inset:0; z-index:650; background:rgba(0,0,0,.78); align-items:center; justify-content:center; padding:20px; }
+  #quest-modal.open { display:flex; }
+  .quest-modal-inner { width:100%; max-width:420px; }
+  .quest-modal-close { width:100%; text-align:center; margin-top:10px; }
+  .quest-modal-close button { background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.15); color:rgba(255,255,255,.7); border-radius:10px; padding:10px 28px; font-size:.88rem; cursor:pointer; transition:background .12s; font-family:inherit; }
+  .quest-modal-close button:hover { background:rgba(255,255,255,.14); }
+  .quest-system-card::before {
+    content:''; position:absolute; inset:0; pointer-events:none;
+    background:
+      radial-gradient(circle at 0% 0%,   rgba(167,139,250,.32) 0%, transparent 55%),
+      radial-gradient(circle at 100% 100%, rgba(34,211,238,.10) 0%, transparent 55%);
+  }
+  /* Subtle scan-line texture for that "system" feel */
+  .quest-system-card::after {
+    content:''; position:absolute; inset:0; pointer-events:none; opacity:.5;
+    background:repeating-linear-gradient(
+      0deg, transparent 0 2px, rgba(255,255,255,.012) 2px 3px
+    );
+  }
+  .quest-header { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; position:relative; }
+  .quest-system-label {
+    font-size:.72rem; font-weight:900; letter-spacing:.24em; color:var(--accent4);
+    text-shadow:0 0 14px rgba(167,139,250,.6);
+  }
+  .quest-streak-badge {
+    font-size:.74rem; font-weight:900; color:#fff;
+    background: linear-gradient(90deg,#f97316,#dc2626);
+    padding:4px 11px; border-radius:14px;
+    box-shadow:0 0 16px rgba(249,115,22,.4);
+    display:inline-flex; align-items:center; gap:3px;
+  }
+  .quest-message {
+    font-size:.76rem; color:rgba(255,255,255,.58); margin-bottom:14px;
+    font-style:italic; line-height:1.5; position:relative;
+  }
+  .quest-items { display:flex; flex-direction:column; gap:6px; position:relative; }
+  .quest-item {
+    display:flex; align-items:center; gap:11px; padding:11px 13px;
+    background:rgba(255,255,255,.035); border:1px solid rgba(167,139,250,.2);
+    border-radius:10px; cursor:pointer; transition:all .15s ease; user-select:none;
+  }
+  .quest-item:hover { background:rgba(167,139,250,.09); border-color:rgba(167,139,250,.5); transform:translateX(2px); }
+  .quest-item.done { background:rgba(74,222,128,.07); border-color:rgba(74,222,128,.32); }
+  .quest-check {
+    width:22px; height:22px; border:2px solid rgba(255,255,255,.22);
+    border-radius:6px; display:flex; align-items:center; justify-content:center;
+    flex-shrink:0; color:transparent; transition:all .18s cubic-bezier(.34,1.56,.64,1);
+  }
+  .quest-check.done { background:var(--accent); border-color:var(--accent); color:#052e16; }
+  .quest-item-name { flex:1; font-size:.94rem; font-weight:700; color:#fff; }
+  .quest-item.done .quest-item-name { text-decoration:line-through; color:rgba(255,255,255,.45); }
+  .quest-item-target { font-size:.78rem; font-weight:800; color:var(--accent4); font-variant-numeric:tabular-nums; flex-shrink:0; letter-spacing:.02em; }
+  .quest-item.done .quest-item-target { color:rgba(74,222,128,.7); }
+  .quest-status { margin-top:14px; text-align:center; font-size:.74rem; font-weight:800; letter-spacing:.04em; position:relative; }
+  .quest-pending  { color:#fca5a5; }
+  .quest-complete { color:var(--accent); text-shadow:0 0 12px rgba(74,222,128,.5); }
+
+  /* ── Activity sub-elements (compact) ───────────── */
+  .act-stat-strip {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:0 4px; margin:4px 0 6px;
+  }
+  .act-stat-text { font-size:.8rem; color:var(--muted); display:flex; align-items:baseline; gap:4px; }
+  .act-stat-text strong { color:var(--accent4); font-weight:900; font-variant-numeric:tabular-nums; font-size:.95rem; }
+  .act-stat-text .act-stat-label { margin-left:6px; }
+  .act-goal-bar { height:4px; background:var(--border); border-radius:2px; overflow:hidden; margin:0 0 14px; }
+  .act-goal-bar-fill { height:100%; background:var(--accent4); border-radius:2px; transition:width .4s ease; }
+
+  /* ── Penalty Modal ──────────────────────────────── */
+  #penalty-modal { display:none; position:fixed; inset:0; z-index:650; background:rgba(0,0,0,.88); align-items:center; justify-content:center; padding:20px; }
+  #penalty-modal.open { display:flex; }
+  .penalty-box {
+    background: linear-gradient(135deg, #1a0000, #0a0000);
+    border:2px solid #dc2626; border-radius:24px;
+    padding:36px 28px; text-align:center; max-width:340px; width:100%;
+    animation: levelup-pop .5s cubic-bezier(.34,1.56,.64,1) forwards;
+    box-shadow:0 0 60px rgba(220,38,38,.45);
+  }
+  .penalty-icon  { font-size:4rem; display:block; margin-bottom:8px; filter:drop-shadow(0 0 16px rgba(220,38,38,.5)); }
+  .penalty-title { font-size:1rem; font-weight:900; letter-spacing:.18em; color:#dc2626; margin-bottom:14px; }
+  .penalty-msg   { font-size:.9rem; color:rgba(255,255,255,.85); margin-bottom:20px; line-height:1.5; }
+  .penalty-stats { display:flex; gap:10px; justify-content:center; margin-bottom:22px; flex-wrap:wrap; }
+  .penalty-stats > div {
+    background:rgba(220,38,38,.15); border:1px solid rgba(220,38,38,.4);
+    padding:8px 14px; border-radius:10px; color:#fca5a5;
+    font-size:.85rem; font-weight:800;
+  }
+
+  /* ── System Status Bar (inside header, always visible) ─────────────────── */
+  #system-status-bar {
+    display: flex; align-items: center; padding: 6px 20px 8px;
+    border-top: 1px solid var(--border);
+    gap: 0;
+  }
+  .ssb-item {
+    display: flex; align-items: center; gap: 5px; flex: 1;
+    padding: 3px 5px; border-radius: 6px; cursor: pointer;
+    transition: background .12s; min-width: 0;
+    text-decoration: none;
+  }
+  .ssb-item:hover { background: var(--surface-2); }
+  @keyframes quest-alert-pulse { 0%,100% { background:transparent; } 60% { background:rgba(167,139,250,.13); } }
+  .ssb-item.quest-alert { animation:quest-alert-pulse 2.4s ease-in-out infinite; }
+  .ssb-item.quest-alert .ssb-lbl { color:var(--accent4) !important; font-weight:900 !important; }
+  .ssb-lbl {
+    font-size: .58rem; font-weight: 800; letter-spacing: .05em; text-transform: uppercase;
+    color: var(--muted); white-space: nowrap; flex-shrink: 0;
+  }
+  .ssb-bar {
+    flex: 1; height: 3px; background: var(--border); border-radius: 2px;
+    overflow: hidden; margin: 0 5px; min-width: 16px;
+  }
+  .ssb-bar-fill { height: 100%; border-radius: 2px; transition: width .35s ease; }
+  .ssb-val {
+    font-size: .62rem; font-weight: 700; color: var(--text-2); white-space: nowrap;
+    flex-shrink: 0; font-variant-numeric: tabular-nums; min-width: 26px; text-align: right;
+  }
+  .ssb-sep { width: 1px; height: 14px; background: var(--border); flex-shrink: 0; margin: 0 6px; }
+
+</style>
+</head>
+<body>
+
+<div id="loading-bar"></div>
+<div id="toast"></div>
+
+<!-- ══ AUTH ══════════════════════════════════════════ -->
+<div id="onboard-screen" style="display:none">
+  <div class="onboard-box">
+    <div class="onboard-step active" id="ob-step-1">
+      <span id="ob-mascot-1" style="display:block;margin:4px 0 0"></span>
+      <div class="onboard-title">Welcome to Froggy</div>
+      <div class="onboard-sub">Set your daily goals. You can update them any time in <strong>Settings</strong>.</div>
+      <div class="onboard-field">
+        <label>Your name</label>
+        <input type="text" id="ob-name" placeholder="What should we call you?">
+      </div>
+      <div class="onboard-field">
+        <label>Daily calorie goal (kcal)</label>
+        <input type="number" id="ob-cal" placeholder="2000" min="500" max="9999">
+      </div>
+      <div class="onboard-field">
+        <label>Workout sessions per week</label>
+        <input type="number" id="ob-wk" placeholder="3" min="1" max="7">
+      </div>
+      <button class="btn btn-green btn-full" onclick="goOnboardStep2()">Next →</button>
+    </div>
+    <div class="onboard-step" id="ob-step-2">
+      <span id="ob-mascot-2" style="display:block;margin:4px 0 0"></span>
+      <div class="onboard-title">Your Daily System</div>
+      <div class="onboard-sub">Add your core daily tasks — the non-negotiables. Skip them and your frog suffers.</div>
+      <div class="onboard-habit-row">
+        <input type="text" id="ob-habit-input" placeholder="e.g. Drink 2L water" onkeydown="if(event.key==='Enter')addOnboardHabit()">
+        <button class="btn btn-green" onclick="addOnboardHabit()">Add</button>
+      </div>
+      <div class="onboard-habit-list" id="ob-habit-list"></div>
+      <button class="btn btn-green btn-full" id="ob-submit-btn" onclick="submitOnboarding()">Start my journey →</button>
+      <button class="btn btn-ghost btn-full" onclick="goOnboardStep1()" style="margin-top:-6px">← Back</button>
+    </div>
+  </div>
+</div>
+
+<div id="auth-screen" style="display:none">
+  <div class="auth-box">
+    <div class="auth-logo-wrap">
+      <svg width="80" height="80" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
+        <ellipse cx="20" cy="25.5" rx="17" ry="13.5" fill="#2D5A1A"/>
+        <circle cx="13" cy="12.5" r="8" fill="#2D5A1A"/><circle cx="27" cy="12.5" r="8" fill="#2D5A1A"/>
+        <ellipse cx="20" cy="25" rx="15.5" ry="12" fill="#66BB6A"/>
+        <circle cx="13" cy="12" r="6.8" fill="#66BB6A"/><circle cx="27" cy="12" r="6.8" fill="#66BB6A"/>
+        <ellipse cx="20" cy="30" rx="8" ry="5.5" fill="#E8E5A0"/>
+        <circle cx="7" cy="37" r="2.5" fill="#F59E0B"/><circle cx="11" cy="36" r="2.5" fill="#F59E0B"/><circle cx="15" cy="37" r="2.5" fill="#F59E0B"/>
+        <circle cx="25" cy="37" r="2.5" fill="#F59E0B"/><circle cx="29" cy="36" r="2.5" fill="#F59E0B"/><circle cx="33" cy="37" r="2.5" fill="#F59E0B"/>
+        <circle cx="13" cy="12" r="5.8" fill="#111"/><circle cx="27" cy="12" r="5.8" fill="#111"/>
+        <circle cx="15.5" cy="9.2" r="2" fill="white"/><circle cx="29.5" cy="9.2" r="2" fill="white"/>
+        <circle cx="7.5" cy="23" r="4" fill="rgba(255,150,155,0.85)"/><circle cx="32.5" cy="23" r="4" fill="rgba(255,150,155,0.85)"/>
+        <circle cx="18.5" cy="19.5" r="1.1" fill="rgba(0,0,0,0.2)"/><circle cx="21.5" cy="19.5" r="1.1" fill="rgba(0,0,0,0.2)"/>
+        <path d="M14,24 Q20,29 26,24" stroke="#2D5A1A" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+      </svg>
+      <div class="auth-brand">Froggy</div>
+      <div class="auth-sub">Sign in to sync across all your devices</div>
+    </div>
+    <input class="auth-input" type="email"    id="auth-email"    placeholder="Email"               autocomplete="email">
+    <input class="auth-input" type="password" id="auth-password" placeholder="Password (6+ chars)" autocomplete="current-password">
+    <div class="auth-btns">
+      <button class="btn btn-green" style="flex:1" onclick="signIn()">Sign In</button>
+      <button class="btn btn-ghost" style="flex:1" onclick="signUp()">Sign Up</button>
+    </div>
+    <div id="auth-msg"></div>
+  </div>
+</div>
+
+<!-- ══ MAIN APP ══════════════════════════════════════ -->
+<div id="offline-banner" role="alert" aria-live="assertive">⚡ No connection — changes will not be saved</div>
+
+<div id="app" style="display:none">
+
+  <header>
+    <div class="header-main">
+      <div class="logo-mark" onclick="switchTab('summary')" title="Home">
+        <span id="mascot-hdr" class="mascot-idle"></span>
+        <span>Froggy</span>
+      </div>
+      <div class="header-right">
+        <span id="level-badge" onclick="switchTab('activity')" title="Your Power Level" style="background:rgba(107,114,128,.12);color:#6b7280;border-color:rgba(107,114,128,.3)">Lv.1</span>
+        <button class="theme-btn" id="settings-btn" onclick="showResetModal()" title="Settings"><span id="settings-icon"></span></button>
+        <button class="signout-btn" onclick="signOut()">Sign out</button>
+      </div>
+    </div>
+    <div id="system-status-bar">
+      <div class="ssb-item" id="ssb-quest-item" onclick="openQuestModal()" title="Daily Quest">
+        <span class="ssb-lbl">⚡ Quest</span>
+        <div class="ssb-bar"><div class="ssb-bar-fill" id="ssb-quest-fill" style="width:0%;background:var(--accent4)"></div></div>
+        <span class="ssb-val" id="ssb-quest-val">0/4</span>
+      </div>
+    </div>
+    <div id="header-date-bar">
+      <div id="hdn-date" style="font-size:.82rem;font-weight:600;color:var(--muted);text-align:center;padding:6px 0 2px"></div>
+    </div>
+  </header>
+
+  <!-- ── FOOD ──────────────────────────────────────── -->
+  <div id="section-food" class="section">
+    <div class="card stat-big">
+      <div class="number" id="cal-total" style="color:var(--accent)">0</div>
+      <div class="label" id="cal-day-label">calories today</div>
+      <div class="goal-bar"><div class="goal-bar-fill" id="cal-bar" style="width:0%;background:var(--accent)"></div></div>
+      <div id="cal-status" aria-live="polite"></div>
+      <div class="goal-text">
+        Goal: <span id="cal-goal-display">2000</span> kcal
+        <button class="text-link" onclick="toggleGoalEdit()">edit</button>
+      </div>
+      <div id="cal-goal-edit" style="display:none" class="goal-row">
+        <label>Daily calorie goal</label>
+        <input type="number" id="cal-goal-input" placeholder="2000">
+        <button class="btn btn-green" style="padding:8px 14px" onclick="saveCalGoal()">Save</button>
+      </div>
+    </div>
+    <div class="card" style="padding:14px 16px">
+      <div class="macros-row" id="macro-boxes"></div>
+    </div>
+    <div class="card">
+      <div class="section-title">Add Food</div>
+      <div class="food-name-row">
+        <input type="text" id="food-name" placeholder="What did you eat?" autocomplete="off" oninput="onFoodInput()" onkeydown="if(event.key==='Enter')triggerFoodSearch()">
+        <button class="btn btn-ghost food-search-btn" id="food-search-btn" onclick="triggerFoodSearch()"><span id="food-search-icon"></span></button>
+      </div>
+      <div id="food-dropdown" style="display:none"></div>
+      <div id="food-portion-row" class="fd-portion" style="display:none">
+        <span>Portion:</span>
+        <input type="number" id="food-grams" value="100" min="1" inputmode="decimal" oninput="onPortionChange()">
+        <span id="food-portion-suffix">g · macros auto-scaled</span>
+      </div>
+      <input type="number" id="food-cal" placeholder="Calories (kcal)" min="0" inputmode="numeric">
+      <div id="food-macro-inputs"></div>
+      <button id="food-add-btn" class="btn btn-green btn-full" onclick="addFood()"><span id="food-plus"></span>Add</button>
+    </div>
+    <div class="section-title" id="food-log-title">Today's Log</div>
+    <div class="list-filter-wrap" id="food-filter-wrap" style="display:none">
+      <input class="list-filter" id="food-filter" placeholder="Filter log…" oninput="renderFood()" aria-label="Filter food log">
+    </div>
+    <div id="food-list"><div class="empty">Nothing logged yet</div></div>
+  </div>
+
+  <!-- ── TRACKER ──────────────────────────────────── -->
+  <div id="section-activity" class="section">
+
+    <!-- Tracker stat strip -->
+    <div class="act-stat-strip">
+      <div class="act-stat-text">
+        <strong id="activity-mins-today">0</strong>
+        <span class="act-stat-label" id="tracker-stat-label"> entries today</span>
+      </div>
+    </div>
+    <div class="act-goal-bar"><div class="act-goal-bar-fill" id="activity-goal-bar" style="width:0%"></div></div>
+
+    <!-- Log Metric -->
+    <div class="card">
+      <div class="section-title">Log Metric</div>
+      <input type="text" id="act-name-input" placeholder="Metric (e.g. Water, Miles, Creatine)…" list="act-name-list" autocomplete="off" style="margin-bottom:10px" oninput="updateActDatalist()" onkeydown="if(event.key==='Enter')document.getElementById('act-duration').focus()">
+      <datalist id="act-name-list"></datalist>
+      <div class="tracker-amount-wrap">
+        <input type="number" id="act-duration" placeholder="Amount" inputmode="decimal" onkeydown="if(event.key==='Enter')document.getElementById('act-unit').focus()" aria-label="Amount">
+        <input type="text" id="act-unit" placeholder="Unit (oz, g, mi…)" autocomplete="off" onkeydown="if(event.key==='Enter')addActivity()">
+      </div>
+      <button id="activity-add-btn" class="btn btn-purple btn-full" onclick="addActivity()"><span id="activity-plus"></span>Log Metric</button>
+    </div>
+
+    <!-- Tracker Log -->
+    <div class="section-title act-quest-title">Tracker Log</div>
+    <div id="activity-list"><div class="card"><div class="empty">No entries logged yet</div></div></div>
+  </div>
+
+  <!-- ── INFO ──────────────────────────────────────── -->
+  <div id="section-info" class="section">
+    <div class="list-filter-wrap" id="info-search-wrap">
+      <input class="list-filter" id="info-search" placeholder="Search notes…" oninput="renderInfo()" aria-label="Search notes">
+    </div>
+    <div id="info-view"></div>
+  </div>
+
+  <!-- ── TASKS ─────────────────────────────────────── -->
+  <div id="section-daily" class="section">
+
+    <div class="card">
+      <div class="section-title">Add Task</div>
+      <div class="type-toggle">
+        <button class="type-btn active" id="type-habit-btn" onclick="setAddType('habit')">Daily (recurring)</button>
+        <button class="type-btn"        id="type-task-btn"  onclick="setAddType('task')">Side (one-time)</button>
+      </div>
+      <div class="task-add-row">
+        <input type="text" id="habit-name" placeholder="Name..." onkeydown="if(event.key==='Enter')addItem()">
+        <button id="habit-add-btn" class="btn btn-green" onclick="addItem()"><span id="habit-plus"></span>Add</button>
+      </div>
+      <div id="task-side-fields" style="display:none">
+        <input type="text" id="task-notes-input" placeholder="Notes (optional)" style="margin-top:8px">
+      </div>
+    </div>
+    <div class="list-filter-wrap" id="task-filter-wrap" style="display:none">
+      <input class="list-filter" id="task-filter" placeholder="Filter tasks…" oninput="renderDaily()" aria-label="Filter tasks">
+    </div>
+    <div id="daily-list"></div>
+  </div>
+
+  <!-- ── SUMMARY ────────────────────────────────────── -->
+  <div id="section-summary" class="section active">
+    <div class="card mascot-card">
+      <div id="mascot-face" class="mascot-idle" onclick="tapMascot()" role="button" aria-label="Poke the frog"></div>
+      <div class="mascot-greeting" id="mascot-greeting"></div>
+      <div class="mascot-msg" id="mascot-msg" aria-live="polite">Loading…</div>
+    </div>
+    <div class="smry-period">
+      <button class="smry-period-btn active" id="sp-day"   onclick="setSummaryPeriod('day')">Day</button>
+      <button class="smry-period-btn" id="sp-week"  onclick="setSummaryPeriod('week')">Week</button>
+      <button class="smry-period-btn" id="sp-month" onclick="setSummaryPeriod('month')">Month</button>
+      <button class="smry-period-btn" id="sp-year"  onclick="setSummaryPeriod('year')">Year</button>
+    </div>
+    <div id="summary-view"></div>
+    <div style="padding: 0 0 8px">
+      <button class="btn btn-ghost btn-full" onclick="showResetModal()" style="font-size:.82rem;color:var(--muted)">Settings &amp; Goals</button>
+    </div>
+  </div>
+
+  <div id="reset-modal">
+    <div class="reset-box">
+      <h3>Settings</h3>
+      <div class="reset-sub">Adjust goals, theme, or core tasks. Your existing data is never deleted.</div>
+
+      <div class="modal-section">Profile</div>
+      <div class="onboard-field" style="margin-bottom:0">
+        <label>Your name</label>
+        <input type="text" id="rm-name" placeholder="What should we call you?">
+      </div>
+
+      <div class="modal-section">Goals</div>
+      <div class="onboard-field" style="margin-bottom:10px">
+        <label>Daily calorie goal (kcal)</label>
+        <input type="number" id="rm-cal" placeholder="2000">
+      </div>
+      <div class="onboard-field">
+        <label>Workout sessions per week</label>
+        <input type="number" id="rm-wk" placeholder="3" min="1" max="7">
+      </div>
+
+      <div class="modal-section">Appearance</div>
+      <button class="btn btn-ghost btn-full" onclick="toggleTheme()" style="justify-content:flex-start;gap:8px">
+        <span id="rm-theme-icon"></span>
+        <span id="rm-theme-label">Switch to Dark Mode</span>
+      </button>
+
+      <div class="modal-section">Notifications</div>
+      <button class="btn btn-ghost btn-full" id="rm-notif-btn" onclick="requestNotifPermission()" style="justify-content:flex-start;gap:8px">🔔 Enable Notifications</button>
+      <div id="rm-notif-time-row" style="display:none;align-items:center;gap:10px;margin-top:8px">
+        <label style="font-size:.82rem;color:var(--muted);white-space:nowrap">Daily reminder</label>
+        <input type="time" id="rm-notif-time" value="09:00" style="flex:1">
+        <button class="btn btn-green" style="padding:8px 14px" onclick="saveNotifTime()">Set</button>
+      </div>
+
+      <div class="modal-section">Core tasks <span style="font-weight:400;text-transform:none;letter-spacing:0;font-size:.72rem;color:var(--muted)">— tap 🗑 to unlock</span></div>
+      <div id="rm-core-locked"></div>
+      <div class="onboard-habit-row" style="margin-top:10px">
+        <input type="text" id="rm-habit-input" placeholder="Add new core task..." onkeydown="if(event.key==='Enter')addResetHabit()">
+        <button class="btn btn-green" onclick="addResetHabit()">Add</button>
+      </div>
+      <div class="onboard-habit-list" id="rm-new-habits" style="margin-top:10px"></div>
+
+      <div style="display:flex;gap:8px;margin-top:22px">
+        <button class="btn btn-green" style="flex:1" onclick="submitReset()">Save</button>
+        <button class="btn btn-ghost" style="flex:1" onclick="hideResetModal()">Cancel</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Level-Up Modal -->
+  <div id="levelup-modal">
+    <div class="levelup-box">
+      <span class="levelup-icon" id="lu-icon">⭐</span>
+      <div class="levelup-title">Power Level Increased!</div>
+      <div class="levelup-level" id="lu-level">Level 2</div>
+      <span class="levelup-rank" id="lu-rank">E-Rank</span>
+      <div class="levelup-msg" id="lu-msg">You grow stronger. Keep pushing your limits.</div>
+      <button class="btn btn-purple btn-full" onclick="document.getElementById('levelup-modal').classList.remove('open')">Continue</button>
+    </div>
+  </div>
+
+  <!-- Penalty Modal -->
+  <div id="penalty-modal">
+    <div class="penalty-box">
+      <span class="penalty-icon">💀</span>
+      <div class="penalty-title">DAILY QUEST FAILED</div>
+      <div class="penalty-msg" id="penalty-msg">You did not complete yesterday's training. The system shows no mercy.</div>
+      <div class="penalty-stats" id="penalty-stats"></div>
+      <button class="btn btn-purple btn-full" onclick="document.getElementById('penalty-modal').classList.remove('open')" style="background:#dc2626;color:#fff">Accept Punishment</button>
+    </div>
+  </div>
+
+  <!-- ── QUEST MODAL ─────────────────────────────── -->
+  <div id="quest-modal" onclick="if(event.target===this)closeQuestModal()">
+    <div class="quest-modal-inner">
+      <div class="card quest-system-card" id="quest-system-card">
+        <div class="quest-header">
+          <span class="quest-system-label">⚡ DAILY QUEST</span>
+          <span class="quest-streak-badge" id="quest-streak" style="display:none">🔥 0</span>
+        </div>
+        <div class="quest-message">The system has assigned today's mandatory training. Failure costs XP and resets your streak.</div>
+        <div class="quest-items" id="quest-items"></div>
+        <div class="quest-status" id="quest-status"></div>
+      </div>
+      <div class="quest-modal-close"><button onclick="closeQuestModal()">Done</button></div>
+    </div>
+  </div>
+
+  <nav role="navigation" aria-label="Main navigation">
+    <button data-tab="food"     onclick="switchTab('food')"     id="nav-food"     aria-label="Food log"></button>
+    <button data-tab="activity" onclick="switchTab('activity')" id="nav-activity" aria-label="Tracker"></button>
+    <button data-tab="daily"    onclick="switchTab('daily')"    id="nav-daily"    aria-label="Tasks"></button>
+    <button data-tab="info"     onclick="switchTab('info')"     id="nav-info"     aria-label="Notes"></button>
+  </nav>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script>
+const SUPABASE_URL = 'https://cemujbavmnyqwhkgwbmu.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_y8WHEa4a7r7XeH-6-mCOiw_LhPq5mPq';
+const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: false, storage: window.localStorage, storageKey: 'tracker-auth' }
+});
+
+let user = null;
+let calGoal = 2000;
+let activeTab = 'summary';
+let editing = { food: null, activity: null, info: null, habit: null, folder: null };
+
+// Info state
+let currentFolder = null;  // null=folder list, '__all__'=all items, uuid=folder contents
+let _folderCache = [];
+let _infoCache = [];
+
+// Daily state
+let addType = 'habit'; // 'habit' | 'task'
+
+let workoutGoal = 3; // weekly session goal
+
+// Summary state
+let summaryPeriod = 'day';
+let _mascot = { cals: 0, habitDone: 0, habitTotal: 0, actMins: 0 };
+let _confettiFired = false;
+
+// ── In-memory cache ────────────────────────────────────────────────────────
+const _cache = new Map();
+const CACHE_TTL = 45000;
+function cacheGet(key) { const e = _cache.get(key); if (!e || Date.now() - e.ts > CACHE_TTL) { _cache.delete(key); return null; } return e.val; }
+function cacheSet(key, val) { _cache.set(key, { val, ts: Date.now() }); }
+function cacheInvalidate(...prefixes) { for (const k of _cache.keys()) if (prefixes.some(p => k.startsWith(p))) _cache.delete(k); }
+
+// ── Undo toast ─────────────────────────────────────────────────────────────
+let _undoFn = null, _undoTimer = null;
+function toastUndo(msg, fn) {
+  const el = document.getElementById('toast');
+  el.innerHTML = `${esc(msg)}<button class="toast-undo-btn" onclick="execUndo()">Undo</button>`;
+  el.className = 'show ok'; clearTimeout(_tt); clearTimeout(_undoTimer);
+  _undoFn = fn;
+  _undoTimer = setTimeout(() => { el.className = ''; _undoFn = null; el.textContent = ''; }, 3500);
+}
+function execUndo() {
+  if (_undoFn) { const f = _undoFn; _undoFn = null; f(); }
+  clearTimeout(_undoTimer); document.getElementById('toast').className = '';
+}
+
+// ── Icons ──────────────────────────────────────────────────────────────────
+const icon = (path, size = 18) =>
+  `<svg width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${path}</svg>`;
+
+const IC = {
+  food:    '<path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2"/><path d="M7 2v20"/><path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7"/>',
+  workout: '<path d="M14.4 14.4 9.6 9.6"/><path d="M18.657 21.485a2 2 0 1 1-2.829-2.828l-1.767 1.768a2 2 0 1 1-2.829-2.829l6.364-6.364a2 2 0 1 1 2.829 2.829l-1.768 1.767a2 2 0 1 1 2.828 2.829z"/><path d="m21.5 21.5-1.4-1.4"/><path d="M3.9 3.9 2.5 2.5"/><path d="M6.404 12.768a2 2 0 1 1-2.829-2.829l1.768-1.767a2 2 0 1 1-2.828-2.829l2.828-2.828a2 2 0 1 1 2.829 2.828l1.767-1.768a2 2 0 1 1 2.829 2.829z"/>',
+  info:    '<rect width="8" height="4" x="8" y="2" rx="1"/><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><path d="M9 12h6"/><path d="M9 16h6"/>',
+  daily:   '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>',
+  edit:    '<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/><path d="m15 5 4 4"/>',
+  trash:   '<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>',
+  check:   '<polyline points="20 6 9 17 4 12"/>',
+  plus:    '<path d="M5 12h14"/><path d="M12 5v14"/>',
+  arrowL:  '<path d="m15 18-6-6 6-6"/>',
+  arrowR:  '<path d="m9 18 6-6-6-6"/>',
+  folder:  '<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>',
+  chevronR:'<path d="m9 18 6-6-6-6"/>',
+  grid:    '<rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/>',
+  sun:     '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>',
+  moon:    '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>',
+  search:  '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+  summary: '<line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>',
+  clock:   '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+  lock:    '<rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
+  gear:    '<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>'
+};
+
+const MACRO_DEFS = [
+  { key:'protein', label:'Protein', unit:'g', color:'var(--accent2)', nid:1003, nnum:'203', core:true  },
+  { key:'sugar',   label:'Sugar',   unit:'g', color:'var(--accent3)', nid:2000, nnum:'269', core:false },
+];
+let trackedMacros = ['protein','sugar'];
+
+const FOLDER_COLORS = ['#60a5fa','#4ade80','#f59e0b','#a78bfa','#f87171','#34d399','#fb923c','#e879f9'];
+
+// ── Activity types ─────────────────────────────────────────────────────────
+const ACTIVITY_TYPES = [
+  { id:'running',  emoji:'🏃', name:'Running'  },
+  { id:'strength', emoji:'⚔️', name:'Strength' },
+  { id:'hiit',     emoji:'🔥', name:'HIIT'     },
+  { id:'combat',   emoji:'🥊', name:'Combat'   },
+  { id:'cycling',  emoji:'🚴', name:'Cycling'  },
+  { id:'swimming', emoji:'🏊', name:'Swimming' },
+  { id:'sport',    emoji:'🏐', name:'Sport'    },
+  { id:'hiking',   emoji:'🥾', name:'Hiking'   },
+];
+
+// ── Daily Quest tiers (Solo Leveling-style mandatory training) ────────────
+// Exercise pool for daily quest rotation — 5 tiers matching level brackets [1-3,4-9,10-19,20-39,40+]
+const EXERCISE_POOL = [
+  { key:'pushups',        label:'Push-ups',          tiers:[30,  50,  80,  100, 150], unit:'reps' },
+  { key:'situps',         label:'Sit-ups',           tiers:[30,  50,  80,  100, 150], unit:'reps' },
+  { key:'squats',         label:'Squats',            tiers:[30,  50,  80,  100, 150], unit:'reps' },
+  { key:'pullups',        label:'Pull-ups',          tiers:[5,   10,  15,  20,  30],  unit:'reps' },
+  { key:'dips',           label:'Tricep Dips',       tiers:[15,  25,  40,  50,  75],  unit:'reps' },
+  { key:'lunges',         label:'Lunges',            tiers:[15,  25,  40,  50,  75],  unit:'each leg' },
+  { key:'burpees',        label:'Burpees',           tiers:[10,  15,  25,  30,  50],  unit:'reps' },
+  { key:'mountainclimbers',label:'Mountain Climbers',tiers:[20,  40,  60,  80,  120], unit:'reps' },
+  { key:'plank',          label:'Plank',             tiers:[30,  60,  90,  120, 180], unit:'sec' },
+  { key:'pikepushups',    label:'Pike Push-ups',     tiers:[10,  20,  30,  40,  60],  unit:'reps' },
+  { key:'jumpingjacks',   label:'Jumping Jacks',     tiers:[30,  50,  80,  100, 150], unit:'reps' },
+  { key:'highknees',      label:'High Knees',        tiers:[30,  50,  80,  100, 150], unit:'reps' },
+  { key:'run',            label:'Run',               tiers:[1,   2,   5,   10,  15],  unit:'km' },
+  { key:'calfraizes',     label:'Calf Raises',       tiers:[20,  40,  60,  80,  120], unit:'reps' },
+];
+const QUEST_BONUS_XP    = 200;
+const QUEST_PENALTY_XP  = 100;
+
+// ── XP State ───────────────────────────────────────────────────────────────
+let totalXP = 0;
+
+function getXPThreshold(level) {
+  if (level <= 1) return 0;
+  return Math.floor(100 * Math.pow(level - 1, 1.8));
+}
+function getLevel(xp) {
+  let lo = 1, hi = 200;
+  while (lo < hi) { const mid = (lo + hi + 1) >> 1; if (getXPThreshold(mid) <= xp) lo = mid; else hi = mid - 1; }
+  return lo;
+}
+function getLevelProgress(xp) {
+  const lvl = getLevel(xp);
+  const cur = getXPThreshold(lvl);
+  const nxt = getXPThreshold(lvl + 1);
+  const needed = nxt - cur;
+  return { level: lvl, current: xp - cur, needed, pct: needed ? Math.round(((xp - cur) / needed) * 100) : 100 };
+}
+function getRankInfo(level) {
+  if (level >= 100) return { rank:'Shadow Monarch', color:'#7c3aed', bg:'rgba(124,58,237,.15)', icon:'👑', msg:'Sovereign of the Shadows. The pinnacle is cold and lonely.' };
+  if (level >= 76)  return { rank:'National',       color:'#dc2626', bg:'rgba(220,38,38,.15)',  icon:'⚔️', msg:'A weapon of the state. Your name carries weight.' };
+  if (level >= 51)  return { rank:'S-Rank',         color:'#a855f7', bg:'rgba(168,85,247,.15)', icon:'💜', msg:'Elite. Few reach this level. Fewer stay.' };
+  if (level >= 36)  return { rank:'A-Rank',         color:'#f59e0b', bg:'rgba(245,158,11,.15)', icon:'⭐', msg:'Strong. Strength means nothing without consistency.' };
+  if (level >= 21)  return { rank:'B-Rank',         color:'#3b82f6', bg:'rgba(59,130,246,.15)', icon:'🔷', msg:'Above the masses. Still nothing exceptional.' };
+  if (level >= 11)  return { rank:'C-Rank',         color:'#22d3ee', bg:'rgba(34,211,238,.15)', icon:'💠', msg:'Average among hunters. Push harder or fall behind.' };
+  if (level >= 6)   return { rank:'D-Rank',         color:'#4ade80', bg:'rgba(74,222,128,.15)', icon:'🟢', msg:'Out of the bottom. The real climb starts now.' };
+  return              { rank:'E-Rank',               color:'#6b7280', bg:'rgba(107,114,128,.15)', icon:'⬜', msg:'The weakest. Most quit here. Will you?' };
+}
+
+async function awardXP(amount, reason, extraMeta) {
+  if (!user || !amount) return;
+  const prev    = totalXP;
+  totalXP       = Math.max(0, totalXP + amount);
+  const prevLvl = getLevel(prev);
+  const newLvl  = getLevel(totalXP);
+  const meta    = { ...user.user_metadata, total_xp: totalXP, ...(extraMeta || {}) };
+  const { data: updData } = await db.auth.updateUser({ data: meta });
+  if (updData?.user) user = updData.user;
+  updateXPDisplay();
+  showXPPopup(amount);
+  if (newLvl > prevLvl) setTimeout(() => showLevelChangeModal(newLvl, true),  700);
+  if (newLvl < prevLvl) setTimeout(() => showLevelChangeModal(newLvl, false), 700);
+}
+
+function showXPPopup(amount) {
+  const el = document.createElement('div');
+  el.className = 'xp-popup';
+  el.textContent = (amount >= 0 ? '+' : '') + amount + ' XP';
+  if (amount < 0) { el.style.color = '#dc2626'; el.style.textShadow = '0 0 20px rgba(220,38,38,.6)'; }
+  const badge = document.getElementById('level-badge');
+  if (badge) {
+    const r = badge.getBoundingClientRect();
+    el.style.position  = 'fixed';
+    el.style.top       = (r.bottom + 12) + 'px';
+    el.style.left      = (r.left + r.width / 2) + 'px';
+    el.style.transform = 'translateX(-50%)';
+  }
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1600);
+}
+
+function showLevelChangeModal(newLevel, isUp) {
+  const rank  = getRankInfo(newLevel);
+  const titleEl = document.querySelector('#levelup-modal .levelup-title');
+  document.getElementById('lu-level').textContent = `Level ${newLevel}`;
+  document.getElementById('lu-rank').textContent  = rank.rank;
+  document.getElementById('lu-rank').style.color  = isUp ? rank.color : '#dc2626';
+  document.getElementById('lu-icon').textContent  = isUp ? rank.icon : '⚠️';
+  document.getElementById('lu-msg').textContent   = isUp ? rank.msg : 'You have weakened. The system shows no mercy. Climb back.';
+  if (titleEl) titleEl.textContent = isUp ? 'Power Level Increased!' : 'Power Level Decreased';
+  document.getElementById('levelup-modal').classList.add('open');
+  if (isUp) popConfetti();
+}
+// Backwards-compatible name kept for any callers expecting it
+function showLevelUpModal(lvl) { showLevelChangeModal(lvl, true); }
+
+function updateXPDisplay() {
+  const prog = getLevelProgress(totalXP);
+  const rank = getRankInfo(prog.level);
+  const badge = document.getElementById('level-badge');
+  if (badge) {
+    badge.textContent      = `Lv.${prog.level}`;
+    badge.style.background = rank.bg;
+    badge.style.color      = rank.color;
+    badge.style.borderColor = rank.color;
+  }
+}
+
+// ── Daily Quest System ─────────────────────────────────────────────────────
+function getQuestTierIdx(level) {
+  if (level <= 3)  return 0;
+  if (level <= 9)  return 1;
+  if (level <= 19) return 2;
+  if (level <= 39) return 3;
+  return 4;
+}
+
+// Deterministic daily exercise selection using date as seed
+function selectDailyExercises(date, level) {
+  const tierIdx = getQuestTierIdx(level);
+  // Simple seeded shuffle: derive seed from date digits
+  let seed = date.replace(/-/g,'').split('').reduce((a,c,i) => a + c.charCodeAt(0) * (i+1), 0);
+  const lcg = () => { seed = (seed * 1664525 + 1013904223) & 0x7fffffff; return seed / 0x7fffffff; };
+  const pool = [...EXERCISE_POOL];
+  for (let i = pool.length - 1; i > 0; i--) {
+    const j = Math.floor(lcg() * (i + 1));
+    [pool[i], pool[j]] = [pool[j], pool[i]];
+  }
+  return pool.slice(0, 4).map(ex => ({
+    key: ex.key,
+    label: ex.label,
+    target: `${ex.tiers[tierIdx]} ${ex.unit}`,
+    done: false
+  }));
+}
+
+function makeNewQuestState(date) {
+  const level = getLevel(totalXP);
+  const exercises = selectDailyExercises(date, level);
+  return { date, exercises, bonus_awarded: false };
+}
+function getCurrentQuestState() {
+  const s = user?.user_metadata?.quest_state;
+  if (s && s.date === todayKey()) return s;
+  return makeNewQuestState(todayKey());
+}
+function questAllDone(s) {
+  if (s.exercises) return s.exercises.every(e => e.done);
+  // backwards-compat: old format
+  return s.pushups && s.situps && s.squats && s.run;
+}
+function getQuestStreak() { return user?.user_metadata?.quest_streak || 0; }
+
+// Called once on app load: penalize if yesterday was incomplete; roll to today.
+async function checkDailyQuestPenalty() {
+  if (!user) return;
+  const today = todayKey();
+  const state = user.user_metadata?.quest_state;
+
+  // No state yet — first run. Create today's state, no penalty.
+  if (!state) {
+    await db.auth.updateUser({ data: { ...user.user_metadata, quest_state: makeNewQuestState(today) } });
+    await refreshUser();
+    return;
+  }
+
+  // Same day — keep state.
+  if (state.date === today) return;
+
+  // Day rolled over. Did they complete the previous day's quest?
+  if (state.bonus_awarded || questAllDone(state)) {
+    // Success — roll over fresh state, keep streak.
+    await db.auth.updateUser({ data: { ...user.user_metadata, quest_state: makeNewQuestState(today) } });
+    await refreshUser();
+    return;
+  }
+
+  // Failure — apply penalty, reset streak, start fresh state.
+  const prevStreak = getQuestStreak();
+  await awardXP(-QUEST_PENALTY_XP, 'Quest Failed', {
+    quest_state:  makeNewQuestState(today),
+    quest_streak: 0,
+  });
+  showPenaltyModal(prevStreak);
+}
+
+async function toggleQuestItem(idx) {
+  if (!user) return;
+  const cur = getCurrentQuestState();
+  let next;
+  if (cur.exercises) {
+    const exs = cur.exercises.map((e, i) => i === idx ? { ...e, done: !e.done } : e);
+    next = { ...cur, exercises: exs };
+  } else {
+    // backwards-compat old format — shouldn't happen after today rolls over
+    const keys = ['pushups','situps','squats','run'];
+    const k = keys[idx];
+    next = { ...cur, [k]: !cur[k] };
+  }
+  if (questAllDone(next) && !next.bonus_awarded) {
+    next.bonus_awarded = true;
+    const newStreak = getQuestStreak() + 1;
+    await awardXP(QUEST_BONUS_XP, 'Daily Quest Complete', {
+      quest_state:  next,
+      quest_streak: newStreak,
+    });
+  } else {
+    const meta = { ...user.user_metadata, quest_state: next };
+    db.auth.updateUser({ data: meta }).then(({ data }) => { if (data?.user) user = data.user; });
+    user.user_metadata = meta;
+  }
+  renderDailyQuest();
+  updateMascot();
+}
+
+function renderDailyQuest() {
+  const card = document.getElementById('quest-system-card');
+  if (!card) return;
+  const state   = getCurrentQuestState();
+  const allDone = questAllDone(state);
+  const streak  = getQuestStreak();
+
+  const streakEl = document.getElementById('quest-streak');
+  if (streakEl) streakEl.style.display = streak >= 1 ? 'inline-flex' : 'none';
+  if (streakEl) streakEl.innerHTML     = `🔥 ${streak}`;
+
+  // Build items list from new or old state format
+  let items;
+  if (state.exercises) {
+    items = state.exercises.map((e, i) => ({ idx: i, label: e.label, target: e.target, done: e.done }));
+  } else {
+    // old format fallback
+    const tierIdx = getQuestTierIdx(getLevel(totalXP));
+    const tiers = [30,50,80,100,150];
+    items = [
+      { idx:0, label:'Push-ups', target:`${tiers[tierIdx]} reps`, done:!!state.pushups },
+      { idx:1, label:'Sit-ups',  target:`${tiers[tierIdx]} reps`, done:!!state.situps  },
+      { idx:2, label:'Squats',   target:`${tiers[tierIdx]} reps`, done:!!state.squats  },
+      { idx:3, label:'Run',      target:'? km',                   done:!!state.run     },
+    ];
+  }
+
+  document.getElementById('quest-items').innerHTML = items.map(it =>
+    `<div class="quest-item${it.done?' done':''}" onclick="toggleQuestItem(${it.idx})">
+      <span class="quest-check${it.done?' done':''}">${it.done ? icon(IC.check, 14) : ''}</span>
+      <span class="quest-item-name">${it.label}</span>
+      <span class="quest-item-target">${it.target}</span>
+    </div>`
+  ).join('');
+
+  const status = document.getElementById('quest-status');
+  if (allDone) {
+    status.innerHTML = `<span class="quest-complete">✓ QUEST COMPLETE${state.bonus_awarded ? ` · +${QUEST_BONUS_XP} XP` : ''}</span>`;
+  } else {
+    const remaining = items.filter(it => !it.done).length;
+    status.innerHTML = `<span class="quest-pending">${remaining} task${remaining!==1?'s':''} remaining · failure costs −${QUEST_PENALTY_XP} XP</span>`;
+  }
+  updateSystemStatus();
+}
+
+function showPenaltyModal(prevStreak) {
+  const modal = document.getElementById('penalty-modal');
+  if (!modal) return;
+  const msgEl    = document.getElementById('penalty-msg');
+  const statsEl  = document.getElementById('penalty-stats');
+  if (msgEl)   msgEl.textContent   = 'You did not complete yesterday\'s training. The system shows no mercy.';
+  if (statsEl) statsEl.innerHTML   = `<div>−${QUEST_PENALTY_XP} XP</div>` + (prevStreak >= 1 ? `<div>Streak Reset (was ${prevStreak})</div>` : '<div>Streak: 0</div>');
+  modal.classList.add('open');
+}
+
+// ── Today stats (always today, regardless of navigation) ──────────────────
+async function refreshTodayStats() {
+  if (!user) return;
+  const today = todayKey();
+  const [foodRes, habRes, compRes, wkRes] = await Promise.all([
+    dbCall(() => db.from('food_entries').select('calories').eq('user_id',user.id).eq('date',today)),
+    dbCall(() => db.from('habits').select('id,recurring,completed').eq('user_id',user.id)),
+    dbCall(() => db.from('habit_completions').select('habit_id').eq('user_id',user.id).eq('date',today)),
+    dbCall(() => db.from('workout_entries').select('id').eq('user_id',user.id).eq('date',today)),
+  ]);
+  const foods   = foodRes.data || [];
+  const items   = habRes.data  || [];
+  const comps   = compRes.data || [];
+  const doneIds = new Set(comps.map(c => c.habit_id));
+  const habits  = items.filter(h => h.recurring);
+  const tasks   = items.filter(h => !h.recurring);
+  _mascot.cals       = foods.reduce((s,f) => s + (f.calories||0), 0);
+  _mascot.habitDone  = habits.filter(h => doneIds.has(h.id)).length + tasks.filter(t => t.completed).length;
+  _mascot.habitTotal = items.length;
+  updateMascot();
+}
+
+// ── Quest Modal ────────────────────────────────────────────────────────────
+function openQuestModal() {
+  renderDailyQuest();
+  document.getElementById('quest-modal').classList.add('open');
+}
+function closeQuestModal() {
+  document.getElementById('quest-modal').classList.remove('open');
+}
+
+// ── System Status Bar ──────────────────────────────────────────────────────
+function updateSystemStatus() {
+  // Quest progress — handle both new (exercises array) and old format
+  const qState = user?.user_metadata?.quest_state;
+  let qDone = 0, qTotal = 4;
+  if (qState?.exercises) {
+    qTotal = qState.exercises.length;
+    qDone  = qState.exercises.filter(e => e.done).length;
+  } else if (qState) {
+    qDone = (!!qState.pushups + !!qState.situps + !!qState.squats + !!qState.run);
+  }
+  const qPct   = (qDone / qTotal) * 100;
+  const qFill  = document.getElementById('ssb-quest-fill');
+  const qVal   = document.getElementById('ssb-quest-val');
+  const qItem  = document.getElementById('ssb-quest-item');
+  if (qFill) { qFill.style.width = qPct + '%'; qFill.style.background = qDone === qTotal ? 'var(--accent)' : 'var(--accent4)'; }
+  if (qVal)  qVal.textContent = `${qDone}/${qTotal}`;
+  if (qItem) qItem.classList.toggle('quest-alert', qDone < qTotal);
+}
+
+// ── Mini Quest Widget (Daily tab) ──────────────────────────────────────────
+
+// ── Theme ──────────────────────────────────────────────────────────────────
+function setTheme(dark) {
+  document.documentElement.setAttribute('data-theme', dark ? 'dark' : 'light');
+  localStorage.setItem('froggy-theme', dark ? 'dark' : 'light');
+  updateThemeButton();
+}
+function toggleTheme() {
+  setTheme(document.documentElement.getAttribute('data-theme') !== 'dark');
+}
+function updateThemeButton() {
+  const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+  const ico  = document.getElementById('rm-theme-icon');
+  const lbl  = document.getElementById('rm-theme-label');
+  if (ico) ico.innerHTML  = icon(dark ? IC.sun : IC.moon, 16);
+  if (lbl) lbl.textContent = dark ? 'Switch to Light Mode' : 'Switch to Dark Mode';
+}
+
+function injectIcons() {
+  document.getElementById('nav-food').innerHTML      = icon(IC.food, 22)    + '<span>Food</span>';
+  document.getElementById('nav-activity').innerHTML  = icon(IC.workout, 22) + '<span>Tracker</span>';
+  document.getElementById('nav-info').innerHTML      = icon(IC.info, 22)    + '<span>Notes</span>';
+  document.getElementById('nav-daily').innerHTML     = icon(IC.daily, 22)   + '<span>Tasks</span>';
+
+  document.getElementById('food-plus').innerHTML         = icon(IC.plus, 16);
+  document.getElementById('food-search-icon').innerHTML  = icon(IC.search, 18);
+  document.getElementById('activity-plus').innerHTML     = icon(IC.plus, 16);
+  document.getElementById('habit-plus').innerHTML        = icon(IC.plus, 16);
+  document.getElementById('settings-icon').innerHTML     = icon(IC.gear, 18);
+  document.getElementById('ob-mascot-1').innerHTML  = mascotSVG(80, 80);
+  document.getElementById('ob-mascot-2').innerHTML  = mascotSVG(80, 80);
+
+  updateMascot();
+  updateXPDisplay();
+}
+
+// ── Auth ───────────────────────────────────────────────────────────────────
+async function init() {
+  injectIcons();
+  // Register service worker for PWA
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(() => {});
+  }
+  document.addEventListener('click', e => {
+    if (!e.target.closest('#food-dropdown') && !e.target.closest('#food-search-btn') && e.target.id !== 'food-name') hideFoodDropdown();
+  });
+  // Keyboard: Escape closes any open modal / dropdown
+  document.addEventListener('keydown', e => {
+    if (e.key !== 'Escape') return;
+    closeQuestModal();
+    ['penalty-modal','levelup-modal','reset-modal'].forEach(id => document.getElementById(id)?.classList.remove('open'));
+    hideFoodDropdown();
+  });
+  // Offline banner
+  const _offlineBanner = document.getElementById('offline-banner');
+  const _updateOffline = () => _offlineBanner?.classList.toggle('show', !navigator.onLine);
+  window.addEventListener('offline', _updateOffline);
+  window.addEventListener('online',  _updateOffline);
+  _updateOffline();
+  const { data: { session } } = await db.auth.getSession();
+  if (session?.user) { user = session.user; await showApp(); } else showAuth();
+
+  db.auth.onAuthStateChange(async (event, session) => {
+    if (event === 'SIGNED_OUT' || !session) { user = null; showAuth(); }
+    else if (event === 'SIGNED_IN' && (!user || user.id !== session.user.id)) { user = session.user; await showApp(); }
+    else if (event === 'TOKEN_REFRESHED') { user = session.user; }
+  });
+
+  document.addEventListener('visibilitychange', async () => {
+    if (document.visibilityState !== 'visible' || !user) return;
+    const { data: { session }, error } = await db.auth.getSession();
+    if (error || !session) { toast('Session expired — please sign in.', 'error'); user = null; showAuth(); return; }
+    if ((session.expires_at * 1000) - Date.now() < 5 * 60 * 1000) await db.auth.refreshSession();
+  });
+
+  setInterval(async () => {
+    if (!user) return;
+    const { data: { session } } = await db.auth.getSession();
+    if (session && (session.expires_at * 1000 - Date.now()) < 15 * 60 * 1000) await db.auth.refreshSession();
+  }, 10 * 60 * 1000);
+}
+
+async function signIn() {
+  const email = document.getElementById('auth-email').value.trim();
+  const pass  = document.getElementById('auth-password').value;
+  if (!email || !pass) return setAuthMsg('Enter your email and password.', true);
+  setLoading(true);
+  const { error } = await db.auth.signInWithPassword({ email, password: pass });
+  setLoading(false);
+  if (error) setAuthMsg(error.message, true);
+}
+async function signUp() {
+  const email = document.getElementById('auth-email').value.trim();
+  const pass  = document.getElementById('auth-password').value;
+  if (!email || !pass) return setAuthMsg('Enter email and password.', true);
+  if (pass.length < 6) return setAuthMsg('Password must be 6+ characters.', true);
+  setLoading(true);
+  const { error } = await db.auth.signUp({ email, password: pass });
+  setLoading(false);
+  if (error) setAuthMsg(error.message, true);
+  else setAuthMsg('Account created! Check email to confirm, then sign in.');
+}
+async function signOut() { await db.auth.signOut(); }
+function setAuthMsg(m, e=false) { const el = document.getElementById('auth-msg'); el.textContent = m; el.style.color = e ? 'var(--danger)' : 'var(--accent)'; }
+function showAuth() { document.getElementById('app').style.display = 'none'; document.getElementById('auth-screen').style.display = 'flex'; }
+async function showApp() {
+  document.getElementById('auth-screen').style.display = 'none';
+  await loadSettings();
+  injectIcons();
+  loadActivityHistory();
+  initNotifications();
+  if (!user?.user_metadata?.setup_complete) {
+    document.getElementById('app').style.display = 'none';
+    document.getElementById('onboard-screen').style.display = 'flex';
+  } else {
+    document.getElementById('onboard-screen').style.display = 'none';
+    document.getElementById('app').style.display = 'block';
+    await renderAll();
+  }
+}
+async function renderAll() {
+  await Promise.all([renderFood(), renderActivity(), renderDaily(), renderInfo()]);
+  setSummaryPeriod('day');
+}
+
+// ── DB wrapper ─────────────────────────────────────────────────────────────
+async function dbCall(builder) {
+  let r = await builder();
+  if (r.error && /JWT|expired|Invalid|401|403/i.test(r.error.message || '')) {
+    const { data, error } = await db.auth.refreshSession();
+    if (error || !data.session) { toast('Session expired — sign in again.', 'error'); showAuth(); return r; }
+    r = await builder();
+  }
+  if (r.error) toast(r.error.message, 'error');
+  return r;
+}
+
+// ── Onboarding ─────────────────────────────────────────────────────────────
+let _obHabits = [];
+let _rmHabits = [];
+
+function getCoreHabitIds() { return user?.user_metadata?.core_habit_ids || []; }
+
+async function refreshUser() {
+  const { data } = await db.auth.getUser();
+  if (data?.user) user = data.user;
+}
+
+function goOnboardStep1() {
+  document.getElementById('ob-step-1').classList.add('active');
+  document.getElementById('ob-step-2').classList.remove('active');
+}
+
+function goOnboardStep2() {
+  const cal = parseInt(document.getElementById('ob-cal').value) || 0;
+  const wk  = parseInt(document.getElementById('ob-wk').value)  || 0;
+  if (cal < 500)       return flashErr('ob-cal', 'Enter a valid calorie goal (min 500)');
+  if (wk < 1 || wk > 7) return flashErr('ob-wk', 'Enter 1–7 sessions per week');
+  document.getElementById('ob-step-1').classList.remove('active');
+  document.getElementById('ob-step-2').classList.add('active');
+}
+
+function addOnboardHabit() {
+  const inp = document.getElementById('ob-habit-input');
+  const name = inp.value.trim();
+  if (!name) return;
+  _obHabits.push(name);
+  inp.value = '';
+  renderObHabits();
+}
+function removeOnboardHabit(i) { _obHabits.splice(i, 1); renderObHabits(); }
+function renderObHabits() {
+  document.getElementById('ob-habit-list').innerHTML = _obHabits.map((h, i) =>
+    `<div class="onboard-habit-item"><span>${esc(h)}</span><button class="icon-btn danger" onclick="removeOnboardHabit(${i})">${icon(IC.trash,14)}</button></div>`
+  ).join('');
+}
+
+async function submitOnboarding() {
+  const cal         = parseInt(document.getElementById('ob-cal').value) || 2000;
+  const wk          = parseInt(document.getElementById('ob-wk').value)  || 3;
+  const displayName = document.getElementById('ob-name').value.trim();
+  const btn = document.getElementById('ob-submit-btn');
+  btnLoad(btn, true);
+  calGoal = cal; workoutGoal = wk;
+  await dbCall(() => db.from('user_settings').upsert({ user_id: user.id, cal_goal: cal, workout_goal: wk }, { onConflict: 'user_id' }));
+  const coreIds = [];
+  for (const habitName of _obHabits) {
+    const { data } = await dbCall(() => db.from('habits').insert({ user_id: user.id, name: habitName, recurring: true, completed: false }).select('id').single());
+    if (data?.id) coreIds.push(data.id);
+  }
+  const prev = getCoreHabitIds();
+  const meta = { ...user.user_metadata, setup_complete: true, core_habit_ids: [...new Set([...prev, ...coreIds])] };
+  if (displayName) meta.display_name = displayName;
+  await db.auth.updateUser({ data: meta });
+  await refreshUser();
+  btnLoad(btn, false);
+  document.getElementById('onboard-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'block';
+  await renderAll();
+}
+
+// ── Reset modal ─────────────────────────────────────────────────────────────
+async function removeCoreHabit(habitId) {
+  const newIds = getCoreHabitIds().filter(id => id !== habitId);
+  const meta   = { ...user.user_metadata, core_habit_ids: newIds };
+  await db.auth.updateUser({ data: meta });
+  await refreshUser();
+  toast('Task unlocked — now editable', 'ok');
+  showResetModal();
+}
+
+async function showResetModal() {
+  document.getElementById('rm-name').value = user?.user_metadata?.display_name || '';
+  document.getElementById('rm-cal').value  = calGoal;
+  document.getElementById('rm-wk').value   = workoutGoal;
+  _rmHabits = [];
+  renderRmNewHabits();
+  updateThemeButton();
+  const coreIds = getCoreHabitIds();
+  if (coreIds.length) {
+    const { data } = await dbCall(() => db.from('habits').select('id,name').in('id', coreIds));
+    document.getElementById('rm-core-locked').innerHTML = (data || []).map(h =>
+      `<div class="core-habit-locked">
+        ${icon(IC.lock,13)}<span>${esc(h.name)}</span>
+        <button class="icon-btn danger" title="Remove from core" onclick="removeCoreHabit('${h.id}')" style="flex-shrink:0">${icon(IC.trash,14)}</button>
+      </div>`
+    ).join('') || '<div style="color:var(--muted);font-size:.85rem;padding:4px 0">No core tasks yet.</div>';
+  } else {
+    document.getElementById('rm-core-locked').innerHTML = '<div style="color:var(--muted);font-size:.85rem;padding:4px 0">No core tasks yet.</div>';
+  }
+  document.getElementById('reset-modal').classList.add('open');
+  updateNotifUI();
+}
+function hideResetModal() { document.getElementById('reset-modal').classList.remove('open'); }
+
+function addResetHabit() {
+  const inp = document.getElementById('rm-habit-input');
+  const name = inp.value.trim();
+  if (!name) return;
+  _rmHabits.push(name);
+  inp.value = '';
+  renderRmNewHabits();
+}
+function removeRmHabit(i) { _rmHabits.splice(i, 1); renderRmNewHabits(); }
+function renderRmNewHabits() {
+  document.getElementById('rm-new-habits').innerHTML = _rmHabits.map((h, i) =>
+    `<div class="onboard-habit-item"><span>${esc(h)}</span><button class="icon-btn danger" onclick="removeRmHabit(${i})">${icon(IC.trash,14)}</button></div>`
+  ).join('');
+}
+
+async function submitReset() {
+  const cal         = parseInt(document.getElementById('rm-cal').value) || calGoal;
+  const wk          = Math.max(1, Math.min(7, parseInt(document.getElementById('rm-wk').value) || workoutGoal));
+  const displayName = document.getElementById('rm-name').value.trim();
+  calGoal = cal; workoutGoal = wk;
+  await dbCall(() => db.from('user_settings').upsert({ user_id: user.id, cal_goal: cal, workout_goal: wk }, { onConflict: 'user_id' }));
+  const newCoreIds = [];
+  for (const habitName of _rmHabits) {
+    const { data } = await dbCall(() => db.from('habits').insert({ user_id: user.id, name: habitName, recurring: true, completed: false }).select('id').single());
+    if (data?.id) newCoreIds.push(data.id);
+  }
+  // Always update metadata (display_name + any new core habits)
+  const meta = { ...user.user_metadata };
+  if (displayName) meta.display_name = displayName;
+  else delete meta.display_name;
+  if (newCoreIds.length) {
+    const prev = getCoreHabitIds();
+    meta.core_habit_ids = [...new Set([...prev, ...newCoreIds])];
+  }
+  await db.auth.updateUser({ data: meta });
+  await refreshUser();
+  hideResetModal();
+  await renderAll();
+  toast('Settings saved!', 'ok');
+}
+
+// ── Settings ───────────────────────────────────────────────────────────────
+async function loadSettings() {
+  const { data } = await dbCall(() => db.from('user_settings').select('*').eq('user_id', user.id).maybeSingle());
+  calGoal     = data?.cal_goal     ?? 2000;
+  workoutGoal = data?.workout_goal ?? 3;
+  trackedMacros = ['protein','sugar'];
+  totalXP = user?.user_metadata?.total_xp ?? 0;
+  updateXPDisplay();
+  await checkDailyQuestPenalty();
+}
+async function saveCalGoal() {
+  const v = parseInt(document.getElementById('cal-goal-input').value) || 2000;
+  calGoal = v;
+  document.getElementById('cal-goal-edit').style.display = 'none';
+  await dbCall(() => db.from('user_settings').upsert({ user_id: user.id, cal_goal: v }, { onConflict: 'user_id' }));
+  renderFood();
+}
+function toggleGoalEdit() { const el = document.getElementById('cal-goal-edit'); el.style.display = el.style.display === 'none' ? 'flex' : 'none'; }
+
+// ── Food search (USDA FoodData Central) ────────────────────────────────────
+const USDA_KEY = 'zTrnEFEmXaZRz9X2SITx61IykQVuGy7Q56bohHWH';
+let _foodSearchTimer      = null;
+let _foodSearchController = null;
+let _foodSearchResults    = [];
+let _selectedFoodBase     = null;
+
+function onFoodInput() {
+  _selectedFoodBase = null;
+  document.getElementById('food-portion-row').style.display = 'none';
+  clearTimeout(_foodSearchTimer);
+  hideFoodDropdown();
+}
+
+function triggerFoodSearch() {
+  const q = document.getElementById('food-name').value.trim();
+  if (q.length < 2) return;
+  searchFoodUSDA(q);
+}
+
+async function searchFoodUSDA(query) {
+  if (_foodSearchController) _foodSearchController.abort();
+  _foodSearchController = new AbortController();
+
+  const dd = document.getElementById('food-dropdown');
+  dd.innerHTML = '<div class="fd-item fd-msg">Searching…</div>';
+  dd.style.display = 'block';
+  try {
+    // Try curated USDA datasets first (no branded duplicates), fall back to all
+    let foods = [];
+    for (const dt of ['Foundation,SR%20Legacy', null]) {
+      const url = `https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(query)}&pageSize=5${dt ? '&dataType=' + dt : ''}&api_key=${USDA_KEY}`;
+      const r = await fetch(url, { signal: _foodSearchController.signal });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const json = await r.json();
+      foods = json.foods || [];
+      if (foods.length) break;
+    }
+    _foodSearchResults = foods;
+    if (!foods.length) {
+      dd.innerHTML = '<div class="fd-item fd-msg">No results — enter calories manually</div>';
+      return;
+    }
+    dd.innerHTML = foods.map((f, i) => {
+      const nuts = f.foodNutrients || [];
+      const nut  = (fid, num) => nuts.find(n => n.nutrientId === fid || String(n.nutrientNumber) === num)?.value || 0;
+      const kcal = nut(1008, '208') || (nut(1062, '268') / 4.184);
+      const cal  = Math.round(kcal);
+      const isBranded = !!f.servingSize;
+      const calLabel = cal ? (isBranded ? `${cal} kcal/serving` : `${cal} kcal/100g`) : 'tap to select';
+      const desc = f.description.length > 52 ? f.description.slice(0, 52) + '…' : f.description;
+      return `<div class="fd-item" onclick="selectFood(${i})">
+        <span class="fd-name">${esc(desc)}</span>
+        <span class="fd-meta">${calLabel}</span>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    if (e.name === 'AbortError') return;
+    dd.innerHTML = '<div class="fd-item fd-msg">Search unavailable — enter manually</div>';
+  }
+}
+
+function selectFood(idx) {
+  const f = _foodSearchResults[idx];
+  if (!f) return;
+  const nuts = f.foodNutrients || [];
+  const nut  = (fid, num) => nuts.find(n => n.nutrientId === fid || String(n.nutrientNumber) === num)?.value || 0;
+
+  // Branded foods store nutrients per serving size, not per 100g — normalize to per-100g base
+  // Treat absent unit as grams (USDA branded items almost always use grams)
+  const isGrams = u => !u || /^(g|gr|grm|gram)/i.test(u.trim());
+  const servGrams = (f.servingSize > 0 && isGrams(f.servingSizeUnit)) ? f.servingSize : null;
+  const scale = servGrams ? (100 / servGrams) : 1;
+
+  const rawKcal = nut(1008, '208') || (nut(1062, '268') / 4.184);
+  _selectedFoodBase = { cal: rawKcal * scale };
+  MACRO_DEFS.forEach(m => { _selectedFoodBase[m.key] = nut(m.nid, m.nnum) * scale; });
+
+  document.getElementById('food-name').value = f.description.split(',')[0].trim();
+  hideFoodDropdown();
+  document.getElementById('food-portion-row').style.display = 'flex';
+  const defaultG = servGrams ? Math.round(servGrams) : 100;
+  document.getElementById('food-grams').value = defaultG;
+  const householdDesc = f.householdServingFullText ? ` · 1 serving = ${f.householdServingFullText}` : (servGrams ? ` · 1 serving = ${Math.round(servGrams)}g` : '');
+  document.getElementById('food-portion-suffix').textContent = `g${householdDesc || ' · macros auto-scaled'}`;
+  applyFoodPortion(defaultG);
+  document.getElementById('food-grams').select();
+}
+
+function applyFoodPortion(g) {
+  if (!_selectedFoodBase) return;
+  const s = g / 100;
+  document.getElementById('food-cal').value = Math.round(_selectedFoodBase.cal * s) || '';
+  MACRO_DEFS.forEach(m => {
+    const el = document.getElementById('food-' + m.key);
+    if (el) el.value = +(_selectedFoodBase[m.key] * s).toFixed(m.unit === 'mg' ? 0 : 1) || '';
+  });
+}
+
+function onPortionChange() {
+  applyFoodPortion(parseFloat(document.getElementById('food-grams').value) || 0);
+}
+
+function hideFoodDropdown() {
+  const dd = document.getElementById('food-dropdown');
+  if (dd) { dd.style.display = 'none'; dd.innerHTML = ''; }
+  _foodSearchResults = [];
+}
+
+// ── Food ───────────────────────────────────────────────────────────────────
+function renderFoodMacroInputs() {
+  const macros = MACRO_DEFS.filter(m => trackedMacros.includes(m.key));
+  const rows = [];
+  for (let i = 0; i < macros.length; i += 3) {
+    const chunk = macros.slice(i, i + 3);
+    rows.push(`<div class="form-row">${chunk.map(m =>
+      `<input type="number" id="food-${m.key}" placeholder="${m.label} (${m.unit})" min="0" inputmode="numeric">`
+    ).join('')}</div>`);
+  }
+  document.getElementById('food-macro-inputs').innerHTML = rows.join('');
+}
+
+async function addFood() {
+  const name = document.getElementById('food-name').value.trim();
+  if (!name) return flashErr('food-name', 'Enter food name');
+  const btn = document.getElementById('food-add-btn'); btnLoad(btn, true);
+  const getMacro = key => parseFloat(document.getElementById('food-' + key)?.value) || 0;
+  const metaObj  = {};
+  MACRO_DEFS.filter(m => !m.core && trackedMacros.includes(m.key)).forEach(m => { const v = getMacro(m.key); if (v) metaObj[m.key] = v; });
+  const hasExtra = Object.keys(metaObj).length > 0;
+  const row = {
+    user_id: user.id, date: todayKey(), name,
+    calories: parseInt(document.getElementById('food-cal').value) || 0,
+    protein: getMacro('protein'), carbs: 0, fat: 0,
+    time: new Date().toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+  };
+  if (hasExtra) row.meta = metaObj;
+  let { error } = await dbCall(() => db.from('food_entries').insert(row));
+  if (error?.message?.includes('meta')) {
+    console.info('Froggy: run this SQL in Supabase to enable extra nutrient tracking:\nALTER TABLE food_entries ADD COLUMN IF NOT EXISTS meta JSONB;\nALTER TABLE user_settings ADD COLUMN IF NOT EXISTS tracked_macros TEXT;');
+    delete row.meta;
+    ({ error } = await dbCall(() => db.from('food_entries').insert(row)));
+  }
+  btnLoad(btn, false); if (error) return;
+  await awardXP(5, 'Food logged');
+  document.getElementById('food-name').value = '';
+  document.getElementById('food-cal').value  = '';
+  MACRO_DEFS.forEach(m => { const el = document.getElementById('food-' + m.key); if (el) el.value = ''; });
+  document.getElementById('food-portion-row').style.display = 'none';
+  _selectedFoodBase = null;
+  await renderFood();
+}
+function startEditFood(id) { editing.food = id; renderFood(); }
+function cancelEditFood()   { editing.food = null; renderFood(); }
+async function saveEditFood(id) {
+  const name = document.getElementById('ef-name-'+id).value.trim();
+  if (!name) return toast('Name required', 'error');
+  const getEf = key => parseFloat(document.getElementById(`ef-${key}-${id}`)?.value) || 0;
+  const metaEf = {};
+  MACRO_DEFS.filter(m => !m.core && trackedMacros.includes(m.key)).forEach(m => { const v = getEf(m.key); if (v) metaEf[m.key] = v; });
+  const upd = { name, calories: parseInt(document.getElementById('ef-cal-'+id).value)||0, protein: getEf('protein'), carbs: 0, fat: 0 };
+  if (Object.keys(metaEf).length) upd.meta = metaEf;
+  const { error } = await dbCall(() => db.from('food_entries').update(upd).eq('id',id).eq('user_id',user.id));
+  if (error) return; editing.food = null; toast('Updated','ok'); await renderFood();
+}
+async function deleteFood(id) { await dbCall(() => db.from('food_entries').delete().eq('id',id).eq('user_id',user.id)); await renderFood(); }
+
+async function renderFood() {
+  const dayKey = todayKey();
+  const dayLabel = fmt(dayKey);
+  const dayLabelShort = dayLabel === 'Today' || dayLabel === 'Yesterday' ? dayLabel.toLowerCase() : dayLabel;
+  document.getElementById('cal-day-label').textContent = 'calories · ' + dayLabelShort;
+  document.getElementById('food-log-title').textContent = dayLabel === 'Today' ? "Today's Log" : dayLabel === 'Yesterday' ? "Yesterday's Log" : `Log — ${dayLabel}`;
+  document.getElementById('cal-goal-display').textContent = calGoal;
+  document.getElementById('cal-goal-input').value = calGoal;
+  const { data: list } = await dbCall(() => db.from('food_entries').select('*').eq('user_id',user.id).eq('date',dayKey).order('created_at',{ascending:true}));
+  const rows = list || [];
+  renderFoodMacroInputs();
+  const totals = {};
+  MACRO_DEFS.forEach(m => { totals[m.key] = rows.reduce((s,e) => s + (m.core ? (+e[m.key]||0) : (+(e.meta?.[m.key])||0)), 0); });
+  const totalCal = rows.reduce((s,e) => s+(e.calories||0), 0);
+  document.getElementById('cal-total').textContent = totalCal;
+  document.getElementById('macro-boxes').innerHTML = MACRO_DEFS.filter(m => trackedMacros.includes(m.key)).map(m =>
+    `<div class="macro-box"><div class="val" style="color:${m.color}">${Math.round(totals[m.key])}${m.unit}</div><div class="lbl">${m.label.toLowerCase()}</div></div>`
+  ).join('');
+  const rawPct = calGoal ? Math.round((totalCal/calGoal)*100) : 0;
+  const pct    = Math.min(100, rawPct);
+  document.getElementById('cal-bar').style.width = pct+'%';
+  document.getElementById('cal-bar').style.background = rawPct > 100 ? 'var(--danger)' : 'var(--accent)';
+  document.getElementById('cal-total').style.animation = rawPct > 100 ? 'cal-pulse 1.2s ease-in-out infinite' : '';
+  // Calorie status message
+  const calStatusEl = document.getElementById('cal-status');
+  if (calStatusEl && calGoal) {
+    if (rawPct > 100) { calStatusEl.textContent = `${totalCal - calGoal} kcal over goal`; calStatusEl.style.color = 'var(--danger)'; }
+    else if (rawPct >= 80) { calStatusEl.textContent = `${calGoal - totalCal} kcal left · looking good`; calStatusEl.style.color = 'var(--accent)'; }
+    else if (rawPct > 0) { calStatusEl.textContent = `${calGoal - totalCal} kcal remaining`; calStatusEl.style.color = 'var(--muted)'; }
+    else { calStatusEl.textContent = ''; }
+  }
+  await refreshTodayStats();
+  // Food filter
+  const foodQ = document.getElementById('food-filter')?.value.trim().toLowerCase() || '';
+  const foodFilterWrap = document.getElementById('food-filter-wrap');
+  if (foodFilterWrap) foodFilterWrap.style.display = rows.length > 4 ? 'block' : 'none';
+  const displayRows = foodQ ? rows.filter(r => r.name.toLowerCase().includes(foodQ)) : rows;
+  const el = document.getElementById('food-list');
+  if (!displayRows.length) { el.innerHTML = foodQ ? '<div class="empty">No matching entries</div>' : '<div class="empty">Nothing logged yet</div>'; return; }
+  el.innerHTML = [...displayRows].reverse().map(e => {
+    if (editing.food === e.id) {
+      const editMacros = MACRO_DEFS.filter(m => trackedMacros.includes(m.key));
+      const editRows = [];
+      for (let i = 0; i < editMacros.length; i += 3) {
+        const chunk = editMacros.slice(i, i+3);
+        editRows.push(`<div class="form-row">${chunk.map(m => {
+          const val = m.core ? (e[m.key]||'') : (e.meta?.[m.key]||'');
+          return `<input type="number" id="ef-${m.key}-${e.id}" value="${val}" placeholder="${m.label}" inputmode="numeric">`;
+        }).join('')}</div>`);
+      }
+      return `<div class="entry-editing">
+        <div class="form-row"><input type="text" id="ef-name-${e.id}" value="${esc(e.name)}" style="flex:2"><input type="number" id="ef-cal-${e.id}" value="${e.calories}" class="narrow" inputmode="numeric"></div>
+        ${editRows.join('')}
+        <div class="edit-actions"><button class="btn btn-green" onclick="saveEditFood('${e.id}')">Save</button><button class="btn btn-ghost" onclick="cancelEditFood()">Cancel</button></div>
+      </div>`;
+    }
+    const macroMeta = e.meta || {};
+    const macroStr = MACRO_DEFS.filter(m => trackedMacros.includes(m.key)).map(m => {
+      const v = m.core ? (+e[m.key]||0) : (+macroMeta[m.key]||0);
+      return v ? `${m.label.slice(0,1)} ${v}${m.unit}` : '';
+    }).filter(Boolean).join(' · ');
+    return `<div class="entry"><div class="entry-content"><div class="entry-name">${esc(e.name)}</div><div class="entry-meta">${esc(e.time||'')}${macroStr?' · '+macroStr:''}</div></div><div class="entry-right"><span class="entry-cal">${e.calories}</span><button class="icon-btn" onclick="startEditFood('${e.id}')" aria-label="Edit ${esc(e.name)}">${icon(IC.edit,16)}</button><button class="icon-btn danger" onclick="deleteFood('${e.id}')" aria-label="Delete ${esc(e.name)}">${icon(IC.trash,16)}</button></div></div>`;
+  }).join('');
+}
+
+// ── Activity ───────────────────────────────────────────────────────────────
+let _actHistory = [];
+async function loadActivityHistory() {
+  if (!user) return;
+  const { data } = await dbCall(() =>
+    db.from('workout_entries').select('name').eq('user_id', user.id).order('created_at', { ascending: false }).limit(200)
+  );
+  const seen = new Set();
+  _actHistory = (data || []).map(r => r.name).filter(n => n && !seen.has(n) && seen.add(n));
+}
+function updateActDatalist() {
+  const dl  = document.getElementById('act-name-list');
+  const val = document.getElementById('act-name-input')?.value || '';
+  if (!dl) return;
+  dl.innerHTML = val.length >= 1 ? _actHistory.map(n => `<option value="${esc(n)}">`).join('') : '';
+}
+
+async function addActivity() {
+  const nameEl = document.getElementById('act-name-input');
+  const name   = nameEl?.value.trim() || '';
+  const amount = document.getElementById('act-duration').value.trim();
+  const unit   = document.getElementById('act-unit')?.value.trim() || '';
+  if (!name)   return flashErr('act-name-input', 'Enter metric name');
+  if (!amount) return flashErr('act-duration',   'Enter amount');
+  const btn = document.getElementById('activity-add-btn'); btnLoad(btn, true);
+  const { error } = await dbCall(() => db.from('workout_entries').insert({
+    user_id:  user.id,
+    date:     todayKey(),
+    name,
+    type:     'tracker',
+    duration: amount,
+    notes:    unit || null,
+    sets: null, reps: null, weight: null,
+    time: new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})
+  }));
+  btnLoad(btn, false); if (error) return;
+  if (nameEl) nameEl.value = '';
+  document.getElementById('act-duration').value = '';
+  if (document.getElementById('act-unit')) document.getElementById('act-unit').value = '';
+  await loadActivityHistory();
+  await renderActivity();
+  toast('Logged!', 'ok');
+}
+
+function startEditActivity(id) { editing.activity = id; renderActivity(); }
+function cancelEditActivity()   { editing.activity = null; renderActivity(); }
+
+async function saveEditActivity(id) {
+  const amount = document.getElementById('ea-dur-'+id)?.value.trim();
+  const unit   = document.getElementById('ea-notes-'+id)?.value.trim() || null;
+  const name   = document.getElementById('ea-name-'+id)?.value.trim() || null;
+  if (!amount) return toast('Enter amount','error');
+  const { error } = await dbCall(() => db.from('workout_entries').update({
+    duration: amount, notes: unit, ...(name ? {name} : {})
+  }).eq('id',id).eq('user_id',user.id));
+  if (error) return; editing.activity = null; toast('Updated','ok'); await renderActivity();
+}
+
+async function deleteActivity(id) {
+  await dbCall(() => db.from('workout_entries').delete().eq('id',id).eq('user_id',user.id));
+  await renderActivity();
+}
+
+async function renderActivity() {
+  const dayKey    = todayKey();
+  const dayLabel  = fmt(dayKey);
+
+  const [dayRes, todayRes] = await Promise.all([
+    dbCall(() => db.from('workout_entries').select('*').eq('user_id',user.id).eq('date',dayKey).order('created_at',{ascending:true})),
+    dbCall(() => db.from('workout_entries').select('id').eq('user_id',user.id).eq('date',dayKey))
+  ]);
+  const rows         = dayRes.data  || [];
+  const todayCount   = (todayRes.data||[]).length;
+  const pct          = Math.min(100, Math.round((todayCount / 5) * 100));
+  await refreshTodayStats();
+
+  const minsEl = document.getElementById('activity-mins-today');
+  const gbEl   = document.getElementById('activity-goal-bar');
+  if (minsEl) minsEl.textContent = todayCount;
+  if (gbEl)   gbEl.style.width   = pct + '%';
+
+  const listEl = document.getElementById('activity-list');
+  if (!listEl) return;
+  if (!rows.length) {
+    listEl.innerHTML = `<div class="card"><div class="empty">No entries logged yet</div></div>`;
+    return;
+  }
+
+  listEl.innerHTML = [...rows].reverse().map(e => {
+    if (editing.activity === e.id) {
+      return `<div class="card" style="margin-bottom:8px">
+        <input type="text" id="ea-name-${e.id}" value="${esc(e.name)}" placeholder="Metric name" style="margin-bottom:8px">
+        <div class="tracker-amount-wrap">
+          <input type="number" id="ea-dur-${e.id}" value="${esc(e.duration||'')}" inputmode="decimal" placeholder="Amount">
+          <input type="text" id="ea-notes-${e.id}" value="${esc(e.notes||'')}" placeholder="Unit">
+        </div>
+        <div class="edit-actions">
+          <button class="btn btn-purple" onclick="saveEditActivity('${e.id}')">Save</button>
+          <button class="btn btn-ghost"  onclick="cancelEditActivity()">Cancel</button>
+        </div>
+      </div>`;
+    }
+
+    const metaParts = [];
+    if (e.duration) metaParts.push(`${esc(e.duration)}${e.notes ? ' ' + esc(e.notes) : ''}`);
+    if (e.time) metaParts.push(esc(e.time));
+
+    // Pick a display emoji based on metric name
+    const nameLower = (e.name||'').toLowerCase();
+    const emoji = nameLower.includes('water') ? '💧'
+      : nameLower.includes('miles') || nameLower.includes('run') || nameLower.includes('km') ? '🏃'
+      : nameLower.includes('creatine') || nameLower.includes('supplement') ? '💊'
+      : nameLower.includes('sleep') ? '😴'
+      : nameLower.includes('step') ? '👟'
+      : nameLower.includes('calor') ? '🔥'
+      : nameLower.includes('protein') ? '🥩'
+      : '📊';
+
+    return `<div class="card" style="margin-bottom:8px">
+      <div class="quest-entry">
+        <span class="quest-emoji">${emoji}</span>
+        <div class="quest-info">
+          <div class="quest-name">${esc(e.name)}</div>
+          <div class="quest-meta">${metaParts.join(' · ')}</div>
+        </div>
+        <button class="icon-btn" onclick="startEditActivity('${e.id}')" aria-label="Edit entry">${icon(IC.edit,16)}</button>
+        <button class="icon-btn danger" onclick="deleteActivity('${e.id}')" aria-label="Delete entry">${icon(IC.trash,16)}</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// INFO — FOLDERS
+// ══════════════════════════════════════════════════════════════════════════
+async function renderInfo() {
+  const view = document.getElementById('info-view');
+  refreshTodayStats();
+
+  if (currentFolder === null) {
+    await renderFolderList(view);
+  } else if (currentFolder === '__all__') {
+    await renderFolderContents(view, null, 'All Notes');
+  } else if (currentFolder === '__uncat__') {
+    await renderFolderContents(view, null, 'No Folder');
+  } else {
+    const folder = _folderCache.find(f => f.id === currentFolder);
+    await renderFolderContents(view, currentFolder, folder?.name || 'Folder');
+  }
+}
+
+async function renderFolderList(view) {
+  const [foldersRes, itemsRes] = await Promise.all([
+    dbCall(() => db.from('info_folders').select('*').eq('user_id', user.id).order('created_at')),
+    dbCall(() => db.from('info_entries').select('id, folder_id').eq('user_id', user.id))
+  ]);
+  _folderCache = foldersRes.data || [];
+  const allItems = itemsRes.data || [];
+  const infoQ = document.getElementById('info-search')?.value.trim().toLowerCase() || '';
+  const filteredFolders = infoQ ? _folderCache.filter(f => f.name.toLowerCase().includes(infoQ)) : _folderCache;
+
+  // Count items per folder
+  const counts = {};
+  let uncatCount = 0;
+  allItems.forEach(item => {
+    if (item.folder_id) counts[item.folder_id] = (counts[item.folder_id] || 0) + 1;
+    else uncatCount++;
+  });
+
+  let html = '';
+
+  // Add folder row
+  if (editing.folder === '__new__') {
+    html += `<div class="card" style="margin-bottom:12px">
+      <div class="section-title">New Folder</div>
+      <div class="form-row">
+        <input type="text" id="new-folder-name" placeholder="Folder name..." style="flex:1">
+        <button class="btn btn-yellow" onclick="saveNewFolder()">Create</button>
+      </div>
+    </div>`;
+  } else {
+    html += `<div class="add-folder-row">
+      <button class="btn btn-yellow btn-full" onclick="startNewFolder()">${icon(IC.plus,16)}New Folder</button>
+    </div>`;
+  }
+
+  // All notes card
+  html += `<div class="folder-list">
+    <div class="folder-card" onclick="openFolder('__all__')">
+      <div class="folder-icon" style="background:rgba(255,255,255,.06)">${icon(IC.grid, 18)}</div>
+      <div class="folder-info"><div class="folder-name">All Notes</div><div class="folder-count">${allItems.length} item${allItems.length!==1?'s':''}</div></div>
+      <div class="folder-chevron">${icon(IC.chevronR, 16)}</div>
+    </div>`;
+
+  // Folder cards
+  filteredFolders.forEach((f, i) => {
+    const color = FOLDER_COLORS[i % FOLDER_COLORS.length];
+    const count = counts[f.id] || 0;
+    if (editing.folder === f.id) {
+      html += `<div class="info-card" style="margin-bottom:0">
+        <div class="form-row" style="margin-bottom:8px">
+          <input type="text" id="ef-folder-${f.id}" value="${esc(f.name)}" style="flex:1">
+        </div>
+        <div class="edit-actions">
+          <button class="btn btn-yellow" onclick="saveEditFolder('${f.id}')">Save</button>
+          <button class="btn btn-ghost"  onclick="renderInfo()">Cancel</button>
+        </div>
+      </div>`;
+    } else {
+      html += `<div class="folder-card" onclick="openFolder('${f.id}')">
+        <div class="folder-icon" style="background:${color}22;color:${color}">${icon(IC.folder, 18)}</div>
+        <div class="folder-info"><div class="folder-name">${esc(f.name)}</div><div class="folder-count">${count} item${count!==1?'s':''}</div></div>
+        <div class="folder-actions">
+          <button class="icon-btn" onclick="event.stopPropagation();startEditFolder('${f.id}')">${icon(IC.edit,16)}</button>
+          <button class="icon-btn danger" onclick="event.stopPropagation();deleteFolder('${f.id}')">${icon(IC.trash,16)}</button>
+        </div>
+        <div class="folder-chevron">${icon(IC.chevronR, 16)}</div>
+      </div>`;
+    }
+  });
+
+  // Uncategorized
+  if (uncatCount > 0) {
+    html += `<div class="folder-card" onclick="openFolder('__uncat__')">
+      <div class="folder-icon" style="background:rgba(255,255,255,.06);color:var(--muted)">${icon(IC.folder, 18)}</div>
+      <div class="folder-info"><div class="folder-name" style="color:var(--muted)">No Folder</div><div class="folder-count">${uncatCount} item${uncatCount!==1?'s':''}</div></div>
+      <div class="folder-chevron">${icon(IC.chevronR, 16)}</div>
+    </div>`;
+  }
+
+  if (infoQ && filteredFolders.length === 0) {
+    html += `<div class="empty">No folders match "${esc(infoQ)}"</div>`;
+  }
+
+  html += '</div>';
+  view.innerHTML = html;
+}
+
+async function renderFolderContents(view, folderId, title) {
+  const isUncat = currentFolder === '__uncat__';
+  const isAll   = currentFolder === '__all__';
+
+  let query = db.from('info_entries').select('*').eq('user_id', user.id).order('created_at', { ascending: false });
+  if (isAll)   { /* no filter */ }
+  else if (isUncat) { query = query.is('folder_id', null); }
+  else              { query = query.eq('folder_id', folderId); }
+
+  const { data: list } = await dbCall(() => query);
+  _infoCache = list || [];
+
+  const color = folderId ? (FOLDER_COLORS[_folderCache.findIndex(f=>f.id===folderId) % FOLDER_COLORS.length]) : null;
+
+  let html = `<div class="folder-header">
+    <button class="folder-back" onclick="backToFolders()">${icon(IC.arrowL, 16)}</button>
+    ${color ? `<div style="width:28px;height:28px;border-radius:6px;background:${color}22;color:${color};display:flex;align-items:center;justify-content:center">${icon(IC.folder,15)}</div>` : ''}
+    <div class="folder-title">${esc(title)}</div>
+  </div>`;
+
+  // Add note form
+  html += `<div class="card">
+    <div class="section-title">Add Note</div>
+    <input type="text" id="info-title" placeholder="Title...">
+    <textarea id="info-body" placeholder="Content..."></textarea>`;
+
+  if (isAll || isUncat) {
+    html += `<div class="form-row" style="margin-bottom:0;margin-top:4px">
+      <select id="info-folder-sel" style="flex:1;padding:10px 8px;font-size:.9rem">
+        <option value="">No folder</option>
+        ${_folderCache.map(f=>`<option value="${f.id}">${esc(f.name)}</option>`).join('')}
+      </select>
+      <button id="info-add-btn" class="btn btn-yellow" onclick="addInfo()">${icon(IC.plus,16)}Save</button>
+    </div>`;
+  } else {
+    html += `<button id="info-add-btn" class="btn btn-yellow btn-full" style="margin-top:8px" onclick="addInfo()">${icon(IC.plus,16)}Save</button>`;
+  }
+  html += `</div>`;
+
+  const infoQ2 = document.getElementById('info-search')?.value.trim().toLowerCase() || '';
+  const filteredInfo = infoQ2 ? _infoCache.filter(e => (e.title||'').toLowerCase().includes(infoQ2) || (e.body||'').toLowerCase().includes(infoQ2)) : _infoCache;
+
+  if (!filteredInfo.length) {
+    html += infoQ2 ? '<div class="empty">No matching notes</div>' : '<div class="empty">Nothing here yet</div>';
+  } else {
+    html += filteredInfo.map(e => {
+      if (editing.info === e.id) {
+        const folderSel = `<select id="ei-folder-${e.id}" style="width:100%;margin-bottom:8px;padding:10px 12px;font-size:.9rem">
+          <option value="">No folder</option>
+          ${_folderCache.map(f=>`<option value="${f.id}" ${f.id===e.folder_id?'selected':''}>${esc(f.name)}</option>`).join('')}
+        </select>`;
+        return `<div class="info-card" style="background:var(--surface-2)">
+          <input type="text" id="ei-title-${e.id}" value="${esc(e.title)}" style="margin-bottom:8px">
+          <textarea id="ei-body-${e.id}" style="margin-bottom:8px">${esc(e.body||'')}</textarea>
+          ${folderSel}
+          <div class="edit-actions">
+            <button class="btn btn-yellow" onclick="saveEditInfo('${e.id}')">Save</button>
+            <button class="btn btn-ghost"  onclick="cancelEditInfo()">Cancel</button>
+          </div>
+        </div>`;
+      }
+      const folderName = _folderCache.find(f=>f.id===e.folder_id)?.name;
+      return `<div class="info-card">
+        <div class="info-card-title">
+          <span>${esc(e.title)}</span>
+          <div class="info-card-actions">
+            <button class="icon-btn" onclick="startEditInfo('${e.id}')">${icon(IC.edit,16)}</button>
+            <button class="icon-btn danger" onclick="deleteInfo('${e.id}')">${icon(IC.trash,16)}</button>
+          </div>
+        </div>
+        ${e.body ? `<div class="info-card-body">${esc(e.body)}</div>` : ''}
+        <div class="info-card-meta">
+          ${new Date(e.created_at).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}
+          ${folderName ? `<span class="chip">${esc(folderName)}</span>` : ''}
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  view.innerHTML = html;
+}
+
+// Folder CRUD
+function openFolder(id)    { currentFolder = id; editing.info = null; editing.folder = null; renderInfo(); }
+function backToFolders()   { currentFolder = null; editing.info = null; editing.folder = null; renderInfo(); }
+function startNewFolder()  { editing.folder = '__new__'; renderInfo(); }
+function startEditFolder(id) { editing.folder = id; renderInfo(); }
+
+async function saveNewFolder() {
+  const name = document.getElementById('new-folder-name')?.value.trim();
+  if (!name) return;
+  const { error } = await dbCall(() => db.from('info_folders').insert({ user_id: user.id, name }));
+  if (error) return;
+  editing.folder = null;
+  toast('Folder created', 'ok');
+  await renderInfo();
+}
+async function saveEditFolder(id) {
+  const name = document.getElementById('ef-folder-'+id)?.value.trim();
+  if (!name) return;
+  const { error } = await dbCall(() => db.from('info_folders').update({ name }).eq('id', id).eq('user_id', user.id));
+  if (error) return;
+  editing.folder = null;
+  toast('Renamed', 'ok');
+  await renderInfo();
+}
+async function deleteFolder(id) {
+  await dbCall(() => db.from('info_folders').delete().eq('id', id).eq('user_id', user.id));
+  toast('Folder deleted — notes moved to No Folder', 'ok');
+  await renderInfo();
+}
+
+// Info CRUD
+async function addInfo() {
+  const title = document.getElementById('info-title')?.value.trim();
+  if (!title) { const el = document.getElementById('info-title'); if(el){el.style.borderColor='var(--danger)';setTimeout(()=>el.style.borderColor='',1500);} return; }
+  const btn = document.getElementById('info-add-btn'); btnLoad(btn, true);
+
+  let folderId = null;
+  if (currentFolder && currentFolder !== '__all__' && currentFolder !== '__uncat__') {
+    folderId = currentFolder;
+  } else {
+    const sel = document.getElementById('info-folder-sel');
+    folderId = sel?.value || null;
+  }
+
+  const { error } = await dbCall(() => db.from('info_entries').insert({
+    user_id: user.id,
+    title,
+    body: document.getElementById('info-body')?.value.trim() || null,
+    folder_id: folderId || null
+  }));
+  btnLoad(btn, false); if (error) return;
+  toast('Saved', 'ok');
+  await renderInfo();
+}
+
+function startEditInfo(id) { editing.info = id; renderInfo(); }
+function cancelEditInfo()  { editing.info = null; renderInfo(); }
+
+async function saveEditInfo(id) {
+  const title = document.getElementById('ei-title-'+id)?.value.trim();
+  if (!title) return toast('Title required', 'error');
+  const sel = document.getElementById('ei-folder-'+id);
+  const { error } = await dbCall(() => db.from('info_entries').update({
+    title,
+    body: document.getElementById('ei-body-'+id)?.value.trim() || null,
+    folder_id: sel?.value || null
+  }).eq('id', id).eq('user_id', user.id));
+  if (error) return; editing.info = null; toast('Updated', 'ok'); await renderInfo();
+}
+
+async function deleteInfo(id) {
+  await dbCall(() => db.from('info_entries').delete().eq('id', id).eq('user_id', user.id));
+  await renderInfo();
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// DAILY — HABITS + TASKS
+// ══════════════════════════════════════════════════════════════════════════
+
+function parseTaskName(raw) {
+  const s = raw || '';
+  const dueM   = s.match(/\[(\d{4}-\d{2}-\d{2})\]/);
+  const timeM  = s.match(/\[TIME:(\d{2}:\d{2})\]/);
+  const notesM = s.match(/\[NOTES:([^\]]*)\]/);
+  const name   = s.replace(/\s*\[\d{4}-\d{2}-\d{2}\]|\s*\[TIME:[^\]]*\]|\s*\[NOTES:[^\]]*\]/g, '').trim();
+  return { name, due: dueM?.[1] || null, time: timeM?.[1] || null, notes: notesM?.[1] || null };
+}
+function formatTime12(t) {
+  if (!t) return '';
+  const [h, m] = t.split(':').map(Number);
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  return `${h % 12 || 12}:${String(m).padStart(2,'0')} ${ampm}`;
+}
+
+function formatDue(dateStr) {
+  const today = todayKey();
+  if (dateStr === today)        return 'today';
+  if (dateStr === offsetKey(1)) return 'tomorrow';
+  if (dateStr === offsetKey(-1)) return 'yesterday';
+  const [y,m,d] = dateStr.split('-');
+  return new Date(+y,+m-1,+d).toLocaleDateString('en-US',{month:'short',day:'numeric'});
+}
+
+function setAddType(t) {
+  addType = t;
+  document.getElementById('type-habit-btn')?.classList.toggle('active', t === 'habit');
+  document.getElementById('type-task-btn')?.classList.toggle('active', t === 'task');
+  const sideFields = document.getElementById('task-side-fields');
+  if (sideFields) sideFields.style.display = t === 'task' ? 'block' : 'none';
+}
+
+async function addItem() {
+  let name = document.getElementById('habit-name').value.trim();
+  if (!name) return flashErr('habit-name', 'Enter a name');
+  if (addType === 'task') {
+    const notes = document.getElementById('task-notes-input')?.value.trim();
+    if (notes) name += ` [NOTES:${notes}]`;
+  }
+  const btn = document.getElementById('habit-add-btn'); btnLoad(btn, true);
+  const { error } = await dbCall(() => db.from('habits').insert({
+    user_id: user.id, name, recurring: addType === 'habit', completed: false
+  }));
+  btnLoad(btn, false); if (error) return;
+  document.getElementById('habit-name').value = '';
+  if (document.getElementById('task-notes-input')) document.getElementById('task-notes-input').value = '';
+  cacheInvalidate('habits', 'completions');
+  await renderDaily();
+}
+
+function startEditHabit(id) { editing.habit = id; renderDaily(); }
+function cancelEditHabit()  { editing.habit = null; renderDaily(); }
+async function saveEditHabit(id, isRecurring) {
+  let name = document.getElementById('eh-name-'+id)?.value.trim();
+  if (!name) return toast('Name required','error');
+  if (!isRecurring) {
+    const notes = document.getElementById('eh-notes-'+id)?.value.trim();
+    if (notes) name += ` [NOTES:${notes}]`;
+  }
+  const { error } = await dbCall(() => db.from('habits').update({ name }).eq('id',id).eq('user_id',user.id));
+  if (error) return; editing.habit = null; cacheInvalidate('habits'); toast('Updated','ok'); await renderDaily();
+}
+
+async function toggleItem(id, isRecurring) {
+  // Optimistic: flip DOM immediately
+  const rowEl   = document.querySelector(`.habit-row[data-id="${id}"]`);
+  const checkEl = rowEl?.querySelector('.habit-check');
+  if (rowEl)   rowEl.classList.toggle('done-row');
+  if (checkEl) checkEl.classList.toggle('done');
+
+  cacheInvalidate('habits', 'completions');
+  let didComplete = false;
+  if (isRecurring) {
+    const dateKey = todayKey();
+    const { data } = await dbCall(() => db.from('habit_completions').select('id').eq('user_id',user.id).eq('habit_id',id).eq('date',dateKey).maybeSingle());
+    if (data) { await dbCall(() => db.from('habit_completions').delete().eq('id',data.id)); }
+    else       { await dbCall(() => db.from('habit_completions').insert({user_id:user.id,habit_id:id,date:dateKey})); didComplete = true; }
+  } else {
+    const { data } = await dbCall(() => db.from('habits').select('completed').eq('id',id).single());
+    const nowDone = !data?.completed;
+    await dbCall(() => db.from('habits').update({ completed: nowDone }).eq('id',id).eq('user_id',user.id));
+    didComplete = nowDone;
+  }
+  if (didComplete) {
+    const isCore = isRecurring && getCoreHabitIds().includes(id);
+    const xp     = isCore ? 50 : isRecurring ? 25 : 15;
+    const reason = isCore ? 'Core Task' : isRecurring ? 'Daily Task' : 'Side Task';
+    await awardXP(xp, reason);
+    toastUndo('Task done!', () => toggleItem(id, isRecurring));
+  } else {
+    const isCore = isRecurring && getCoreHabitIds().includes(id);
+    const xp     = isCore ? 50 : isRecurring ? 25 : 15;
+    await awardXP(-xp, 'Task unchecked');
+  }
+  await renderDaily();
+}
+
+async function deleteItem(id) {
+  cacheInvalidate('habits', 'completions');
+  await dbCall(() => db.from('habits').delete().eq('id',id).eq('user_id',user.id));
+  await renderDaily();
+}
+
+async function renderDaily() {
+  const dateKey  = todayKey();
+  renderDailyQuest();
+
+  let all      = cacheGet('habits');
+  let allComps = cacheGet('completions');
+  if (!all || !allComps) {
+    const [itemsRes, compRes] = await Promise.all([
+      dbCall(() => db.from('habits').select('*').eq('user_id',user.id).order('created_at')),
+      dbCall(() => db.from('habit_completions').select('habit_id,date').eq('user_id',user.id).gte('date', offsetKey(-90)))
+    ]);
+    all      = itemsRes.data || [];
+    allComps = compRes.data || [];
+    cacheSet('habits', all); cacheSet('completions', allComps);
+  }
+
+  // Task filter
+  const taskQ = document.getElementById('task-filter')?.value.trim().toLowerCase() || '';
+  const filterWrap = document.getElementById('task-filter-wrap');
+  if (filterWrap) filterWrap.style.display = all.length > 4 ? 'block' : 'none';
+  const filteredAll = taskQ ? all.filter(h => h.name.toLowerCase().includes(taskQ)) : all;
+  const doneHabitIds = new Set(allComps.filter(c => c.date === dateKey).map(c => c.habit_id));
+
+  // Precompute streaks for all recurring habits
+  const streakMap = {};
+  all.filter(h => h.recurring).forEach(h => {
+    const dates = new Set(allComps.filter(c => c.habit_id === h.id).map(c => c.date));
+    let streak = 0;
+    const skip = dates.has(todayKey()) ? 0 : 1;
+    for (let i = skip; i <= 90; i++) {
+      if (dates.has(offsetKey(-i))) streak++;
+      else break;
+    }
+    streakMap[h.id] = streak;
+  });
+
+  const habits  = filteredAll.filter(h =>  h.recurring);
+  const tasks   = filteredAll.filter(h => !h.recurring);
+
+  await refreshTodayStats();
+
+  if (!filteredAll.length) {
+    document.getElementById('daily-list').innerHTML = taskQ
+      ? '<div class="card"><div class="empty">No matching tasks</div></div>'
+      : '<div class="card"><div class="empty">Add tasks above</div></div>';
+    return;
+  }
+
+  function renderRow(item, isDone) {
+    const parsed = item.recurring ? { name: item.name, due: null, time: null, notes: null } : parseTaskName(item.name);
+    if (editing.habit === item.id) {
+      const sideFields = item.recurring ? '' : `
+        <input type="text" id="eh-notes-${item.id}" placeholder="Notes (optional)" value="${esc(parsed.notes||'')}" style="margin-bottom:8px">`;
+      return `<div class="entry-editing">
+        <input type="text" id="eh-name-${item.id}" value="${esc(parsed.name)}" style="margin-bottom:8px">
+        ${sideFields}
+        <div class="edit-actions">
+          <button class="btn btn-green" onclick="saveEditHabit('${item.id}',${item.recurring})">Save</button>
+          <button class="btn btn-ghost"  onclick="cancelEditHabit()">Cancel</button>
+        </div>
+      </div>`;
+    }
+    const isCore = item.recurring && getCoreHabitIds().includes(item.id);
+    const shape  = item.recurring ? 'round' : 'square';
+    const streak = item.recurring ? (streakMap[item.id] || 0) : 0;
+    const streakBadge = streak >= 1 ? `<span class="streak-badge">🔥 ${streak}</span>` : '';
+    const badge = isCore
+      ? `<span class="core-badge">${icon(IC.lock,11)} Core</span>`
+      : item.recurring
+        ? `<span class="habit-badge badge-daily">Daily</span>`
+        : `<span class="habit-badge badge-side">Side</span>`;
+    let metaHtml = '';
+    if (parsed.due) {
+      const isOverdue = !isDone && parsed.due < dateKey;
+      const timeStr = parsed.time ? ` at ${formatTime12(parsed.time)}` : '';
+      const cls   = isOverdue ? ' overdue' : parsed.due > dateKey ? ' scheduled' : '';
+      const label = parsed.due > dateKey ? 'scheduled' : 'due';
+      metaHtml += `<div class="task-due${cls}">${label} ${formatDue(parsed.due)}${timeStr}</div>`;
+    }
+    if (parsed.notes) metaHtml += `<div class="task-inline-note">${esc(parsed.notes)}</div>`;
+    return `<div class="habit-row ${isDone?'done-row':''}" data-id="${item.id}">
+      <button class="habit-check ${shape} ${isDone?'done':''}" onclick="toggleItem('${item.id}',${item.recurring})" aria-label="${isDone?'Mark incomplete':'Mark complete'}: ${esc(parsed.name)}">${icon(IC.check,14)}</button>
+      <div style="flex:1;min-width:0">
+        <div class="habit-name">${esc(parsed.name)}</div>
+        ${metaHtml}
+      </div>
+      ${streakBadge}${badge}
+      ${isCore ? '' : `<button class="icon-btn" onclick="startEditHabit('${item.id}')">${icon(IC.edit,16)}</button>`}
+      ${isCore ? '' : `<button class="icon-btn danger" onclick="deleteItem('${item.id}')">${icon(IC.trash,16)}</button>`}
+    </div>`;
+  }
+
+  let html = '';
+
+  const incompleteHabits = habits.filter(h => !doneHabitIds.has(h.id));
+  const completedHabits  = habits.filter(h =>  doneHabitIds.has(h.id));
+
+  // Split side tasks: due today/overdue/no-date vs scheduled future
+  const incompleteTasks = tasks.filter(t => {
+    if (t.completed) return false;
+    const p = parseTaskName(t.name);
+    return !p.due || p.due <= dateKey;
+  });
+  const futureTasks = tasks
+    .filter(t => !t.completed)
+    .map(t => ({ t, due: parseTaskName(t.name).due }))
+    .filter(({ due }) => due && due > dateKey)
+    .sort((a, b) => a.due < b.due ? -1 : a.due > b.due ? 1 : 0)
+    .map(({ t }) => t);
+  const completedTasks = tasks.filter(t => t.completed);
+
+  const hasHabits = habits.length > 0;
+  const hasTasks  = incompleteTasks.length + completedTasks.length > 0;
+
+  // Open card — due/overdue/no-date tasks + daily habits
+  if (incompleteHabits.length || incompleteTasks.length) {
+    html += '<div class="card">';
+    if (hasHabits && hasTasks && incompleteHabits.length) {
+      html += `<div class="list-divider">Daily</div>`;
+    }
+    incompleteHabits.forEach(h => { html += renderRow(h, false); });
+    if (hasHabits && incompleteTasks.length) {
+      html += `<div class="list-divider" style="margin-top:8px">Side</div>`;
+    }
+    incompleteTasks.forEach(t => { html += renderRow(t, false); });
+    html += '</div>';
+  }
+
+  // Upcoming card — future scheduled tasks (not yet due)
+  if (futureTasks.length) {
+    html += '<div class="card" style="opacity:.7">';
+    html += `<div class="list-divider" style="margin-bottom:4px">Upcoming</div>`;
+    futureTasks.forEach(t => { html += renderRow(t, false); });
+    html += '</div>';
+  }
+
+  // Archive — completed items
+  if (completedHabits.length || completedTasks.length) {
+    html += '<div class="card" style="margin-top:8px;border-style:dashed;opacity:.7">';
+    html += `<div class="list-divider" style="margin-bottom:4px;font-size:.7rem;letter-spacing:.08em">ARCHIVE</div>`;
+    completedHabits.forEach(h => { html += renderRow(h, true); });
+    completedTasks.forEach(t  => { html += renderRow(t, true); });
+    html += '</div>';
+  }
+
+  document.getElementById('daily-list').innerHTML = html;
+
+  // Frog jump when all current (non-future) items are complete
+  const currentCount = incompleteHabits.length + incompleteTasks.length + completedHabits.length + completedTasks.length;
+  const allDoneNow = currentCount > 0 && incompleteHabits.length === 0 && incompleteTasks.length === 0;
+  if (allDoneNow && !_jumpFired) { _jumpFired = true; mascotJump(); }
+  if (!allDoneNow) _jumpFired = false;
+}
+
+// ══════════════════════════════════════════════════════════════════════════
+// SUMMARY
+// ══════════════════════════════════════════════════════════════════════════
+function getPeriodRange(p) {
+  const end = todayKey();
+  if (p === 'day') return { start: end, end, days: 1 };
+  const n = { week: 6, month: 29, year: 364 }[p];
+  const s = new Date(); s.setDate(s.getDate() - n);
+  return { start: localDateStr(s), end, days: n + 1 };
+}
+
+function setSummaryPeriod(p) {
+  summaryPeriod = p;
+  ['day','week','month','year'].forEach(x => {
+    const b = document.getElementById('sp-' + x);
+    if (b) b.classList.toggle('active', x === p);
+  });
+  renderSummary();
+}
+
+async function renderSummary() {
+  const view = document.getElementById('summary-view');
+  if (!view) return;
+  view.innerHTML = '<div class="empty">Loading…</div>';
+
+  const { start, end, days } = getPeriodRange(summaryPeriod);
+  const today   = todayKey();
+  const [foodRes, wkRes, habRes, compRes, todayWkRes, todayFoodRes, todayCompRes] = await Promise.all([
+    dbCall(() => db.from('food_entries').select('calories,protein,carbs,fat,date').eq('user_id',user.id).gte('date',start).lte('date',end)),
+    dbCall(() => db.from('workout_entries').select('id,date,type,duration').eq('user_id',user.id).gte('date',start).lte('date',end)),
+    dbCall(() => db.from('habits').select('id,recurring,completed').eq('user_id',user.id)),
+    dbCall(() => db.from('habit_completions').select('habit_id,date').eq('user_id',user.id).gte('date',start).lte('date',end)),
+    dbCall(() => db.from('workout_entries').select('id').eq('user_id',user.id).eq('date',today)),
+    dbCall(() => db.from('food_entries').select('calories').eq('user_id',user.id).eq('date',today)),
+    dbCall(() => db.from('habit_completions').select('habit_id').eq('user_id',user.id).eq('date',today)),
+  ]);
+
+  const foods    = foodRes.data  || [];
+  const wks      = wkRes.data    || [];
+  const allItems = habRes.data   || [];
+  const comps    = compRes.data  || [];
+  const habits   = allItems.filter(h =>  h.recurring);
+  const tasks    = allItems.filter(h => !h.recurring);
+
+  // Today's goal data (for mascot + today card)
+  const todayCals      = (todayFoodRes.data||[]).reduce((s,f)=>s+(f.calories||0),0);
+  const todayTracked   = (todayWkRes.data||[]).length;
+  const todayDoneIds   = new Set((todayCompRes.data||[]).map(c=>c.habit_id));
+  const todayHabitDone = habits.filter(h=>todayDoneIds.has(h.id)).length + tasks.filter(t=>t.completed).length;
+  const totalItems     = allItems.length;
+
+  // Update mascot state
+  _mascot.cals       = todayCals;
+  _mascot.habitDone  = todayHabitDone;
+  _mascot.habitTotal = totalItems;
+  updateMascot();
+
+  // ── Today's Status card
+  const calPct  = calGoal ? Math.min(100, Math.round((todayCals/calGoal)*100)) : 0;
+  const trkPct  = Math.min(100, Math.round((todayTracked / 5) * 100));
+  const habPct  = totalItems ? Math.round((todayHabitDone/totalItems)*100) : 0;
+  const qStateS = user?.user_metadata?.quest_state;
+  let qDoneS = 0, qTotalS = 4;
+  if (qStateS?.exercises) { qTotalS = qStateS.exercises.length; qDoneS = qStateS.exercises.filter(e=>e.done).length; }
+  else if (qStateS) { qDoneS = (!!qStateS.pushups + !!qStateS.situps + !!qStateS.squats + !!qStateS.run); }
+  const qPctS   = qTotalS > 0 ? (qDoneS / qTotalS) * 100 : 0;
+  const questStreak = getQuestStreak();
+  const todayCard = `<div class="card" style="margin-bottom:12px">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px">
+      <div class="smry-ttl" style="margin:0">Today's Status</div>
+      ${questStreak >= 1 ? `<span style="font-size:.68rem;font-weight:800;color:#f97316">🔥 ${questStreak}-day streak</span>` : ''}
+    </div>
+    <div style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">
+        <span style="font-size:.82rem;font-weight:700">⚡ Daily Quest</span>
+        <span style="font-size:.76rem;font-weight:700;color:${qDoneS===qTotalS?'var(--accent)':'var(--muted)'}">${qDoneS}/${qTotalS}${qDoneS===qTotalS?' · complete':''}</span>
+      </div>
+      <div class="goal-bar"><div class="goal-bar-fill" style="width:${qPctS}%;background:${qDoneS===qTotalS?'var(--accent)':'var(--accent4)'}"></div></div>
+    </div>
+    <div style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">
+        <span style="font-size:.82rem;font-weight:700">☑ Tasks</span>
+        <span style="font-size:.76rem;color:var(--muted)">${todayHabitDone} / ${totalItems}</span>
+      </div>
+      <div class="goal-bar"><div class="goal-bar-fill" style="width:${habPct}%;background:${habPct>=100?'var(--accent)':'var(--accent4)'}"></div></div>
+    </div>
+    <div style="margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">
+        <span style="font-size:.82rem;font-weight:700">🍽 Calories</span>
+        <span style="font-size:.76rem;color:var(--muted)">${todayCals.toLocaleString()} / ${calGoal.toLocaleString()} kcal</span>
+      </div>
+      <div class="goal-bar"><div class="goal-bar-fill" style="width:${calPct}%;background:${calPct>110?'var(--danger)':'var(--accent)'}"></div></div>
+    </div>
+    <div>
+      <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:5px">
+        <span style="font-size:.82rem;font-weight:700">📊 Tracker</span>
+        <span style="font-size:.76rem;color:var(--muted)">${todayTracked} entries</span>
+      </div>
+      <div class="goal-bar"><div class="goal-bar-fill" style="width:${trkPct}%;background:var(--accent4)"></div></div>
+    </div>
+  </div>`;
+
+  // Nutrition
+  const totalCals  = foods.reduce((s,f) => s + (f.calories||0), 0);
+  const macroTotals = {};
+  MACRO_DEFS.forEach(m => { macroTotals[m.key] = foods.reduce((s,f) => s + (m.core ? (+f[m.key]||0) : (+(f.meta?.[m.key])||0)), 0); });
+  const loggedDays = new Set(foods.map(f => f.date)).size;
+  const avgCals    = loggedDays ? Math.round(totalCals / loggedDays) : 0;
+
+  // Workouts
+  const wkDaysSet = new Set(wks.map(w => w.date));
+  const wkDays    = wkDaysSet.size;
+
+  // Habits
+  const compRate   = (habits.length && days) ? Math.min(100, Math.round((comps.length / (habits.length * days)) * 100)) : null;
+  const tasksDone  = tasks.filter(t => t.completed).length;
+
+  // ── Week chart (week period only)
+  let chartHtml = '';
+  if (summaryPeriod === 'week') {
+    const calsByDay = {};
+    foods.forEach(f => { calsByDay[f.date] = (calsByDay[f.date]||0) + f.calories; });
+    const weekDays = Array.from({length:7}, (_,i) => {
+      const d = new Date(); d.setDate(d.getDate() - (6 - i));
+      return localDateStr(d);
+    });
+    const cols = weekDays.map(date => {
+      const d = new Date(date + 'T12:00:00');
+      const lbl = ['S','M','T','W','T','F','S'][d.getDay()];
+      const cals = calsByDay[date] || 0;
+      const barH = (cals && calGoal) ? Math.min(42, Math.max(3, Math.round((cals/calGoal)*42))) : 0;
+      const barColor = cals > calGoal ? 'var(--danger)' : 'var(--accent5)';
+      const hasWk = wkDaysSet.has(date);
+      return `<div class="week-day-col">
+        <div class="week-day-lbl${date===today?' wk-today':''}">${lbl}</div>
+        <div class="week-cal-wrap"><div class="week-cal-bar" style="height:${barH}px;background:${barColor}"></div></div>
+        <div class="week-wk-dot" style="background:${hasWk?'var(--accent4)':'var(--border)'}"></div>
+      </div>`;
+    }).join('');
+    chartHtml = `<div class="card" style="margin-bottom:12px">
+      <div class="smry-ttl">This Week</div>
+      <div class="week-grid">${cols}</div>
+      <div class="week-legend">
+        <span><i class="wk-swatch" style="background:var(--accent5);border-radius:2px"></i>Calories</span>
+        <span><i class="wk-swatch" style="background:var(--accent4);border-radius:50%"></i>Tracker</span>
+      </div>
+    </div>`;
+  }
+
+  // ── Nutrition card
+  const displayCals = days === 1 ? totalCals : avgCals;
+  const goalPct = calGoal ? Math.min(100, Math.round((displayCals / calGoal) * 100)) : 0;
+  const nutritionHtml = `<div class="card" style="margin-bottom:12px">
+    <div class="smry-ttl">Nutrition</div>
+    <div class="smry-stat-row">
+      <span class="smry-big" style="color:var(--accent)">${displayCals.toLocaleString()}</span>
+      <span class="smry-lbl">kcal${days > 1 ? ' avg / day' : ' today'}</span>
+    </div>
+    <div class="summary-bar"><div class="summary-bar-fill" style="width:${goalPct}%;background:${goalPct>110?'var(--danger)':'var(--accent)'}"></div></div>
+    <div class="smry-sub">${goalPct}% of ${calGoal.toLocaleString()} goal${days > 1 ? ` · ${totalCals.toLocaleString()} total · ${loggedDays} of ${days} days logged` : ''}</div>
+    <div class="smry-macros">${MACRO_DEFS.filter(m=>trackedMacros.includes(m.key)).map(m=>{
+      const tot = macroTotals[m.key]||0;
+      const disp = Math.round(days===1 ? tot : tot/(loggedDays||1));
+      return `<div class="smry-mac"><div class="smry-mac-val" style="color:${m.color}">${disp}${m.unit}</div><div class="smry-mac-lbl">${days>1?'avg ':''}${m.label.toLowerCase()}</div></div>`;
+    }).join('')}</div>
+  </div>`;
+
+  // ── Tracker & Power Level card
+  const trackedDays = wkDaysSet.size;
+  const trkDayPct   = days ? Math.round((trackedDays/days)*100) : 0;
+  const xpProg      = getLevelProgress(totalXP);
+  const xpRank      = getRankInfo(xpProg.level);
+  const workoutsHtml = `<div class="card" style="margin-bottom:12px">
+    <div class="smry-ttl">Tracker &amp; Power Level</div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+      <div style="flex:1">
+        <div style="font-size:.72rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:${xpRank.color};margin-bottom:2px">${xpRank.rank}</div>
+        <div style="font-size:1.6rem;font-weight:900;letter-spacing:-.03em;color:var(--text)">Level ${xpProg.level}</div>
+        <div style="font-size:.72rem;color:var(--muted);margin-top:2px">${totalXP.toLocaleString()} XP · ${xpProg.pct}% to next</div>
+      </div>
+      <div style="font-size:2.4rem">${xpRank.icon}</div>
+    </div>
+    <div class="summary-bar" style="margin-bottom:10px"><div class="summary-bar-fill" style="width:${xpProg.pct}%;background:linear-gradient(90deg,var(--accent4),var(--accent5))"></div></div>
+    <div style="display:flex;gap:20px;align-items:flex-end">
+      <div><div class="smry-big" style="color:var(--accent4)">${trackedDays}</div><div class="smry-sub">day${trackedDays!==1?'s':''} tracked</div></div>
+      <div><div class="smry-big" style="color:var(--accent4);font-size:1.5rem">${wks.length}</div><div class="smry-sub">entr${wks.length!==1?'ies':'y'}</div></div>
+      ${days>1 ? `<div style="margin-left:auto;text-align:right"><div style="font-size:1.3rem;font-weight:700;color:var(--text-2)">${trkDayPct}%</div><div class="smry-sub">days logged</div></div>` : ''}
+    </div>
+  </div>`;
+
+  // ── Daily card
+  const dailyHtml = `<div class="card">
+    <div class="smry-ttl">Daily</div>
+    ${habits.length ? `
+      <div class="smry-stat-row">
+        <span class="smry-big" style="color:var(--accent4)">${compRate ?? 0}%</span>
+        <span class="smry-lbl">habit completion</span>
+      </div>
+      <div class="summary-bar"><div class="summary-bar-fill" style="width:${compRate??0}%;background:var(--accent4)"></div></div>
+      <div class="smry-sub">${habits.length} habit${habits.length!==1?'s':''}</div>
+    ` : '<div class="smry-sub">No habits tracked</div>'}
+    ${tasks.length ? `<div class="smry-sub" style="margin-top:${habits.length?6:0}px">${tasksDone} of ${tasks.length} task${tasks.length!==1?'s':''} completed</div>` : ''}
+  </div>`;
+
+  view.innerHTML = todayCard + chartHtml + nutritionHtml + workoutsHtml + dailyHtml;
+}
+
+// ── Mascot (kawaii frog) ────────────────────────────────────────────────────
+function mascotSVG(score, size) {
+  size = size || 72;
+  const s = score;
+  const body    = '#66BB6A';
+  const outline = '#2D5A1A';
+  const bl      = s>=65?0.88:s>=40?0.5:0; // blush opacity
+  // Small cute mouth (not wide — kawaii style)
+  const mouth = s>=90?'M13,24 Q20,30 27,24'
+              : s>=65?'M14,24 Q20,29 26,24'
+              : s>=40?'M15,24.5 Q20,28 25,24.5'
+              : s>=20?'M16,25.5 Q20,26.5 24,25.5'
+              : s>=8 ?'M14,27 Q20,22.5 26,27'
+              :        'M13,28 Q20,21 27,28';
+  // Tears when very sad
+  const tears = s<8
+    ? '<ellipse cx="10" cy="21" rx="1.5" ry="2.5" fill="#93c5fd" opacity=".9"/>'
+    + '<ellipse cx="28" cy="21" rx="1.5" ry="2.5" fill="#93c5fd" opacity=".9"/>'
+    : '';
+  // Gold stars when celebrating
+  const stars = s>=90
+    ? '<path d="M3,8 L4,5 L5,8 L8,9 L5,10 L4,13 L3,10 L0,9Z" fill="#FBBF24"/>'
+    + '<path d="M35,6 L36,3 L37,6 L40,7 L37,8 L36,11 L35,8 L32,7Z" fill="#FBBF24"/>'
+    : '';
+  return '<svg width="'+size+'" height="'+size+'" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">'
+    // Dark outline layer (1-1.5px border effect)
+    + '<ellipse cx="20" cy="25.5" rx="17" ry="13.5" fill="'+outline+'"/>'
+    + '<circle cx="13" cy="12.5" r="8" fill="'+outline+'"/>'
+    + '<circle cx="27" cy="12.5" r="8" fill="'+outline+'"/>'
+    // Body + eye bumps
+    + '<ellipse cx="20" cy="25" rx="15.5" ry="12" fill="'+body+'"/>'
+    + '<circle cx="13" cy="12" r="6.8" fill="'+body+'"/>'
+    + '<circle cx="27" cy="12" r="6.8" fill="'+body+'"/>'
+    // Cream belly
+    + '<ellipse cx="20" cy="30" rx="8" ry="5.5" fill="#E8E5A0"/>'
+    // Orange webbed feet (3 toe bumps each)
+    + '<circle cx="7" cy="37" r="2.6" fill="#F59E0B"/>'
+    + '<circle cx="11" cy="35.8" r="2.6" fill="#F59E0B"/>'
+    + '<circle cx="15" cy="37" r="2.6" fill="#F59E0B"/>'
+    + '<circle cx="25" cy="37" r="2.6" fill="#F59E0B"/>'
+    + '<circle cx="29" cy="35.8" r="2.6" fill="#F59E0B"/>'
+    + '<circle cx="33" cy="37" r="2.6" fill="#F59E0B"/>'
+    // Large kawaii eyes (big black circles with white shine)
+    + '<circle cx="13" cy="12" r="5.8" fill="#111"/>'
+    + '<circle cx="27" cy="12" r="5.8" fill="#111"/>'
+    + '<circle cx="15.5" cy="9.2" r="2" fill="white"/>'
+    + '<circle cx="29.5" cy="9.2" r="2" fill="white"/>'
+    // Pink blush cheeks
+    + '<circle cx="7.5" cy="23" r="4" fill="rgba(255,140,160,'+bl+')"/>'
+    + '<circle cx="32.5" cy="23" r="4" fill="rgba(255,140,160,'+bl+')"/>'
+    // Tiny nostrils
+    + '<circle cx="18.5" cy="19.5" r="1.1" fill="rgba(0,0,0,0.2)"/>'
+    + '<circle cx="21.5" cy="19.5" r="1.1" fill="rgba(0,0,0,0.2)"/>'
+    + tears + stars
+    // Mouth
+    + '<path d="'+mouth+'" stroke="'+outline+'" stroke-width="1.6" fill="none" stroke-linecap="round"/>'
+    + '</svg>';
+}
+
+function mascotMsg(score) {
+  if (score>=95) return "All goals crushed! You're on fire! 🎉";
+  if (score>=80) return "Incredible progress today!";
+  if (score>=65) return "Looking great, keep it up!";
+  if (score>=45) return "Good progress, you've got this!";
+  if (score>=25) return "A little more effort...";
+  if (score>=10) return "Let's get moving!";
+  return "I'm waiting for you...";
+}
+
+function updateMascot() {
+  const { cals, habitDone, habitTotal } = _mascot;
+  const calPct = calGoal > 0 ? (cals / calGoal) * 100 : 0;
+  const calS   = calPct <= 100 ? calPct : Math.max(0, 100 - (calPct - 100) * 2);
+  const habS   = habitTotal > 0 ? (habitDone / habitTotal) * 100 : 0;
+  const qState = user?.user_metadata?.quest_state;
+  let qDone = 0, qTotal = 4;
+  if (qState?.exercises) { qTotal = qState.exercises.length; qDone = qState.exercises.filter(e => e.done).length; }
+  else if (qState) { qDone = (!!qState.pushups + !!qState.situps + !!qState.squats + !!qState.run); }
+  const qS = qTotal > 0 ? (qDone / qTotal) * 100 : 0;
+  const s  = Math.round((calS + habS + qS) / 3);
+  const cls = s>=90?'mascot-celebrate':s>=55?'mascot-bounce':'mascot-idle';
+  const face = document.getElementById('mascot-face');
+  const msg  = document.getElementById('mascot-msg');
+  const hdr  = document.getElementById('mascot-hdr');
+  const greet = document.getElementById('mascot-greeting');
+  if (face && !face.classList.contains('mascot-tap') && !face.classList.contains('mascot-jump-once')) {
+    face.innerHTML = mascotSVG(s, 72); face.className = cls;
+  }
+  if (msg)  msg.textContent = mascotMsg(s);
+  if (hdr)  { hdr.innerHTML = mascotSVG(s, 34); hdr.className = cls; }
+  if (greet) {
+    const name = user?.user_metadata?.display_name;
+    const h = new Date().getHours();
+    const tod = h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening';
+    greet.textContent = name ? `${tod}, ${name}!` : '';
+  }
+  if (s>=95 && habitTotal>0 && !_confettiFired) { _confettiFired=true; popConfetti(); }
+  if (s<90) _confettiFired = false;
+  updateSystemStatus();
+}
+
+// #10 — Mascot tap reaction
+const MASCOT_TAPS = [
+  "Ribbit! 🐸", "You got this!", "Stay consistent!", "Every rep counts!",
+  "One day at a time.", "Discipline beats motivation.", "You showed up. That's everything.",
+  "Don't quit when it gets hard.", "Progress > perfection.", "I believe in you! 💚",
+  "The grind never stops 💪", "Hydrate or diedrate 💧", "Rest is part of the process.",
+  "You're stronger than yesterday.", "Keep stacking those habits!", "Ribbit ribbit! 🐸🐸",
+];
+let _tapIdx = -1;
+function tapMascot() {
+  const face = document.getElementById('mascot-face');
+  const msg  = document.getElementById('mascot-msg');
+  if (!face) return;
+  face.classList.remove('mascot-tap', 'mascot-jump-once');
+  void face.offsetWidth; // reflow to restart animation
+  face.classList.add('mascot-tap');
+  _tapIdx = (_tapIdx + 1) % MASCOT_TAPS.length;
+  if (msg) msg.textContent = MASCOT_TAPS[_tapIdx];
+  setTimeout(() => {
+    face.classList.remove('mascot-tap');
+    updateMascot();
+  }, 600);
+}
+
+// #4 — Frog jump animation when all daily tasks complete
+let _jumpFired = false;
+function mascotJump() {
+  const face = document.getElementById('mascot-face');
+  if (!face) return;
+  face.classList.remove('mascot-jump-once', 'mascot-tap');
+  void face.offsetWidth;
+  face.classList.add('mascot-jump-once');
+  popConfetti();
+  setTimeout(() => { face.classList.remove('mascot-jump-once'); updateMascot(); }, 800);
+}
+
+function popConfetti() {
+  const cols = ['#4ade80','#60a5fa','#f59e0b','#a78bfa','#f87171','#22d3ee','#fb923c'];
+  for (let i=0;i<45;i++) {
+    const el = document.createElement('div');
+    el.style.cssText = 'position:fixed;width:'+(6+Math.random()*7)+'px;height:'+(6+Math.random()*7)+'px;background:'+cols[i%cols.length]+';border-radius:'+(Math.random()>.5?'50%':'2px')+';top:-12px;left:'+(4+Math.random()*92)+'%;z-index:9998;pointer-events:none;animation:confetti-fall '+(0.85+Math.random()*.9)+'s ease-in forwards;animation-delay:'+(Math.random()*.65)+'s';
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(),2600);
+  }
+}
+
+// ── Navigation ─────────────────────────────────────────────────────────────
+
+function switchTab(tab) {
+  activeTab = tab;
+  editing = { food: null, activity: null, info: null, habit: null, folder: null };
+  hideFoodDropdown();
+  const _dateEl = document.getElementById('hdn-date'); if(_dateEl) _dateEl.textContent = new Date().toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById('section-'+tab).classList.add('active');
+  document.querySelector(`nav button[data-tab="${tab}"]`)?.classList.add('active');
+  if (tab==='food')     renderFood();
+  if (tab==='activity') renderActivity();
+  if (tab==='info')     renderInfo();
+  if (tab==='daily')    renderDaily();
+  if (tab==='summary')  setSummaryPeriod(summaryPeriod);
+}
+
+// ── Push Notifications (#9) ────────────────────────────────────────────────
+function initNotifications() {
+  if (!('Notification' in window)) return;
+  scheduleAppNotification();
+}
+function scheduleAppNotification() {
+  const time  = localStorage.getItem('froggy-notif-time');
+  const today = todayKey();
+  if (!time || localStorage.getItem('froggy-notif-last') === today) return;
+  const [h, m] = time.split(':').map(Number);
+  const now = new Date();
+  const target = new Date(now.getFullYear(), now.getMonth(), now.getDate(), h, m, 0);
+  const ms = target - now;
+  if (ms < 0 || ms > 24 * 60 * 60 * 1000) return; // only same-day upcoming reminders
+  setTimeout(() => {
+    if (Notification.permission === 'granted') {
+      new Notification('Froggy 🐸', { body: "Time to check in on your goals!", icon: '/icon.svg', badge: '/icon.svg' });
+      localStorage.setItem('froggy-notif-last', todayKey());
+    }
+  }, ms);
+}
+async function requestNotifPermission() {
+  if (!('Notification' in window)) return toast('Notifications not supported', 'error');
+  const result = await Notification.requestPermission();
+  if (result === 'granted') {
+    toast('Notifications enabled! 🔔', 'ok');
+    scheduleAppNotification();
+    updateNotifUI();
+  } else {
+    toast('Permission denied', 'error');
+  }
+}
+function saveNotifTime() {
+  const t = document.getElementById('rm-notif-time')?.value;
+  if (t) {
+    localStorage.setItem('froggy-notif-time', t);
+    toast('Reminder set!', 'ok');
+    scheduleAppNotification();
+  }
+}
+function updateNotifUI() {
+  const perm = ('Notification' in window) ? Notification.permission : 'unsupported';
+  const btn = document.getElementById('rm-notif-btn');
+  const timeRow = document.getElementById('rm-notif-time-row');
+  if (btn) btn.textContent = perm === 'granted' ? '🔔 Notifications On' : '🔔 Enable Notifications';
+  if (timeRow) timeRow.style.display = perm === 'granted' ? 'flex' : 'none';
+  const saved = localStorage.getItem('froggy-notif-time') || '09:00';
+  const timeEl = document.getElementById('rm-notif-time');
+  if (timeEl) timeEl.value = saved;
+}
+
+// ── Swipe-to-delete ────────────────────────────────────────────────────────
+// ── Utils ──────────────────────────────────────────────────────────────────
+const localDateStr = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+const todayKey     = () => localDateStr();
+const offsetKey    = n => { const d = new Date(); d.setDate(d.getDate() + n); return localDateStr(d); };
+const weekStartKey = () => { const d = new Date(); d.setDate(d.getDate() - (d.getDay() === 0 ? 6 : d.getDay() - 1)); return localDateStr(d); };
+const fmt = key => {
+  if (key===todayKey())    return 'Today';
+  if (key===offsetKey(-1)) return 'Yesterday';
+  const [y,m,d]=key.split('-');
+  return new Date(+y,+m-1,+d).toLocaleDateString('en-US',{weekday:'short',month:'short',day:'numeric'});
+};
+function esc(s) { return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function flashErr(id, ph) { const el=document.getElementById(id); const orig=el.placeholder; el.style.borderColor='var(--danger)'; el.placeholder=ph; setTimeout(()=>{ el.style.borderColor=''; el.placeholder=orig; },1500); }
+function setLoading(on) { const b=document.getElementById('loading-bar'); b.style.opacity='1'; b.style.width=on?'70%':'100%'; if(!on)setTimeout(()=>{b.style.width='0%';b.style.opacity='0';},350); }
+function btnLoad(btn,on) { if(!btn)return; if(on){btn._orig=btn.innerHTML;btn.innerHTML='...';btn.disabled=true;}else{btn.innerHTML=btn._orig||btn.innerHTML;btn.disabled=false;} }
+let _tt; function toast(msg,type=''){const el=document.getElementById('toast');el.textContent=msg;el.className='show '+type;clearTimeout(_tt);_tt=setTimeout(()=>el.className=type,2200);}
+
+init();
+</script>
+</body>
+</html>

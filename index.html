@@ -188,21 +188,42 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
 .quest-pending{color:#fca5a5}
 .quest-complete{color:var(--accent);text-shadow:0 0 12px rgba(74,222,128,.5)}
 
+/* Player stats card */
+.player-stats-card{padding:16px 18px!important}
+.ps-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.ps-rank-block{display:flex;align-items:center;gap:10px}
+.ps-rank-icon{font-size:1.8rem;line-height:1}
+.ps-rank-name{font-size:1rem;font-weight:900;letter-spacing:-.01em}
+.ps-level{font-size:.72rem;color:var(--muted);margin-top:1px;font-weight:600}
+.ps-streak-block{text-align:right}
+.ps-streak-num{font-size:1.8rem;font-weight:900;line-height:1;color:#f97316;font-variant-numeric:tabular-nums}
+.ps-streak-lbl{font-size:.65rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;margin-top:1px}
+.ps-mult{font-size:.68rem;font-weight:800;color:#a855f7;margin-top:3px;min-height:14px}
+.ps-bar-wrap{gap:5px;display:flex;flex-direction:column}
+.ps-bar-bg{height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+.ps-bar-fill{height:100%;border-radius:4px;transition:width .5s cubic-bezier(.4,0,.2,1);background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.ps-bar-labels{display:flex;justify-content:space-between;font-size:.68rem;font-weight:600;color:var(--muted);font-variant-numeric:tabular-nums}
+
 /* Leaderboard */
-.lb-row{display:flex;align-items:center;gap:12px;padding:10px 6px;border-radius:8px;border-bottom:1px solid var(--border);transition:background .12s}
+.lb-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.lb-row{display:flex;align-items:center;gap:10px;padding:9px 4px;border-radius:8px;border-bottom:1px solid var(--border);transition:background .12s}
 .lb-row:last-child{border-bottom:none}
-.lb-row.lb-me{background:rgba(74,222,128,.06)}
+.lb-row.lb-me{background:rgba(74,222,128,.06);border-radius:8px}
 .lb-row:hover{background:var(--surface-2)}
-.lb-rank{font-size:1rem;width:28px;text-align:center;flex-shrink:0}
+.lb-rank{font-size:.95rem;width:26px;text-align:center;flex-shrink:0}
 .lb-info{flex:1;min-width:0}
-.lb-name{font-size:.9rem;font-weight:600;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.lb-level{font-size:.72rem;font-weight:600;display:block;margin-top:1px}
+.lb-name{font-size:.88rem;font-weight:600;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lb-level{font-size:.7rem;font-weight:600;display:block;margin-top:1px}
 .lb-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0}
-.lb-xp{font-size:.8rem;font-weight:700;font-variant-numeric:tabular-nums}
-.lb-streak{font-size:.7rem;font-weight:700;color:#f97316}
-.lb-refresh-btn{font-size:.75rem;color:var(--muted);background:none;border:none;cursor:pointer;padding:4px 8px;border-radius:6px;transition:background .12s}
+.lb-xp{font-size:.78rem;font-weight:700;font-variant-numeric:tabular-nums}
+.lb-streak{font-size:.68rem;font-weight:700;color:#f97316}
+.lb-refresh-btn{font-size:.8rem;color:var(--muted);background:none;border:none;cursor:pointer;padding:4px 8px;border-radius:6px;transition:background .12s;line-height:1}
 .lb-refresh-btn:hover{background:var(--surface-2);color:var(--text)}
 .lb-setup{font-size:.8rem;color:var(--muted);line-height:1.5;padding:8px 0}
+
+/* Task add card */
+.task-add-card{padding:14px 16px!important;margin-bottom:10px}
+.task-add-header{display:flex;align-items:center;gap:10px}
 
 /* XP / Level */
 @keyframes xp-float{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-64px) scale(1.18)}}
@@ -364,29 +385,55 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
       <!-- rendered by renderDailyQuest() -->
     </div>
 
-    <!-- LEADERBOARD -->
-    <div class="card" style="margin-bottom:16px">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-        <div class="section-title" style="margin:0">🏆 Leaderboard</div>
-        <button class="lb-refresh-btn" onclick="renderLeaderboard()">↻ Refresh</button>
+    <!-- PLAYER STATS -->
+    <div class="card player-stats-card" style="margin-bottom:12px">
+      <div class="ps-top">
+        <div class="ps-rank-block">
+          <span class="ps-rank-icon" id="ps-rank-icon">⬜</span>
+          <div>
+            <div class="ps-rank-name" id="ps-rank-name">Novice</div>
+            <div class="ps-level" id="ps-level">Level 1</div>
+          </div>
+        </div>
+        <div class="ps-streak-block">
+          <div class="ps-streak-num" id="ps-streak-num">0</div>
+          <div class="ps-streak-lbl">day streak</div>
+          <div class="ps-mult" id="ps-mult"></div>
+        </div>
       </div>
-      <div id="leaderboard-list"><div class="empty" style="padding:16px 0">Loading…</div></div>
+      <div class="ps-bar-wrap">
+        <div class="ps-bar-bg"><div class="ps-bar-fill" id="ps-bar-fill" style="width:0%"></div></div>
+        <div class="ps-bar-labels">
+          <span id="ps-xp-label">0 / 100 XP</span>
+          <span id="ps-next-rank" style="color:var(--muted)"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- LEADERBOARD -->
+    <div class="card" style="margin-bottom:12px">
+      <div class="lb-header">
+        <div class="section-title" style="margin:0">🏆 Leaderboard</div>
+        <button class="lb-refresh-btn" onclick="renderLeaderboard()">↻</button>
+      </div>
+      <div id="leaderboard-list"><div class="empty" style="padding:12px 0">Loading…</div></div>
     </div>
 
     <!-- TASKS -->
-    <div id="tasks-section" style="margin-bottom:16px">
-      <div class="card">
-        <div class="section-title">Add Task</div>
-        <div class="type-toggle">
-          <button class="type-btn" id="type-habit-btn" onclick="setAddType('habit')">Daily (recurring)</button>
-          <button class="type-btn active" id="type-task-btn" onclick="setAddType('task')">Side (one-time)</button>
+    <div id="tasks-section">
+      <div class="card task-add-card">
+        <div class="task-add-header">
+          <div class="type-toggle" style="margin:0;flex:1">
+            <button class="type-btn" id="type-habit-btn" onclick="setAddType('habit')">Daily</button>
+            <button class="type-btn active" id="type-task-btn" onclick="setAddType('task')">Side Quest</button>
+          </div>
         </div>
-        <div class="task-add-row">
-          <input type="text" id="habit-name" placeholder="Task name…" onkeydown="if(event.key==='Enter')addItem()">
-          <button id="habit-add-btn" class="btn btn-green" onclick="addItem()"><span id="habit-plus"></span>Add</button>
+        <div class="task-add-row" style="margin-top:10px">
+          <input type="text" id="habit-name" placeholder="Add a task…" onkeydown="if(event.key==='Enter')addItem()">
+          <button id="habit-add-btn" class="btn btn-green" onclick="addItem()"><span id="habit-plus"></span></button>
         </div>
         <div id="task-side-fields" style="display:block">
-          <input type="text" id="task-notes-input" placeholder="Notes (optional)" style="margin-top:8px">
+          <input type="text" id="task-notes-input" placeholder="Notes (optional)" style="margin-top:6px;font-size:.88rem">
         </div>
       </div>
       <div id="daily-list"></div>
@@ -422,9 +469,6 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
         <button class="btn btn-green" onclick="addResetHabit()">Add</button>
       </div>
       <div class="onboard-habit-list" id="rm-new-habits" style="margin-top:10px"></div>
-      <div class="modal-section">Leaderboard</div>
-      <div style="font-size:.82rem;color:var(--muted);line-height:1.55;margin-bottom:10px">To enable the leaderboard, run the SQL below in your Supabase SQL editor.</div>
-      <button class="btn btn-ghost btn-full" onclick="copyLeaderboardSQL()" style="font-size:.82rem">📋 Copy Setup SQL</button>
       <div style="display:flex;gap:8px;margin-top:22px">
         <button class="btn btn-green" style="flex:1" onclick="submitReset()">Save</button>
         <button class="btn btn-ghost" style="flex:1" onclick="hideResetModal()">Cancel</button>
@@ -513,69 +557,105 @@ const IC={
   moon:'<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>'
 };
 
-// ── Exercise pool (52 bodyweight exercises, 5 difficulty tiers) ────────────
+// ── Exercise pool ─────────────────────────────────────────────────────────────
+// tiers[0-4] = target reps/sec at each tier (Novice/D/C-B/B-A/S+)
+// minTier (default 0) = earliest tier this exercise appears in daily quests
 const EXERCISE_POOL=[
-  // Push
-  {key:'pushups',         label:'Push-ups',               tiers:[20, 40,  65,  100, 150], unit:'reps',   tip:'Chest to floor, full extension'},
-  {key:'widepushups',     label:'Wide Push-ups',           tiers:[15, 30,  50,  80,  120], unit:'reps',   tip:'Hands wider than shoulder-width'},
-  {key:'diamondpushups',  label:'Diamond Push-ups',        tiers:[10, 20,  35,  55,  80],  unit:'reps',   tip:'Index fingers touching — hits triceps hard'},
-  {key:'declinepushups',  label:'Decline Push-ups',        tiers:[12, 25,  40,  60,  90],  unit:'reps',   tip:'Feet on chair, upper chest focus'},
-  {key:'pikepushups',     label:'Pike Push-ups',           tiers:[10, 20,  30,  50,  70],  unit:'reps',   tip:'Hips high, elbows flared — shoulders'},
-  {key:'dips',            label:'Tricep Dips',             tiers:[15, 25,  40,  60,  90],  unit:'reps',   tip:'Hands on chair, lower to 90°'},
-  {key:'archerpushups',   label:'Archer Push-ups',         tiers:[5,  10,  18,  28,  40],  unit:'each',   tip:'One arm wide per rep — brutal unilateral'},
-  {key:'handstandhold',   label:'Handstand Hold',          tiers:[15, 30,  45,  60,  90],  unit:'sec',    tip:'Against wall — builds shoulder strength'},
-  // Pull
-  {key:'pullups',         label:'Pull-ups',                tiers:[5,  10,  15,  22,  35],  unit:'reps',   tip:'Dead hang to chin over bar'},
-  {key:'chinups',         label:'Chin-ups',                tiers:[5,  10,  15,  22,  35],  unit:'reps',   tip:'Underhand grip — more bicep activation'},
-  {key:'invertedrows',    label:'Inverted Rows',           tiers:[10, 20,  30,  45,  65],  unit:'reps',   tip:'Under a table, pull chest to it'},
-  {key:'australianpu',    label:'Australian Pull-ups',     tiers:[10, 20,  30,  45,  65],  unit:'reps',   tip:'Low bar, body straight, pull chest up'},
-  {key:'toetochest',      label:'Knees to Chest (hang)',   tiers:[8,  15,  25,  40,  60],  unit:'reps',   tip:'Hanging from bar, pull knees to chest'},
-  // Core
-  {key:'plank',           label:'Plank Hold',              tiers:[30, 60,  90,  150, 210], unit:'sec',    tip:'Hips level, squeeze glutes and abs'},
-  {key:'sideplankleft',   label:'Side Plank (Left)',       tiers:[20, 40,  60,  90,  120], unit:'sec',    tip:'Left side — body in straight line'},
-  {key:'sideplankright',  label:'Side Plank (Right)',      tiers:[20, 40,  60,  90,  120], unit:'sec',    tip:'Right side — body in straight line'},
-  {key:'situps',          label:'Sit-ups',                 tiers:[25, 50,  80,  120, 180], unit:'reps',   tip:'Hands crossed, full range of motion'},
-  {key:'legraises',       label:'Leg Raises',              tiers:[10, 20,  35,  50,  80],  unit:'reps',   tip:'Lying flat, legs to 90° with control'},
-  {key:'bicyclecrunches', label:'Bicycle Crunches',        tiers:[20, 40,  65,  100, 150], unit:'reps',   tip:'Opposite elbow to knee, slow and controlled'},
-  {key:'vups',            label:'V-Ups',                   tiers:[10, 20,  35,  55,  80],  unit:'reps',   tip:'Simultaneously raise legs and torso'},
-  {key:'russiantwists',   label:'Russian Twists',          tiers:[20, 40,  65,  100, 150], unit:'reps',   tip:'Feet off floor, twist fully side to side'},
-  {key:'hollowbody',      label:'Hollow Body Hold',        tiers:[20, 40,  60,  90,  120], unit:'sec',    tip:'Lower back pressed flat, arms overhead'},
-  {key:'deadbug',         label:'Dead Bug',                tiers:[10, 20,  30,  45,  60],  unit:'each',   tip:'Opposite arm + leg, slow and deliberate'},
-  {key:'mountainclimbers',label:'Mountain Climbers',       tiers:[20, 40,  65,  100, 150], unit:'reps',   tip:'Fast knees to chest alternating'},
-  {key:'superman',        label:'Superman Hold',           tiers:[10, 20,  30,  45,  65],  unit:'reps',   tip:'Arms + legs off floor simultaneously'},
-  // Legs
-  {key:'squats',          label:'Squats',                  tiers:[25, 50,  80,  125, 180], unit:'reps',   tip:'Below parallel, knees track over toes'},
-  {key:'jumpsquats',      label:'Jump Squats',             tiers:[15, 25,  40,  60,  90],  unit:'reps',   tip:'Squat deep, explode fully upward'},
-  {key:'lunges',          label:'Lunges',                  tiers:[10, 20,  35,  55,  80],  unit:'each',   tip:'Back knee to floor, front knee at 90°'},
-  {key:'reverselunges',   label:'Reverse Lunges',          tiers:[10, 20,  35,  55,  80],  unit:'each',   tip:'Step back and drop the knee'},
-  {key:'splitsquats',     label:'Bulgarian Split Squats',  tiers:[8,  15,  25,  40,  60],  unit:'each',   tip:'Rear foot on chair — absolutely brutal'},
-  {key:'pistolsquats',    label:'Pistol Squats',           tiers:[3,  6,   10,  18,  28],  unit:'each',   tip:'Single leg squat to floor — master this'},
-  {key:'wallsit',         label:'Wall Sit',                tiers:[30, 60,  90,  150, 210], unit:'sec',    tip:'Thighs parallel, 90° at knees'},
-  {key:'calfraises',      label:'Calf Raises',             tiers:[20, 40,  65,  100, 150], unit:'reps',   tip:'Full ROM, pause at top and bottom'},
-  {key:'glutebridges',    label:'Glute Bridges',           tiers:[20, 40,  65,  100, 150], unit:'reps',   tip:'Squeeze hard at top, hold 1 second'},
-  {key:'singleglute',     label:'Single-Leg Glute Bridge', tiers:[10, 20,  35,  55,  80],  unit:'each',   tip:'Drive through heel, keep hips level'},
-  {key:'donkeykicks',     label:'Donkey Kicks',            tiers:[15, 30,  45,  65,  100], unit:'each',   tip:'On all fours, kick leg straight and up'},
-  {key:'stepups',         label:'Step-Ups',                tiers:[10, 20,  35,  55,  80],  unit:'each',   tip:'Full step onto chair, control the descent'},
-  {key:'boxjumps',        label:'Box Jumps',               tiers:[10, 15,  25,  35,  50],  unit:'reps',   tip:'Land softly, fully reset before next rep'},
-  {key:'broadjumps',      label:'Broad Jumps',             tiers:[5,  10,  15,  22,  30],  unit:'reps',   tip:'Max horizontal distance — explosive power'},
-  // Cardio / Full Body
-  {key:'burpees',         label:'Burpees',                 tiers:[10, 20,  35,  50,  75],  unit:'reps',   tip:'Full push-up + full jump at the top'},
-  {key:'jumpingjacks',    label:'Jumping Jacks',           tiers:[30, 60,  90,  150, 200], unit:'reps',   tip:'Full range, fully synchronized'},
-  {key:'highknees',       label:'High Knees',              tiers:[30, 60,  90,  150, 210], unit:'sec',    tip:'Knees above hip height, sprint pace'},
-  {key:'run',             label:'Run',                     tiers:[1,  2,   4,   6,   10],  unit:'km',     tip:'Consistent pace, no stopping'},
-  {key:'sprintintervals', label:'Sprint Intervals',        tiers:[4,  6,   8,   10,  14],  unit:'×30 sec',tip:'All-out sprint each interval, walk recovery'},
-  {key:'burpeepullups',   label:'Burpee Pull-ups',         tiers:[3,  6,   10,  16,  25],  unit:'reps',   tip:'Full burpee immediately into a pull-up'},
-  {key:'bearcrawl',       label:'Bear Crawl',              tiers:[10, 20,  30,  45,  60],  unit:'meters', tip:'Opposite arm + leg, hips low and level'},
-  {key:'inchworm',        label:'Inchworm Walk',           tiers:[5,  10,  15,  22,  30],  unit:'reps',   tip:'Walk hands out to push-up, walk back up'},
-  // Shoulder / Mobility
-  {key:'wallangels',      label:'Wall Angels',             tiers:[10, 15,  25,  35,  50],  unit:'reps',   tip:'Back flat against wall, slide arms up'},
-  {key:'scapularpushups', label:'Scapular Push-ups',       tiers:[10, 20,  30,  45,  65],  unit:'reps',   tip:'Arms locked, move only shoulder blades'},
-  {key:'handstandpushups',label:'Handstand Push-ups',      tiers:[3,  6,   12,  20,  30],  unit:'reps',   tip:'Wall-supported, lower crown to floor'},
-  {key:'archerhang',      label:'Active Hang',             tiers:[20, 40,  60,  90,  120], unit:'sec',    tip:'Dead hang, depress scapula actively'},
+  // ── PUSH horizontal ───────────────────────────────────────────────────────
+  {key:'wallpushups',      label:'Wall Push-ups',             tiers:[20, 35,  55,  80,  110], unit:'reps', tip:'Hands on wall, incline reduces load — build form before floor'},
+  {key:'kneepushups',      label:'Knee Push-ups',             tiers:[15, 30,  50,  75,  110], unit:'reps', tip:'Knees on floor — build chest and tricep strength for full push-up'},
+  {key:'pushups',          label:'Push-ups',                  tiers:[20, 40,  65,  100, 150], unit:'reps', tip:'Chest to floor, full lockout — the absolute foundation'},
+  {key:'widepushups',      label:'Wide Push-ups',             tiers:[15, 30,  50,  80,  120], unit:'reps', tip:'Hands wider than shoulder-width — outer chest emphasis'},
+  {key:'diamondpushups',   label:'Diamond Push-ups',          tiers:[10, 20,  35,  55,  80],  unit:'reps', tip:'Fingers touching, elbows back — maximum tricep recruitment'},
+  {key:'declinepushups',   label:'Decline Push-ups',          tiers:[12, 25,  40,  60,  90],  unit:'reps', tip:'Feet elevated on chair — upper chest and anterior deltoid focus'},
+  {key:'pikepushups',      label:'Pike Push-ups',             tiers:[8,  18,  30,  50,  70],  unit:'reps', tip:'Hips high, elbows flared wide — shoulder pressing pattern'},
+  {key:'dips',             label:'Tricep Dips',               tiers:[15, 25,  40,  65,  100], unit:'reps', tip:'Hands on chair or bars, lower to 90°, elbows track back'},
+  {key:'archerpushups',    label:'Archer Push-ups',           tiers:[4,  8,   15,  25,  40],  unit:'each', minTier:1, tip:'One arm extends wide per rep — heavy unilateral load'},
+  {key:'pseudoplanche',    label:'Pseudo Planche Push-ups',   tiers:[5,  10,  18,  30,  45],  unit:'reps', minTier:2, tip:'Fingers back, lean far forward — straight-arm planche prerequisite'},
+  {key:'typewriterpushups',label:'Typewriter Push-ups',       tiers:[4,  8,   14,  22,  33],  unit:'reps', minTier:2, tip:'Lower to one side, slide across bottom, push up opposite side'},
+  {key:'oaepushup',        label:'One-Arm Push-up Negatives', tiers:[3,  5,   8,   12,  18],  unit:'each', minTier:3, tip:'Lower on one arm over 5 slow counts — builds OAP strength'},
+  // ── PUSH vertical / overhead ──────────────────────────────────────────────
+  {key:'wallhandstandhold',label:'Wall Handstand Hold',       tiers:[15, 30,  50,  75,  120], unit:'sec',  tip:'Face wall, kick up — shoulder endurance and body alignment'},
+  {key:'handstandpushups', label:'Handstand Push-ups',        tiers:[2,  5,   10,  18,  28],  unit:'reps', minTier:1, tip:'Wall-supported, crown to floor and full lockout overhead'},
+  {key:'stricthspu',       label:'Strict Handstand Push-ups', tiers:[2,  4,   8,   14,  22],  unit:'reps', minTier:2, tip:'Full ROM, no kip — nose to floor, dead-stop at bottom'},
+  {key:'freehandstand',    label:'Freestanding Handstand',    tiers:[5,  15,  30,  45,  60],  unit:'sec',  minTier:3, tip:'Away from wall — hollow body, fingers spread, constant micro-corrections'},
+  {key:'tuckplanche',      label:'Tuck Planche Hold',         tiers:[5,  10,  20,  35,  55],  unit:'sec',  minTier:3, tip:'Knees to chest, arms locked — body horizontal, ultimate push strength'},
+  {key:'advtuckplanche',   label:'Adv. Tuck Planche Hold',   tiers:[5,  8,   15,  25,  40],  unit:'sec',  minTier:4, tip:'Back parallel to floor, knees at 90° — bridge to straddle planche'},
+  {key:'straddleplanche',  label:'Straddle Planche Hold',    tiers:[3,  6,   12,  20,  35],  unit:'sec',  minTier:4, tip:'Legs spread wide, body horizontal — reduced lever from straddle'},
+  {key:'fullplanche',      label:'Full Planche Hold',         tiers:[2,  5,   10,  18,  30],  unit:'sec',  minTier:4, tip:'Legs together, fully horizontal — peak relative upper-body strength'},
+  // ── PULL horizontal ───────────────────────────────────────────────────────
+  {key:'invertedrows',     label:'Inverted Rows',             tiers:[10, 20,  35,  55,  80],  unit:'reps', tip:'Under table or bar, body rigid, pull chest up — beginner pulling pattern'},
+  {key:'australianpu',     label:'Australian Pull-ups',       tiers:[10, 20,  35,  55,  80],  unit:'reps', tip:'Low bar, feet extended, body straight — harder than inverted rows'},
+  // ── PULL vertical ─────────────────────────────────────────────────────────
+  {key:'archerhang',       label:'Active Dead Hang',          tiers:[20, 40,  60,  90,  120], unit:'sec',  tip:'Depress scapula actively in dead hang — shoulder health prerequisite'},
+  {key:'scapularpullups',  label:'Scapular Pull-ups',         tiers:[8,  15,  25,  40,  60],  unit:'reps', tip:'Straight arms, raise body only via shoulder blade depression'},
+  {key:'chinups',          label:'Chin-ups',                  tiers:[3,  8,   14,  22,  33],  unit:'reps', tip:'Underhand grip, dead hang to chin above bar — bicep dominant'},
+  {key:'pullups',          label:'Pull-ups',                  tiers:[3,  8,   14,  22,  33],  unit:'reps', tip:'Overhand grip, dead hang to chin above bar — lat dominant'},
+  {key:'widepullups',      label:'Wide-Grip Pull-ups',        tiers:[3,  6,   12,  18,  28],  unit:'reps', minTier:1, tip:'Hands wide, elbows flare out — maximum lat width stimulus'},
+  {key:'chesttobar',       label:'Chest-to-Bar Pull-ups',     tiers:[2,  5,   10,  16,  25],  unit:'reps', minTier:2, tip:'Pull until sternum touches bar — direct muscle-up prerequisite'},
+  {key:'toetochest',       label:'Toes-to-Bar',               tiers:[5,  10,  18,  28,  40],  unit:'reps', minTier:1, tip:'Hanging, raise straight legs to touch bar — core and pulling combined'},
+  {key:'archerpullups',    label:'Archer Pull-ups',           tiers:[2,  4,   8,   14,  22],  unit:'each', minTier:2, tip:'One arm pulls, other extends out — unilateral pulling development'},
+  {key:'muscleupneg',      label:'Muscle-up Negatives',       tiers:[2,  3,   5,   8,   12],  unit:'reps', minTier:2, tip:'Jump to top, lower over 5+ counts — builds transition strength'},
+  {key:'strictmuscleup',   label:'Strict Muscle-ups',         tiers:[1,  2,   4,   7,   12],  unit:'reps', minTier:3, tip:'Dead hang to full dip lockout with no kip — pinnacle of pulling'},
+  {key:'lsitpullups',      label:'L-Sit Pull-ups',            tiers:[2,  4,   7,   12,  18],  unit:'reps', minTier:3, tip:'Maintain L-sit position throughout pull — combined core and pull'},
+  // ── HOLDS / SKILL HOLDS ───────────────────────────────────────────────────
+  {key:'skinthecat',       label:'Skin the Cat',              tiers:[3,  5,   10,  18,  30],  unit:'reps', minTier:2, tip:'Rotate legs through arms and back — shoulder health and back lever prep'},
+  {key:'frontlevertuck',   label:'Front Lever (Tuck)',        tiers:[5,  10,  20,  35,  55],  unit:'sec',  minTier:2, tip:'Knees tucked, body horizontal under bar — immense back strength'},
+  {key:'frontleveradv',    label:'Front Lever (Adv. Tuck)',  tiers:[5,  8,   15,  25,  40],  unit:'sec',  minTier:3, tip:'Back parallel, knees 90° — next progression toward full lever'},
+  {key:'frontleverfull',   label:'Front Lever (Full)',        tiers:[3,  5,   10,  18,  30],  unit:'sec',  minTier:4, tip:'Body completely horizontal, legs together — rare elite skill'},
+  {key:'backlever',        label:'Back Lever Hold',           tiers:[5,  10,  20,  35,  55],  unit:'sec',  minTier:3, tip:'Face-down horizontal under bar — shoulder mobility and strength'},
+  {key:'lsitfloor',        label:'L-Sit Hold (Floor)',        tiers:[3,  8,   15,  25,  40],  unit:'sec',  minTier:1, tip:'Hands flat, legs fully extended and horizontal — intense hip flexors'},
+  {key:'lsithold',         label:'L-Sit (Parallettes)',       tiers:[5,  10,  20,  35,  55],  unit:'sec',  minTier:2, tip:'Greater depth on bars — harder to achieve, shows true L-sit strength'},
+  {key:'vsit',             label:'V-Sit Hold',                tiers:[3,  5,   10,  18,  30],  unit:'sec',  minTier:4, tip:'Legs above horizontal — extreme hip flexor and core compression'},
+  {key:'onearmhang',       label:'One-Arm Hang',              tiers:[5,  10,  20,  35,  55],  unit:'sec',  minTier:3, tip:'Single arm dead hang — grip, forearm, and shoulder resilience'},
+  // ── CORE ──────────────────────────────────────────────────────────────────
+  {key:'plank',            label:'Plank Hold',                tiers:[30, 60,  90,  150, 210], unit:'sec',  tip:'Hips level, neutral spine — squeeze glutes, abs, and quads together'},
+  {key:'sideplankleft',    label:'Side Plank (Left)',         tiers:[20, 40,  65,  100, 140], unit:'sec',  tip:'Left hip up, body in straight line — lateral stability foundation'},
+  {key:'sideplankright',   label:'Side Plank (Right)',        tiers:[20, 40,  65,  100, 140], unit:'sec',  tip:'Right hip up, body in straight line — lateral stability foundation'},
+  {key:'hollowbody',       label:'Hollow Body Hold',          tiers:[20, 40,  65,  100, 140], unit:'sec',  tip:'Lower back flat, arms overhead — the cornerstone of gymnastics core'},
+  {key:'legraises',        label:'Hanging Leg Raises',        tiers:[8,  15,  25,  40,  60],  unit:'reps', tip:'From bar, raise straight legs to horizontal with full control'},
+  {key:'vups',             label:'V-Ups',                     tiers:[10, 20,  35,  55,  80],  unit:'reps', tip:'Simultaneously raise legs and torso — full peak contraction'},
+  {key:'bicyclecrunches',  label:'Bicycle Crunches',          tiers:[20, 40,  65,  100, 150], unit:'reps', tip:'Opposite elbow to knee, fully extend the other leg — go slow'},
+  {key:'russiantwists',    label:'Russian Twists',            tiers:[20, 40,  65,  100, 150], unit:'reps', tip:'Feet off floor, rotate fully each side — do not cheat the range'},
+  {key:'deadbug',          label:'Dead Bug',                  tiers:[10, 20,  30,  45,  65],  unit:'each', tip:'Opposite arm and leg extend slowly — anti-extension core stability'},
+  {key:'mountainclimbers', label:'Mountain Climbers',         tiers:[20, 40,  65,  100, 150], unit:'reps', tip:'High pace, knees to chest — maintains plank while testing conditioning'},
+  {key:'superman',         label:'Superman Hold',             tiers:[10, 20,  35,  55,  80],  unit:'reps', tip:'Arms and legs off floor simultaneously — lower back endurance'},
+  {key:'windshieldwipers', label:'Windshield Wipers',         tiers:[5,  10,  18,  28,  40],  unit:'each', minTier:2, tip:'Hanging, legs vertical then rotate side to side — advanced rotational core'},
+  {key:'dragonflag',       label:'Dragon Flag Negatives',     tiers:[2,  4,   7,   11,  16],  unit:'reps', minTier:3, tip:'On bench: straight-body lower from vertical in 5 slow counts'},
+  {key:'dragonflagfull',   label:'Dragon Flag (Full)',        tiers:[2,  3,   6,   10,  15],  unit:'reps', minTier:4, tip:'Raise and lower straight-body — concentric dragon flag, elite core'},
+  // ── LEGS ──────────────────────────────────────────────────────────────────
+  {key:'squats',           label:'Squats',                    tiers:[25, 50,  80,  125, 180], unit:'reps', tip:'Below parallel, knees track over toes — volume builds leg endurance'},
+  {key:'jumpsquats',       label:'Jump Squats',               tiers:[15, 25,  40,  60,  90],  unit:'reps', tip:'Full depth squat, max vertical explosion — power development'},
+  {key:'lunges',           label:'Lunges',                    tiers:[10, 20,  35,  55,  80],  unit:'each', tip:'Back knee to floor, front knee at 90° — unilateral leg strength'},
+  {key:'reverselunges',    label:'Reverse Lunges',            tiers:[10, 20,  35,  55,  80],  unit:'each', tip:'Step back and drop the knee — knee-friendly unilateral option'},
+  {key:'splitsquats',      label:'Bulgarian Split Squats',    tiers:[8,  15,  25,  40,  60],  unit:'each', tip:'Rear foot elevated on chair — brutally effective single-leg strength'},
+  {key:'shrimpsquat',      label:'Shrimp Squat',              tiers:[2,  4,   8,   14,  22],  unit:'each', minTier:2, tip:'Rear foot held behind, squat to floor — elite single-leg control'},
+  {key:'pistolsquats',     label:'Pistol Squats',             tiers:[2,  5,   10,  18,  28],  unit:'each', minTier:1, tip:'Single leg to floor, other leg extended — the gold standard'},
+  {key:'nordiccurl',       label:'Nordic Curl Negatives',     tiers:[2,  4,   7,   11,  16],  unit:'reps', minTier:2, tip:'Feet anchored, lower torso forward over 5 counts — brutal hamstring eccentric'},
+  {key:'wallsit',          label:'Wall Sit',                  tiers:[30, 60,  90,  150, 210], unit:'sec',  tip:'Thighs parallel, 90° knee angle — leg endurance under sustained load'},
+  {key:'calfraises',       label:'Calf Raises',               tiers:[20, 40,  65,  100, 150], unit:'reps', tip:'Full ROM, pause at peak contraction — do single-leg for more challenge'},
+  {key:'glutebridges',     label:'Glute Bridges',             tiers:[20, 40,  65,  100, 150], unit:'reps', tip:'Drive hips up, hard squeeze at top for 1 second — posterior chain'},
+  {key:'singleglute',      label:'Single-Leg Glute Bridge',   tiers:[10, 20,  35,  55,  80],  unit:'each', tip:'One leg extended, drive through heel — unilateral glute development'},
+  {key:'stepups',          label:'Step-Ups',                  tiers:[10, 20,  35,  55,  80],  unit:'each', tip:'Full extension at top, controlled descent — functional leg power'},
+  {key:'boxjumps',         label:'Box Jumps',                 tiers:[8,  15,  25,  35,  50],  unit:'reps', tip:'Land softly absorbing force — fully reset and reset between each rep'},
+  {key:'broadjumps',       label:'Broad Jumps',               tiers:[5,  10,  15,  22,  30],  unit:'reps', tip:'Maximum horizontal distance — explosive posterior chain power'},
+  // ── CARDIO / FULL-BODY ────────────────────────────────────────────────────
+  {key:'burpees',          label:'Burpees',                   tiers:[10, 20,  35,  55,  80],  unit:'reps', tip:'Full push-up + full vertical jump — systemically demanding'},
+  {key:'jumpingjacks',     label:'Jumping Jacks',             tiers:[30, 60,  90,  150, 200], unit:'reps', tip:'Full range, synchronized — ideal warm-up or conditioning finisher'},
+  {key:'highknees',        label:'High Knees',                tiers:[30, 60,  90,  150, 210], unit:'sec',  tip:'Knees above hip height, sprint pace — conditioning and coordination'},
+  {key:'run',              label:'Run',                       tiers:[1,  2,   4,   6,   10],  unit:'km',   tip:'Sustainable pace, zero stops — aerobic base is the root of all fitness'},
+  {key:'sprintintervals',  label:'Sprint Intervals',          tiers:[4,  6,   8,   10,  14],  unit:'×30s', tip:'Maximum effort each interval, full walk recovery — VO₂ max development'},
+  {key:'burpeepullups',    label:'Burpee Pull-ups',           tiers:[3,  6,   10,  16,  25],  unit:'reps', minTier:1, tip:'Full burpee into a dead-hang pull-up — total body conditioning test'},
+  {key:'bearcrawl',        label:'Bear Crawl',                tiers:[10, 20,  30,  45,  60],  unit:'m',    tip:'Opposite arm and leg, hips low — shoulder stability under locomotion'},
+  {key:'inchworm',         label:'Inchworm Walk',             tiers:[5,  10,  15,  22,  30],  unit:'reps', tip:'Walk hands out to plank, walk feet in — dynamic full-body warm-up'},
+  // ── MOBILITY / SCAPULAR ───────────────────────────────────────────────────
+  {key:'wallangels',       label:'Wall Angels',               tiers:[10, 15,  25,  35,  50],  unit:'reps', tip:'Back flat, arms slide full range — shoulder mobility and posture fix'},
+  {key:'scapularpushups',  label:'Scapular Push-ups',         tiers:[10, 20,  30,  45,  65],  unit:'reps', tip:'Arms locked, protract and retract blades only — injury prevention'},
+  {key:'donkeykicks',      label:'Donkey Kicks',              tiers:[15, 30,  45,  65,  100], unit:'each', tip:'On all fours, kick leg up and fully extend at the hip — glute isolation'},
 ];
 
-const QUEST_BONUS_XP = 200;
-const QUEST_PENALTY_XP = 150;
+const QUEST_BONUS_XP = 250;
+const QUEST_PENALTY_XP = 200;
 
 // ── XP system ──────────────────────────────────────────────────────────────
 function getXPThreshold(l){if(l<=1)return 0;return Math.floor(100*Math.pow(l-1,1.8))}
@@ -645,6 +725,29 @@ function updateXPDisplay(){
   const rank=getRankInfo(prog.level);
   const badge=document.getElementById('level-badge');
   if(badge){badge.textContent=`Lv.${prog.level}`;badge.style.background=rank.bg;badge.style.color=rank.color;badge.style.borderColor=rank.color}
+  // Player stats card
+  const rankEl=document.getElementById('ps-rank-name');
+  const iconEl=document.getElementById('ps-rank-icon');
+  const levelEl=document.getElementById('ps-level');
+  const barEl=document.getElementById('ps-bar-fill');
+  const xpEl=document.getElementById('ps-xp-label');
+  const nextEl=document.getElementById('ps-next-rank');
+  const streakEl=document.getElementById('ps-streak-num');
+  const multEl=document.getElementById('ps-mult');
+  if(rankEl)rankEl.textContent=rank.rank;
+  if(rankEl)rankEl.style.color=rank.color;
+  if(iconEl)iconEl.textContent=rank.icon;
+  if(levelEl)levelEl.textContent=`Level ${prog.level} · ${totalXP.toLocaleString()} XP`;
+  if(barEl)barEl.style.width=prog.pct+'%';
+  if(xpEl)xpEl.textContent=`${prog.current.toLocaleString()} / ${prog.needed.toLocaleString()} XP to next level`;
+  // Find next rank
+  const nextRankLevels={6:'D-Rank',11:'C-Rank',21:'B-Rank',36:'A-Rank',51:'S-Rank',76:'National',100:'Shadow Monarch'};
+  const nextRankEntry=Object.entries(nextRankLevels).find(([l])=>prog.level<+l);
+  if(nextEl)nextEl.textContent=nextRankEntry?`→ ${nextRankEntry[1]} at Lv.${nextRankEntry[0]}`:'MAX RANK';
+  const streak=getQuestStreak();
+  if(streakEl)streakEl.textContent=streak;
+  const multi=getStreakMultiplier(streak);
+  if(multEl)multEl.textContent=multi>1?`${multi}× XP bonus`:'';
 }
 
 // ── Leaderboard ─────────────────────────────────────────────────────────────
@@ -668,7 +771,7 @@ async function renderLeaderboard(){
     .order('total_xp',{ascending:false})
     .limit(25);
   if(error){
-    el.innerHTML=`<div class="lb-setup">The leaderboard needs a <strong>profiles</strong> table in Supabase.<br>Go to Settings → Copy Setup SQL, then run it in your Supabase SQL editor.</div>`;
+    el.innerHTML=`<div class="lb-setup">Leaderboard unavailable — check your Supabase <strong>profiles</strong> table setup.</div>`;
     return;
   }
   if(!data?.length){el.innerHTML='<div class="empty" style="padding:16px 0">No hunters yet — be the first</div>';return}
@@ -691,32 +794,17 @@ async function renderLeaderboard(){
   }).join('');
 }
 
-function copyLeaderboardSQL(){
-  const sql=`CREATE TABLE IF NOT EXISTS profiles (
-  user_id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  display_name TEXT,
-  total_xp INTEGER DEFAULT 0,
-  streak INTEGER DEFAULT 0,
-  updated_at TIMESTAMPTZ DEFAULT NOW()
-);
-ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "profiles_select" ON profiles FOR SELECT TO authenticated USING (true);
-CREATE POLICY "profiles_upsert" ON profiles FOR ALL TO authenticated USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);`;
-  navigator.clipboard?.writeText(sql).then(()=>toast('SQL copied to clipboard!','ok')).catch(()=>toast('Copy failed — check console','error'));
-  console.log('Leaderboard SQL:\n\n'+sql);
-}
-
 // ── Quest system ─────────────────────────────────────────────────────────────
 function getQuestTierIdx(level){
-  if(level<=3) return 0;
-  if(level<=9) return 1;
-  if(level<=19)return 2;
-  if(level<=39)return 3;
-  return 4;
+  if(level<=5) return 0;  // Novice
+  if(level<=10)return 1;  // D-Rank
+  if(level<=20)return 2;  // C/B-Rank
+  if(level<=35)return 3;  // B/A-Rank
+  return 4;               // S-Rank+
 }
 
 function getQuestCount(date,level){
-  const base=level>=30?6:level>=20?5:level>=10?4:3;
+  const base=level>=50?6:level>=35?5:level>=15?4:3;
   let seed=date.replace(/-/g,'').split('').reduce((a,c,i)=>a+c.charCodeAt(0)*(i+7),17);
   seed=(seed*1664525+1013904223)&0x7fffffff;
   const variation=(seed%3)-1; // -1, 0, or +1
@@ -728,7 +816,7 @@ function selectDailyExercises(date,level){
   const count=getQuestCount(date,level);
   let seed=date.replace(/-/g,'').split('').reduce((a,c,i)=>a+c.charCodeAt(0)*(i+1),0);
   const lcg=()=>{seed=(seed*1664525+1013904223)&0x7fffffff;return seed/0x7fffffff};
-  const pool=[...EXERCISE_POOL];
+  const pool=[...EXERCISE_POOL].filter(ex=>(ex.minTier||0)<=tierIdx);
   for(let i=pool.length-1;i>0;i--){const j=Math.floor(lcg()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
   return pool.slice(0,count).map(ex=>({key:ex.key,label:ex.label,target:`${ex.tiers[tierIdx]} ${ex.unit}`,tip:ex.tip,done:false}));
 }
@@ -770,7 +858,7 @@ async function checkDailyQuestPenalty(){
   const d1=new Date(state.date+'T12:00:00');
   const d2=new Date(today+'T12:00:00');
   const daysMissed=Math.max(1,Math.round((d2-d1)/86400000));
-  const penalty=Math.min(500,QUEST_PENALTY_XP+Math.max(0,daysMissed-1)*100);
+  const penalty=Math.min(600,QUEST_PENALTY_XP+Math.max(0,daysMissed-1)*125);
   const prevStreak=getQuestStreak();
   await awardXP(-penalty,'Quest Failed',{quest_state:makeNewQuestState(today),quest_streak:0});
   showPenaltyModal(prevStreak,daysMissed,penalty);
@@ -794,7 +882,7 @@ async function toggleQuestItem(idx){
     db.auth.updateUser({data:meta}).then(({data})=>{if(data?.user)user=data.user});
     user.user_metadata={...user.user_metadata,quest_state:next};
   }
-  renderDailyQuest();
+  renderDailyQuest();updateXPDisplay();
 }
 
 function renderDailyQuest(){

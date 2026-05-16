@@ -122,44 +122,17 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
 .list-filter-wrap{position:relative;margin-bottom:4px}
 .list-filter-wrap::before{content:'🔍';position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:.78rem;pointer-events:none;opacity:.5}
 
-/* Food */
-.goal-bar{height:8px;background:var(--border);border-radius:4px;margin-top:16px;overflow:hidden}
-.goal-bar-fill{height:100%;border-radius:4px;transition:width .4s cubic-bezier(.4,0,.2,1),background .25s ease}
-.goal-text{font-size:.76rem;color:var(--muted);margin-top:10px}
-.goal-row{display:flex;align-items:center;gap:8px;margin-top:10px}
-.goal-row label{font-size:.8rem;color:var(--muted);flex:1;text-align:left}
-.goal-row input{width:90px;margin:0}
-.stat-big{text-align:center;padding:26px 16px}
-.stat-big .number{font-size:3.8rem;font-weight:800;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
-.stat-big .label{color:var(--muted);font-size:.82rem;margin-top:8px;font-weight:500}
-.macros-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(72px,1fr));gap:8px}
-.macro-box{background:var(--surface-2);border:1px solid var(--border);border-radius:10px;padding:12px 8px;text-align:center}
-.macro-box .val{font-size:1.1rem;font-weight:800;font-variant-numeric:tabular-nums}
-.macro-box .lbl{font-size:.72rem;color:var(--muted);margin-top:3px;font-weight:500}
-#food-dropdown{background:var(--surface);border:1px solid var(--border-light);border-radius:8px;overflow:hidden;margin:-4px 0 8px;box-shadow:0 4px 16px rgba(0,0,0,.07)}
-.fd-item{padding:10px 14px;font-size:.88rem;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid var(--border);transition:background .1s}
-.fd-item:last-child{border-bottom:none}
-.fd-item:not(.fd-msg):hover{background:var(--surface-2)}
-.fd-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
-.fd-meta{font-size:.75rem;color:var(--muted);flex-shrink:0;font-variant-numeric:tabular-nums}
-.fd-msg{color:var(--muted);cursor:default;font-size:.84rem}
-.fd-portion{display:flex;align-items:center;gap:8px;margin:-4px 0 8px;padding:8px 12px;background:var(--surface-2);border-radius:8px;font-size:.85rem;color:var(--muted)}
-.fd-portion input{width:72px;padding:6px 10px}
-.food-name-row{display:flex;gap:8px;margin-bottom:10px;align-items:flex-start}
-.food-name-row input{flex:1;margin-bottom:0}
-.food-search-btn{flex-shrink:0;padding:9px 13px}
+/* Entries */
 .entry{display:flex;align-items:center;justify-content:space-between;padding:12px 6px;border-bottom:1px solid var(--border);gap:8px;transition:background .15s ease;border-radius:8px;margin:0 -6px}
 .entry:hover{background:var(--surface-2)}
 .entry:last-child{border-bottom:none}
 .entry-content{flex:1;min-width:0}
 .entry-name{font-size:.95rem;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.entry-cal{font-weight:700;font-size:.95rem;color:var(--accent);font-variant-numeric:tabular-nums}
 .entry-meta{font-size:.76rem;color:var(--muted);margin-top:3px}
 .entry-right{display:flex;align-items:center;gap:4px;flex-shrink:0}
 .entry-editing{background:var(--surface-2);margin:4px -8px;padding:12px;border-radius:8px;border-bottom:none}
 .edit-actions{display:flex;gap:8px;margin-top:8px}
 .edit-actions .btn{flex:1;padding:8px 12px;font-size:.85rem}
-@keyframes cal-pulse{0%,100%{opacity:1}50%{opacity:.5}}
 
 /* Tasks */
 .type-toggle{display:flex;background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:3px;gap:3px;margin-bottom:10px}
@@ -310,7 +283,6 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
       <div class="onboard-title">Welcome to Froggy</div>
       <div class="onboard-sub">Your daily training system. The system assigns quests. Complete them or face consequences.</div>
       <div class="onboard-field"><label>Your name</label><input type="text" id="ob-name" placeholder="What should we call you?"></div>
-      <div class="onboard-field"><label>Daily calorie goal (kcal)</label><input type="number" id="ob-cal" placeholder="2000" min="500" max="9999"></div>
       <button class="btn btn-green btn-full" onclick="goOnboardStep2()">Next →</button>
     </div>
     <div class="onboard-step" id="ob-step-2">
@@ -420,41 +392,6 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
       <div id="daily-list"></div>
     </div>
 
-    <!-- FOOD -->
-    <div id="food-section">
-      <div class="card stat-big">
-        <div class="number" id="cal-total" style="color:var(--accent)">0</div>
-        <div class="label" id="cal-day-label">calories today</div>
-        <div class="goal-bar"><div class="goal-bar-fill" id="cal-bar" style="width:0%;background:var(--accent)"></div></div>
-        <div id="cal-status" style="font-size:.78rem;text-align:center;margin-top:6px;font-weight:600;min-height:16px"></div>
-        <div class="goal-text">Goal: <span id="cal-goal-display">2000</span> kcal <button class="text-link" onclick="toggleGoalEdit()">edit</button></div>
-        <div id="cal-goal-edit" style="display:none" class="goal-row">
-          <label>Daily calorie goal</label>
-          <input type="number" id="cal-goal-input" placeholder="2000">
-          <button class="btn btn-green" style="padding:8px 14px" onclick="saveCalGoal()">Save</button>
-        </div>
-      </div>
-      <div class="card" style="padding:14px 16px"><div class="macros-row" id="macro-boxes"></div></div>
-      <div class="card">
-        <div class="section-title">Add Food</div>
-        <div class="food-name-row">
-          <input type="text" id="food-name" placeholder="What did you eat?" autocomplete="off" oninput="onFoodInput()" onkeydown="if(event.key==='Enter')triggerFoodSearch()">
-          <button class="btn btn-ghost food-search-btn" id="food-search-btn" onclick="triggerFoodSearch()"><span id="food-search-icon"></span></button>
-        </div>
-        <div id="food-dropdown" style="display:none"></div>
-        <div id="food-portion-row" class="fd-portion" style="display:none">
-          <span>Portion:</span>
-          <input type="number" id="food-grams" value="100" min="1" inputmode="decimal" oninput="onPortionChange()">
-          <span id="food-portion-suffix">g · macros auto-scaled</span>
-        </div>
-        <input type="number" id="food-cal" placeholder="Calories (kcal)" min="0" inputmode="numeric">
-        <div id="food-macro-inputs"></div>
-        <button id="food-add-btn" class="btn btn-green btn-full" onclick="addFood()"><span id="food-plus"></span>Add</button>
-      </div>
-      <div class="section-title" id="food-log-title">Today's Log</div>
-      <div id="food-list"><div class="empty">Nothing logged yet</div></div>
-    </div>
-
   </div><!-- /main-content -->
 
   <!-- SETTINGS MODAL -->
@@ -466,11 +403,6 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
       <div class="onboard-field" style="margin-bottom:0">
         <label>Your name</label>
         <input type="text" id="rm-name" placeholder="What should we call you?">
-      </div>
-      <div class="modal-section">Goals</div>
-      <div class="onboard-field" style="margin-bottom:10px">
-        <label>Daily calorie goal (kcal)</label>
-        <input type="number" id="rm-cal" placeholder="2000">
       </div>
       <div class="modal-section">Appearance</div>
       <button class="btn btn-ghost btn-full" onclick="toggleTheme()" style="justify-content:flex-start;gap:8px">
@@ -515,7 +447,7 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
       <span class="levelup-icon" id="lu-icon">⭐</span>
       <div class="levelup-title">Power Level Increased!</div>
       <div class="levelup-level" id="lu-level">Level 2</div>
-      <span class="levelup-rank" id="lu-rank">E-Rank</span>
+      <span class="levelup-rank" id="lu-rank">Novice</span>
       <div class="levelup-msg" id="lu-msg">You grow stronger.</div>
       <button class="btn btn-purple btn-full" onclick="document.getElementById('levelup-modal').classList.remove('open')">Continue</button>
     </div>
@@ -543,13 +475,12 @@ const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
 });
 
 let user = null;
-let calGoal = 2000;
 let addType = 'task';
-let editing = { food:null, habit:null };
+let editing = { habit:null };
 let totalXP = 0;
 let _obHabits = [];
 let _rmHabits = [];
-let _mascot = { cals:0, habitDone:0, habitTotal:0 };
+let _mascot = { habitDone:0, habitTotal:0 };
 let _confettiFired = false;
 let _jumpFired = false;
 
@@ -581,12 +512,6 @@ const IC={
   sun:'<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>',
   moon:'<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>'
 };
-
-const MACRO_DEFS=[
-  {key:'protein',label:'Protein',unit:'g',color:'var(--accent2)',nid:1003,nnum:'203',core:true},
-  {key:'sugar',  label:'Sugar',  unit:'g',color:'var(--accent3)',nid:2000,nnum:'269',core:false},
-];
-let trackedMacros=['protein','sugar'];
 
 // ── Exercise pool (52 bodyweight exercises, 5 difficulty tiers) ────────────
 const EXERCISE_POOL=[
@@ -664,7 +589,7 @@ function getRankInfo(l){
   if(l>=21) return{rank:'B-Rank',        color:'#3b82f6',bg:'rgba(59,130,246,.15)',icon:'🔷',msg:'Above the masses. Still nothing exceptional.'};
   if(l>=11) return{rank:'C-Rank',        color:'#22d3ee',bg:'rgba(34,211,238,.15)',icon:'💠',msg:'Average among hunters. Push harder or fall behind.'};
   if(l>=6)  return{rank:'D-Rank',        color:'#4ade80',bg:'rgba(74,222,128,.15)',icon:'🟢',msg:'Out of the bottom. The real climb starts now.'};
-  return           {rank:'E-Rank',        color:'#6b7280',bg:'rgba(107,114,128,.15)',icon:'⬜',msg:'The weakest. Most quit here. Will you?'};
+  return           {rank:'Novice',        color:'#6b7280',bg:'rgba(107,114,128,.15)',icon:'⬜',msg:'The weakest. Most quit here. Will you?'};
 }
 
 function getStreakMultiplier(streak){
@@ -968,15 +893,13 @@ function mascotSVG(score,size){
 }
 
 function updateMascot(){
-  const{cals,habitDone,habitTotal}=_mascot;
-  const calPct=calGoal>0?(cals/calGoal)*100:0;
-  const calS=calPct<=100?calPct:Math.max(0,100-(calPct-100)*2);
+  const{habitDone,habitTotal}=_mascot;
   const habS=habitTotal>0?(habitDone/habitTotal)*100:0;
   const qState=user?.user_metadata?.quest_state;
   let qDone=0,qTotal=3;
   if(qState?.exercises){qTotal=qState.exercises.length;qDone=qState.exercises.filter(e=>e.done).length}
   const qS=qTotal>0?(qDone/qTotal)*100:0;
-  const s=Math.round((calS+habS+qS)/3);
+  const s=Math.round((habS+qS)/2);
   const cls=s>=90?'mascot-celebrate':s>=55?'mascot-bounce':'mascot-idle';
   const hdr=document.getElementById('mascot-hdr');
   if(hdr){hdr.innerHTML=mascotSVG(s,34);hdr.className=cls}
@@ -1022,13 +945,9 @@ function popConfetti(){
 async function init(){
   injectIcons();
   if('serviceWorker' in navigator)navigator.serviceWorker.register('/sw.js').catch(()=>{});
-  document.addEventListener('click',e=>{
-    if(!e.target.closest('#food-dropdown')&&!e.target.closest('#food-search-btn')&&e.target.id!=='food-name')hideFoodDropdown();
-  });
   document.addEventListener('keydown',e=>{
     if(e.key!=='Escape')return;
     ['penalty-modal','levelup-modal','reset-modal'].forEach(id=>document.getElementById(id)?.classList.remove('open'));
-    hideFoodDropdown();
   });
   const _ob=document.getElementById('offline-banner');
   const _uo=()=>_ob?.classList.toggle('show',!navigator.onLine);
@@ -1095,7 +1014,7 @@ async function showApp(){
 
 async function renderAll(){
   updateDateDisplay();
-  await Promise.all([renderDailyQuest(),renderLeaderboard(),renderDaily(),renderFood()]);
+  await Promise.all([renderDailyQuest(),renderLeaderboard(),renderDaily()]);
 }
 
 function updateDateDisplay(){
@@ -1105,8 +1024,6 @@ function updateDateDisplay(){
 
 function injectIcons(){
   const set=(id,html)=>{const el=document.getElementById(id);if(el)el.innerHTML=html};
-  set('food-plus',icon(IC.plus,16));
-  set('food-search-icon',icon(IC.search,18));
   set('habit-plus',icon(IC.plus,16));
   set('settings-icon',icon(IC.gear,18));
   set('ob-mascot-1',mascotSVG(60,80));
@@ -1137,8 +1054,6 @@ function goOnboardStep1(){
   document.getElementById('ob-step-2').classList.remove('active');
 }
 function goOnboardStep2(){
-  const cal=parseInt(document.getElementById('ob-cal').value)||0;
-  if(cal<500)return flashErr('ob-cal','Enter a valid calorie goal (min 500)');
   document.getElementById('ob-step-1').classList.remove('active');
   document.getElementById('ob-step-2').classList.add('active');
 }
@@ -1155,11 +1070,8 @@ function renderObHabits(){
 }
 
 async function submitOnboarding(){
-  const cal=parseInt(document.getElementById('ob-cal').value)||2000;
   const displayName=document.getElementById('ob-name').value.trim();
   const btn=document.getElementById('ob-submit-btn');btnLoad(btn,true);
-  calGoal=cal;
-  await dbCall(()=>db.from('user_settings').upsert({user_id:user.id,cal_goal:cal},{onConflict:'user_id'}));
   const coreIds=[];
   for(const habitName of _obHabits){
     const{data}=await dbCall(()=>db.from('habits').insert({user_id:user.id,name:habitName,recurring:true,completed:false}).select('id').single());
@@ -1186,7 +1098,6 @@ async function removeCoreHabit(habitId){
 
 async function showResetModal(){
   document.getElementById('rm-name').value=user?.user_metadata?.display_name||'';
-  document.getElementById('rm-cal').value=calGoal;
   _rmHabits=[];renderRmNewHabits();updateThemeButton();
   const coreIds=getCoreHabitIds();
   if(coreIds.length){
@@ -1211,10 +1122,7 @@ function renderRmNewHabits(){
 }
 
 async function submitReset(){
-  const cal=parseInt(document.getElementById('rm-cal').value)||calGoal;
   const displayName=document.getElementById('rm-name').value.trim();
-  calGoal=cal;
-  await dbCall(()=>db.from('user_settings').upsert({user_id:user.id,cal_goal:cal},{onConflict:'user_id'}));
   const newCoreIds=[];
   for(const habitName of _rmHabits){
     const{data}=await dbCall(()=>db.from('habits').insert({user_id:user.id,name:habitName,recurring:true,completed:false}).select('id').single());
@@ -1233,8 +1141,6 @@ async function submitReset(){
 
 // ── Settings ──────────────────────────────────────────────────────────────────
 async function loadSettings(){
-  const{data}=await dbCall(()=>db.from('user_settings').select('*').eq('user_id',user.id).maybeSingle());
-  calGoal=data?.cal_goal??2000;
   totalXP=user?.user_metadata?.total_xp??0;
   updateXPDisplay();
   await checkDailyQuestPenalty();
@@ -1246,180 +1152,12 @@ async function wipeAccount(){
   await Promise.all([
     dbCall(()=>db.from('habits').delete().eq('user_id',user.id)),
     dbCall(()=>db.from('habit_completions').delete().eq('user_id',user.id)),
-    dbCall(()=>db.from('food_entries').delete().eq('user_id',user.id)),
     dbCall(()=>db.from('user_settings').delete().eq('user_id',user.id)),
     db.from('profiles').delete().eq('user_id',user.id),
   ]);
   await db.auth.updateUser({data:{setup_complete:false,total_xp:0,quest_state:null,quest_streak:0,core_habit_ids:[],display_name:null}});
   location.reload();
 }
-
-// ── Food search (USDA) ────────────────────────────────────────────────────────
-const USDA_KEY='zTrnEFEmXaZRz9X2SITx61IykQVuGy7Q56bohHWH';
-let _foodSearchTimer=null,_foodSearchController=null,_foodSearchResults=[],_selectedFoodBase=null;
-
-function onFoodInput(){_selectedFoodBase=null;document.getElementById('food-portion-row').style.display='none';clearTimeout(_foodSearchTimer);hideFoodDropdown()}
-function triggerFoodSearch(){const q=document.getElementById('food-name').value.trim();if(q.length<2)return;searchFoodUSDA(q)}
-
-async function searchFoodUSDA(query){
-  if(_foodSearchController)_foodSearchController.abort();
-  _foodSearchController=new AbortController();
-  const dd=document.getElementById('food-dropdown');
-  dd.innerHTML='<div class="fd-item fd-msg">Searching…</div>';dd.style.display='block';
-  try{
-    let foods=[];
-    for(const dt of['Foundation,SR%20Legacy',null]){
-      const url=`https://api.nal.usda.gov/fdc/v1/foods/search?query=${encodeURIComponent(query)}&pageSize=5${dt?'&dataType='+dt:''}&api_key=${USDA_KEY}`;
-      const r=await fetch(url,{signal:_foodSearchController.signal});
-      if(!r.ok)throw new Error(`HTTP ${r.status}`);
-      const json=await r.json();foods=json.foods||[];if(foods.length)break;
-    }
-    _foodSearchResults=foods;
-    if(!foods.length){dd.innerHTML='<div class="fd-item fd-msg">No results — enter calories manually</div>';return}
-    dd.innerHTML=foods.map((f,i)=>{
-      const nuts=f.foodNutrients||[];
-      const nut=(fid,num)=>nuts.find(n=>n.nutrientId===fid||String(n.nutrientNumber)===num)?.value||0;
-      const kcal=nut(1008,'208')||(nut(1062,'268')/4.184);
-      const cal=Math.round(kcal);
-      const isBranded=!!f.servingSize;
-      const calLabel=cal?(isBranded?`${cal} kcal/serving`:`${cal} kcal/100g`):'tap to select';
-      const desc=f.description.length>52?f.description.slice(0,52)+'…':f.description;
-      return`<div class="fd-item" onclick="selectFood(${i})"><span class="fd-name">${esc(desc)}</span><span class="fd-meta">${calLabel}</span></div>`;
-    }).join('');
-  }catch(e){
-    if(e.name==='AbortError')return;
-    dd.innerHTML='<div class="fd-item fd-msg">Search unavailable — enter manually</div>';
-  }
-}
-
-function selectFood(idx){
-  const f=_foodSearchResults[idx];if(!f)return;
-  const nuts=f.foodNutrients||[];
-  const nut=(fid,num)=>nuts.find(n=>n.nutrientId===fid||String(n.nutrientNumber)===num)?.value||0;
-  const isGrams=u=>!u||/^(g|gr|grm|gram)/i.test(u.trim());
-  const servGrams=(f.servingSize>0&&isGrams(f.servingSizeUnit))?f.servingSize:null;
-  const scale=servGrams?(100/servGrams):1;
-  const rawKcal=nut(1008,'208')||(nut(1062,'268')/4.184);
-  _selectedFoodBase={cal:rawKcal*scale};
-  MACRO_DEFS.forEach(m=>{_selectedFoodBase[m.key]=nut(m.nid,m.nnum)*scale});
-  document.getElementById('food-name').value=f.description.split(',')[0].trim();
-  hideFoodDropdown();
-  document.getElementById('food-portion-row').style.display='flex';
-  const defaultG=servGrams?Math.round(servGrams):100;
-  document.getElementById('food-grams').value=defaultG;
-  const hDesc=f.householdServingFullText?` · 1 serving = ${f.householdServingFullText}`:(servGrams?` · 1 serving = ${Math.round(servGrams)}g`:'');
-  document.getElementById('food-portion-suffix').textContent=`g${hDesc||' · macros auto-scaled'}`;
-  applyFoodPortion(defaultG);
-  document.getElementById('food-grams').select();
-}
-
-function applyFoodPortion(g){
-  if(!_selectedFoodBase)return;
-  const s=g/100;
-  document.getElementById('food-cal').value=Math.round(_selectedFoodBase.cal*s)||'';
-  MACRO_DEFS.forEach(m=>{const el=document.getElementById('food-'+m.key);if(el)el.value=+(_selectedFoodBase[m.key]*s).toFixed(m.unit==='mg'?0:1)||''});
-}
-
-function onPortionChange(){applyFoodPortion(parseFloat(document.getElementById('food-grams').value)||0)}
-function hideFoodDropdown(){const dd=document.getElementById('food-dropdown');if(dd){dd.style.display='none';dd.innerHTML=''}; _foodSearchResults=[]}
-
-// ── Food CRUD ─────────────────────────────────────────────────────────────────
-function renderFoodMacroInputs(){
-  const macros=MACRO_DEFS.filter(m=>trackedMacros.includes(m.key));
-  const rows=[];
-  for(let i=0;i<macros.length;i+=3){
-    const chunk=macros.slice(i,i+3);
-    rows.push(`<div class="form-row">${chunk.map(m=>`<input type="number" id="food-${m.key}" placeholder="${m.label} (${m.unit})" min="0" inputmode="numeric">`).join('')}</div>`);
-  }
-  document.getElementById('food-macro-inputs').innerHTML=rows.join('');
-}
-
-async function addFood(){
-  const name=document.getElementById('food-name').value.trim();
-  if(!name)return flashErr('food-name','Enter food name');
-  const btn=document.getElementById('food-add-btn');btnLoad(btn,true);
-  const getMacro=key=>parseFloat(document.getElementById('food-'+key)?.value)||0;
-  const metaObj={};
-  MACRO_DEFS.filter(m=>!m.core&&trackedMacros.includes(m.key)).forEach(m=>{const v=getMacro(m.key);if(v)metaObj[m.key]=v});
-  const row={user_id:user.id,date:todayKey(),name,calories:parseInt(document.getElementById('food-cal').value)||0,protein:getMacro('protein'),carbs:0,fat:0,time:new Date().toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})};
-  if(Object.keys(metaObj).length)row.meta=metaObj;
-  let{error}=await dbCall(()=>db.from('food_entries').insert(row));
-  if(error?.message?.includes('meta')){delete row.meta;({error}=await dbCall(()=>db.from('food_entries').insert(row)))}
-  btnLoad(btn,false);if(error)return;
-  await awardXP(5,'Food logged');
-  document.getElementById('food-name').value='';
-  document.getElementById('food-cal').value='';
-  MACRO_DEFS.forEach(m=>{const el=document.getElementById('food-'+m.key);if(el)el.value=''});
-  document.getElementById('food-portion-row').style.display='none';
-  _selectedFoodBase=null;
-  await renderFood();
-}
-
-function startEditFood(id){editing.food=id;renderFood()}
-function cancelEditFood(){editing.food=null;renderFood()}
-async function saveEditFood(id){
-  const name=document.getElementById('ef-name-'+id).value.trim();
-  if(!name)return toast('Name required','error');
-  const getEf=key=>parseFloat(document.getElementById(`ef-${key}-${id}`)?.value)||0;
-  const metaEf={};
-  MACRO_DEFS.filter(m=>!m.core&&trackedMacros.includes(m.key)).forEach(m=>{const v=getEf(m.key);if(v)metaEf[m.key]=v});
-  const upd={name,calories:parseInt(document.getElementById('ef-cal-'+id).value)||0,protein:getEf('protein'),carbs:0,fat:0};
-  if(Object.keys(metaEf).length)upd.meta=metaEf;
-  const{error}=await dbCall(()=>db.from('food_entries').update(upd).eq('id',id).eq('user_id',user.id));
-  if(error)return;editing.food=null;toast('Updated','ok');await renderFood();
-}
-async function deleteFood(id){await dbCall(()=>db.from('food_entries').delete().eq('id',id).eq('user_id',user.id));await renderFood()}
-
-async function renderFood(){
-  const dayKey=todayKey();
-  document.getElementById('cal-day-label').textContent='calories today';
-  document.getElementById('food-log-title').textContent="Today's Log";
-  document.getElementById('cal-goal-display').textContent=calGoal;
-  document.getElementById('cal-goal-input').value=calGoal;
-  const{data:list}=await dbCall(()=>db.from('food_entries').select('*').eq('user_id',user.id).eq('date',dayKey).order('created_at',{ascending:true}));
-  const rows=list||[];
-  renderFoodMacroInputs();
-  const totals={};
-  MACRO_DEFS.forEach(m=>{totals[m.key]=rows.reduce((s,e)=>s+(m.core?(+e[m.key]||0):(+(e.meta?.[m.key])||0)),0)});
-  const totalCal=rows.reduce((s,e)=>s+(e.calories||0),0);
-  document.getElementById('cal-total').textContent=totalCal;
-  document.getElementById('macro-boxes').innerHTML=MACRO_DEFS.filter(m=>trackedMacros.includes(m.key)).map(m=>
-    `<div class="macro-box"><div class="val" style="color:${m.color}">${Math.round(totals[m.key])}${m.unit}</div><div class="lbl">${m.label.toLowerCase()}</div></div>`
-  ).join('');
-  const rawPct=calGoal?Math.round((totalCal/calGoal)*100):0;
-  const pct=Math.min(100,rawPct);
-  document.getElementById('cal-bar').style.width=pct+'%';
-  document.getElementById('cal-bar').style.background=rawPct>100?'var(--danger)':'var(--accent)';
-  document.getElementById('cal-total').style.animation=rawPct>100?'cal-pulse 1.2s ease-in-out infinite':'';
-  const calStatusEl=document.getElementById('cal-status');
-  if(calStatusEl&&calGoal){
-    if(rawPct>100){calStatusEl.textContent=`${totalCal-calGoal} kcal over goal`;calStatusEl.style.color='var(--danger)'}
-    else if(rawPct>=80){calStatusEl.textContent=`${calGoal-totalCal} kcal left · looking good`;calStatusEl.style.color='var(--accent)'}
-    else if(rawPct>0){calStatusEl.textContent=`${calGoal-totalCal} kcal remaining`;calStatusEl.style.color='var(--muted)'}
-    else calStatusEl.textContent='';
-  }
-  // Update mascot food stats
-  _mascot.cals=totalCal;updateMascot();
-  const el=document.getElementById('food-list');
-  if(!rows.length){el.innerHTML='<div class="empty">Nothing logged yet</div>';return}
-  el.innerHTML=[...rows].reverse().map(e=>{
-    if(editing.food===e.id){
-      const editMacros=MACRO_DEFS.filter(m=>trackedMacros.includes(m.key));
-      const editRows=[];
-      for(let i=0;i<editMacros.length;i+=3){
-        const chunk=editMacros.slice(i,i+3);
-        editRows.push(`<div class="form-row">${chunk.map(m=>{const val=m.core?(e[m.key]||''):(e.meta?.[m.key]||'');return`<input type="number" id="ef-${m.key}-${e.id}" value="${val}" placeholder="${m.label}" inputmode="numeric">`}).join('')}</div>`);
-      }
-      return`<div class="entry-editing"><div class="form-row"><input type="text" id="ef-name-${e.id}" value="${esc(e.name)}" style="flex:2"><input type="number" id="ef-cal-${e.id}" value="${e.calories}" style="width:80px;flex:0 0 80px" inputmode="numeric"></div>${editRows.join('')}<div class="edit-actions"><button class="btn btn-green" onclick="saveEditFood('${e.id}')">Save</button><button class="btn btn-ghost" onclick="cancelEditFood()">Cancel</button></div></div>`;
-    }
-    const macroMeta=e.meta||{};
-    const macroStr=MACRO_DEFS.filter(m=>trackedMacros.includes(m.key)).map(m=>{const v=m.core?(+e[m.key]||0):(+macroMeta[m.key]||0);return v?`${m.label.slice(0,1)} ${v}${m.unit}`:''}).filter(Boolean).join(' · ');
-    return`<div class="entry"><div class="entry-content"><div class="entry-name">${esc(e.name)}</div><div class="entry-meta">${esc(e.time||'')}${macroStr?' · '+macroStr:''}</div></div><div class="entry-right"><span class="entry-cal">${e.calories}</span><button class="icon-btn" onclick="startEditFood('${e.id}')">${icon(IC.edit,16)}</button><button class="icon-btn danger" onclick="deleteFood('${e.id}')">${icon(IC.trash,16)}</button></div></div>`;
-  }).join('');
-}
-
-function saveCalGoal(){const v=parseInt(document.getElementById('cal-goal-input').value)||2000;calGoal=v;document.getElementById('cal-goal-edit').style.display='none';dbCall(()=>db.from('user_settings').upsert({user_id:user.id,cal_goal:v},{onConflict:'user_id'}));renderFood()}
-function toggleGoalEdit(){const el=document.getElementById('cal-goal-edit');el.style.display=el.style.display==='none'?'flex':'none'}
 
 // ── Tasks ─────────────────────────────────────────────────────────────────────
 function parseTaskName(raw){

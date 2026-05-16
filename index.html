@@ -57,24 +57,16 @@ header{position:sticky;top:0;background:var(--header-bg);backdrop-filter:blur(12
 .header-main{padding:12px 20px;display:flex;align-items:center;justify-content:space-between}
 .logo-mark{display:flex;align-items:center;gap:8px;cursor:pointer;padding:5px 10px;margin:-5px -10px;border-radius:12px;transition:background .18s ease,transform .18s ease;user-select:none}
 .logo-mark:hover{background:rgba(74,222,128,.13);transform:scale(1.05)}
-.logo-mark span{font-size:1.05rem;font-weight:800;letter-spacing:-.04em}
+.logo-mark span{line-height:1}
 .header-right{display:flex;align-items:center;gap:10px}
 .theme-btn{background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--muted);padding:5px;cursor:pointer;line-height:0;transition:border-color .15s,color .15s;display:flex;align-items:center}
 .theme-btn:hover{border-color:var(--border-light);color:var(--text)}
 
-/* Quest section in header */
-#quest-section{border-top:1px solid var(--border);transition:background .3s}
-@keyframes quest-section-flash{0%,100%{background:transparent}50%{background:rgba(167,139,250,.13)}}
-#quest-section.quest-pending{animation:quest-section-flash 2.2s ease-in-out infinite}
-#hdn-date{font-size:.72rem;font-weight:600;color:var(--muted);text-align:center;padding:5px 0 0;letter-spacing:.03em;text-transform:uppercase}
-#system-status-bar{display:flex;align-items:center;padding:5px 20px 8px;gap:0}
-.ssb-item{display:flex;align-items:center;gap:5px;flex:1;padding:3px 5px;border-radius:6px;cursor:pointer;transition:background .12s;min-width:0;text-decoration:none}
-.ssb-item:hover{background:var(--surface-2)}
-.ssb-item.quest-alert .ssb-lbl{color:var(--accent4)!important;font-weight:900!important}
-.ssb-lbl{font-size:.58rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);white-space:nowrap;flex-shrink:0}
-.ssb-bar{flex:1;height:3px;background:var(--border);border-radius:2px;overflow:hidden;margin:0 5px;min-width:16px}
-.ssb-bar-fill{height:100%;border-radius:2px;transition:width .35s ease}
-.ssb-val{font-size:.62rem;font-weight:700;color:var(--text-2);white-space:nowrap;flex-shrink:0;font-variant-numeric:tabular-nums;min-width:26px;text-align:right}
+.logo-name{font-size:1.05rem;font-weight:800;letter-spacing:-.04em}
+.logo-date{display:block;font-size:.6rem;font-weight:600;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;margin-top:1px}
+.view-switcher{display:flex;background:var(--surface-2);border:1px solid var(--border);border-radius:20px;padding:2px;gap:0}
+.vs-btn{background:transparent;border:none;border-radius:18px;color:var(--muted);padding:5px 14px;font-size:.8rem;font-weight:700;cursor:pointer;transition:background .15s,color .15s;white-space:nowrap}
+.vs-btn.active{background:var(--surface);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.1)}
 
 /* Main content */
 #main-content{padding:16px 20px calc(40px + env(safe-area-inset-bottom))}
@@ -198,7 +190,7 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
 .ps-streak-block{text-align:right}
 .ps-streak-num{font-size:1.8rem;font-weight:900;line-height:1;color:#f97316;font-variant-numeric:tabular-nums}
 .ps-streak-lbl{font-size:.65rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);font-weight:700;margin-top:1px}
-.ps-mult{font-size:.68rem;font-weight:800;color:#a855f7;margin-top:3px;min-height:14px}
+.ps-mult{font-size:.68rem;font-weight:800;color:var(--accent3);margin-top:3px;min-height:14px}
 .ps-bar-wrap{gap:5px;display:flex;flex-direction:column}
 .ps-bar-bg{height:8px;background:var(--border);border-radius:4px;overflow:hidden}
 .ps-bar-fill{height:100%;border-radius:4px;transition:width .5s cubic-bezier(.4,0,.2,1);background:linear-gradient(90deg,var(--accent),var(--accent2))}
@@ -357,35 +349,51 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
     <div class="header-main">
       <div class="logo-mark" id="mascot-hdr-wrap" onclick="tapMascot()">
         <span id="mascot-hdr" class="mascot-idle"></span>
-        <span>Froggy</span>
+        <div>
+          <span class="logo-name">Froggy</span>
+          <span class="logo-date" id="hdn-date"></span>
+        </div>
       </div>
       <div class="header-right">
+        <div class="view-switcher">
+          <button class="vs-btn active" id="vs-today" onclick="switchView('today')">Today</button>
+          <button class="vs-btn" id="vs-profile" onclick="switchView('profile')">Profile</button>
+        </div>
         <span id="level-badge" style="background:rgba(107,114,128,.12);color:#6b7280;border-color:rgba(107,114,128,.3)">Lv.1</span>
         <button class="theme-btn" id="settings-btn" onclick="showResetModal()"><span id="settings-icon"></span></button>
-      </div>
-    </div>
-    <div id="quest-section">
-      <div id="header-date-bar">
-        <div id="hdn-date"></div>
-      </div>
-      <div id="system-status-bar">
-        <div class="ssb-item" id="ssb-quest-item" onclick="document.getElementById('quest-main').scrollIntoView({behavior:'smooth'})">
-          <span class="ssb-lbl">⚡ Quest</span>
-          <div class="ssb-bar"><div class="ssb-bar-fill" id="ssb-quest-fill" style="width:0%;background:var(--accent4)"></div></div>
-          <span class="ssb-val" id="ssb-quest-val">0/3</span>
-        </div>
       </div>
     </div>
   </header>
 
   <div id="main-content">
 
-    <!-- QUEST -->
+    <!-- TODAY VIEW: Quest + Tasks -->
+    <div id="view-today">
     <div id="quest-main" class="card quest-system-card" style="margin-bottom:16px">
       <!-- rendered by renderDailyQuest() -->
     </div>
+    <div id="tasks-section">
+      <div class="card task-add-card">
+        <div class="task-add-header">
+          <div class="type-toggle" style="margin:0;flex:1">
+            <button class="type-btn" id="type-habit-btn" onclick="setAddType('habit')">Daily</button>
+            <button class="type-btn active" id="type-task-btn" onclick="setAddType('task')">Side Quest</button>
+          </div>
+        </div>
+        <div class="task-add-row" style="margin-top:10px">
+          <input type="text" id="habit-name" placeholder="Add a task…" onkeydown="if(event.key==='Enter')addItem()">
+          <button id="habit-add-btn" class="btn btn-green" onclick="addItem()"><span id="habit-plus"></span></button>
+        </div>
+        <div id="task-side-fields" style="display:block">
+          <input type="text" id="task-notes-input" placeholder="Notes (optional)" style="margin-top:6px;font-size:.88rem">
+        </div>
+      </div>
+      <div id="daily-list"></div>
+    </div>
+    </div><!-- /view-today -->
 
-    <!-- PLAYER STATS -->
+    <!-- PROFILE VIEW: Stats + Leaderboard -->
+    <div id="view-profile" style="display:none">
     <div class="card player-stats-card" style="margin-bottom:12px">
       <div class="ps-top">
         <div class="ps-rank-block">
@@ -409,8 +417,6 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
         </div>
       </div>
     </div>
-
-    <!-- LEADERBOARD -->
     <div class="card" style="margin-bottom:12px">
       <div class="lb-header">
         <div class="section-title" style="margin:0">🏆 Leaderboard</div>
@@ -418,26 +424,7 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
       </div>
       <div id="leaderboard-list"><div class="empty" style="padding:12px 0">Loading…</div></div>
     </div>
-
-    <!-- TASKS -->
-    <div id="tasks-section">
-      <div class="card task-add-card">
-        <div class="task-add-header">
-          <div class="type-toggle" style="margin:0;flex:1">
-            <button class="type-btn" id="type-habit-btn" onclick="setAddType('habit')">Daily</button>
-            <button class="type-btn active" id="type-task-btn" onclick="setAddType('task')">Side Quest</button>
-          </div>
-        </div>
-        <div class="task-add-row" style="margin-top:10px">
-          <input type="text" id="habit-name" placeholder="Add a task…" onkeydown="if(event.key==='Enter')addItem()">
-          <button id="habit-add-btn" class="btn btn-green" onclick="addItem()"><span id="habit-plus"></span></button>
-        </div>
-        <div id="task-side-fields" style="display:block">
-          <input type="text" id="task-notes-input" placeholder="Notes (optional)" style="margin-top:6px;font-size:.88rem">
-        </div>
-      </div>
-      <div id="daily-list"></div>
-    </div>
+    </div><!-- /view-profile -->
 
   </div><!-- /main-content -->
 
@@ -932,18 +919,19 @@ function showPenaltyModal(prevStreak,daysMissed,penalty){
 }
 
 function updateSystemStatus(){
-  const qState=user?.user_metadata?.quest_state;
-  let qDone=0,qTotal=3;
-  if(qState?.exercises){qTotal=qState.exercises.length;qDone=qState.exercises.filter(e=>e.done).length}
-  const qPct=(qDone/qTotal)*100;
-  const qFill=document.getElementById('ssb-quest-fill');
-  const qVal=document.getElementById('ssb-quest-val');
-  const qItem=document.getElementById('ssb-quest-item');
-  if(qFill){qFill.style.width=qPct+'%';qFill.style.background=qDone===qTotal?'var(--accent)':'var(--accent4)'}
-  if(qVal)qVal.textContent=`${qDone}/${qTotal}`;
-  if(qItem)qItem.classList.toggle('quest-alert',qDone<qTotal);
-  const qSection=document.getElementById('quest-section');
-  if(qSection)qSection.classList.toggle('quest-pending',qDone<qTotal);
+  // Status bar removed — no-op
+}
+
+function switchView(v){
+  const today=document.getElementById('view-today');
+  const profile=document.getElementById('view-profile');
+  const btnT=document.getElementById('vs-today');
+  const btnP=document.getElementById('vs-profile');
+  if(today)today.style.display=v==='today'?'':'none';
+  if(profile)profile.style.display=v==='profile'?'':'none';
+  if(btnT)btnT.classList.toggle('active',v==='today');
+  if(btnP)btnP.classList.toggle('active',v==='profile');
+  localStorage.setItem('froggy-view',v);
 }
 
 // ── Theme ───────────────────────────────────────────────────────────────────
@@ -1095,6 +1083,7 @@ async function showApp(){
   }else{
     document.getElementById('onboard-screen').style.display='none';
     document.getElementById('app').style.display='block';
+    switchView(localStorage.getItem('froggy-view')||'today');
     upsertProfile();
     await renderAll();
   }

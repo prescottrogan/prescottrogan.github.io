@@ -1,4 +1,4 @@
-const CACHE = 'froggy-v1';
+const CACHE = 'froggy-v2';
 const PRECACHE = ['/', '/index.html', '/icon.svg', '/manifest.json'];
 
 self.addEventListener('install', e => {

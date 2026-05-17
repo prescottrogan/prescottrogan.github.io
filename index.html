@@ -242,6 +242,31 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
 .penalty-stats{display:flex;gap:10px;justify-content:center;margin-bottom:22px;flex-wrap:wrap}
 .penalty-stats>div{background:rgba(220,38,38,.15);border:1px solid rgba(220,38,38,.4);padding:8px 14px;border-radius:10px;color:#fca5a5;font-size:.85rem;font-weight:800}
 
+/* Training class selector */
+.class-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:2px}
+.class-btn{background:var(--surface-2);border:2px solid var(--border);border-radius:10px;padding:10px 6px;cursor:pointer;transition:all .15s;text-align:center;color:var(--text);font-family:inherit}
+.class-btn.active{border-color:var(--accent);background:rgba(74,222,128,.08)}
+.class-btn:hover:not(.active){border-color:var(--border-light)}
+.class-icon{font-size:1.4rem;display:block;margin-bottom:3px}
+.class-name{font-size:.78rem;font-weight:700;display:block}
+.class-desc{font-size:.6rem;color:var(--muted);display:block;margin-top:1px}
+/* Promotion modal */
+#promotion-modal{display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.9);align-items:center;justify-content:center;padding:20px}
+#promotion-modal.open{display:flex}
+.promotion-box{background:linear-gradient(135deg,#1a0d00 0%,#250f00 50%,#0a0500 100%);border:2px solid #b45309;border-radius:24px;padding:30px 22px;text-align:center;max-width:360px;width:100%;animation:levelup-pop .5s cubic-bezier(.34,1.56,.64,1) forwards;box-shadow:0 0 60px rgba(180,83,9,.45)}
+.promo-header{font-size:.7rem;font-weight:900;letter-spacing:.22em;color:#f59e0b;margin-bottom:16px;text-transform:uppercase}
+.promo-rank-compare{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:14px}
+.promo-rank{display:flex;flex-direction:column;align-items:center;gap:3px}
+.promo-rank-icon{font-size:2rem;line-height:1}
+.promo-rank-name{font-size:.78rem;font-weight:800;color:rgba(255,255,255,.9)}
+.promo-arrow{font-size:1.5rem;color:#f59e0b;font-weight:900}
+.promo-warning{font-size:.8rem;color:rgba(255,255,255,.6);line-height:1.55;margin-bottom:10px}
+.promo-trial-preview{font-size:.7rem;color:rgba(255,165,0,.75);line-height:1.55;background:rgba(255,140,0,.07);border:1px solid rgba(255,140,0,.2);border-radius:8px;padding:8px 12px;text-align:left;margin-bottom:4px}
+/* Promotion trial quest card variant */
+.quest-system-card.trial-card{background:linear-gradient(135deg,#1a0a00 0%,#2a1000 50%,#0a0500 100%)!important;border-color:#b45309!important;box-shadow:0 0 36px rgba(180,83,9,.3),inset 0 1px 0 rgba(255,255,255,.06)!important}
+.quest-system-card.trial-card::before{background:radial-gradient(circle at 0% 0%,rgba(180,83,9,.35) 0%,transparent 55%),radial-gradient(circle at 100% 100%,rgba(220,38,38,.12) 0%,transparent 55%)!important}
+.trial-label{font-size:.7rem;font-weight:900;letter-spacing:.2em;color:#f59e0b;text-shadow:0 0 12px rgba(245,158,11,.55)}
+.trial-rank-target{font-size:.82rem;font-weight:800;color:#f59e0b;margin-bottom:12px;letter-spacing:.05em}
 /* Settings modal */
 #reset-modal{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.75);align-items:center;justify-content:center;padding:16px;box-sizing:border-box}
 #reset-modal.open{display:flex}
@@ -438,6 +463,31 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
         <label>Your name</label>
         <input type="text" id="rm-name" placeholder="What should we call you?">
       </div>
+      <div class="modal-section">Training Class</div>
+      <div class="class-grid">
+        <button class="class-btn" id="cls-calisthenics" onclick="setTrainingClass('calisthenics')">
+          <span class="class-icon">🤸</span>
+          <span class="class-name">Calisthenics</span>
+          <span class="class-desc">Bodyweight mastery</span>
+        </button>
+        <button class="class-btn" id="cls-strength" onclick="setTrainingClass('strength')">
+          <span class="class-icon">🏋️</span>
+          <span class="class-name">Strength</span>
+          <span class="class-desc">Barbell &amp; weights</span>
+        </button>
+        <button class="class-btn" id="cls-cardio" onclick="setTrainingClass('cardio')">
+          <span class="class-icon">🏃</span>
+          <span class="class-name">Cardio</span>
+          <span class="class-desc">Endurance &amp; speed</span>
+        </button>
+      </div>
+      <div style="font-size:.72rem;color:var(--muted);margin-top:5px">Changes apply to tomorrow's quest.</div>
+      <div id="rm-promo-section" style="display:none">
+        <div class="modal-section">Rank Promotion</div>
+        <div id="rm-promo-status" style="font-size:.8rem;color:var(--muted);margin-bottom:8px"></div>
+        <button class="btn btn-ghost btn-full" id="rm-start-promo-btn" onclick="startPromoFromSettings()" style="color:var(--accent3);border-color:var(--accent3);justify-content:flex-start;gap:8px">⚔️ Begin Promotion Trial Tomorrow</button>
+        <button class="btn btn-ghost btn-full" id="rm-cancel-promo-btn" onclick="cancelPromotion()" style="margin-top:6px;justify-content:flex-start;gap:8px">✕ Cancel Promotion Trial</button>
+      </div>
       <div class="modal-section">Appearance</div>
       <button class="btn btn-ghost btn-full" onclick="toggleTheme()" style="justify-content:flex-start;gap:8px">
         <span id="rm-theme-icon"></span><span id="rm-theme-label">Switch to Dark Mode</span>
@@ -492,6 +542,31 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
       <div class="penalty-msg" id="penalty-msg">You did not complete yesterday's training. The system shows no mercy.</div>
       <div class="penalty-stats" id="penalty-stats"></div>
       <button class="btn btn-full" onclick="document.getElementById('penalty-modal').classList.remove('open')" style="background:#dc2626;color:#fff">Accept Punishment</button>
+    </div>
+  </div>
+
+  <!-- PROMOTION MODAL -->
+  <div id="promotion-modal">
+    <div class="promotion-box">
+      <div class="promo-header">⚔️ Rank Promotion Available</div>
+      <div class="promo-rank-compare">
+        <div class="promo-rank">
+          <span class="promo-rank-icon" id="promo-from-icon"></span>
+          <span class="promo-rank-name" id="promo-from-name"></span>
+        </div>
+        <span class="promo-arrow">→</span>
+        <div class="promo-rank">
+          <span class="promo-rank-icon" id="promo-to-icon"></span>
+          <span class="promo-rank-name" id="promo-to-name"></span>
+        </div>
+      </div>
+      <div class="promo-warning">You have reached the threshold for advancement. Tomorrow you will face a brutal Promotion Trial. Complete every exercise to earn your rank.</div>
+      <div class="promo-trial-preview" id="promo-preview-text"></div>
+      <div style="display:flex;gap:10px;margin-top:16px">
+        <button class="btn btn-ghost" style="flex:1" onclick="dismissPromotionModal()">Not Ready</button>
+        <button class="btn" style="flex:1.5;background:linear-gradient(135deg,#92400e,#d97706);color:#fff;font-weight:800;letter-spacing:.03em" onclick="initiatePromotion()">Accept Challenge →</button>
+      </div>
+      <div style="font-size:.68rem;color:rgba(255,255,255,.35);margin-top:10px">You can start the challenge later from Settings.</div>
     </div>
   </div>
 
@@ -641,6 +716,200 @@ const EXERCISE_POOL=[
   {key:'donkeykicks',      label:'Donkey Kicks',              tiers:[15, 30,  45,  65,  100], unit:'each', tip:'On all fours, kick leg up and fully extend at the hip — glute isolation'},
 ];
 
+// ── Strength exercise pool (gym/barbell) ─────────────────────────────────────
+const STRENGTH_EXERCISE_POOL = [
+  {key:'squat',         label:'Barbell Back Squat',      tiers:['3×5','3×8','4×8','5×5','5×3 heavy'],    unit:'',minTier:0,tip:'Feet shoulder-width, break parallel, drive through heels every rep.'},
+  {key:'bench',         label:'Bench Press',             tiers:['3×8','3×10','4×8','5×5','5×3 heavy'],   unit:'',minTier:0,tip:'Bar to chest, controlled descent, explosive press, shoulder blades retracted.'},
+  {key:'deadlift',      label:'Deadlift',                tiers:['3×5','3×8','4×6','3×3 heavy','1RM attempt'], unit:'',minTier:0,tip:'Brace hard, hinge at hips, bar stays close to body. Controlled lower.'},
+  {key:'ohp',           label:'Overhead Press',          tiers:['3×8','3×8','4×8','5×5','5×3 heavy'],    unit:'',minTier:0,tip:'Full lockout overhead, no excessive arch, abs tight.'},
+  {key:'row',           label:'Barbell Row',             tiers:['3×10','3×10','4×8','4×8','5×5'],        unit:'',minTier:0,tip:'Chest up, pull to lower chest, hold the contraction each rep.'},
+  {key:'lat',           label:'Lat Pulldown',            tiers:['3×10','3×12','4×10','4×12','5×10'],     unit:'',minTier:0,tip:'Full stretch at top, drive elbows down, slight lean back.'},
+  {key:'cablerow',      label:'Cable Row',               tiers:['3×12','3×12','4×10','4×10','5×10'],     unit:'',minTier:0,tip:'Chest proud, row to lower ribcage, pause at peak contraction.'},
+  {key:'goblet',        label:'Goblet Squat',            tiers:['3×12','3×15','4×12','4×15','5×12'],     unit:'',minTier:0,tip:'Elbows inside knees, sit into hips fully, stay upright throughout.'},
+  {key:'hipthrust',     label:'Hip Thrust',              tiers:['3×12','3×15','4×12','4×15','5×15'],     unit:'',minTier:0,tip:'Drive through heels, squeeze glutes hard at full extension.'},
+  {key:'rdl',           label:'Romanian Deadlift',       tiers:['3×10','3×12','4×10','4×12','5×10'],     unit:'',minTier:0,tip:'Slight knee bend, push hips back, feel the hamstrings load fully.'},
+  {key:'incline',       label:'Incline Bench Press',     tiers:['3×8','3×10','4×8','4×8','5×5'],         unit:'',minTier:1,tip:'30–45 degree angle, control the weight, chest gets a full stretch.'},
+  {key:'frontsquat',    label:'Front Squat',             tiers:['3×5','3×6','4×6','5×5','5×3 heavy'],    unit:'',minTier:1,tip:'Elbows high, upright torso, core braced, full depth.'},
+  {key:'wtpullup',      label:'Weighted Pull-Up',        tiers:['3×5','3×6','4×8','4×8','5×5 heavy'],    unit:'',minTier:1,tip:'Add weight via belt or vest. Full hang, chin over bar, no kipping.'},
+  {key:'wtdip',         label:'Weighted Dip',            tiers:['3×8','3×10','4×10','4×10','5×8 heavy'], unit:'',minTier:2,tip:'Weight via belt, full depth, chest slightly forward.'},
+  {key:'pausesquat',    label:'Pause Squat',             tiers:['3×4','3×5','4×5','5×4','5×3'],          unit:'',minTier:2,tip:'3-second pause at the bottom. Stay braced. Explode out of the hole.'},
+  {key:'deficitdl',     label:'Deficit Deadlift',        tiers:['3×4','3×5','4×4','4×5','5×3'],          unit:'',minTier:2,tip:'Stand on a 1–2 inch plate. Increased range of motion, stay tight.'},
+  {key:'cgbench',       label:'Close-Grip Bench',        tiers:['3×8','3×10','4×8','4×10','5×8'],        unit:'',minTier:2,tip:'Elbows tucked close, tricep focus, smooth press to lockout.'},
+  {key:'pushpress',     label:'Push Press',              tiers:['3×5','3×6','4×6','5×5','5×3 heavy'],    unit:'',minTier:3,tip:'Leg drive to initiate, punch bar overhead, lock out hard.'},
+  {key:'powerclean',    label:'Power Clean',             tiers:['3×3','3×4','3×5','4×3','5×3 heavy'],    unit:'',minTier:3,tip:'Explosive pull, fast elbows under the bar, land in athletic stance.'},
+  {key:'maxsquat',      label:'Max Squat Attempt',       tiers:['1 PR attempt','1 PR attempt','1 PR attempt','1 PR attempt','1 PR attempt'], unit:'',minTier:4,tip:'Work up to a true max single. Spotter required. Record every PR.'},
+];
+
+// ── Cardio exercise pool ──────────────────────────────────────────────────────
+const CARDIO_EXERCISE_POOL = [
+  {key:'run',           label:'Run',                     tiers:['1 mile','2 miles','3 miles','5 miles','8 miles'],    unit:'',minTier:0,tip:'No stops. Slow down if needed but keep moving forward.'},
+  {key:'jumpropec',     label:'Jump Rope',               tiers:['100 reps','300 reps','500 reps','800 reps','1200 reps'],unit:'',minTier:0,tip:'Quick wrists, light feet, consistent rhythm. Count every rep.'},
+  {key:'burpees',       label:'Burpees',                 tiers:['20 reps','35 reps','50 reps','75 reps','100 reps'],  unit:'',minTier:0,tip:'Chest to floor, explosive jump, clap overhead. Every rep the same.'},
+  {key:'highknees',     label:'High Knees',              tiers:['60 sec','90 sec','120 sec','150 sec','180 sec'],     unit:'',minTier:0,tip:'Knees above hip height, sprint-pace arms, stay on toes.'},
+  {key:'boxjumps',      label:'Box Jumps',               tiers:['15 reps','20 reps','25 reps','30 reps','40 reps'],  unit:'',minTier:0,tip:'Full extension at top, soft landing, step down, reset.'},
+  {key:'mountainclimb', label:'Mountain Climbers',       tiers:['30 reps','50 reps','75 reps','100 reps','150 reps'],unit:'',minTier:0,tip:'Plank position, drive knees to chest alternately, fast pace.'},
+  {key:'stairclimb',    label:'Stair Climber',           tiers:['10 min','15 min','20 min','30 min','40 min'],       unit:'',minTier:0,tip:'Moderate resistance, full step, upright posture. Cardio base work.'},
+  {key:'rowmachine',    label:'Rowing Machine',          tiers:['500 m','1000 m','2000 m','3000 m','5000 m'],        unit:'',minTier:0,tip:'Legs → core → arms on the drive. Arms → core → legs on recovery.'},
+  {key:'sprint',        label:'Sprint Intervals',        tiers:['4×30sec','6×30sec','8×40sec','10×40sec','12×45sec'],unit:'',minTier:0,tip:'Maximum effort each interval. Full walk recovery. Don't pace yourself.'},
+  {key:'bikeintervals', label:'Bike Sprints',            tiers:['5×1min','6×1min','8×1min','10×1min','12×1min'],    unit:'',minTier:0,tip:'Max resistance sprint, 2-min easy recovery between. Seated power.'},
+  {key:'swimlaps',      label:'Swim Laps',               tiers:['10 laps','15 laps','20 laps','30 laps','40 laps'], unit:'',minTier:1,tip:'Any stroke. Consistent breathing pattern. No stopping mid-lap.'},
+  {key:'dblunders',     label:'Double-Unders',           tiers:['25 reps','50 reps','75 reps','100 reps','150 reps'],unit:'',minTier:2,tip:'Two rope passes per jump. Tight core, wrist rotation, not arms.'},
+  {key:'tempopace',     label:'Tempo Run',               tiers:['1 mile','2 miles','3 miles','4 miles','5 miles'],  unit:'',minTier:2,tip:'Comfortably hard pace — you can't talk but not an all-out sprint.'},
+  {key:'longjump',      label:'Broad Jumps',             tiers:['15 reps','20 reps','30 reps','40 reps','50 reps'], unit:'',minTier:1,tip:'Max horizontal distance each jump. Swing arms, explosive extension.'},
+];
+
+// ── Promotion trial workouts ──────────────────────────────────────────────────
+// key: `${fromTier}_${trainingClass}`  — fromTier 0-6, class: calisthenics|strength|cardio
+const PROMOTION_TRIALS = {
+  '0_calisthenics':[
+    {label:'Push-Ups',target:'50 reps',tip:'Do them in sets. Don't stop until 50 total.'},
+    {label:'Bodyweight Squats',target:'100 reps',tip:'Deep, controlled. Feel your legs loading.'},
+    {label:'Pull-Ups',target:'10 reps',tip:'Full dead hang to chin over bar. Zero kipping.'},
+    {label:'Dips',target:'20 reps',tip:'Shoulders down, full depth, triceps loaded.'},
+    {label:'Plank Hold',target:'2 min total',tip:'Break into sets. Rigid spine, no hips sagging.'},
+  ],
+  '0_strength':[
+    {label:'Barbell Back Squat',target:'3×10 reps',tip:'Find a working weight. Record it. Break parallel every rep.'},
+    {label:'Bench Press',target:'3×10 reps',tip:'Control descent. Touch chest. Drive explosively.'},
+    {label:'Deadlift',target:'3×8 reps',tip:'Brace. Hinge. Bar close. Controlled lower each rep.'},
+    {label:'Overhead Press',target:'3×8 reps',tip:'Full lockout overhead. No excessive lumbar arch.'},
+    {label:'Barbell Row',target:'3×10 reps',tip:'Chest up, pull to lower chest, hard contraction.'},
+  ],
+  '0_cardio':[
+    {label:'Run',target:'2 miles',tip:'No stops. Slow down if needed but don't stop.'},
+    {label:'Jump Rope',target:'200 reps',tip:'Quick wrists. Light feet. Rhythm is everything.'},
+    {label:'Burpees',target:'30 reps',tip:'Chest to floor, explosive jump. One breath per rep.'},
+    {label:'High Knees',target:'100 reps',tip:'Drive knees above hip height. Sprint rhythm.'},
+    {label:'Jump Squats',target:'30 reps',tip:'Full depth down, explosive up, soft landing.'},
+  ],
+  '1_calisthenics':[
+    {label:'Push-Ups',target:'100 reps',tip:'Any number of sets. 100 total. No excuses.'},
+    {label:'Pull-Ups',target:'25 reps',tip:'Strict. Full dead hang each rep. Earn every one.'},
+    {label:'Dips',target:'50 reps',tip:'Total reps. Go deep, chest forward, full lockout.'},
+    {label:'Bodyweight Squats',target:'200 reps',tip:'Controlled pace. Lungs should be burning by the end.'},
+    {label:'L-Sit Hold',target:'30 sec × 3',tip:'Legs parallel to floor. Compress hard. Rest 30sec between.'},
+  ],
+  '1_strength':[
+    {label:'Barbell Squat',target:'4×8 reps',tip:'Heavier than your last session. Hit depth every rep.'},
+    {label:'Bench Press',target:'4×8 reps',tip:'Controlled and powerful. Progressive overload.'},
+    {label:'Deadlift',target:'4×6 reps',tip:'Heavy. Full reset each rep. Perfect form maintained.'},
+    {label:'Overhead Press',target:'4×8 reps',tip:'Strict press. No leg drive. Build the foundation.'},
+    {label:'Weighted Pull-Up',target:'3×6 reps',tip:'Add weight via belt. Full range. No swinging.'},
+  ],
+  '1_cardio':[
+    {label:'Run',target:'3 miles',tip:'Continuous. Push your pace. No walk breaks.'},
+    {label:'Jump Rope',target:'500 reps',tip:'Unbroken as long as possible. Count every rep.'},
+    {label:'Burpees',target:'50 reps',tip:'Pace yourself. Chest to deck every rep, every time.'},
+    {label:'Box Step-Ups',target:'50 reps',tip:'Alternate legs. Drive through the heel at top.'},
+    {label:'Sprint Intervals',target:'5 × 200m',tip:'Walk back recovery. Full effort every sprint.'},
+  ],
+  '2_calisthenics':[
+    {label:'Muscle-Ups',target:'5 reps',tip:'Strict. Pull high, fast transition, full lockout. No swinging.'},
+    {label:'Pull-Ups',target:'50 reps',tip:'Strict dead-hang. This is your foundation. No shortcuts.'},
+    {label:'Parallel Bar Dips',target:'100 reps',tip:'Legs straight. Total across sets. No partial reps allowed.'},
+    {label:'Front Lever Hold',target:'5 sec × 3',tip:'Tuck or straddle if needed. Work toward full straight body.'},
+    {label:'Handstand Hold',target:'1 min total',tip:'Wall or freestanding. Break into sets. Body must be straight.'},
+  ],
+  '2_strength':[
+    {label:'Barbell Squat (5×5)',target:'5×5 reps heavy',tip:'Work up to a near-max 5×5. Record the weight. Rest 3 min between.'},
+    {label:'Bench Press (5×5)',target:'5×5 reps heavy',tip:'Heavy 5×5. Pause on chest on the last rep of each set.'},
+    {label:'Deadlift (3×3)',target:'3×3 reps near-max',tip:'Near-maximum effort. Long rests. Perfect bracing.'},
+    {label:'Weighted Dip',target:'4×10 reps',tip:'Add significant weight. Full depth every rep. Earn it.'},
+    {label:'Weighted Pull-Up',target:'4×8 reps',tip:'Progressive loading. Back must be the prime mover.'},
+  ],
+  '2_cardio':[
+    {label:'Run',target:'5 miles',tip:'Continuous. Do not walk. Challenge your aerobic base.'},
+    {label:'Jump Rope',target:'750 reps',tip:'Double-unders if you can. Speed and consistency.'},
+    {label:'Burpees',target:'75 reps',tip:'Unbroken if possible. Every rep explosive. Don't coast.'},
+    {label:'Box Jumps',target:'30 reps (24" box)',tip:'Full extension at top. Soft landing. Reset between each.'},
+    {label:'100m Sprints',target:'10 × 100m',tip:'Full effort. Walk or jog back. Minimal rest between.'},
+  ],
+  '3_calisthenics':[
+    {label:'Muscle-Ups',target:'10 reps',tip:'Strict. Perfect form. No momentum. Earn every single rep.'},
+    {label:'Pull-Ups',target:'75 reps',tip:'Strict dead hang. If your form breaks, stop and rest. Then continue.'},
+    {label:'Handstand',target:'30 sec total',tip:'Freestanding or minimal wall touch. Straight body required.'},
+    {label:'L-Sit',target:'2 min total',tip:'Accumulated. Legs fully extended. No break over 5 sec.'},
+    {label:'Full Front Lever',target:'10 sec × 3',tip:'Body completely horizontal and straight. No tuck allowed here.'},
+  ],
+  '3_strength':[
+    {label:'1-Rep Max Squat',target:'1 PR attempt',tip:'Warm up properly. Attempt a true 1RM. Spotter required.'},
+    {label:'1-Rep Max Bench',target:'1 PR attempt',tip:'Spotter required. Full range. Pause on chest. Record it.'},
+    {label:'1-Rep Max Deadlift',target:'1 PR attempt',tip:'Maximum effort single. No straps. Set a new personal record.'},
+    {label:'Weighted Pull-Up',target:'5×5 heavy',tip:'After 1RM attempts. Prove your pulling strength holds up.'},
+    {label:'Dips',target:'50 reps bodyweight',tip:'Bodyweight only. After maxing out. Prove your endurance.'},
+  ],
+  '3_cardio':[
+    {label:'10K Run',target:'sub 55 min',tip:'6.2 miles. Pace it early. The last mile is won or lost at mile 4.'},
+    {label:'Jump Rope',target:'1000 reps',tip:'Non-stop. If you break rhythm, continue but keep counting.'},
+    {label:'Burpees',target:'100 reps',tip:'The full hundred. Chest to floor. Full jump. Every single rep.'},
+    {label:'400m Sprints',target:'5 × 400m',tip:'Near max effort. 2-min rest between. Split times matter.'},
+    {label:'Box Jumps',target:'20 reps (max height)',tip:'Max height you can find. Full extension. Control landing.'},
+  ],
+  '4_calisthenics':[
+    {label:'Muscle-Ups',target:'15 reps',tip:'Consecutive if possible. Max sets, minimal rest until 15.'},
+    {label:'Freestanding Handstand',target:'30 sec',tip:'Unassisted. No wall. Perfect straight body line required.'},
+    {label:'Strict Pull-Ups',target:'40 reps',tip:'Dead hang to chin over. If form breaks, rest then continue.'},
+    {label:'Front Lever',target:'15 sec × 3',tip:'Full body horizontal. Straight legs. Three holds, rest 30s between.'},
+    {label:'Strict HSPU',target:'10 reps',tip:'Freestanding preferred. Head to floor, full lockout, controlled.'},
+  ],
+  '4_strength':[
+    {label:'Squat New 1RM',target:'PR attempt',tip:'Beat your previous best. This is the champion's test.'},
+    {label:'Pause Bench 1RM',target:'PR attempt',tip:'Pause bench. New maximum. Controlled and powerful.'},
+    {label:'Deadlift New 1RM',target:'PR attempt',tip:'All-out effort. No straps. Belt allowed. Set a new record.'},
+    {label:'10×10 Squat at 60%',target:'10×10 reps',tip:'Squats at 60% of your 1RM. 60-sec rest between sets. Brutal volume.'},
+    {label:'Overhead Press (5×5)',target:'5×5 reps heavy',tip:'75%+ of your 1RM. S-Rank press strength. Prove it.'},
+  ],
+  '4_cardio':[
+    {label:'Half Marathon',target:'13.1 miles',tip:'Run the full distance. Target sub-2:30:00. Don't walk.'},
+    {label:'Jump Rope',target:'2000 reps',tip:'The full count. No excuses. Speed and endurance combined.'},
+    {label:'Burpees',target:'200 reps',tip:'Two hundred. This is what separates ranks.'},
+    {label:'1-Mile Repeats',target:'3 × 1 mile',tip:'Track each mile split. Aim for consistency across all three.'},
+    {label:'Double-Unders',target:'100 reps',tip:'Both jumps per rotation. Wrist control. Full focus.'},
+  ],
+  '5_calisthenics':[
+    {label:'Full Planche',target:'5 sec × 3',tip:'Straight arm, horizontal body, feet together. No straddle allowed.'},
+    {label:'Muscle-Ups',target:'25 reps',tip:'Strict, slow, controlled. Ring or bar. Absolutely no kipping.'},
+    {label:'Strict Pull-Ups',target:'100 reps',tip:'One hundred. This takes as long as it takes. Do not quit.'},
+    {label:'Straddle Front Lever',target:'20 sec × 3',tip:'Straddle or full. 20 unbroken seconds per hold. Three times.'},
+    {label:'Strict Freestanding HSPU',target:'15 reps',tip:'Freestanding preferred. Head to floor. Zero wall support.'},
+  ],
+  '5_strength':[
+    {label:'1000-lb Club Attempt',target:'Squat+Bench+Deadlift ≥ 1000 lbs',tip:'Plan your attempts. Three lifts, one session. Record total.'},
+    {label:'Squat Volume (20×3)',target:'20×3 at 70% 1RM',tip:'20 sets of 3. 60-sec rest. Volume endurance at its worst.'},
+    {label:'Bench Volume (20×3)',target:'20×3 at 70% 1RM',tip:'Same session as squat volume. Prove you can maintain.'},
+    {label:'Deadlift Volume (10×3)',target:'10×3 at 70% 1RM',tip:'Full reset every rep. Perfect form regardless of fatigue.'},
+    {label:'Overhead Press 1RM',target:'New PR',tip:'Strict press. Full lockout. Feet together. New max.'},
+  ],
+  '5_cardio':[
+    {label:'Marathon',target:'26.2 miles',tip:'The full distance. Under 4 hours is the standard. Earn it.'},
+    {label:'Jump Rope',target:'3000 reps',tip:'Three thousand. Maintain rhythm the entire way.'},
+    {label:'Burpees',target:'500 reps',tip:'500 burpees. Spread over the session. Every rep counts.'},
+    {label:'5K Time Trial',target:'sub 22:00',tip:'Maximum effort 5K. This is the qualifier for National rank.'},
+    {label:'200m Sprints',target:'20 × 200m',tip:'Sprint, walk back, sprint. Twenty rounds. No shortcuts.'},
+  ],
+  '6_calisthenics':[
+    {label:'Human Flag',target:'10 sec',tip:'Horizontal on vertical pole. Both arms. No assistance tolerated.'},
+    {label:'Full Planche',target:'15 sec total',tip:'Three 5-second holds minimum. Straight arm, straight body.'},
+    {label:'Muscle-Ups',target:'50 reps',tip:'Fifty. Ring or bar. Takes what it takes. Don't stop.'},
+    {label:'One-Arm Push-Ups',target:'10 each side',tip:'Controlled. Full range. Ten per arm. Shadow Monarch demands it.'},
+    {label:'Strict Pull-Ups sub-15min',target:'100 reps',tip:'One hundred in under fifteen minutes. The clock is running.'},
+  ],
+  '6_strength':[
+    {label:'Iron War — Squat',target:'20 reps @ 80% 1RM',tip:'Twenty reps at eighty percent. No re-racking. Breathe and fight.'},
+    {label:'Iron War — Bench',target:'20 reps @ 80% 1RM',tip:'Same day. Same percentage. Complete all twenty.'},
+    {label:'Iron War — Deadlift',target:'20 reps @ 80% 1RM',tip:'The final lift. Touch-and-go allowed. Finish it.'},
+    {label:'Heavy Squat 5×5',target:'5×5 @ 90% 1RM',tip:'After the Iron War. 90% max. Prove you are unbreakable.'},
+    {label:'Heavy Bench 5×5',target:'5×5 @ 90% 1RM',tip:'Prove the Iron War didn't break you. Five sets. Heavy.'},
+  ],
+  '6_cardio':[
+    {label:'Ultra Run 50K',target:'31.1 miles',tip:'Fifty kilometers. No time limit. But you finish. Period.'},
+    {label:'Jump Rope',target:'5000 reps',tip:'Five thousand reps. One session. No days off from counting.'},
+    {label:'Burpees',target:'1000 reps',tip:'One thousand burpees. Under 60 minutes is the goal.'},
+    {label:'Tempo Run',target:'10 miles @ 7:30/mile',tip:'Maintain pace throughout. Heart rate zone 4-5 the whole way.'},
+    {label:'Sprint Finisher',target:'10 × 400m',tip:'After everything else. Sprint intervals to close. No excuses.'},
+  ],
+};
+
 const QUEST_BONUS_XP = 250;
 const QUEST_PENALTY_XP = 200;
 
@@ -648,16 +917,24 @@ const QUEST_PENALTY_XP = 200;
 function getXPThreshold(l){if(l<=1)return 0;return Math.floor(100*Math.pow(l-1,1.8))}
 function getLevel(xp){let lo=1,hi=200;while(lo<hi){const mid=(lo+hi+1)>>1;if(getXPThreshold(mid)<=xp)lo=mid;else hi=mid-1}return lo}
 function getLevelProgress(xp){const lvl=getLevel(xp);const cur=getXPThreshold(lvl);const nxt=getXPThreshold(lvl+1);const needed=nxt-cur;return{level:lvl,current:xp-cur,needed,pct:needed?Math.round(((xp-cur)/needed)*100):100}}
-function getRankInfo(l){
-  if(l>=100)return{rank:'Shadow Monarch',color:'#7c3aed',bg:'rgba(124,58,237,.15)',icon:'👑',msg:'Sovereign of the Shadows. The pinnacle is cold and lonely.'};
-  if(l>=76) return{rank:'National',      color:'#dc2626',bg:'rgba(220,38,38,.15)', icon:'⚔️',msg:'A weapon of the state. Your name carries weight.'};
-  if(l>=51) return{rank:'S-Rank',        color:'#a855f7',bg:'rgba(168,85,247,.15)',icon:'💜',msg:'Elite. Few reach this level. Fewer stay.'};
-  if(l>=36) return{rank:'A-Rank',        color:'#f59e0b',bg:'rgba(245,158,11,.15)',icon:'⭐',msg:'Strong. Strength means nothing without consistency.'};
-  if(l>=21) return{rank:'B-Rank',        color:'#3b82f6',bg:'rgba(59,130,246,.15)',icon:'🔷',msg:'Above the masses. Still nothing exceptional.'};
-  if(l>=11) return{rank:'C-Rank',        color:'#22d3ee',bg:'rgba(34,211,238,.15)',icon:'💠',msg:'Average among hunters. Push harder or fall behind.'};
-  if(l>=6)  return{rank:'D-Rank',        color:'#4ade80',bg:'rgba(74,222,128,.15)',icon:'🟢',msg:'Out of the bottom. The real climb starts now.'};
-  return           {rank:'Novice',        color:'#6b7280',bg:'rgba(107,114,128,.15)',icon:'⬜',msg:'The weakest. Most quit here. Will you?'};
-}
+const RANK_DATA=[
+  {rank:'Novice',        color:'#6b7280',bg:'rgba(107,114,128,.15)',icon:'⬜',msg:"The weakest. Most quit here. Will you?"},
+  {rank:'D-Rank',        color:'#4ade80',bg:'rgba(74,222,128,.15)', icon:'🟢',msg:"Out of the bottom. The real climb starts now."},
+  {rank:'C-Rank',        color:'#22d3ee',bg:'rgba(34,211,238,.15)', icon:'💠',msg:"Average among hunters. Push harder or fall behind."},
+  {rank:'B-Rank',        color:'#3b82f6',bg:'rgba(59,130,246,.15)', icon:'🔷',msg:"Above the masses. Still nothing exceptional."},
+  {rank:'A-Rank',        color:'#f59e0b',bg:'rgba(245,158,11,.15)', icon:'⭐',msg:"Strong. Strength means nothing without consistency."},
+  {rank:'S-Rank',        color:'#a855f7',bg:'rgba(168,85,247,.15)', icon:'💜',msg:"Elite. Few reach this level. Fewer stay."},
+  {rank:'National',      color:'#dc2626',bg:'rgba(220,38,38,.15)',  icon:'⚔️',msg:"A weapon of the state. Your name carries weight."},
+  {rank:'Shadow Monarch',color:'#7c3aed',bg:'rgba(124,58,237,.15)', icon:'👑',msg:"Sovereign of the Shadows. The pinnacle is cold and lonely."},
+];
+const RANK_THRESHOLDS=[6,11,21,36,51,76,100]; // level required to unlock next tier
+function getTierFromLevel(l){if(l>=100)return 7;if(l>=76)return 6;if(l>=51)return 5;if(l>=36)return 4;if(l>=21)return 3;if(l>=11)return 2;if(l>=6)return 1;return 0}
+function getRankInfoByTier(tier){return RANK_DATA[Math.min(Math.max(0,tier),7)]}
+function getRankInfo(l){return getRankInfoByTier(getTierFromLevel(l))}
+function getPlayerRankTier(){const prt=user?.user_metadata?.player_rank_tier;return prt!=null?prt:getTierFromLevel(getLevel(totalXP))}
+function getEffectiveRankInfo(){return getRankInfoByTier(getPlayerRankTier())}
+function getTrainingClass(){return user?.user_metadata?.training_class||'calisthenics'}
+function getClassPool(cls){if(cls==='strength')return STRENGTH_EXERCISE_POOL;if(cls==='cardio')return CARDIO_EXERCISE_POOL;return EXERCISE_POOL}
 
 function getStreakMultiplier(streak){
   if(streak>=30)return 2.0;
@@ -678,7 +955,7 @@ async function awardXP(amount,reason,extraMeta){
   if(updData?.user)user=updData.user;
   updateXPDisplay();
   showXPPopup(amount);
-  if(newLvl>prevLvl)setTimeout(()=>showLevelChangeModal(newLvl,true),700);
+  if(newLvl>prevLvl){setTimeout(()=>showLevelChangeModal(newLvl,true),700);if(amount>0)setTimeout(()=>checkRankPromotionAvailable(),1400)}
   if(newLvl<prevLvl)setTimeout(()=>showLevelChangeModal(newLvl,false),700);
   upsertProfile();
 }
@@ -709,7 +986,7 @@ function showLevelChangeModal(newLevel,isUp){
 
 function updateXPDisplay(){
   const prog=getLevelProgress(totalXP);
-  const rank=getRankInfo(prog.level);
+  const rank=getEffectiveRankInfo();
   const badge=document.getElementById('level-badge');
   if(badge){badge.textContent=`Lv.${prog.level}`;badge.style.background=rank.bg;badge.style.color=rank.color;badge.style.borderColor=rank.color}
   // Player stats card
@@ -783,11 +1060,7 @@ async function renderLeaderboard(){
 
 // ── Quest system ─────────────────────────────────────────────────────────────
 function getQuestTierIdx(level){
-  if(level<=5) return 0;  // Novice
-  if(level<=10)return 1;  // D-Rank
-  if(level<=20)return 2;  // C/B-Rank
-  if(level<=35)return 3;  // B/A-Rank
-  return 4;               // S-Rank+
+  return Math.min(getPlayerRankTier(),4); // exercise pools have 5 tiers max (0-4)
 }
 
 function getQuestCount(date,level){
@@ -803,9 +1076,10 @@ function selectDailyExercises(date,level){
   const count=getQuestCount(date,level);
   let seed=date.replace(/-/g,'').split('').reduce((a,c,i)=>a+c.charCodeAt(0)*(i+1),0);
   const lcg=()=>{seed=(seed*1664525+1013904223)&0x7fffffff;return seed/0x7fffffff};
-  const pool=[...EXERCISE_POOL].filter(ex=>(ex.minTier||0)<=tierIdx);
+  const cls=getTrainingClass();
+  const pool=[...getClassPool(cls)].filter(ex=>(ex.minTier||0)<=tierIdx);
   for(let i=pool.length-1;i>0;i--){const j=Math.floor(lcg()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
-  return pool.slice(0,count).map(ex=>({key:ex.key,label:ex.label,target:`${ex.tiers[tierIdx]} ${ex.unit}`,tip:ex.tip,done:false}));
+  return pool.slice(0,count).map(ex=>({key:ex.key,label:ex.label,target:`${ex.tiers[tierIdx]}${ex.unit?' '+ex.unit:''}`.trim(),tip:ex.tip,done:false}));
 }
 
 function makeNewQuestState(date){
@@ -830,6 +1104,15 @@ async function checkDailyQuestPenalty(){
   if(!user)return;
   const today=todayKey();
   const state=user.user_metadata?.quest_state;
+  const promoPendingDate=user.user_metadata?.promotion_pending_date;
+  // Check if promotion trial is due today or overdue
+  if(promoPendingDate&&promoPendingDate<=today){
+    if(!state||!state.is_promotion_trial||state.date!==today){
+      await makePromotionTrialState(today);
+      await refreshUser();
+    }
+    return; // Promotion trial active — no regular quest
+  }
   if(!state){
     await db.auth.updateUser({data:{...user.user_metadata,quest_state:makeNewQuestState(today)}});
     await refreshUser();
@@ -838,6 +1121,12 @@ async function checkDailyQuestPenalty(){
   if(state.date===today)return;
   if(state.bonus_awarded||questAllDone(state)){
     await db.auth.updateUser({data:{...user.user_metadata,quest_state:makeNewQuestState(today)}});
+    await refreshUser();
+    return;
+  }
+  if(state.is_promotion_trial){
+    // Incomplete promotion trial from a past day — reschedule for today
+    await makePromotionTrialState(today);
     await refreshUser();
     return;
   }
@@ -859,11 +1148,19 @@ async function toggleQuestItem(idx){
   const next={...cur,exercises:exs};
   if(questAllDone(next)&&!next.bonus_awarded){
     next.bonus_awarded=true;
-    const currentStreak=getQuestStreak();
-    const newStreak=currentStreak+1;
-    const multi=getStreakMultiplier(newStreak);
-    const xpReward=Math.round(QUEST_BONUS_XP*multi);
-    await awardXP(xpReward,'Daily Quest Complete',{quest_state:next,quest_streak:newStreak});
+    if(next.is_promotion_trial){
+      const toTier=next.promotion_to_tier??((user.user_metadata?.player_rank_tier??0)+1);
+      const fromTier=next.promotion_from_tier??0;
+      const xpReward=300+fromTier*350;
+      await awardXP(xpReward,'Rank Promotion',{quest_state:next,quest_streak:getQuestStreak()+1,player_rank_tier:toTier,promotion_pending_date:null,promotion_available:false,promotion_from_tier:null,promotion_to_tier:null});
+      setTimeout(()=>showRankPromotionComplete(fromTier,toTier),800);
+    }else{
+      const currentStreak=getQuestStreak();
+      const newStreak=currentStreak+1;
+      const multi=getStreakMultiplier(newStreak);
+      const xpReward=Math.round(QUEST_BONUS_XP*multi);
+      await awardXP(xpReward,'Daily Quest Complete',{quest_state:next,quest_streak:newStreak});
+    }
   }else{
     const meta={...user.user_metadata,quest_state:next};
     db.auth.updateUser({data:meta}).then(({data})=>{if(data?.user)user=data.user});
@@ -876,11 +1173,10 @@ function renderDailyQuest(){
   const card=document.getElementById('quest-main');
   if(!card)return;
   const state=getCurrentQuestState();
+  const isPromo=!!state?.is_promotion_trial;
   const allDone=questAllDone(state);
   const streak=getQuestStreak();
   const multi=getStreakMultiplier(streak);
-  const streakHTML=streak>=1?`<span class="quest-streak-badge">🔥 ${streak}-day streak</span>`:'';
-  const multiHTML=multi>1?`<span class="multiplier-badge">${multi}x XP</span>`:'';
   const items=(state.exercises||[]).map((e,i)=>({idx:i,...e}));
   const itemsHTML=items.map(it=>`
     <div class="quest-item${it.done?' done':''}" onclick="toggleQuestItem(${it.idx})">
@@ -889,21 +1185,44 @@ function renderDailyQuest(){
         <span class="quest-item-name">${esc(it.label)}</span>
         <span class="quest-item-tip">${esc(it.tip||'')}</span>
       </div>
-      <span class="quest-item-target">${esc(it.target)}</span>
+      <span class="quest-item-target" style="${isPromo?'color:#f59e0b':''}">${esc(it.target)}</span>
     </div>`).join('');
-  const remaining=items.filter(it=>!it.done).length;
-  const bonusXP=Math.round(QUEST_BONUS_XP*multi);
-  const statusHTML=allDone
-    ?`<span class="quest-complete">✓ QUEST COMPLETE · +${bonusXP} XP EARNED</span>`
-    :`<span class="quest-pending">${remaining} exercise${remaining!==1?'s':''} remaining · failure costs −${QUEST_PENALTY_XP} XP</span>`;
-  card.innerHTML=`
-    <div class="quest-header">
-      <span class="quest-system-label">⚡ DAILY QUEST</span>
-      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">${streakHTML}${multiHTML}</div>
-    </div>
-    <div class="quest-message">The system has assigned today's mandatory training. Complete every exercise to earn XP${multi>1?' with your '+multi+'x streak bonus':''} and extend your streak.</div>
-    <div class="quest-items">${itemsHTML}</div>
-    <div class="quest-status">${statusHTML}</div>`;
+  if(isPromo){
+    card.classList.add('trial-card');
+    const toTier=state.promotion_to_tier??1;
+    const toRank=getRankInfoByTier(toTier);
+    const remaining=items.filter(it=>!it.done).length;
+    const xpReward=300+(state.promotion_from_tier||0)*350;
+    const statusHTML=allDone
+      ?`<span class="quest-complete">✓ TRIAL COMPLETE · RANK ADVANCEMENT EARNED</span>`
+      :`<span class="quest-pending">${remaining} exercise${remaining!==1?'s':''} remaining · Complete all to advance rank</span>`;
+    card.innerHTML=`
+      <div class="quest-header">
+        <span class="trial-label">⚔️ RANK PROMOTION TRIAL</span>
+        <span style="font-size:.78rem;font-weight:900;color:${toRank.color}">${toRank.icon} ${toRank.rank}</span>
+      </div>
+      <div class="trial-rank-target">${toRank.rank} · +${xpReward} XP on completion</div>
+      <div class="quest-message" style="color:rgba(255,200,100,.7)">This is the advancement trial. Complete every exercise to earn ${toRank.rank}. There are no second chances today — only results.</div>
+      <div class="quest-items">${itemsHTML}</div>
+      <div class="quest-status">${statusHTML}</div>`;
+  }else{
+    card.classList.remove('trial-card');
+    const streakHTML=streak>=1?`<span class="quest-streak-badge">🔥 ${streak}-day streak</span>`:'';
+    const multiHTML=multi>1?`<span class="multiplier-badge">${multi}x XP</span>`:'';
+    const remaining=items.filter(it=>!it.done).length;
+    const bonusXP=Math.round(QUEST_BONUS_XP*multi);
+    const statusHTML=allDone
+      ?`<span class="quest-complete">✓ QUEST COMPLETE · +${bonusXP} XP EARNED</span>`
+      :`<span class="quest-pending">${remaining} exercise${remaining!==1?'s':''} remaining · failure costs −${QUEST_PENALTY_XP} XP</span>`;
+    card.innerHTML=`
+      <div class="quest-header">
+        <span class="quest-system-label">⚡ DAILY QUEST</span>
+        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">${streakHTML}${multiHTML}</div>
+      </div>
+      <div class="quest-message">The system has assigned today's mandatory training. Complete every exercise to earn XP${multi>1?' with your '+multi+'x streak bonus':''} and extend your streak.</div>
+      <div class="quest-items">${itemsHTML}</div>
+      <div class="quest-status">${statusHTML}</div>`;
+  }
   updateSystemStatus();
 }
 
@@ -920,6 +1239,99 @@ function showPenaltyModal(prevStreak,daysMissed,penalty){
 
 function updateSystemStatus(){
   // Status bar removed — no-op
+}
+
+// ── Training class ───────────────────────────────────────────────────────────
+async function setTrainingClass(cls){
+  if(!user)return;
+  await db.auth.updateUser({data:{...user.user_metadata,training_class:cls}});
+  await refreshUser();
+  ['calisthenics','strength','cardio'].forEach(c=>{const b=document.getElementById('cls-'+c);if(b)b.classList.toggle('active',c===cls)});
+  toast(cls.charAt(0).toUpperCase()+cls.slice(1)+' class selected','ok');
+}
+
+// ── Rank promotion system ─────────────────────────────────────────────────────
+function checkRankPromotionAvailable(){
+  if(!user)return;
+  const prt=getPlayerRankTier();
+  if(prt>=7)return;
+  const level=getLevel(totalXP);
+  if(level<RANK_THRESHOLDS[prt])return;
+  const m=user.user_metadata;
+  if(m.promotion_available||m.promotion_pending_date)return;
+  db.auth.updateUser({data:{...m,promotion_available:true}}).then(({data})=>{if(data?.user)user=data.user});
+  setTimeout(()=>showPromotionModal(prt,prt+1),1200);
+}
+
+function showPromotionModal(fromTier,toTier){
+  const from=getRankInfoByTier(fromTier);
+  const to=getRankInfoByTier(toTier);
+  const m=document.getElementById('promotion-modal');if(!m)return;
+  const el=(id,val,attr='textContent')=>{const e=document.getElementById(id);if(e)e[attr]=val};
+  el('promo-from-icon',from.icon);el('promo-from-name',from.rank);
+  el('promo-to-icon',to.icon);el('promo-to-name',to.rank);
+  const cls=getTrainingClass();
+  const preview=PROMOTION_TRIALS[`${fromTier}_${cls}`]||PROMOTION_TRIALS[`${fromTier}_calisthenics`]||[];
+  const previewEl=document.getElementById('promo-preview-text');
+  if(previewEl)previewEl.textContent=`Trial workout: ${preview.slice(0,3).map(e=>e.label+' ('+e.target+')').join(' · ')}${preview.length>3?' + more':''}.`;
+  m.classList.add('open');
+}
+
+function dismissPromotionModal(){document.getElementById('promotion-modal')?.classList.remove('open')}
+
+async function initiatePromotion(){
+  if(!user)return;
+  const fromTier=getPlayerRankTier();
+  const toTier=fromTier+1;
+  const tomorrow=offsetKey(1);
+  await db.auth.updateUser({data:{...user.user_metadata,promotion_available:false,promotion_pending_date:tomorrow,promotion_from_tier:fromTier,promotion_to_tier:toTier}});
+  await refreshUser();
+  document.getElementById('promotion-modal')?.classList.remove('open');
+  toast('Promotion Trial scheduled for tomorrow. Prepare yourself.','ok');
+}
+
+async function startPromoFromSettings(){
+  if(!user)return;
+  const fromTier=getPlayerRankTier();
+  const toTier=fromTier+1;
+  const tomorrow=offsetKey(1);
+  await db.auth.updateUser({data:{...user.user_metadata,promotion_available:false,promotion_pending_date:tomorrow,promotion_from_tier:fromTier,promotion_to_tier:toTier}});
+  await refreshUser();
+  hideResetModal();
+  toast('Promotion Trial set for tomorrow.','ok');
+}
+
+async function cancelPromotion(){
+  if(!user)return;
+  await db.auth.updateUser({data:{...user.user_metadata,promotion_available:false,promotion_pending_date:null,promotion_from_tier:null,promotion_to_tier:null}});
+  await refreshUser();
+  toast('Promotion trial cancelled.','ok');
+  hideResetModal();
+  await renderAll();
+}
+
+async function makePromotionTrialState(date){
+  if(!user)return;
+  const fromTier=user.user_metadata.promotion_from_tier??getPlayerRankTier();
+  const toTier=user.user_metadata.promotion_to_tier??(fromTier+1);
+  const cls=getTrainingClass();
+  const key=`${fromTier}_${cls}`;
+  const exercises=(PROMOTION_TRIALS[key]||PROMOTION_TRIALS[`${fromTier}_calisthenics`]||[]).map(e=>({...e,done:false}));
+  const trialState={date:date||todayKey(),exercises,bonus_awarded:false,is_promotion_trial:true,promotion_from_tier:fromTier,promotion_to_tier:toTier};
+  await db.auth.updateUser({data:{...user.user_metadata,quest_state:trialState,promotion_pending_date:date||todayKey()}});
+}
+
+function showRankPromotionComplete(fromTier,toTier){
+  const toRank=getRankInfoByTier(toTier);
+  const titleEl=document.querySelector('#levelup-modal .levelup-title');
+  document.getElementById('lu-level').textContent=toRank.rank;
+  document.getElementById('lu-rank').textContent='⚔️ RANK ADVANCEMENT';
+  document.getElementById('lu-rank').style.color=toRank.color;
+  document.getElementById('lu-icon').textContent='🏆';
+  document.getElementById('lu-msg').textContent=`You have proven yourself worthy. Welcome to ${toRank.rank}. Your training escalates from here. There is no going back.`;
+  if(titleEl)titleEl.textContent='PROMOTION COMPLETE';
+  document.getElementById('levelup-modal').classList.add('open');
+  popConfetti();
 }
 
 function switchView(v){
@@ -1187,6 +1599,21 @@ async function showResetModal(){
   }
   document.getElementById('reset-modal').classList.add('open');
   updateNotifUI();
+  // Class buttons
+  const cls=getTrainingClass();
+  ['calisthenics','strength','cardio'].forEach(c=>{const b=document.getElementById('cls-'+c);if(b)b.classList.toggle('active',c===cls)});
+  // Promo section
+  const promoAvail=user?.user_metadata?.promotion_available;
+  const promoPending=user?.user_metadata?.promotion_pending_date;
+  const promoSection=document.getElementById('rm-promo-section');
+  if(promoSection){
+    promoSection.style.display=(promoAvail||promoPending)?'':'none';
+    const st=document.getElementById('rm-promo-status');
+    if(st){const prt=getPlayerRankTier();const toName=getRankInfoByTier(Math.min(prt+1,7)).rank;st.textContent=promoPending?`Trial scheduled: ${promoPending===todayKey()?'TODAY':promoPending}`:`Promotion to ${toName} available.`}
+    const sb=document.getElementById('rm-start-promo-btn');const cb=document.getElementById('rm-cancel-promo-btn');
+    if(sb)sb.style.display=promoAvail&&!promoPending?'':'none';
+    if(cb)cb.style.display=promoPending?'':'none';
+  }
 }
 function hideResetModal(){document.getElementById('reset-modal').classList.remove('open')}
 
@@ -1221,6 +1648,7 @@ async function loadSettings(){
   totalXP=user?.user_metadata?.total_xp??0;
   updateXPDisplay();
   await checkDailyQuestPenalty();
+  checkRankPromotionAvailable();
 }
 
 async function wipeAccount(){

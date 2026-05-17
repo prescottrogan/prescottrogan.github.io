@@ -750,11 +750,11 @@ const CARDIO_EXERCISE_POOL = [
   {key:'mountainclimb', label:'Mountain Climbers',       tiers:['30 reps','50 reps','75 reps','100 reps','150 reps'],unit:'',minTier:0,tip:'Plank position, drive knees to chest alternately, fast pace.'},
   {key:'stairclimb',    label:'Stair Climber',           tiers:['10 min','15 min','20 min','30 min','40 min'],       unit:'',minTier:0,tip:'Moderate resistance, full step, upright posture. Cardio base work.'},
   {key:'rowmachine',    label:'Rowing Machine',          tiers:['500 m','1000 m','2000 m','3000 m','5000 m'],        unit:'',minTier:0,tip:'Legs → core → arms on the drive. Arms → core → legs on recovery.'},
-  {key:'sprint',        label:'Sprint Intervals',        tiers:['4×30sec','6×30sec','8×40sec','10×40sec','12×45sec'],unit:'',minTier:0,tip:'Maximum effort each interval. Full walk recovery. Don't pace yourself.'},
+  {key:'sprint',        label:'Sprint Intervals',        tiers:['4×30sec','6×30sec','8×40sec','10×40sec','12×45sec'],unit:'',minTier:0,tip:'Maximum effort each interval. Full walk recovery. Don\'t pace yourself.'},
   {key:'bikeintervals', label:'Bike Sprints',            tiers:['5×1min','6×1min','8×1min','10×1min','12×1min'],    unit:'',minTier:0,tip:'Max resistance sprint, 2-min easy recovery between. Seated power.'},
   {key:'swimlaps',      label:'Swim Laps',               tiers:['10 laps','15 laps','20 laps','30 laps','40 laps'], unit:'',minTier:1,tip:'Any stroke. Consistent breathing pattern. No stopping mid-lap.'},
   {key:'dblunders',     label:'Double-Unders',           tiers:['25 reps','50 reps','75 reps','100 reps','150 reps'],unit:'',minTier:2,tip:'Two rope passes per jump. Tight core, wrist rotation, not arms.'},
-  {key:'tempopace',     label:'Tempo Run',               tiers:['1 mile','2 miles','3 miles','4 miles','5 miles'],  unit:'',minTier:2,tip:'Comfortably hard pace — you can't talk but not an all-out sprint.'},
+  {key:'tempopace',     label:'Tempo Run',               tiers:['1 mile','2 miles','3 miles','4 miles','5 miles'],  unit:'',minTier:2,tip:'Comfortably hard pace — you can\'t talk but not an all-out sprint.'},
   {key:'longjump',      label:'Broad Jumps',             tiers:['15 reps','20 reps','30 reps','40 reps','50 reps'], unit:'',minTier:1,tip:'Max horizontal distance each jump. Swing arms, explosive extension.'},
 ];
 
@@ -762,7 +762,7 @@ const CARDIO_EXERCISE_POOL = [
 // key: `${fromTier}_${trainingClass}`  — fromTier 0-6, class: calisthenics|strength|cardio
 const PROMOTION_TRIALS = {
   '0_calisthenics':[
-    {label:'Push-Ups',target:'50 reps',tip:'Do them in sets. Don't stop until 50 total.'},
+    {label:'Push-Ups',target:'50 reps',tip:'Do them in sets. Don\'t stop until 50 total.'},
     {label:'Bodyweight Squats',target:'100 reps',tip:'Deep, controlled. Feel your legs loading.'},
     {label:'Pull-Ups',target:'10 reps',tip:'Full dead hang to chin over bar. Zero kipping.'},
     {label:'Dips',target:'20 reps',tip:'Shoulders down, full depth, triceps loaded.'},
@@ -776,7 +776,7 @@ const PROMOTION_TRIALS = {
     {label:'Barbell Row',target:'3×10 reps',tip:'Chest up, pull to lower chest, hard contraction.'},
   ],
   '0_cardio':[
-    {label:'Run',target:'2 miles',tip:'No stops. Slow down if needed but don't stop.'},
+    {label:'Run',target:'2 miles',tip:'No stops. Slow down if needed but don\'t stop.'},
     {label:'Jump Rope',target:'200 reps',tip:'Quick wrists. Light feet. Rhythm is everything.'},
     {label:'Burpees',target:'30 reps',tip:'Chest to floor, explosive jump. One breath per rep.'},
     {label:'High Knees',target:'100 reps',tip:'Drive knees above hip height. Sprint rhythm.'},
@@ -820,7 +820,7 @@ const PROMOTION_TRIALS = {
   '2_cardio':[
     {label:'Run',target:'5 miles',tip:'Continuous. Do not walk. Challenge your aerobic base.'},
     {label:'Jump Rope',target:'750 reps',tip:'Double-unders if you can. Speed and consistency.'},
-    {label:'Burpees',target:'75 reps',tip:'Unbroken if possible. Every rep explosive. Don't coast.'},
+    {label:'Burpees',target:'75 reps',tip:'Unbroken if possible. Every rep explosive. Don\'t coast.'},
     {label:'Box Jumps',target:'30 reps (24" box)',tip:'Full extension at top. Soft landing. Reset between each.'},
     {label:'100m Sprints',target:'10 × 100m',tip:'Full effort. Walk or jog back. Minimal rest between.'},
   ],
@@ -853,14 +853,14 @@ const PROMOTION_TRIALS = {
     {label:'Strict HSPU',target:'10 reps',tip:'Freestanding preferred. Head to floor, full lockout, controlled.'},
   ],
   '4_strength':[
-    {label:'Squat New 1RM',target:'PR attempt',tip:'Beat your previous best. This is the champion's test.'},
+    {label:'Squat New 1RM',target:'PR attempt',tip:'Beat your previous best. This is the champion\'s test.'},
     {label:'Pause Bench 1RM',target:'PR attempt',tip:'Pause bench. New maximum. Controlled and powerful.'},
     {label:'Deadlift New 1RM',target:'PR attempt',tip:'All-out effort. No straps. Belt allowed. Set a new record.'},
     {label:'10×10 Squat at 60%',target:'10×10 reps',tip:'Squats at 60% of your 1RM. 60-sec rest between sets. Brutal volume.'},
     {label:'Overhead Press (5×5)',target:'5×5 reps heavy',tip:'75%+ of your 1RM. S-Rank press strength. Prove it.'},
   ],
   '4_cardio':[
-    {label:'Half Marathon',target:'13.1 miles',tip:'Run the full distance. Target sub-2:30:00. Don't walk.'},
+    {label:'Half Marathon',target:'13.1 miles',tip:'Run the full distance. Target sub-2:30:00. Don\'t walk.'},
     {label:'Jump Rope',target:'2000 reps',tip:'The full count. No excuses. Speed and endurance combined.'},
     {label:'Burpees',target:'200 reps',tip:'Two hundred. This is what separates ranks.'},
     {label:'1-Mile Repeats',target:'3 × 1 mile',tip:'Track each mile split. Aim for consistency across all three.'},
@@ -890,7 +890,7 @@ const PROMOTION_TRIALS = {
   '6_calisthenics':[
     {label:'Human Flag',target:'10 sec',tip:'Horizontal on vertical pole. Both arms. No assistance tolerated.'},
     {label:'Full Planche',target:'15 sec total',tip:'Three 5-second holds minimum. Straight arm, straight body.'},
-    {label:'Muscle-Ups',target:'50 reps',tip:'Fifty. Ring or bar. Takes what it takes. Don't stop.'},
+    {label:'Muscle-Ups',target:'50 reps',tip:'Fifty. Ring or bar. Takes what it takes. Don\'t stop.'},
     {label:'One-Arm Push-Ups',target:'10 each side',tip:'Controlled. Full range. Ten per arm. Shadow Monarch demands it.'},
     {label:'Strict Pull-Ups sub-15min',target:'100 reps',tip:'One hundred in under fifteen minutes. The clock is running.'},
   ],
@@ -899,7 +899,7 @@ const PROMOTION_TRIALS = {
     {label:'Iron War — Bench',target:'20 reps @ 80% 1RM',tip:'Same day. Same percentage. Complete all twenty.'},
     {label:'Iron War — Deadlift',target:'20 reps @ 80% 1RM',tip:'The final lift. Touch-and-go allowed. Finish it.'},
     {label:'Heavy Squat 5×5',target:'5×5 @ 90% 1RM',tip:'After the Iron War. 90% max. Prove you are unbreakable.'},
-    {label:'Heavy Bench 5×5',target:'5×5 @ 90% 1RM',tip:'Prove the Iron War didn't break you. Five sets. Heavy.'},
+    {label:'Heavy Bench 5×5',target:'5×5 @ 90% 1RM',tip:'Prove the Iron War didn\'t break you. Five sets. Heavy.'},
   ],
   '6_cardio':[
     {label:'Ultra Run 50K',target:'31.1 miles',tip:'Fifty kilometers. No time limit. But you finish. Period.'},

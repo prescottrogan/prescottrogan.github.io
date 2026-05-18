@@ -1,4 +1,4 @@
-const CACHE = 'rise-v4';
+const CACHE = 'rise-v5';
 const PRECACHE = ['/icon.svg', '/manifest.json'];
 
 self.addEventListener('install', e => {
@@ -9,8 +9,11 @@ self.addEventListener('install', e => {
 
 self.addEventListener('activate', e => {
   e.waitUntil(
-    caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
+    caches.keys()
+      .then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k))))
       .then(() => self.clients.claim())
+      .then(() => self.clients.matchAll({ type: 'window', includeUncontrolled: true }))
+      .then(clients => Promise.all(clients.map(c => c.navigate(c.url))))
   );
 });
 
@@ -18,7 +21,7 @@ self.addEventListener('fetch', e => {
   if (e.request.method !== 'GET') return;
   const url = new URL(e.request.url);
 
-  // Network-first for HTML and the SW itself — always get fresh app code
+  // Network-first for HTML and SW — always serve fresh app code
   if (url.pathname === '/' || url.pathname.endsWith('.html') || url.pathname.endsWith('sw.js')) {
     e.respondWith(
       fetch(e.request)
@@ -33,7 +36,7 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // Cache-first for all other assets (icons, manifests, CDN scripts)
+  // Cache-first for assets
   e.respondWith(
     caches.match(e.request).then(cached => {
       if (cached) return cached;

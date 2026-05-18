@@ -63,9 +63,6 @@ header{position:sticky;top:0;background:var(--header-bg);backdrop-filter:blur(12
 
 .logo-name{font-size:1.05rem;font-weight:800;letter-spacing:-.04em}
 .logo-date{display:block;font-size:.6rem;font-weight:600;color:var(--muted);letter-spacing:.04em;text-transform:uppercase;margin-top:1px}
-.view-switcher{display:flex;background:var(--surface-2);border:1px solid var(--border);border-radius:20px;padding:2px;gap:0}
-.vs-btn{background:transparent;border:none;border-radius:18px;color:var(--muted);padding:5px 14px;font-size:.8rem;font-weight:700;cursor:pointer;transition:background .15s,color .15s;white-space:nowrap}
-.vs-btn.active{background:var(--surface);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.1)}
 
 /* Main content */
 #main-content{padding:16px 20px calc(80px + env(safe-area-inset-bottom))}
@@ -551,7 +548,7 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 // Self-healing version check — clears stale SW cache on deploy
-const APP_VERSION = '20260518-v5';
+const APP_VERSION = '20260518-v6';
 (function(){
   if(localStorage.getItem('rise-app-version')!==APP_VERSION){
     localStorage.setItem('rise-app-version',APP_VERSION);
@@ -1250,23 +1247,19 @@ async function toggleQuestItem(idx){
     const currentStreak=getQuestStreak();
     const newStreak=currentStreak+1;
     const multi=getStreakMultiplier(newStreak);
-    // Find which classes have exercises in this quest
     const classesInQuest=[...new Set(next.exercises.map(e=>e.cls).filter(Boolean))];
-    // If no class tags (legacy), use active classes
     const toReward=classesInQuest.length>0?classesInQuest:getActiveClasses();
-    // Save quest state and streak first
     const baseMeta={...user.user_metadata,quest_state:next,quest_streak:newStreak};
-    await db.auth.updateUser({data:baseMeta});
-    if((await db.auth.getUser()).data?.user)user=(await db.auth.getUser()).data.user;
-    // Award XP to each class
+    const{data:saved}=await db.auth.updateUser({data:baseMeta});
+    if(saved?.user)user=saved.user;
     for(const cls of toReward){
-      const xpReward=Math.round(QUEST_BONUS_XP*multi);
-      await awardClassXP(cls,xpReward,'Daily Quest Complete');
+      await awardClassXP(cls,Math.round(QUEST_BONUS_XP*multi),'Daily Quest Complete');
     }
   }else{
     const meta={...user.user_metadata,quest_state:next};
-    db.auth.updateUser({data:meta}).then(({data})=>{if(data?.user)user=data.user});
-    user.user_metadata={...user.user_metadata,quest_state:next};
+    const{data}=await db.auth.updateUser({data:meta});
+    if(data?.user)user=data.user;
+    else user.user_metadata=meta;
   }
   renderDailyQuest();updateXPDisplay();
 }
@@ -1518,6 +1511,7 @@ async function init(){
   document.addEventListener('keydown',e=>{
     if(e.key!=='Escape')return;
     ['penalty-modal','levelup-modal','reset-modal'].forEach(id=>document.getElementById(id)?.classList.remove('open'));
+    document.getElementById('reset-modal')?.classList.remove('open');
   });
   const _ob=document.getElementById('offline-banner');
   const _uo=()=>_ob?.classList.toggle('show',!navigator.onLine);
@@ -1603,8 +1597,9 @@ async function showApp(){
 
 async function renderAll(){
   updateDateDisplay();
-  await Promise.all([renderDailyQuest(),renderLeaderboard(),renderDaily()]);
+  await Promise.all([renderDailyQuest(),renderDaily()]);
   renderPromotionTrial();
+  renderLeaderboard(); // fire-and-forget — leaderboard is non-critical on load
 }
 
 function updateDateDisplay(){
@@ -1665,7 +1660,18 @@ async function submitOnboarding(){
     if(data?.id)coreIds.push(data.id);
   }
   const prev=getCoreHabitIds();
-  const meta={...user.user_metadata,setup_complete:true,core_habit_ids:[...new Set([...prev,...coreIds])],active_classes:_obClasses};
+  const meta={
+    ...user.user_metadata,
+    setup_complete:true,
+    core_habit_ids:[...new Set([...prev,...coreIds])],
+    active_classes:_obClasses,
+    xp_calisthenics:user.user_metadata?.xp_calisthenics??0,
+    xp_strength:user.user_metadata?.xp_strength??0,
+    xp_cardio:user.user_metadata?.xp_cardio??0,
+    rank_calisthenics:user.user_metadata?.rank_calisthenics??0,
+    rank_strength:user.user_metadata?.rank_strength??0,
+    rank_cardio:user.user_metadata?.rank_cardio??0,
+  };
   if(displayName)meta.display_name=displayName;
   await db.auth.updateUser({data:meta});
   await refreshUser();
@@ -1743,7 +1749,7 @@ async function wipeAccount(){
     dbCall(()=>db.from('user_settings').delete().eq('user_id',user.id)),
     db.from('profiles').delete().eq('user_id',user.id),
   ]);
-  await db.auth.updateUser({data:{setup_complete:false,total_xp:0,quest_state:null,quest_streak:0,core_habit_ids:[],display_name:null}});
+  await db.auth.updateUser({data:{setup_complete:false,total_xp:0,quest_state:null,quest_streak:0,core_habit_ids:[],display_name:null,active_classes:null,promotion_trial_state:null,xp_calisthenics:0,xp_strength:0,xp_cardio:0,rank_calisthenics:0,rank_strength:0,rank_cardio:0}});
   location.reload();
 }
 
@@ -1807,14 +1813,13 @@ async function toggleItem(id,isRecurring){
   if(didComplete){
     const isCore=isRecurring&&getCoreHabitIds().includes(id);
     const xp=isCore?50:isRecurring?25:15;
-    const cls=getTrainingClass();
-    await awardClassXP(cls,xp,isCore?'Core Task':isRecurring?'Daily Task':'Side Task');
+    const label=isCore?'Core Task':isRecurring?'Daily Task':'Side Task';
+    await Promise.all(getActiveClasses().map(cls=>awardClassXP(cls,xp,label)));
     toastUndo('Task done!',()=>toggleItem(id,isRecurring));
   }else{
     const isCore=isRecurring&&getCoreHabitIds().includes(id);
     const xp=isCore?50:isRecurring?25:15;
-    const cls=getTrainingClass();
-    await awardClassXP(cls,-xp,'Task unchecked');
+    await Promise.all(getActiveClasses().map(cls=>awardClassXP(cls,-xp,'Task unchecked')));
   }
   await renderDaily();
 }
@@ -1826,7 +1831,6 @@ async function deleteItem(id){
 }
 
 async function renderDaily(){
-  renderDailyQuest();
   let all=cacheGet('habits');
   let allComps=cacheGet('completions');
   if(!all||!allComps){

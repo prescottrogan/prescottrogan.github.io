@@ -342,7 +342,7 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
 </div>
 
 <!-- AUTH -->
-<div id="auth-screen" style="display:none">
+<div id="auth-screen" style="display:flex">
   <div class="auth-box">
     <div class="auth-logo-wrap">
       <div class="auth-brand">Rise</div>
@@ -548,7 +548,7 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 // Self-healing version check — clears stale SW cache on deploy
-const APP_VERSION = '20260518-v6';
+const APP_VERSION = '20260518-v7';
 (function(){
   if(localStorage.getItem('rise-app-version')!==APP_VERSION){
     localStorage.setItem('rise-app-version',APP_VERSION);
@@ -1516,8 +1516,10 @@ async function init(){
   const _ob=document.getElementById('offline-banner');
   const _uo=()=>_ob?.classList.toggle('show',!navigator.onLine);
   window.addEventListener('offline',_uo);window.addEventListener('online',_uo);_uo();
-  const{data:{session}}=await db.auth.getSession();
-  if(session?.user){user=session.user;await showApp()}else showAuth();
+  try{
+    const{data:{session}}=await db.auth.getSession();
+    if(session?.user){user=session.user;await showApp()}else showAuth();
+  }catch(e){showAuth()}
   db.auth.onAuthStateChange(async(event,session)=>{
     if(event==='SIGNED_OUT'||!session){user=null;showAuth()}
     else if(event==='SIGNED_IN'&&(!user||user.id!==session.user.id)){user=session.user;await showApp()}
@@ -1558,7 +1560,7 @@ async function signUp(){
 }
 async function signOut(){await db.auth.signOut()}
 function setAuthMsg(m,e=false){const el=document.getElementById('auth-msg');el.textContent=m;el.style.color=e?'var(--danger)':'var(--accent)'}
-function showAuth(){document.getElementById('app').style.display='none';document.getElementById('auth-screen').style.display='flex';document.getElementById('bottom-nav').style.display='none'}
+function showAuth(){document.getElementById('app').style.display='none';document.getElementById('onboard-screen').style.display='none';document.getElementById('auth-screen').style.display='flex';document.getElementById('bottom-nav').style.display='none'}
 
 async function migrateXPIfNeeded(){
   if(!user)return;

@@ -1020,32 +1020,35 @@ function updateXPDisplay(){
   const highestLevel=getHighestLevel();
   const levelEl=document.getElementById('level-badge');
   if(levelEl)levelEl.textContent=`Lv.${highestLevel}`;
-  // Per-class stat rows
+  // Per-class stat rows — always show all 3 classes; dim inactive ones
   const container=document.getElementById('class-stats-rows');
   if(!container)return;
   const activeClasses=getActiveClasses();
-  container.innerHTML=activeClasses.map(cls=>{
+  container.innerHTML=ALL_CLASSES.map(cls=>{
     const meta=CLASS_META[cls]||CLASS_META.calisthenics;
     const xp=getClassXP(cls);
     const prog=getLevelProgress(xp);
     const tier=getClassRankTier(cls);
     const rankInfo=getRankInfoByTier(tier);
+    const isActive=activeClasses.includes(cls);
     const nextRankLevels={6:'D-Rank',11:'C-Rank',21:'B-Rank',36:'A-Rank',51:'S-Rank',76:'National',100:'Shadow Monarch'};
     const nextRankEntry=Object.entries(nextRankLevels).find(([l])=>prog.level<+l);
     const nextRankText=nextRankEntry?`→ ${nextRankEntry[1]} at Lv.${nextRankEntry[0]}`:'MAX';
-    return`<div class="class-stat-row" style="margin-bottom:14px">
+    const inactivePill=isActive?'':`<span style="font-size:.58rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);background:var(--surface-2);border:1px solid var(--border);border-radius:4px;padding:1px 5px;margin-left:5px">Inactive</span>`;
+    const subText=isActive?nextRankText:'XP preserved · reactivate to resume';
+    return`<div class="class-stat-row" style="margin-bottom:14px;${isActive?'':'opacity:.45'}">
       <div class="csr-header">
-        <span style="color:${meta.color};font-weight:700;font-size:.88rem">${meta.icon} ${meta.label}</span>
+        <span style="color:${meta.color};font-weight:700;font-size:.88rem">${meta.icon} ${meta.label}${inactivePill}</span>
         <span style="color:${rankInfo.color};font-size:.78rem;font-weight:700">${rankInfo.icon} ${rankInfo.rank} · Lv.${prog.level}</span>
       </div>
-      <div class="ps-bar-bg" style="margin:6px 0 3px"><div class="ps-bar-fill" style="width:${prog.pct}%;background:${meta.color};transition:width .4s ease"></div></div>
+      <div class="ps-bar-bg" style="margin:6px 0 3px"><div class="ps-bar-fill" style="width:${prog.pct}%;background:${isActive?meta.color:'var(--muted)'};transition:width .4s ease"></div></div>
       <div class="ps-bar-labels">
         <span style="font-size:.7rem;color:var(--muted)">${prog.current.toLocaleString()} / ${prog.needed.toLocaleString()} XP</span>
-        <span style="font-size:.7rem;color:var(--muted)">${nextRankText}</span>
+        <span style="font-size:.7rem;color:var(--muted)">${subText}</span>
       </div>
     </div>`;
   }).join('');
-  // Also update level badge color based on highest-level class tier
+  // Level badge color based on highest-level active class tier
   if(levelEl){
     const topCls=activeClasses.reduce((best,c)=>getClassXP(c)>getClassXP(best)?c:best,activeClasses[0]);
     const topRank=getRankInfoByTier(getClassRankTier(topCls));

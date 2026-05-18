@@ -1520,8 +1520,24 @@ async function signOut(){await db.auth.signOut()}
 function setAuthMsg(m,e=false){const el=document.getElementById('auth-msg');el.textContent=m;el.style.color=e?'var(--danger)':'var(--accent)'}
 function showAuth(){document.getElementById('app').style.display='none';document.getElementById('auth-screen').style.display='flex'}
 
+async function migrateXPIfNeeded(){
+  if(!user)return;
+  const meta=user.user_metadata||{};
+  // Already migrated if any per-class key exists
+  if(meta.xp_calisthenics!=null||meta.xp_strength!=null||meta.xp_cardio!=null)return;
+  // Nothing to migrate
+  const legacyXP=meta.total_xp||0;
+  if(!legacyXP)return;
+  // Assign all legacy XP to the old training class (or calisthenics)
+  const cls=meta.training_class||'calisthenics';
+  const newMeta={...meta,[`xp_${cls}`]:legacyXP};
+  const{data}=await db.auth.updateUser({data:newMeta});
+  if(data?.user)user=data.user;
+}
+
 async function showApp(){
   document.getElementById('auth-screen').style.display='none';
+  await migrateXPIfNeeded();
   await loadSettings();
   injectIcons();
   initNotifications();

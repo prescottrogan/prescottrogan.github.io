@@ -68,7 +68,7 @@ header{position:sticky;top:0;background:var(--header-bg);backdrop-filter:blur(12
 .vs-btn.active{background:var(--surface);color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,.1)}
 
 /* Main content */
-#main-content{padding:16px 20px calc(40px + env(safe-area-inset-bottom))}
+#main-content{padding:16px 20px calc(80px + env(safe-area-inset-bottom))}
 
 /* Cards */
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:16px;margin-bottom:12px;box-shadow:0 1px 4px rgba(0,0,0,.05);transition:box-shadow .2s ease,transform .2s ease,border-color .2s ease}
@@ -284,6 +284,16 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
 #wipe-confirm{display:none;margin-top:10px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);border-radius:10px;padding:14px}
 
 .class-stat-row .csr-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}
+
+/* Bottom navigation */
+#bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:200;background:var(--header-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--border);padding-bottom:env(safe-area-inset-bottom)}
+.nav-inner{display:flex;width:100%;max-width:640px;margin:0 auto}
+.nav-tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;padding:10px 0 14px;background:none;border:none;cursor:pointer;color:var(--muted);transition:color .15s,opacity .15s;font-family:inherit;position:relative}
+.nav-tab::after{content:'';position:absolute;top:0;left:30%;right:30%;height:2px;background:var(--accent);border-radius:0 0 2px 2px;opacity:0;transition:opacity .15s}
+.nav-tab.active{color:var(--accent)}
+.nav-tab.active::after{opacity:1}
+.nav-tab svg{width:22px;height:22px}
+.nav-tab-label{font-size:.56rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase}
 </style>
 </head>
 <body>
@@ -362,10 +372,6 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
         </div>
       </div>
       <div class="header-right">
-        <div class="view-switcher">
-          <button class="vs-btn active" id="vs-today" onclick="switchView('today')">Today</button>
-          <button class="vs-btn" id="vs-profile" onclick="switchView('profile')">Profile</button>
-        </div>
         <span id="level-badge" style="background:rgba(107,114,128,.12);color:#6b7280;border-color:rgba(107,114,128,.3)">Lv.1</span>
         <button class="theme-btn" id="settings-btn" onclick="showResetModal()"><span id="settings-icon"></span></button>
       </div>
@@ -374,13 +380,37 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
 
   <div id="main-content">
 
-    <!-- TODAY VIEW: Quest + Tasks -->
-    <div id="view-today">
-    <div id="promotion-trial-card" style="display:none;margin-bottom:16px"></div>
-    <div id="quest-main" class="card quest-system-card" style="margin-bottom:16px">
-      <!-- rendered by renderDailyQuest() -->
+    <!-- TAB 1: Quest -->
+    <div id="view-quest">
+      <div id="promotion-trial-card" style="display:none;margin-bottom:16px"></div>
+      <div id="quest-main" class="card quest-system-card" style="margin-bottom:16px">
+        <!-- rendered by renderDailyQuest() -->
+      </div>
     </div>
-    <div id="tasks-section">
+
+    <!-- TAB 2: Stats + Leaderboard -->
+    <div id="view-stats" style="display:none">
+      <div class="card player-stats-card" style="margin-bottom:12px">
+        <div class="ps-top">
+          <div class="ps-streak-block" style="margin-left:auto">
+            <div class="ps-streak-num" id="ps-streak-num">0</div>
+            <div class="ps-streak-lbl">day streak</div>
+            <div class="ps-mult" id="ps-mult"></div>
+          </div>
+        </div>
+        <div id="class-stats-rows"><!-- rendered by updateXPDisplay() --></div>
+      </div>
+      <div class="card" style="margin-bottom:12px">
+        <div class="lb-header">
+          <div class="section-title" style="margin:0">🏆 Leaderboard</div>
+          <button class="lb-refresh-btn" onclick="renderLeaderboard()">↻</button>
+        </div>
+        <div id="leaderboard-list"><div class="empty" style="padding:12px 0">Loading…</div></div>
+      </div>
+    </div>
+
+    <!-- TAB 3: Tasks -->
+    <div id="view-tasks" style="display:none">
       <div class="card task-add-card">
         <div class="task-add-header">
           <div class="type-toggle" style="margin:0;flex:1">
@@ -398,32 +428,36 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
       </div>
       <div id="daily-list"></div>
     </div>
-    </div><!-- /view-today -->
-
-    <!-- PROFILE VIEW: Stats + Leaderboard -->
-    <div id="view-profile" style="display:none">
-    <div class="card player-stats-card" style="margin-bottom:12px">
-      <div class="ps-top">
-        <div class="ps-streak-block" style="margin-left:auto">
-          <div class="ps-streak-num" id="ps-streak-num">0</div>
-          <div class="ps-streak-lbl">day streak</div>
-          <div class="ps-mult" id="ps-mult"></div>
-        </div>
-      </div>
-      <div id="class-stats-rows">
-        <!-- rendered by updateXPDisplay() -->
-      </div>
-    </div>
-    <div class="card" style="margin-bottom:12px">
-      <div class="lb-header">
-        <div class="section-title" style="margin:0">🏆 Leaderboard</div>
-        <button class="lb-refresh-btn" onclick="renderLeaderboard()">↻</button>
-      </div>
-      <div id="leaderboard-list"><div class="empty" style="padding:12px 0">Loading…</div></div>
-    </div>
-    </div><!-- /view-profile -->
 
   </div><!-- /main-content -->
+
+  <!-- BOTTOM NAV -->
+  <nav id="bottom-nav">
+    <div class="nav-inner">
+      <button class="nav-tab active" id="nav-quest" onclick="switchTab('quest')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M13 2L4.5 13H11L9 22L19.5 11H13Z"/>
+        </svg>
+        <span class="nav-tab-label">Quest</span>
+      </button>
+      <button class="nav-tab" id="nav-stats" onclick="switchTab('stats')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round">
+          <path d="M4 20V15M9 20V9M14 20V12M19 20V4"/>
+          <path d="M2 20H22"/>
+        </svg>
+        <span class="nav-tab-label">Stats</span>
+      </button>
+      <button class="nav-tab" id="nav-tasks" onclick="switchTab('tasks')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M9 6H20M9 12H20M9 18H15"/>
+          <path d="M4 6l1 1.5 2.5-3"/>
+          <path d="M4 12l1 1.5 2.5-3"/>
+          <circle cx="4.5" cy="18" r="1.2" fill="currentColor" stroke="none"/>
+        </svg>
+        <span class="nav-tab-label">Tasks</span>
+      </button>
+    </div>
+  </nav>
 
   <!-- SETTINGS MODAL -->
   <div id="reset-modal">
@@ -1417,16 +1451,14 @@ function updateClassButtons(){
   });
 }
 
-function switchView(v){
-  const today=document.getElementById('view-today');
-  const profile=document.getElementById('view-profile');
-  const btnT=document.getElementById('vs-today');
-  const btnP=document.getElementById('vs-profile');
-  if(today)today.style.display=v==='today'?'':'none';
-  if(profile)profile.style.display=v==='profile'?'':'none';
-  if(btnT)btnT.classList.toggle('active',v==='today');
-  if(btnP)btnP.classList.toggle('active',v==='profile');
-  localStorage.setItem('rise-view',v);
+function switchTab(v){
+  ['quest','stats','tasks'].forEach(t=>{
+    const view=document.getElementById('view-'+t);
+    const btn=document.getElementById('nav-'+t);
+    if(view)view.style.display=t===v?'':'none';
+    if(btn)btn.classList.toggle('active',t===v);
+  });
+  localStorage.setItem('rise-tab',v);
 }
 
 // ── Theme ───────────────────────────────────────────────────────────────────
@@ -1550,7 +1582,7 @@ async function showApp(){
   }else{
     document.getElementById('onboard-screen').style.display='none';
     document.getElementById('app').style.display='block';
-    switchView(localStorage.getItem('rise-view')||'today');
+    switchTab(localStorage.getItem('rise-tab')||'quest');
     upsertProfile();
     await renderAll();
   }

@@ -1,11 +1,11 @@
 {
-  "name": "Froggy",
-  "short_name": "Froggy",
-  "description": "Your personal health & habit tracker",
+  "name": "Rise",
+  "short_name": "Rise",
+  "description": "Your daily training system",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0a0a0a",
-  "theme_color": "#66BB6A",
+  "theme_color": "#4ade80",
   "orientation": "portrait",
   "icons": [
     { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }

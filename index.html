@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<title>Froggy</title>
+<title>Rise</title>
 <link rel="icon" type="image/svg+xml" href="icon.svg">
 <link rel="apple-touch-icon" href="icon.svg">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#66BB6A">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Froggy">
+<meta name="apple-mobile-web-app-title" content="Rise">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<script>(function(){document.documentElement.setAttribute('data-theme',localStorage.getItem('froggy-theme')||'light')})();</script>
+<script>(function(){document.documentElement.setAttribute('data-theme',localStorage.getItem('rise-theme')||'light')})();</script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -55,8 +55,7 @@ svg{display:block}button{font-family:inherit}
 /* Header */
 header{position:sticky;top:0;background:var(--header-bg);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-bottom:1px solid var(--border);z-index:50;padding-top:env(safe-area-inset-top)}
 .header-main{padding:12px 20px;display:flex;align-items:center;justify-content:space-between}
-.logo-mark{display:flex;align-items:center;gap:8px;cursor:pointer;padding:5px 10px;margin:-5px -10px;border-radius:12px;transition:background .18s ease,transform .18s ease;user-select:none}
-.logo-mark:hover{background:rgba(74,222,128,.13);transform:scale(1.05)}
+.logo-mark{display:flex;align-items:center;gap:8px;padding:5px 10px;margin:-5px -10px;border-radius:12px;user-select:none}
 .logo-mark span{line-height:1}
 .header-right{display:flex;align-items:center;gap:10px}
 .theme-btn{background:transparent;border:1px solid var(--border);border-radius:6px;color:var(--muted);padding:5px;cursor:pointer;line-height:0;transition:border-color .15s,color .15s;display:flex;align-items:center}
@@ -250,23 +249,7 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
 .class-icon{font-size:1.4rem;display:block;margin-bottom:3px}
 .class-name{font-size:.78rem;font-weight:700;display:block}
 .class-desc{font-size:.6rem;color:var(--muted);display:block;margin-top:1px}
-/* Promotion modal */
-#promotion-modal{display:none;position:fixed;inset:0;z-index:700;background:rgba(0,0,0,.9);align-items:center;justify-content:center;padding:20px}
-#promotion-modal.open{display:flex}
-.promotion-box{background:linear-gradient(135deg,#1a0d00 0%,#250f00 50%,#0a0500 100%);border:2px solid #b45309;border-radius:24px;padding:30px 22px;text-align:center;max-width:360px;width:100%;animation:levelup-pop .5s cubic-bezier(.34,1.56,.64,1) forwards;box-shadow:0 0 60px rgba(180,83,9,.45)}
-.promo-header{font-size:.7rem;font-weight:900;letter-spacing:.22em;color:#f59e0b;margin-bottom:16px;text-transform:uppercase}
-.promo-rank-compare{display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:14px}
-.promo-rank{display:flex;flex-direction:column;align-items:center;gap:3px}
-.promo-rank-icon{font-size:2rem;line-height:1}
-.promo-rank-name{font-size:.78rem;font-weight:800;color:rgba(255,255,255,.9)}
-.promo-arrow{font-size:1.5rem;color:#f59e0b;font-weight:900}
-.promo-warning{font-size:.8rem;color:rgba(255,255,255,.6);line-height:1.55;margin-bottom:10px}
-.promo-trial-preview{font-size:.7rem;color:rgba(255,165,0,.75);line-height:1.55;background:rgba(255,140,0,.07);border:1px solid rgba(255,140,0,.2);border-radius:8px;padding:8px 12px;text-align:left;margin-bottom:4px}
-/* Promotion trial quest card variant */
-.quest-system-card.trial-card{background:linear-gradient(135deg,#1a0a00 0%,#2a1000 50%,#0a0500 100%)!important;border-color:#b45309!important;box-shadow:0 0 36px rgba(180,83,9,.3),inset 0 1px 0 rgba(255,255,255,.06)!important}
-.quest-system-card.trial-card::before{background:radial-gradient(circle at 0% 0%,rgba(180,83,9,.35) 0%,transparent 55%),radial-gradient(circle at 100% 100%,rgba(220,38,38,.12) 0%,transparent 55%)!important}
-.trial-label{font-size:.7rem;font-weight:900;letter-spacing:.2em;color:#f59e0b;text-shadow:0 0 12px rgba(245,158,11,.55)}
-.trial-rank-target{font-size:.82rem;font-weight:800;color:#f59e0b;margin-bottom:12px;letter-spacing:.05em}
+
 /* Settings modal */
 #reset-modal{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.75);align-items:center;justify-content:center;padding:16px;box-sizing:border-box}
 #reset-modal.open{display:flex}
@@ -294,18 +277,7 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
 .onboard-habit-item span{flex:1;font-weight:500;font-size:.92rem}
 #wipe-confirm{display:none;margin-top:10px;background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.3);border-radius:10px;padding:14px}
 
-/* Mascot */
-@keyframes m-idle{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
-@keyframes m-bounce{0%,100%{transform:translateY(0) scale(1)}40%{transform:translateY(-9px) scale(1.06)}}
-@keyframes m-celebrate{0%,100%{transform:rotate(-12deg) scale(1.1)}50%{transform:rotate(12deg) scale(1.12)}}
-@keyframes m-tap{0%{transform:scale(1) rotate(0)}25%{transform:scale(1.3) rotate(15deg)}60%{transform:scale(0.88) rotate(-10deg)}80%{transform:scale(1.08) rotate(4deg)}100%{transform:scale(1) rotate(0)}}
-@keyframes m-jump{0%{transform:translateY(0) scale(1)}30%{transform:translateY(-22px) scale(1.05,.95)}55%{transform:translateY(-30px) scale(.95,1.05)}75%{transform:translateY(-8px) scale(1.02,.98)}100%{transform:translateY(0) scale(1)}}
-.mascot-idle{animation:m-idle 2.8s ease-in-out infinite;display:inline-block}
-.mascot-bounce{animation:m-bounce 1.1s ease-in-out infinite;display:inline-block}
-.mascot-celebrate{animation:m-celebrate .44s ease-in-out infinite;display:inline-block}
-.mascot-tap{animation:m-tap .5s cubic-bezier(.36,.07,.19,.97) forwards;display:inline-block}
-.mascot-jump-once{animation:m-jump .65s cubic-bezier(.36,.07,.19,.97) forwards;display:inline-block}
-#mascot-hdr{cursor:pointer}
+.class-stat-row .csr-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:2px}
 </style>
 </head>
 <body>
@@ -317,14 +289,32 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
 <div id="onboard-screen" style="display:none">
   <div class="onboard-box">
     <div class="onboard-step active" id="ob-step-1">
-      <span id="ob-mascot-1" style="display:block;margin:4px 0 0"></span>
-      <div class="onboard-title">Welcome to Froggy</div>
+      <div class="onboard-title">Welcome to Rise</div>
       <div class="onboard-sub">Your daily training system. The system assigns quests. Complete them or face consequences.</div>
       <div class="onboard-field"><label>Your name</label><input type="text" id="ob-name" placeholder="What should we call you?"></div>
+      <div class="onboard-field">
+        <label>Training Classes</label>
+        <div class="class-grid" style="margin-top:6px">
+          <button class="class-btn active" id="ob-cls-calisthenics" onclick="obToggleClass('calisthenics')" style="border-color:#4ade80;background:rgba(74,222,128,.15)">
+            <span class="class-icon">🤸</span>
+            <span class="class-name">Calisthenics</span>
+            <span class="class-desc">Bodyweight mastery</span>
+          </button>
+          <button class="class-btn" id="ob-cls-strength" onclick="obToggleClass('strength')">
+            <span class="class-icon">🏋️</span>
+            <span class="class-name">Strength</span>
+            <span class="class-desc">Barbell &amp; weights</span>
+          </button>
+          <button class="class-btn" id="ob-cls-cardio" onclick="obToggleClass('cardio')">
+            <span class="class-icon">🏃</span>
+            <span class="class-name">Cardio</span>
+            <span class="class-desc">Endurance &amp; speed</span>
+          </button>
+        </div>
+      </div>
       <button class="btn btn-green btn-full" onclick="goOnboardStep2()">Next →</button>
     </div>
     <div class="onboard-step" id="ob-step-2">
-      <span id="ob-mascot-2" style="display:block;margin:4px 0 0"></span>
       <div class="onboard-title">Your Daily System</div>
       <div class="onboard-sub">Add your core daily tasks — the non-negotiables. The system will hold you accountable.</div>
       <div class="onboard-habit-row">
@@ -342,21 +332,8 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
 <div id="auth-screen" style="display:none">
   <div class="auth-box">
     <div class="auth-logo-wrap">
-      <svg width="80" height="80" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">
-        <ellipse cx="20" cy="25.5" rx="17" ry="13.5" fill="#2D5A1A"/>
-        <circle cx="13" cy="12.5" r="8" fill="#2D5A1A"/><circle cx="27" cy="12.5" r="8" fill="#2D5A1A"/>
-        <ellipse cx="20" cy="25" rx="15.5" ry="12" fill="#66BB6A"/>
-        <circle cx="13" cy="12" r="6.8" fill="#66BB6A"/><circle cx="27" cy="12" r="6.8" fill="#66BB6A"/>
-        <ellipse cx="20" cy="30" rx="8" ry="5.5" fill="#E8E5A0"/>
-        <circle cx="7" cy="37" r="2.5" fill="#F59E0B"/><circle cx="11" cy="36" r="2.5" fill="#F59E0B"/><circle cx="15" cy="37" r="2.5" fill="#F59E0B"/>
-        <circle cx="25" cy="37" r="2.5" fill="#F59E0B"/><circle cx="29" cy="36" r="2.5" fill="#F59E0B"/><circle cx="33" cy="37" r="2.5" fill="#F59E0B"/>
-        <circle cx="13" cy="12" r="5.8" fill="#111"/><circle cx="27" cy="12" r="5.8" fill="#111"/>
-        <circle cx="15.5" cy="9.2" r="2" fill="white"/><circle cx="29.5" cy="9.2" r="2" fill="white"/>
-        <circle cx="7.5" cy="23" r="4" fill="rgba(255,150,155,0.85)"/><circle cx="32.5" cy="23" r="4" fill="rgba(255,150,155,0.85)"/>
-        <path d="M14,24 Q20,29 26,24" stroke="#2D5A1A" stroke-width="1.6" fill="none" stroke-linecap="round"/>
-      </svg>
-      <div class="auth-brand">Froggy</div>
-      <div class="auth-sub">Your solo leveling system</div>
+      <div class="auth-brand">Rise</div>
+      <div class="auth-sub">Your daily training system</div>
     </div>
     <input class="auth-input" type="email" id="auth-email" placeholder="Email" autocomplete="email">
     <input class="auth-input" type="password" id="auth-password" placeholder="Password (6+ chars)" autocomplete="current-password">
@@ -372,10 +349,9 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
 <div id="app" style="display:none">
   <header>
     <div class="header-main">
-      <div class="logo-mark" id="mascot-hdr-wrap" onclick="tapMascot()">
-        <span id="mascot-hdr" class="mascot-idle"></span>
+      <div class="logo-mark">
         <div>
-          <span class="logo-name">Froggy</span>
+          <span class="logo-name">Rise</span>
           <span class="logo-date" id="hdn-date"></span>
         </div>
       </div>
@@ -421,25 +397,14 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
     <div id="view-profile" style="display:none">
     <div class="card player-stats-card" style="margin-bottom:12px">
       <div class="ps-top">
-        <div class="ps-rank-block">
-          <span class="ps-rank-icon" id="ps-rank-icon">⬜</span>
-          <div>
-            <div class="ps-rank-name" id="ps-rank-name">Novice</div>
-            <div class="ps-level" id="ps-level">Level 1</div>
-          </div>
-        </div>
-        <div class="ps-streak-block">
+        <div class="ps-streak-block" style="margin-left:auto">
           <div class="ps-streak-num" id="ps-streak-num">0</div>
           <div class="ps-streak-lbl">day streak</div>
           <div class="ps-mult" id="ps-mult"></div>
         </div>
       </div>
-      <div class="ps-bar-wrap">
-        <div class="ps-bar-bg"><div class="ps-bar-fill" id="ps-bar-fill" style="width:0%"></div></div>
-        <div class="ps-bar-labels">
-          <span id="ps-xp-label">0 / 100 XP</span>
-          <span id="ps-next-rank" style="color:var(--muted)"></span>
-        </div>
+      <div id="class-stats-rows">
+        <!-- rendered by updateXPDisplay() -->
       </div>
     </div>
     <div class="card" style="margin-bottom:12px">
@@ -463,31 +428,25 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
         <label>Your name</label>
         <input type="text" id="rm-name" placeholder="What should we call you?">
       </div>
-      <div class="modal-section">Training Class</div>
+      <div class="modal-section">Training Classes <span style="font-weight:400;font-size:.72rem;color:var(--muted);text-transform:none;letter-spacing:0">— select one or more</span></div>
       <div class="class-grid">
-        <button class="class-btn" id="cls-calisthenics" onclick="setTrainingClass('calisthenics')">
+        <button class="class-btn" id="cls-calisthenics" onclick="toggleClass('calisthenics')">
           <span class="class-icon">🤸</span>
           <span class="class-name">Calisthenics</span>
           <span class="class-desc">Bodyweight mastery</span>
         </button>
-        <button class="class-btn" id="cls-strength" onclick="setTrainingClass('strength')">
+        <button class="class-btn" id="cls-strength" onclick="toggleClass('strength')">
           <span class="class-icon">🏋️</span>
           <span class="class-name">Strength</span>
           <span class="class-desc">Barbell &amp; weights</span>
         </button>
-        <button class="class-btn" id="cls-cardio" onclick="setTrainingClass('cardio')">
+        <button class="class-btn" id="cls-cardio" onclick="toggleClass('cardio')">
           <span class="class-icon">🏃</span>
           <span class="class-name">Cardio</span>
           <span class="class-desc">Endurance &amp; speed</span>
         </button>
       </div>
-      <div style="font-size:.72rem;color:var(--muted);margin-top:5px">Changes apply to tomorrow's quest.</div>
-      <div id="rm-promo-section" style="display:none">
-        <div class="modal-section">Rank Promotion</div>
-        <div id="rm-promo-status" style="font-size:.8rem;color:var(--muted);margin-bottom:8px"></div>
-        <button class="btn btn-ghost btn-full" id="rm-start-promo-btn" onclick="startPromoFromSettings()" style="color:var(--accent3);border-color:var(--accent3);justify-content:flex-start;gap:8px">⚔️ Begin Promotion Trial Tomorrow</button>
-        <button class="btn btn-ghost btn-full" id="rm-cancel-promo-btn" onclick="cancelPromotion()" style="margin-top:6px;justify-content:flex-start;gap:8px">✕ Cancel Promotion Trial</button>
-      </div>
+      <div style="font-size:.72rem;color:var(--muted);margin-top:5px">Each class has its own rank. Changes apply tomorrow.</div>
       <div class="modal-section">Appearance</div>
       <button class="btn btn-ghost btn-full" onclick="toggleTheme()" style="justify-content:flex-start;gap:8px">
         <span id="rm-theme-icon"></span><span id="rm-theme-label">Switch to Dark Mode</span>
@@ -545,30 +504,6 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
     </div>
   </div>
 
-  <!-- PROMOTION MODAL -->
-  <div id="promotion-modal">
-    <div class="promotion-box">
-      <div class="promo-header">⚔️ Rank Promotion Available</div>
-      <div class="promo-rank-compare">
-        <div class="promo-rank">
-          <span class="promo-rank-icon" id="promo-from-icon"></span>
-          <span class="promo-rank-name" id="promo-from-name"></span>
-        </div>
-        <span class="promo-arrow">→</span>
-        <div class="promo-rank">
-          <span class="promo-rank-icon" id="promo-to-icon"></span>
-          <span class="promo-rank-name" id="promo-to-name"></span>
-        </div>
-      </div>
-      <div class="promo-warning">You have reached the threshold for advancement. Tomorrow you will face a brutal Promotion Trial. Complete every exercise to earn your rank.</div>
-      <div class="promo-trial-preview" id="promo-preview-text"></div>
-      <div style="display:flex;gap:10px;margin-top:16px">
-        <button class="btn btn-ghost" style="flex:1" onclick="dismissPromotionModal()">Not Ready</button>
-        <button class="btn" style="flex:1.5;background:linear-gradient(135deg,#92400e,#d97706);color:#fff;font-weight:800;letter-spacing:.03em" onclick="initiatePromotion()">Accept Challenge →</button>
-      </div>
-      <div style="font-size:.68rem;color:rgba(255,255,255,.35);margin-top:10px">You can start the challenge later from Settings.</div>
-    </div>
-  </div>
 
 </div><!-- /app -->
 
@@ -583,10 +518,9 @@ const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
 let user = null;
 let addType = 'task';
 let editing = { habit:null };
-let totalXP = 0;
 let _obHabits = [];
+let _obClasses = ['calisthenics'];
 let _rmHabits = [];
-let _mascot = { habitDone:0, habitTotal:0 };
 let _confettiFired = false;
 let _jumpFired = false;
 
@@ -968,6 +902,31 @@ const PROMOTION_TRIALS = {
   ],
 };
 
+// ── Class metadata ──────────────────────────────────────────────────────────
+const CLASS_META = {
+  calisthenics: {label:'Calisthenics', icon:'🤸', color:'#4ade80', bg:'rgba(74,222,128,.15)', desc:'Bodyweight mastery'},
+  strength:     {label:'Strength',     icon:'🏋️', color:'#f97316', bg:'rgba(249,115,22,.15)',  desc:'Barbell & weights'},
+  cardio:       {label:'Cardio',       icon:'🏃', color:'#60a5fa', bg:'rgba(96,165,250,.15)',  desc:'Endurance & speed'},
+};
+const ALL_CLASSES = ['calisthenics','strength','cardio'];
+
+function getActiveClasses(){
+  const ac=user?.user_metadata?.active_classes;
+  if(Array.isArray(ac)&&ac.length>0)return ac;
+  // Legacy migration: if training_class set, use it
+  const legacy=user?.user_metadata?.training_class;
+  return [legacy||'calisthenics'];
+}
+
+function getClassXP(cls){return user?.user_metadata?.[`xp_${cls}`]??0}
+function getClassRankTier(cls){
+  const stored=user?.user_metadata?.[`rank_${cls}`];
+  if(stored!=null)return stored;
+  return getTierFromLevel(getLevel(getClassXP(cls)));
+}
+function getTotalXP(){return ALL_CLASSES.reduce((s,c)=>s+getClassXP(c),0)}
+function getHighestLevel(){return Math.max(...getActiveClasses().map(c=>getLevel(getClassXP(c))))||1}
+
 const QUEST_BONUS_XP = 250;
 const QUEST_PENALTY_XP = 200;
 
@@ -989,9 +948,7 @@ const RANK_THRESHOLDS=[6,11,21,36,51,76,100]; // level required to unlock next t
 function getTierFromLevel(l){if(l>=100)return 7;if(l>=76)return 6;if(l>=51)return 5;if(l>=36)return 4;if(l>=21)return 3;if(l>=11)return 2;if(l>=6)return 1;return 0}
 function getRankInfoByTier(tier){return RANK_DATA[Math.min(Math.max(0,tier),7)]}
 function getRankInfo(l){return getRankInfoByTier(getTierFromLevel(l))}
-function getPlayerRankTier(){const prt=user?.user_metadata?.player_rank_tier;return prt!=null?prt:getTierFromLevel(getLevel(totalXP))}
-function getEffectiveRankInfo(){return getRankInfoByTier(getPlayerRankTier())}
-function getTrainingClass(){return user?.user_metadata?.training_class||'calisthenics'}
+function getTrainingClass(){return getActiveClasses()[0]||'calisthenics'} // legacy compat
 function getClassPool(cls){if(cls==='strength')return STRENGTH_EXERCISE_POOL;if(cls==='cardio')return CARDIO_EXERCISE_POOL;return EXERCISE_POOL}
 
 function getStreakMultiplier(streak){
@@ -1002,29 +959,29 @@ function getStreakMultiplier(streak){
   return 1.0;
 }
 
-async function awardXP(amount,reason,extraMeta){
+async function awardClassXP(cls,amount,reason,extraMeta){
   if(!user||!amount)return;
-  const prev=totalXP;
-  totalXP=Math.max(0,totalXP+amount);
+  const prev=getClassXP(cls);
+  const newXP=Math.max(0,prev+amount);
   const prevLvl=getLevel(prev);
-  const newLvl=getLevel(totalXP);
-  const meta={...user.user_metadata,total_xp:totalXP,...(extraMeta||{})};
+  const newLvl=getLevel(newXP);
+  const meta={...user.user_metadata,[`xp_${cls}`]:newXP,...(extraMeta||{})};
+  meta.total_xp=ALL_CLASSES.reduce((s,c)=>s+(c===cls?newXP:(meta[`xp_${c}`]??getClassXP(c))),0);
   const{data:updData}=await db.auth.updateUser({data:meta});
   if(updData?.user)user=updData.user;
   updateXPDisplay();
-  showXPPopup(amount);
-  if(newLvl>prevLvl){setTimeout(()=>showLevelChangeModal(newLvl,true),700);if(amount>0)setTimeout(()=>checkRankPromotionAvailable(),1400)}
+  showXPPopup(amount,CLASS_META[cls]?.color);
+  if(newLvl>prevLvl)setTimeout(()=>showLevelChangeModal(newLvl,true),700);
   if(newLvl<prevLvl)setTimeout(()=>showLevelChangeModal(newLvl,false),700);
   upsertProfile();
 }
 
-function showXPPopup(amount){
+function showXPPopup(amount,color){
   const el=document.createElement('div');
   el.className='xp-popup';
+  el.style.color=color||'#4ade80';
   el.textContent=(amount>=0?'+':'')+amount+' XP';
-  if(amount<0){el.style.color='#dc2626';el.style.textShadow='0 0 20px rgba(220,38,38,.6)'}
-  const badge=document.getElementById('level-badge');
-  if(badge){const r=badge.getBoundingClientRect();el.style.position='fixed';el.style.top=(r.bottom+12)+'px';el.style.left=(r.left+r.width/2)+'px';el.style.transform='translateX(-50%)'}
+  el.style.left='50%';el.style.top='40%';el.style.transform='translateX(-50%)';
   document.body.appendChild(el);
   setTimeout(()=>el.remove(),1600);
 }
@@ -1043,43 +1000,62 @@ function showLevelChangeModal(newLevel,isUp){
 }
 
 function updateXPDisplay(){
-  const prog=getLevelProgress(totalXP);
-  const rank=getEffectiveRankInfo();
-  const badge=document.getElementById('level-badge');
-  if(badge){badge.textContent=`Lv.${prog.level}`;badge.style.background=rank.bg;badge.style.color=rank.color;badge.style.borderColor=rank.color}
-  // Player stats card
-  const rankEl=document.getElementById('ps-rank-name');
-  const iconEl=document.getElementById('ps-rank-icon');
-  const levelEl=document.getElementById('ps-level');
-  const barEl=document.getElementById('ps-bar-fill');
-  const xpEl=document.getElementById('ps-xp-label');
-  const nextEl=document.getElementById('ps-next-rank');
+  if(!user)return;
+  const streak=getQuestStreak();
   const streakEl=document.getElementById('ps-streak-num');
   const multEl=document.getElementById('ps-mult');
-  if(rankEl)rankEl.textContent=rank.rank;
-  if(rankEl)rankEl.style.color=rank.color;
-  if(iconEl)iconEl.textContent=rank.icon;
-  if(levelEl)levelEl.textContent=`Level ${prog.level} · ${totalXP.toLocaleString()} XP`;
-  if(barEl)barEl.style.width=prog.pct+'%';
-  if(xpEl)xpEl.textContent=`${prog.current.toLocaleString()} / ${prog.needed.toLocaleString()} XP to next level`;
-  // Find next rank
-  const nextRankLevels={6:'D-Rank',11:'C-Rank',21:'B-Rank',36:'A-Rank',51:'S-Rank',76:'National',100:'Shadow Monarch'};
-  const nextRankEntry=Object.entries(nextRankLevels).find(([l])=>prog.level<+l);
-  if(nextEl)nextEl.textContent=nextRankEntry?`→ ${nextRankEntry[1]} at Lv.${nextRankEntry[0]}`:'MAX RANK';
-  const streak=getQuestStreak();
-  if(streakEl)streakEl.textContent=streak;
   const multi=getStreakMultiplier(streak);
+  if(streakEl)streakEl.textContent=streak;
   if(multEl)multEl.textContent=multi>1?`${multi}× XP bonus`:'';
+  // Level badge — show highest level
+  const highestLevel=getHighestLevel();
+  const levelEl=document.getElementById('level-badge');
+  if(levelEl)levelEl.textContent=`Lv.${highestLevel}`;
+  // Per-class stat rows
+  const container=document.getElementById('class-stats-rows');
+  if(!container)return;
+  const activeClasses=getActiveClasses();
+  container.innerHTML=activeClasses.map(cls=>{
+    const meta=CLASS_META[cls]||CLASS_META.calisthenics;
+    const xp=getClassXP(cls);
+    const prog=getLevelProgress(xp);
+    const tier=getClassRankTier(cls);
+    const rankInfo=getRankInfoByTier(tier);
+    const nextRankLevels={6:'D-Rank',11:'C-Rank',21:'B-Rank',36:'A-Rank',51:'S-Rank',76:'National',100:'Shadow Monarch'};
+    const nextRankEntry=Object.entries(nextRankLevels).find(([l])=>prog.level<+l);
+    const nextRankText=nextRankEntry?`→ ${nextRankEntry[1]} at Lv.${nextRankEntry[0]}`:'MAX';
+    return`<div class="class-stat-row" style="margin-bottom:14px">
+      <div class="csr-header">
+        <span style="color:${meta.color};font-weight:700;font-size:.88rem">${meta.icon} ${meta.label}</span>
+        <span style="color:${rankInfo.color};font-size:.78rem;font-weight:700">${rankInfo.icon} ${rankInfo.rank} · Lv.${prog.level}</span>
+      </div>
+      <div class="ps-bar-bg" style="margin:6px 0 3px"><div class="ps-bar-fill" style="width:${prog.pct}%;background:${meta.color};transition:width .4s ease"></div></div>
+      <div class="ps-bar-labels">
+        <span style="font-size:.7rem;color:var(--muted)">${prog.current.toLocaleString()} / ${prog.needed.toLocaleString()} XP</span>
+        <span style="font-size:.7rem;color:var(--muted)">${nextRankText}</span>
+      </div>
+    </div>`;
+  }).join('');
+  // Also update level badge color based on highest-level class tier
+  if(levelEl){
+    const topCls=activeClasses.reduce((best,c)=>getClassXP(c)>getClassXP(best)?c:best,activeClasses[0]);
+    const topRank=getRankInfoByTier(getClassRankTier(topCls));
+    levelEl.style.cssText=`background:${topRank.bg};color:${topRank.color};border-color:${topRank.color}44`;
+  }
 }
 
 // ── Leaderboard ─────────────────────────────────────────────────────────────
 async function upsertProfile(){
   if(!user)return;
-  const displayName=user.user_metadata?.display_name||user.email?.split('@')[0]||'Hunter';
+  const displayName=user.user_metadata?.display_name||user.email?.split('@')[0]||'Athlete';
   try{
     await db.from('profiles').upsert({
       user_id:user.id,display_name:displayName,
-      total_xp:totalXP,streak:getQuestStreak(),
+      total_xp:getTotalXP(),streak:getQuestStreak(),
+      xp_calisthenics:getClassXP('calisthenics'),
+      xp_strength:getClassXP('strength'),
+      xp_cardio:getClassXP('cardio'),
+      active_classes:getActiveClasses(),
       updated_at:new Date().toISOString()
     },{onConflict:'user_id'});
   }catch(e){}
@@ -1089,24 +1065,28 @@ async function renderLeaderboard(){
   const el=document.getElementById('leaderboard-list');
   if(!el)return;
   const{data,error}=await db.from('profiles')
-    .select('user_id,display_name,total_xp,streak')
+    .select('user_id,display_name,total_xp,streak,xp_calisthenics,xp_strength,xp_cardio,active_classes')
     .order('total_xp',{ascending:false})
     .limit(25);
-  if(error){
-    el.innerHTML=`<div class="lb-setup">Leaderboard unavailable — check your Supabase <strong>profiles</strong> table setup.</div>`;
-    return;
-  }
-  if(!data?.length){el.innerHTML='<div class="empty" style="padding:16px 0">No hunters yet — be the first</div>';return}
+  if(error){el.innerHTML=`<div class="lb-setup">Leaderboard unavailable.</div>`;return}
+  if(!data?.length){el.innerHTML='<div class="empty" style="padding:16px 0">No athletes yet — be the first</div>';return}
   el.innerHTML=data.map((p,i)=>{
     const isMe=p.user_id===user?.id;
-    const level=getLevel(p.total_xp||0);
-    const rank=getRankInfo(level);
     const medal=i===0?'🥇':i===1?'🥈':i===2?'🥉':`<span style="font-size:.82rem;color:var(--muted)">#${i+1}</span>`;
+    const activeClasses=Array.isArray(p.active_classes)&&p.active_classes.length?p.active_classes:['calisthenics'];
+    const classLines=activeClasses.map(cls=>{
+      const xp=p[`xp_${cls}`]||0;
+      const level=getLevel(xp);
+      const tier=getTierFromLevel(level);
+      const rankInfo=getRankInfoByTier(tier);
+      const cm=CLASS_META[cls]||CLASS_META.calisthenics;
+      return`<span style="color:${cm.color};font-size:.68rem;font-weight:700;margin-right:8px">${cm.icon} ${rankInfo.rank} Lv.${level}</span>`;
+    }).join('');
     return`<div class="lb-row${isMe?' lb-me':''}">
       <div class="lb-rank">${medal}</div>
       <div class="lb-info">
         <span class="lb-name">${esc(p.display_name||'Anonymous')}${isMe?'&nbsp;<span style="font-size:.6rem;color:var(--accent);font-weight:800;vertical-align:middle">YOU</span>':''}</span>
-        <span class="lb-level" style="color:${rank.color}">${rank.icon} ${rank.rank} · Lv.${level}</span>
+        <span class="lb-level" style="margin-top:3px;display:flex;flex-wrap:wrap;gap:2px">${classLines}</span>
       </div>
       <div class="lb-right">
         <span class="lb-xp">${(p.total_xp||0).toLocaleString()} XP</span>
@@ -1117,8 +1097,8 @@ async function renderLeaderboard(){
 }
 
 // ── Quest system ─────────────────────────────────────────────────────────────
-function getQuestTierIdx(level){
-  return Math.min(getPlayerRankTier(),4); // exercise pools have 5 tiers max (0-4)
+function getQuestTierIdx(cls){
+  return Math.min(getClassRankTier(cls),4); // exercise pools have 5 tiers max (0-4)
 }
 
 function getQuestCount(date,level){
@@ -1129,20 +1109,32 @@ function getQuestCount(date,level){
   return Math.max(3,Math.min(6,base+variation));
 }
 
-function selectDailyExercises(date,level){
-  const tierIdx=getQuestTierIdx(level);
-  const count=getQuestCount(date,level);
+function selectDailyExercises(date){
+  const activeClasses=getActiveClasses();
+  const totalCount=getQuestCount(date,getHighestLevel());
   let seed=date.replace(/-/g,'').split('').reduce((a,c,i)=>a+c.charCodeAt(0)*(i+1),0);
   const lcg=()=>{seed=(seed*1664525+1013904223)&0x7fffffff;return seed/0x7fffffff};
-  const cls=getTrainingClass();
-  const pool=[...getClassPool(cls)].filter(ex=>(ex.minTier||0)<=tierIdx);
-  for(let i=pool.length-1;i>0;i--){const j=Math.floor(lcg()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
-  return pool.slice(0,count).map(ex=>({key:ex.key,label:ex.label,target:`${ex.tiers[tierIdx]}${ex.unit?' '+ex.unit:''}`.trim(),tip:ex.tip,done:false}));
+  // Distribute exercises evenly across active classes
+  const perClass=Math.ceil(totalCount/activeClasses.length);
+  const result=[];
+  for(const cls of activeClasses){
+    const tierIdx=Math.min(getClassRankTier(cls),4);
+    const pool=[...getClassPool(cls)].filter(ex=>(ex.minTier||0)<=tierIdx);
+    for(let i=pool.length-1;i>0;i--){const j=Math.floor(lcg()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
+    const take=activeClasses.length===1?totalCount:perClass;
+    pool.slice(0,take).forEach(ex=>result.push({
+      key:ex.key,label:ex.label,
+      target:`${ex.tiers[tierIdx]}${ex.unit?' '+ex.unit:''}`.trim(),
+      tip:ex.tip,done:false,cls
+    }));
+  }
+  // Shuffle the combined list so classes aren't all grouped
+  for(let i=result.length-1;i>0;i--){const j=Math.floor(lcg()*(i+1));[result[i],result[j]]=[result[j],result[i]]}
+  return result.slice(0,Math.max(totalCount,3));
 }
 
 function makeNewQuestState(date){
-  const level=getLevel(totalXP);
-  return{date,exercises:selectDailyExercises(date,level),bonus_awarded:false};
+  return{date,exercises:selectDailyExercises(date),bonus_awarded:false};
 }
 
 function getCurrentQuestState(){
@@ -1162,15 +1154,6 @@ async function checkDailyQuestPenalty(){
   if(!user)return;
   const today=todayKey();
   const state=user.user_metadata?.quest_state;
-  const promoPendingDate=user.user_metadata?.promotion_pending_date;
-  // Check if promotion trial is due today or overdue
-  if(promoPendingDate&&promoPendingDate<=today){
-    if(!state||!state.is_promotion_trial||state.date!==today){
-      await makePromotionTrialState(today);
-      await refreshUser();
-    }
-    return; // Promotion trial active — no regular quest
-  }
   if(!state){
     await db.auth.updateUser({data:{...user.user_metadata,quest_state:makeNewQuestState(today)}});
     await refreshUser();
@@ -1182,19 +1165,20 @@ async function checkDailyQuestPenalty(){
     await refreshUser();
     return;
   }
-  if(state.is_promotion_trial){
-    // Incomplete promotion trial from a past day — reschedule for today
-    await makePromotionTrialState(today);
-    await refreshUser();
-    return;
-  }
   // Missed — calculate how many days
   const d1=new Date(state.date+'T12:00:00');
   const d2=new Date(today+'T12:00:00');
   const daysMissed=Math.max(1,Math.round((d2-d1)/86400000));
   const penalty=Math.min(600,QUEST_PENALTY_XP+Math.max(0,daysMissed-1)*125);
   const prevStreak=getQuestStreak();
-  await awardXP(-penalty,'Quest Failed',{quest_state:makeNewQuestState(today),quest_streak:0});
+  // Deduct from all active classes
+  const meta={...user.user_metadata,quest_state:makeNewQuestState(today),quest_streak:0};
+  await db.auth.updateUser({data:meta});
+  await refreshUser();
+  const activeClasses=getActiveClasses();
+  for(const cls of activeClasses){
+    await awardClassXP(cls,-Math.round(penalty/activeClasses.length),'Quest Failed');
+  }
   showPenaltyModal(prevStreak,daysMissed,penalty);
 }
 
@@ -1206,18 +1190,21 @@ async function toggleQuestItem(idx){
   const next={...cur,exercises:exs};
   if(questAllDone(next)&&!next.bonus_awarded){
     next.bonus_awarded=true;
-    if(next.is_promotion_trial){
-      const toTier=next.promotion_to_tier??((user.user_metadata?.player_rank_tier??0)+1);
-      const fromTier=next.promotion_from_tier??0;
-      const xpReward=300+fromTier*350;
-      await awardXP(xpReward,'Rank Promotion',{quest_state:next,quest_streak:getQuestStreak()+1,player_rank_tier:toTier,promotion_pending_date:null,promotion_available:false,promotion_from_tier:null,promotion_to_tier:null});
-      setTimeout(()=>showRankPromotionComplete(fromTier,toTier),800);
-    }else{
-      const currentStreak=getQuestStreak();
-      const newStreak=currentStreak+1;
-      const multi=getStreakMultiplier(newStreak);
+    const currentStreak=getQuestStreak();
+    const newStreak=currentStreak+1;
+    const multi=getStreakMultiplier(newStreak);
+    // Find which classes have exercises in this quest
+    const classesInQuest=[...new Set(next.exercises.map(e=>e.cls).filter(Boolean))];
+    // If no class tags (legacy), use active classes
+    const toReward=classesInQuest.length>0?classesInQuest:getActiveClasses();
+    // Save quest state and streak first
+    const baseMeta={...user.user_metadata,quest_state:next,quest_streak:newStreak};
+    await db.auth.updateUser({data:baseMeta});
+    if((await db.auth.getUser()).data?.user)user=(await db.auth.getUser()).data.user;
+    // Award XP to each class
+    for(const cls of toReward){
       const xpReward=Math.round(QUEST_BONUS_XP*multi);
-      await awardXP(xpReward,'Daily Quest Complete',{quest_state:next,quest_streak:newStreak});
+      await awardClassXP(cls,xpReward,'Daily Quest Complete');
     }
   }else{
     const meta={...user.user_metadata,quest_state:next};
@@ -1231,56 +1218,40 @@ function renderDailyQuest(){
   const card=document.getElementById('quest-main');
   if(!card)return;
   const state=getCurrentQuestState();
-  const isPromo=!!state?.is_promotion_trial;
   const allDone=questAllDone(state);
   const streak=getQuestStreak();
   const multi=getStreakMultiplier(streak);
   const items=(state.exercises||[]).map((e,i)=>({idx:i,...e}));
-  const itemsHTML=items.map(it=>`
+  const activeClassCount=getActiveClasses().length;
+  const itemsHTML=items.map(it=>{
+    const cm=CLASS_META[it.cls];
+    const clsBadge=cm&&activeClassCount>1?`<span style="font-size:.6rem;font-weight:800;color:${cm.color};letter-spacing:.06em;margin-right:4px;text-transform:uppercase">${cm.icon}</span>`:'';
+    return`
     <div class="quest-item${it.done?' done':''}" onclick="toggleQuestItem(${it.idx})">
       <span class="quest-check${it.done?' done':''}">${it.done?icon(IC.check,14):''}</span>
       <div class="quest-item-info">
-        <span class="quest-item-name">${esc(it.label)}</span>
+        <span class="quest-item-name">${clsBadge}${esc(it.label)}</span>
         <span class="quest-item-tip">${esc(it.tip||'')}</span>
       </div>
-      <span class="quest-item-target" style="${isPromo?'color:#f59e0b':''}">${esc(it.target)}</span>
-    </div>`).join('');
-  if(isPromo){
-    card.classList.add('trial-card');
-    const toTier=state.promotion_to_tier??1;
-    const toRank=getRankInfoByTier(toTier);
-    const remaining=items.filter(it=>!it.done).length;
-    const xpReward=300+(state.promotion_from_tier||0)*350;
-    const statusHTML=allDone
-      ?`<span class="quest-complete">✓ TRIAL COMPLETE · RANK ADVANCEMENT EARNED</span>`
-      :`<span class="quest-pending">${remaining} exercise${remaining!==1?'s':''} remaining · Complete all to advance rank</span>`;
-    card.innerHTML=`
-      <div class="quest-header">
-        <span class="trial-label">⚔️ RANK PROMOTION TRIAL</span>
-        <span style="font-size:.78rem;font-weight:900;color:${toRank.color}">${toRank.icon} ${toRank.rank}</span>
-      </div>
-      <div class="trial-rank-target">${toRank.rank} · +${xpReward} XP on completion</div>
-      <div class="quest-message" style="color:rgba(255,200,100,.7)">This is the advancement trial. Complete every exercise to earn ${toRank.rank}. There are no second chances today — only results.</div>
-      <div class="quest-items">${itemsHTML}</div>
-      <div class="quest-status">${statusHTML}</div>`;
-  }else{
-    card.classList.remove('trial-card');
-    const streakHTML=streak>=1?`<span class="quest-streak-badge">🔥 ${streak}-day streak</span>`:'';
-    const multiHTML=multi>1?`<span class="multiplier-badge">${multi}x XP</span>`:'';
-    const remaining=items.filter(it=>!it.done).length;
-    const bonusXP=Math.round(QUEST_BONUS_XP*multi);
-    const statusHTML=allDone
-      ?`<span class="quest-complete">✓ QUEST COMPLETE · +${bonusXP} XP EARNED</span>`
-      :`<span class="quest-pending">${remaining} exercise${remaining!==1?'s':''} remaining · failure costs −${QUEST_PENALTY_XP} XP</span>`;
-    card.innerHTML=`
-      <div class="quest-header">
-        <span class="quest-system-label">⚡ DAILY QUEST</span>
-        <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">${streakHTML}${multiHTML}</div>
-      </div>
-      <div class="quest-message">The system has assigned today's mandatory training. Complete every exercise to earn XP${multi>1?' with your '+multi+'x streak bonus':''} and extend your streak.</div>
-      <div class="quest-items">${itemsHTML}</div>
-      <div class="quest-status">${statusHTML}</div>`;
-  }
+      <span class="quest-item-target">${esc(it.target)}</span>
+    </div>`;
+  }).join('');
+  card.classList.remove('trial-card');
+  const streakHTML=streak>=1?`<span class="quest-streak-badge">🔥 ${streak}-day streak</span>`:'';
+  const multiHTML=multi>1?`<span class="multiplier-badge">${multi}x XP</span>`:'';
+  const remaining=items.filter(it=>!it.done).length;
+  const bonusXP=Math.round(QUEST_BONUS_XP*multi);
+  const statusHTML=allDone
+    ?`<span class="quest-complete">✓ QUEST COMPLETE · +${bonusXP} XP EARNED</span>`
+    :`<span class="quest-pending">${remaining} exercise${remaining!==1?'s':''} remaining · failure costs −${QUEST_PENALTY_XP} XP</span>`;
+  card.innerHTML=`
+    <div class="quest-header">
+      <span class="quest-system-label">⚡ DAILY QUEST</span>
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">${streakHTML}${multiHTML}</div>
+    </div>
+    <div class="quest-message">The system has assigned today's mandatory training. Complete every exercise to earn XP${multi>1?' with your '+multi+'x streak bonus':''} and extend your streak.</div>
+    <div class="quest-items">${itemsHTML}</div>
+    <div class="quest-status">${statusHTML}</div>`;
   updateSystemStatus();
 }
 
@@ -1300,96 +1271,37 @@ function updateSystemStatus(){
 }
 
 // ── Training class ───────────────────────────────────────────────────────────
-async function setTrainingClass(cls){
+async function toggleClass(cls){
   if(!user)return;
-  await db.auth.updateUser({data:{...user.user_metadata,training_class:cls}});
+  const current=getActiveClasses();
+  let updated;
+  if(current.includes(cls)){
+    if(current.length===1){toast('Keep at least one class active','error');return}
+    updated=current.filter(c=>c!==cls);
+  }else{
+    updated=[...current,cls];
+  }
+  await db.auth.updateUser({data:{...user.user_metadata,active_classes:updated}});
   await refreshUser();
-  ['calisthenics','strength','cardio'].forEach(c=>{const b=document.getElementById('cls-'+c);if(b)b.classList.toggle('active',c===cls)});
-  toast(cls.charAt(0).toUpperCase()+cls.slice(1)+' class selected','ok');
+  updateClassButtons();
+  toast('Classes updated','ok');
 }
 
-// ── Rank promotion system ─────────────────────────────────────────────────────
-function checkRankPromotionAvailable(){
-  if(!user)return;
-  const prt=getPlayerRankTier();
-  if(prt>=7)return;
-  const level=getLevel(totalXP);
-  if(level<RANK_THRESHOLDS[prt])return;
-  const m=user.user_metadata;
-  if(m.promotion_available||m.promotion_pending_date)return;
-  db.auth.updateUser({data:{...m,promotion_available:true}}).then(({data})=>{if(data?.user)user=data.user});
-  setTimeout(()=>showPromotionModal(prt,prt+1),1200);
-}
-
-function showPromotionModal(fromTier,toTier){
-  const from=getRankInfoByTier(fromTier);
-  const to=getRankInfoByTier(toTier);
-  const m=document.getElementById('promotion-modal');if(!m)return;
-  const el=(id,val,attr='textContent')=>{const e=document.getElementById(id);if(e)e[attr]=val};
-  el('promo-from-icon',from.icon);el('promo-from-name',from.rank);
-  el('promo-to-icon',to.icon);el('promo-to-name',to.rank);
-  const cls=getTrainingClass();
-  const preview=PROMOTION_TRIALS[`${fromTier}_${cls}`]||PROMOTION_TRIALS[`${fromTier}_calisthenics`]||[];
-  const previewEl=document.getElementById('promo-preview-text');
-  if(previewEl)previewEl.textContent=`Trial workout: ${preview.slice(0,3).map(e=>e.label+' ('+e.target+')').join(' · ')}${preview.length>3?' + more':''}.`;
-  m.classList.add('open');
-}
-
-function dismissPromotionModal(){document.getElementById('promotion-modal')?.classList.remove('open')}
-
-async function initiatePromotion(){
-  if(!user)return;
-  const fromTier=getPlayerRankTier();
-  const toTier=fromTier+1;
-  const tomorrow=offsetKey(1);
-  await db.auth.updateUser({data:{...user.user_metadata,promotion_available:false,promotion_pending_date:tomorrow,promotion_from_tier:fromTier,promotion_to_tier:toTier}});
-  await refreshUser();
-  document.getElementById('promotion-modal')?.classList.remove('open');
-  toast('Promotion Trial scheduled for tomorrow. Prepare yourself.','ok');
-}
-
-async function startPromoFromSettings(){
-  if(!user)return;
-  const fromTier=getPlayerRankTier();
-  const toTier=fromTier+1;
-  const tomorrow=offsetKey(1);
-  await db.auth.updateUser({data:{...user.user_metadata,promotion_available:false,promotion_pending_date:tomorrow,promotion_from_tier:fromTier,promotion_to_tier:toTier}});
-  await refreshUser();
-  hideResetModal();
-  toast('Promotion Trial set for tomorrow.','ok');
-}
-
-async function cancelPromotion(){
-  if(!user)return;
-  await db.auth.updateUser({data:{...user.user_metadata,promotion_available:false,promotion_pending_date:null,promotion_from_tier:null,promotion_to_tier:null}});
-  await refreshUser();
-  toast('Promotion trial cancelled.','ok');
-  hideResetModal();
-  await renderAll();
-}
-
-async function makePromotionTrialState(date){
-  if(!user)return;
-  const fromTier=user.user_metadata.promotion_from_tier??getPlayerRankTier();
-  const toTier=user.user_metadata.promotion_to_tier??(fromTier+1);
-  const cls=getTrainingClass();
-  const key=`${fromTier}_${cls}`;
-  const exercises=(PROMOTION_TRIALS[key]||PROMOTION_TRIALS[`${fromTier}_calisthenics`]||[]).map(e=>({...e,done:false}));
-  const trialState={date:date||todayKey(),exercises,bonus_awarded:false,is_promotion_trial:true,promotion_from_tier:fromTier,promotion_to_tier:toTier};
-  await db.auth.updateUser({data:{...user.user_metadata,quest_state:trialState,promotion_pending_date:date||todayKey()}});
-}
-
-function showRankPromotionComplete(fromTier,toTier){
-  const toRank=getRankInfoByTier(toTier);
-  const titleEl=document.querySelector('#levelup-modal .levelup-title');
-  document.getElementById('lu-level').textContent=toRank.rank;
-  document.getElementById('lu-rank').textContent='⚔️ RANK ADVANCEMENT';
-  document.getElementById('lu-rank').style.color=toRank.color;
-  document.getElementById('lu-icon').textContent='🏆';
-  document.getElementById('lu-msg').textContent=`You have proven yourself worthy. Welcome to ${toRank.rank}. Your training escalates from here. There is no going back.`;
-  if(titleEl)titleEl.textContent='PROMOTION COMPLETE';
-  document.getElementById('levelup-modal').classList.add('open');
-  popConfetti();
+function updateClassButtons(){
+  const active=getActiveClasses();
+  ALL_CLASSES.forEach(cls=>{
+    const b=document.getElementById('cls-'+cls);
+    if(!b)return;
+    b.classList.toggle('active',active.includes(cls));
+    const cm=CLASS_META[cls];
+    if(active.includes(cls)){
+      b.style.borderColor=cm.color;
+      b.style.background=cm.bg;
+    }else{
+      b.style.borderColor='';
+      b.style.background='';
+    }
+  });
 }
 
 function switchView(v){
@@ -1401,11 +1313,11 @@ function switchView(v){
   if(profile)profile.style.display=v==='profile'?'':'none';
   if(btnT)btnT.classList.toggle('active',v==='today');
   if(btnP)btnP.classList.toggle('active',v==='profile');
-  localStorage.setItem('froggy-view',v);
+  localStorage.setItem('rise-view',v);
 }
 
 // ── Theme ───────────────────────────────────────────────────────────────────
-function setTheme(dark){document.documentElement.setAttribute('data-theme',dark?'dark':'light');localStorage.setItem('froggy-theme',dark?'dark':'light');updateThemeButton()}
+function setTheme(dark){document.documentElement.setAttribute('data-theme',dark?'dark':'light');localStorage.setItem('rise-theme',dark?'dark':'light');updateThemeButton()}
 function toggleTheme(){setTheme(document.documentElement.getAttribute('data-theme')!=='dark')}
 function updateThemeButton(){
   const dark=document.documentElement.getAttribute('data-theme')==='dark';
@@ -1414,67 +1326,23 @@ function updateThemeButton(){
   if(lbl)lbl.textContent=dark?'Switch to Light Mode':'Switch to Dark Mode';
 }
 
-// ── Mascot ──────────────────────────────────────────────────────────────────
-function mascotSVG(score,size){
-  size=size||72;const s=score;
-  const body='#66BB6A';const outline='#2D5A1A';const bl=s>=65?0.88:s>=40?0.5:0;
-  const mouth=s>=90?'M13,24 Q20,30 27,24':s>=65?'M14,24 Q20,29 26,24':s>=40?'M15,24.5 Q20,28 25,24.5':s>=20?'M16,25.5 Q20,26.5 24,25.5':s>=8?'M14,27 Q20,22.5 26,27':'M13,28 Q20,21 27,28';
-  const tears=s<8?'<ellipse cx="10" cy="21" rx="1.5" ry="2.5" fill="#93c5fd" opacity=".9"/><ellipse cx="28" cy="21" rx="1.5" ry="2.5" fill="#93c5fd" opacity=".9"/>':'';
-  const stars=s>=90?'<path d="M3,8 L4,5 L5,8 L8,9 L5,10 L4,13 L3,10 L0,9Z" fill="#FBBF24"/><path d="M35,6 L36,3 L37,6 L40,7 L37,8 L36,11 L35,8 L32,7Z" fill="#FBBF24"/>':'';
-  return'<svg width="'+size+'" height="'+size+'" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg">'
-    +'<ellipse cx="20" cy="25.5" rx="17" ry="13.5" fill="'+outline+'"/>'
-    +'<circle cx="13" cy="12.5" r="8" fill="'+outline+'"/><circle cx="27" cy="12.5" r="8" fill="'+outline+'"/>'
-    +'<ellipse cx="20" cy="25" rx="15.5" ry="12" fill="'+body+'"/>'
-    +'<circle cx="13" cy="12" r="6.8" fill="'+body+'"/><circle cx="27" cy="12" r="6.8" fill="'+body+'"/>'
-    +'<ellipse cx="20" cy="30" rx="8" ry="5.5" fill="#E8E5A0"/>'
-    +'<circle cx="7" cy="37" r="2.6" fill="#F59E0B"/><circle cx="11" cy="35.8" r="2.6" fill="#F59E0B"/><circle cx="15" cy="37" r="2.6" fill="#F59E0B"/>'
-    +'<circle cx="25" cy="37" r="2.6" fill="#F59E0B"/><circle cx="29" cy="35.8" r="2.6" fill="#F59E0B"/><circle cx="33" cy="37" r="2.6" fill="#F59E0B"/>'
-    +'<circle cx="13" cy="12" r="5.8" fill="#111"/><circle cx="27" cy="12" r="5.8" fill="#111"/>'
-    +'<circle cx="15.5" cy="9.2" r="2" fill="white"/><circle cx="29.5" cy="9.2" r="2" fill="white"/>'
-    +'<circle cx="7.5" cy="23" r="4" fill="rgba(255,140,160,'+bl+')"/><circle cx="32.5" cy="23" r="4" fill="rgba(255,140,160,'+bl+')"/>'
-    +'<circle cx="18.5" cy="19.5" r="1.1" fill="rgba(0,0,0,0.2)"/><circle cx="21.5" cy="19.5" r="1.1" fill="rgba(0,0,0,0.2)"/>'
-    +tears+stars
-    +'<path d="'+mouth+'" stroke="'+outline+'" stroke-width="1.6" fill="none" stroke-linecap="round"/>'
-    +'</svg>';
-}
-
-function updateMascot(){
-  const{habitDone,habitTotal}=_mascot;
-  const habS=habitTotal>0?(habitDone/habitTotal)*100:0;
-  const qState=user?.user_metadata?.quest_state;
-  let qDone=0,qTotal=3;
-  if(qState?.exercises){qTotal=qState.exercises.length;qDone=qState.exercises.filter(e=>e.done).length}
-  const qS=qTotal>0?(qDone/qTotal)*100:0;
-  const s=Math.round((habS+qS)/2);
-  const cls=s>=90?'mascot-celebrate':s>=55?'mascot-bounce':'mascot-idle';
-  const hdr=document.getElementById('mascot-hdr');
-  if(hdr){hdr.innerHTML=mascotSVG(s,34);hdr.className=cls}
-  if(s>=95&&habitTotal>0&&!_confettiFired){_confettiFired=true;popConfetti()}
-  if(s<90)_confettiFired=false;
-  updateSystemStatus();
-}
-
-const MASCOT_TAPS=["Ribbit! 🐸","You got this!","Stay consistent!","Every rep counts!","One day at a time.","Discipline beats motivation.","You showed up. That's everything.","Don't quit when it gets hard.","Progress > perfection.","I believe in you! 💚","The grind never stops 💪","Hydrate or diedrate 💧","Rest is part of the process.","You're stronger than yesterday.","Keep stacking those habits!","Ribbit ribbit! 🐸🐸"];
-let _tapIdx=-1;
-function tapMascot(){
-  const hdr=document.getElementById('mascot-hdr');
-  if(!hdr)return;
-  hdr.classList.remove('mascot-tap');
-  void hdr.offsetWidth;
-  hdr.classList.add('mascot-tap');
-  _tapIdx=(_tapIdx+1)%MASCOT_TAPS.length;
-  toast(MASCOT_TAPS[_tapIdx]);
-  setTimeout(()=>{hdr.classList.remove('mascot-tap');updateMascot()},600);
-}
-
-function mascotJump(){
-  const hdr=document.getElementById('mascot-hdr');
-  if(!hdr)return;
-  hdr.classList.remove('mascot-jump-once','mascot-tap');
-  void hdr.offsetWidth;
-  hdr.classList.add('mascot-jump-once');
-  popConfetti();
-  setTimeout(()=>{hdr.classList.remove('mascot-jump-once');updateMascot()},800);
+// ── Onboarding class toggle ─────────────────────────────────────────────────
+function obToggleClass(cls){
+  if(_obClasses.includes(cls)){
+    if(_obClasses.length===1){return}
+    _obClasses=_obClasses.filter(c=>c!==cls);
+  }else{
+    _obClasses=[..._obClasses,cls];
+  }
+  ALL_CLASSES.forEach(c=>{
+    const b=document.getElementById('ob-cls-'+c);
+    if(!b)return;
+    const cm=CLASS_META[c];
+    const active=_obClasses.includes(c);
+    b.classList.toggle('active',active);
+    b.style.borderColor=active?cm.color:'';
+    b.style.background=active?cm.bg:'';
+  });
 }
 
 function popConfetti(){
@@ -1553,7 +1421,7 @@ async function showApp(){
   }else{
     document.getElementById('onboard-screen').style.display='none';
     document.getElementById('app').style.display='block';
-    switchView(localStorage.getItem('froggy-view')||'today');
+    switchView(localStorage.getItem('rise-view')||'today');
     upsertProfile();
     await renderAll();
   }
@@ -1573,9 +1441,6 @@ function injectIcons(){
   const set=(id,html)=>{const el=document.getElementById(id);if(el)el.innerHTML=html};
   set('habit-plus',icon(IC.plus,16));
   set('settings-icon',icon(IC.gear,18));
-  set('ob-mascot-1',mascotSVG(60,80));
-  set('ob-mascot-2',mascotSVG(60,80));
-  updateMascot();
   updateXPDisplay();
   updateThemeButton();
 }
@@ -1625,7 +1490,7 @@ async function submitOnboarding(){
     if(data?.id)coreIds.push(data.id);
   }
   const prev=getCoreHabitIds();
-  const meta={...user.user_metadata,setup_complete:true,core_habit_ids:[...new Set([...prev,...coreIds])]};
+  const meta={...user.user_metadata,setup_complete:true,core_habit_ids:[...new Set([...prev,...coreIds])],active_classes:_obClasses};
   if(displayName)meta.display_name=displayName;
   await db.auth.updateUser({data:meta});
   await refreshUser();
@@ -1657,21 +1522,7 @@ async function showResetModal(){
   }
   document.getElementById('reset-modal').classList.add('open');
   updateNotifUI();
-  // Class buttons
-  const cls=getTrainingClass();
-  ['calisthenics','strength','cardio'].forEach(c=>{const b=document.getElementById('cls-'+c);if(b)b.classList.toggle('active',c===cls)});
-  // Promo section
-  const promoAvail=user?.user_metadata?.promotion_available;
-  const promoPending=user?.user_metadata?.promotion_pending_date;
-  const promoSection=document.getElementById('rm-promo-section');
-  if(promoSection){
-    promoSection.style.display=(promoAvail||promoPending)?'':'none';
-    const st=document.getElementById('rm-promo-status');
-    if(st){const prt=getPlayerRankTier();const toName=getRankInfoByTier(Math.min(prt+1,7)).rank;st.textContent=promoPending?`Trial scheduled: ${promoPending===todayKey()?'TODAY':promoPending}`:`Promotion to ${toName} available.`}
-    const sb=document.getElementById('rm-start-promo-btn');const cb=document.getElementById('rm-cancel-promo-btn');
-    if(sb)sb.style.display=promoAvail&&!promoPending?'':'none';
-    if(cb)cb.style.display=promoPending?'':'none';
-  }
+  updateClassButtons();
 }
 function hideResetModal(){document.getElementById('reset-modal').classList.remove('open')}
 
@@ -1703,10 +1554,8 @@ async function submitReset(){
 
 // ── Settings ──────────────────────────────────────────────────────────────────
 async function loadSettings(){
-  totalXP=user?.user_metadata?.total_xp??0;
   updateXPDisplay();
   await checkDailyQuestPenalty();
-  checkRankPromotionAvailable();
 }
 
 async function wipeAccount(){
@@ -1782,12 +1631,14 @@ async function toggleItem(id,isRecurring){
   if(didComplete){
     const isCore=isRecurring&&getCoreHabitIds().includes(id);
     const xp=isCore?50:isRecurring?25:15;
-    await awardXP(xp,isCore?'Core Task':isRecurring?'Daily Task':'Side Task');
+    const cls=getTrainingClass();
+    await awardClassXP(cls,xp,isCore?'Core Task':isRecurring?'Daily Task':'Side Task');
     toastUndo('Task done!',()=>toggleItem(id,isRecurring));
   }else{
     const isCore=isRecurring&&getCoreHabitIds().includes(id);
     const xp=isCore?50:isRecurring?25:15;
-    await awardXP(-xp,'Task unchecked');
+    const cls=getTrainingClass();
+    await awardClassXP(cls,-xp,'Task unchecked');
   }
   await renderDaily();
 }
@@ -1822,9 +1673,8 @@ async function renderDaily(){
   const habits=all.filter(h=>h.recurring);
   const tasks=all.filter(h=>!h.recurring);
 
-  // Update mascot task stats
+  // Update confetti tracking
   const doneHabitCount=habits.filter(h=>doneHabitIds.has(h.id)).length+tasks.filter(t=>t.completed).length;
-  _mascot.habitDone=doneHabitCount;_mascot.habitTotal=all.length;updateMascot();
 
   if(!all.length){document.getElementById('daily-list').innerHTML='<div class="card"><div class="empty">Add your first task above</div></div>';return}
 
@@ -1874,20 +1724,20 @@ async function renderDaily(){
   document.getElementById('daily-list').innerHTML=html;
 
   const allDoneNow=(incompleteHabits.length+incompleteTasks.length)===0&&(completedHabits.length+completedTasks.length)>0;
-  if(allDoneNow&&!_jumpFired){_jumpFired=true;mascotJump()}
+  if(allDoneNow&&!_jumpFired){_jumpFired=true;popConfetti()}
   if(!allDoneNow)_jumpFired=false;
 }
 
 // ── Notifications ─────────────────────────────────────────────────────────────
 function initNotifications(){if(!('Notification' in window))return;scheduleAppNotification()}
 function scheduleAppNotification(){
-  const time=localStorage.getItem('froggy-notif-time');const today=todayKey();
-  if(!time||localStorage.getItem('froggy-notif-last')===today)return;
+  const time=localStorage.getItem('rise-notif-time');const today=todayKey();
+  if(!time||localStorage.getItem('rise-notif-last')===today)return;
   const[h,m]=time.split(':').map(Number);const now=new Date();
   const target=new Date(now.getFullYear(),now.getMonth(),now.getDate(),h,m,0);
   const ms=target-now;
   if(ms<0||ms>24*60*60*1000)return;
-  setTimeout(()=>{if(Notification.permission==='granted'){new Notification('Froggy 🐸',{body:"Time to check in on your quest!",icon:'/icon.svg'});localStorage.setItem('froggy-notif-last',todayKey())}},ms);
+  setTimeout(()=>{if(Notification.permission==='granted'){new Notification('Rise',{body:"Time to check in on your quest!",icon:'/icon.svg'});localStorage.setItem('rise-notif-last',todayKey())}},ms);
 }
 async function requestNotifPermission(){
   if(!('Notification' in window))return toast('Notifications not supported','error');
@@ -1895,13 +1745,13 @@ async function requestNotifPermission(){
   if(result==='granted'){toast('Notifications enabled! 🔔','ok');scheduleAppNotification();updateNotifUI()}
   else toast('Permission denied','error');
 }
-function saveNotifTime(){const t=document.getElementById('rm-notif-time')?.value;if(t){localStorage.setItem('froggy-notif-time',t);toast('Reminder set!','ok');scheduleAppNotification()}}
+function saveNotifTime(){const t=document.getElementById('rm-notif-time')?.value;if(t){localStorage.setItem('rise-notif-time',t);toast('Reminder set!','ok');scheduleAppNotification()}}
 function updateNotifUI(){
   const perm=('Notification' in window)?Notification.permission:'unsupported';
   const btn=document.getElementById('rm-notif-btn');const timeRow=document.getElementById('rm-notif-time-row');
   if(btn)btn.textContent=perm==='granted'?'🔔 Notifications On':'🔔 Enable Notifications';
   if(timeRow)timeRow.style.display=perm==='granted'?'flex':'none';
-  const saved=localStorage.getItem('froggy-notif-time')||'09:00';
+  const saved=localStorage.getItem('rise-notif-time')||'09:00';
   const timeEl=document.getElementById('rm-notif-time');if(timeEl)timeEl.value=saved;
 }
 

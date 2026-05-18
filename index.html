@@ -161,23 +161,25 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
 .quest-system-label{font-size:.72rem;font-weight:900;letter-spacing:.24em;color:var(--accent);text-shadow:0 0 14px rgba(74,222,128,.5)}
 .quest-streak-badge{font-size:.74rem;font-weight:900;color:#fff;background:linear-gradient(90deg,#f97316,#dc2626);padding:4px 11px;border-radius:14px;box-shadow:0 0 16px rgba(249,115,22,.4);display:inline-flex;align-items:center;gap:3px}
 .multiplier-badge{display:inline-flex;align-items:center;gap:3px;font-size:.7rem;font-weight:900;color:#fff;background:linear-gradient(90deg,#d97706,#f59e0b);padding:3px 9px;border-radius:12px;box-shadow:0 0 12px rgba(245,158,11,.4)}
-.quest-message{font-size:.76rem;color:rgba(255,255,255,.55);margin-bottom:14px;font-style:italic;line-height:1.5;position:relative}
+.quest-message{font-size:.76rem;color:var(--muted);margin-bottom:14px;font-style:italic;line-height:1.5;position:relative}
 .quest-items{display:flex;flex-direction:column;gap:6px;position:relative}
-.quest-item{display:flex;align-items:flex-start;gap:11px;padding:11px 13px;background:rgba(255,255,255,.6);border:1px solid rgba(74,222,128,.25);border-radius:10px;cursor:pointer;transition:all .15s ease;user-select:none}
+.quest-item{display:flex;align-items:flex-start;gap:11px;padding:11px 13px;background:rgba(255,255,255,.7);border:1px solid rgba(74,222,128,.25);border-radius:10px;cursor:pointer;transition:all .15s ease;user-select:none}
 .quest-item:hover{background:rgba(74,222,128,.12);border-color:rgba(74,222,128,.5);transform:translateX(2px)}
 [data-theme="dark"] .quest-item{background:rgba(255,255,255,.035);border-color:rgba(74,222,128,.18)}
 [data-theme="dark"] .quest-item:hover{background:rgba(74,222,128,.07)}
 .quest-item.done{background:rgba(74,222,128,.07);border-color:rgba(74,222,128,.32)}
-.quest-check{width:22px;height:22px;border:2px solid rgba(255,255,255,.22);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:transparent;transition:all .18s cubic-bezier(.34,1.56,.64,1);margin-top:1px}
+.quest-check{width:22px;height:22px;border:2px solid var(--border-light);border-radius:6px;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:transparent;transition:all .18s cubic-bezier(.34,1.56,.64,1);margin-top:1px}
+[data-theme="dark"] .quest-check{border-color:rgba(255,255,255,.22)}
 .quest-check.done{background:var(--accent);border-color:var(--accent);color:#052e16}
 .quest-item-info{flex:1;min-width:0}
-.quest-item-name{font-size:.94rem;font-weight:700;color:#fff;display:block}
-.quest-item.done .quest-item-name{text-decoration:line-through;color:rgba(255,255,255,.45)}
-.quest-item-tip{font-size:.71rem;color:rgba(255,255,255,.4);margin-top:2px;display:block;font-style:italic}
+.quest-item-name{font-size:.94rem;font-weight:700;color:var(--text);display:block}
+.quest-item.done .quest-item-name{text-decoration:line-through;color:var(--muted)}
+.quest-item-tip{font-size:.71rem;color:var(--muted);margin-top:2px;display:block;font-style:italic}
 .quest-item-target{font-size:.78rem;font-weight:800;color:var(--accent);font-variant-numeric:tabular-nums;flex-shrink:0;letter-spacing:.02em;white-space:nowrap;margin-top:2px}
 .quest-item.done .quest-item-target{color:rgba(74,222,128,.7)}
 .quest-status{margin-top:14px;text-align:center;font-size:.74rem;font-weight:800;letter-spacing:.04em;position:relative}
-.quest-pending{color:#fca5a5}
+.quest-pending{color:#dc2626}
+[data-theme="dark"] .quest-pending{color:#fca5a5}
 .quest-complete{color:var(--accent);text-shadow:0 0 12px rgba(74,222,128,.5)}
 
 /* Promotion Trial card */
@@ -316,7 +318,7 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
         <label>Training Classes</label>
         <div class="class-grid" style="margin-top:6px">
           <button class="class-btn active" id="ob-cls-calisthenics" onclick="obToggleClass('calisthenics')" style="border-color:#4ade80;background:rgba(74,222,128,.15)">
-            <span class="class-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="4" r="1.5"/><path d="M12 6v6l-3 4"/><path d="M12 12l3 4"/><path d="M7 9h10"/><path d="M9 17l-2 3"/><path d="M15 17l2 3"/></svg></span>
+            <span class="class-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="4" r="1.5"/><path d="M12 6v6"/><path d="M7 9h10"/><path d="M12 12l-3 4.5"/><path d="M12 12l3 4.5"/><path d="M9 16.5l-2 3"/><path d="M15 16.5l2 3"/></svg></span>
             <span class="class-name">Calisthenics</span>
             <span class="class-desc">Bodyweight mastery</span>
           </button>
@@ -448,7 +450,7 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
       <div class="modal-section">Training Classes <span style="font-weight:400;font-size:.72rem;color:var(--muted);text-transform:none;letter-spacing:0">— select one or more</span></div>
       <div class="class-grid">
         <button class="class-btn" id="cls-calisthenics" onclick="toggleClass('calisthenics')">
-          <span class="class-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="4" r="1.5"/><path d="M12 6v6l-3 4"/><path d="M12 12l3 4"/><path d="M7 9h10"/><path d="M9 17l-2 3"/><path d="M15 17l2 3"/></svg></span>
+          <span class="class-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="4" r="1.5"/><path d="M12 6v6"/><path d="M7 9h10"/><path d="M12 12l-3 4.5"/><path d="M12 12l3 4.5"/><path d="M9 16.5l-2 3"/><path d="M15 16.5l2 3"/></svg></span>
           <span class="class-name">Calisthenics</span>
           <span class="class-desc">Bodyweight mastery</span>
         </button>
@@ -548,7 +550,7 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 // Self-healing version check — clears stale SW cache on deploy
-const APP_VERSION = '20260518-v9';
+const APP_VERSION = '20260518-v10';
 (function(){
   if(localStorage.getItem('rise-app-version')!==APP_VERSION){
     localStorage.setItem('rise-app-version',APP_VERSION);
@@ -953,7 +955,7 @@ const PROMOTION_TRIALS = {
 
 // ── Class metadata ──────────────────────────────────────────────────────────
 const CLASS_SVG = {
-  calisthenics:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><circle cx="12" cy="4" r="1.5"/><path d="M12 6v6l-3 4"/><path d="M12 12l3 4"/><path d="M7 9h10"/><path d="M9 17l-2 3"/><path d="M15 17l2 3"/></svg>`,
+  calisthenics:`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><circle cx="12" cy="4" r="1.5"/><path d="M12 6v6"/><path d="M7 9h10"/><path d="M12 12l-3 4.5"/><path d="M12 12l3 4.5"/><path d="M9 16.5l-2 3"/><path d="M15 16.5l2 3"/></svg>`,
   strength:    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M6 12h12"/><path d="M4 10v4"/><path d="M2 11v2"/><path d="M20 10v4"/><path d="M22 11v2"/><rect x="6" y="10" width="2" height="4" rx="0.5"/><rect x="16" y="10" width="2" height="4" rx="0.5"/></svg>`,
   cardio:      `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" width="14" height="14"><path d="M2 12h4l2-6 4 12 2-8 2 4h4"/></svg>`,
 };

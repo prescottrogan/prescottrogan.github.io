@@ -179,6 +179,12 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
 .quest-pending{color:#fca5a5}
 .quest-complete{color:var(--accent);text-shadow:0 0 12px rgba(74,222,128,.5)}
 
+/* Promotion Trial card */
+.promotion-trial-card{background:linear-gradient(135deg,#1a0800 0%,#2d1200 50%,#1a0800 100%)!important;border:1.5px solid #f59e0b!important;position:relative;overflow:hidden;box-shadow:0 0 36px rgba(245,158,11,.22),inset 0 1px 0 rgba(255,255,255,.06);padding:22px!important}
+.promotion-trial-card::before{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 0% 0%,rgba(245,158,11,.32) 0%,transparent 55%),radial-gradient(circle at 100% 100%,rgba(249,115,22,.10) 0%,transparent 55%)}
+.promotion-trial-card::after{content:'';position:absolute;inset:0;pointer-events:none;opacity:.5;background:repeating-linear-gradient(0deg,transparent 0 2px,rgba(255,255,255,.012) 2px 3px)}
+.trial-label{font-size:.72rem;font-weight:900;letter-spacing:.24em;color:#f59e0b;text-shadow:0 0 14px rgba(245,158,11,.6)}
+
 /* Player stats card */
 .player-stats-card{padding:16px 18px!important}
 .ps-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
@@ -370,6 +376,7 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
 
     <!-- TODAY VIEW: Quest + Tasks -->
     <div id="view-today">
+    <div id="promotion-trial-card" style="display:none;margin-bottom:16px"></div>
     <div id="quest-main" class="card quest-system-card" style="margin-bottom:16px">
       <!-- rendered by renderDailyQuest() -->
     </div>
@@ -929,6 +936,7 @@ function getHighestLevel(){return Math.max(...getActiveClasses().map(c=>getLevel
 
 const QUEST_BONUS_XP = 250;
 const QUEST_PENALTY_XP = 200;
+const PROMOTION_TRIAL_XP_BY_TIER=[800,1200,2000,2750,4500,6000,9800];
 
 // ── XP system ──────────────────────────────────────────────────────────────
 function getXPThreshold(l){if(l<=1)return 0;return Math.floor(100*Math.pow(l-1,1.8))}
@@ -974,6 +982,7 @@ async function awardClassXP(cls,amount,reason,extraMeta){
   if(newLvl>prevLvl)setTimeout(()=>showLevelChangeModal(newLvl,true),700);
   if(newLvl<prevLvl)setTimeout(()=>showLevelChangeModal(newLvl,false),700);
   upsertProfile();
+  if(amount>0)setTimeout(checkPromotionEligibility,800);
 }
 
 function showXPPopup(amount,color){
@@ -1270,6 +1279,107 @@ function updateSystemStatus(){
   // Status bar removed — no-op
 }
 
+// ── Promotion Trial system ───────────────────────────────────────────────────
+function getPromotionTrialState(){return user?.user_metadata?.promotion_trial_state||null}
+
+function isEligibleForPromotion(cls){
+  const tier=getClassRankTier(cls);
+  if(tier>=7)return false;
+  const requiredLevel=RANK_THRESHOLDS[tier];
+  return getLevel(getClassXP(cls))>=requiredLevel;
+}
+
+async function checkPromotionEligibility(){
+  if(!user)return;
+  const existing=getPromotionTrialState();
+  if(existing)return;
+  for(const cls of getActiveClasses()){
+    if(isEligibleForPromotion(cls)){await startPromotionTrial(cls);break}
+  }
+}
+
+async function startPromotionTrial(cls){
+  const tier=getClassRankTier(cls);
+  const key=`${tier}_${cls}`;
+  const exercises=(PROMOTION_TRIALS[key]||[]).map(e=>({...e,done:false}));
+  if(!exercises.length)return;
+  const trialState={cls,fromTier:tier,exercises,bonus_awarded:false};
+  await db.auth.updateUser({data:{...user.user_metadata,promotion_trial_state:trialState}});
+  await refreshUser();
+  renderPromotionTrial();
+}
+
+async function toggleTrialItem(idx){
+  if(!user)return;
+  const state=getPromotionTrialState();
+  if(!state)return;
+  const exercises=state.exercises.map((e,i)=>i===idx?{...e,done:!e.done}:e);
+  const next={...state,exercises};
+  if(exercises.every(e=>e.done)&&!next.bonus_awarded){
+    next.bonus_awarded=true;
+    await db.auth.updateUser({data:{...user.user_metadata,promotion_trial_state:next}});
+    await refreshUser();
+    await completePromotionTrial(next);
+  }else{
+    await db.auth.updateUser({data:{...user.user_metadata,promotion_trial_state:next}});
+    const{data}=await db.auth.getUser();if(data?.user)user=data.user;
+    else user.user_metadata={...user.user_metadata,promotion_trial_state:next};
+    renderPromotionTrial();
+  }
+}
+
+async function completePromotionTrial(state){
+  const{cls,fromTier}=state;
+  const newTier=fromTier+1;
+  const xpReward=PROMOTION_TRIAL_XP_BY_TIER[fromTier]??800;
+  const meta={...user.user_metadata,[`rank_${cls}`]:newTier,promotion_trial_state:null};
+  await db.auth.updateUser({data:meta});
+  await refreshUser();
+  await awardClassXP(cls,xpReward,'Promotion Trial Complete');
+  const cm=CLASS_META[cls];
+  const rankInfo=getRankInfoByTier(newTier);
+  toast(`${cm.icon} Promoted to ${rankInfo.rank}!`,'ok');
+  renderPromotionTrial();
+  updateXPDisplay();
+  upsertProfile();
+}
+
+function renderPromotionTrial(){
+  const card=document.getElementById('promotion-trial-card');
+  if(!card)return;
+  const state=getPromotionTrialState();
+  if(!state){card.style.display='none';return}
+  card.style.display='';
+  card.className='card promotion-trial-card';
+  const{cls,fromTier,exercises}=state;
+  const cm=CLASS_META[cls]||CLASS_META.calisthenics;
+  const rankInfo=getRankInfoByTier(fromTier);
+  const nextRankInfo=getRankInfoByTier(fromTier+1);
+  const allDone=exercises.every(e=>e.done);
+  const xpReward=PROMOTION_TRIAL_XP_BY_TIER[fromTier]??800;
+  const remaining=exercises.filter(e=>!e.done).length;
+  const itemsHTML=exercises.map((e,i)=>`
+    <div class="quest-item${e.done?' done':''}" onclick="toggleTrialItem(${i})">
+      <span class="quest-check${e.done?' done':''}">${e.done?icon(IC.check,14):''}</span>
+      <div class="quest-item-info">
+        <span class="quest-item-name">${esc(e.label)}</span>
+        <span class="quest-item-tip">${esc(e.tip||'')}</span>
+      </div>
+      <span class="quest-item-target" style="color:#f59e0b">${esc(e.target)}</span>
+    </div>`).join('');
+  const statusHTML=allDone
+    ?`<span class="quest-complete">✓ TRIAL COMPLETE · +${xpReward.toLocaleString()} XP EARNED</span>`
+    :`<span style="color:#fca5a5;font-weight:800;font-size:.74rem;letter-spacing:.04em">${remaining} task${remaining!==1?'s':''} remaining to earn promotion</span>`;
+  card.innerHTML=`
+    <div class="quest-header" style="position:relative">
+      <span class="trial-label">🏆 PROMOTION TRIAL</span>
+      <span style="font-size:.72rem;font-weight:800;padding:3px 10px;border-radius:12px;background:rgba(245,158,11,.15);border:1px solid rgba(245,158,11,.35);color:#f59e0b">${cm.icon} ${rankInfo.rank} → ${nextRankInfo.rank}</span>
+    </div>
+    <div class="quest-message" style="position:relative">Complete every exercise to earn ${nextRankInfo.rank} rank and ${xpReward.toLocaleString()} XP. This trial does not expire — finish it to unlock your next rank.</div>
+    <div class="quest-items" style="position:relative">${itemsHTML}</div>
+    <div class="quest-status" style="position:relative">${statusHTML}</div>`;
+}
+
 // ── Training class ───────────────────────────────────────────────────────────
 async function toggleClass(cls){
   if(!user)return;
@@ -1430,6 +1540,7 @@ async function showApp(){
 async function renderAll(){
   updateDateDisplay();
   await Promise.all([renderDailyQuest(),renderLeaderboard(),renderDaily()]);
+  renderPromotionTrial();
 }
 
 function updateDateDisplay(){
@@ -1556,6 +1667,7 @@ async function submitReset(){
 async function loadSettings(){
   updateXPDisplay();
   await checkDailyQuestPenalty();
+  await checkPromotionEligibility();
 }
 
 async function wipeAccount(){

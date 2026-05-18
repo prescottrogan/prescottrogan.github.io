@@ -431,34 +431,6 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
 
   </div><!-- /main-content -->
 
-  <!-- BOTTOM NAV -->
-  <nav id="bottom-nav">
-    <div class="nav-inner">
-      <button class="nav-tab active" id="nav-quest" onclick="switchTab('quest')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M13 2L4.5 13H11L9 22L19.5 11H13Z"/>
-        </svg>
-        <span class="nav-tab-label">Quest</span>
-      </button>
-      <button class="nav-tab" id="nav-stats" onclick="switchTab('stats')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round">
-          <path d="M4 20V15M9 20V9M14 20V12M19 20V4"/>
-          <path d="M2 20H22"/>
-        </svg>
-        <span class="nav-tab-label">Stats</span>
-      </button>
-      <button class="nav-tab" id="nav-tasks" onclick="switchTab('tasks')">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M9 6H20M9 12H20M9 18H15"/>
-          <path d="M4 6l1 1.5 2.5-3"/>
-          <path d="M4 12l1 1.5 2.5-3"/>
-          <circle cx="4.5" cy="18" r="1.2" fill="currentColor" stroke="none"/>
-        </svg>
-        <span class="nav-tab-label">Tasks</span>
-      </button>
-    </div>
-  </nav>
-
   <!-- SETTINGS MODAL -->
   <div id="reset-modal">
     <div class="reset-box">
@@ -547,6 +519,34 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
 
 
 </div><!-- /app -->
+
+<!-- BOTTOM NAV — outside #app so display:none on parent never hides it -->
+<nav id="bottom-nav" style="display:none">
+  <div class="nav-inner">
+    <button class="nav-tab active" id="nav-quest" onclick="switchTab('quest')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M13 2L4.5 13H11L9 22L19.5 11H13Z"/>
+      </svg>
+      <span class="nav-tab-label">Quest</span>
+    </button>
+    <button class="nav-tab" id="nav-stats" onclick="switchTab('stats')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round">
+        <path d="M4 20V15M9 20V9M14 20V12M19 20V4"/>
+        <path d="M2 20H22"/>
+      </svg>
+      <span class="nav-tab-label">Stats</span>
+    </button>
+    <button class="nav-tab" id="nav-tasks" onclick="switchTab('tasks')">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 6H20M9 12H20M9 18H15"/>
+        <path d="M4 6l1 1.5 2.5-3"/>
+        <path d="M4 12l1 1.5 2.5-3"/>
+        <circle cx="4.5" cy="18" r="1.2" fill="currentColor" stroke="none"/>
+      </svg>
+      <span class="nav-tab-label">Tasks</span>
+    </button>
+  </div>
+</nav>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
@@ -1553,7 +1553,7 @@ async function signUp(){
 }
 async function signOut(){await db.auth.signOut()}
 function setAuthMsg(m,e=false){const el=document.getElementById('auth-msg');el.textContent=m;el.style.color=e?'var(--danger)':'var(--accent)'}
-function showAuth(){document.getElementById('app').style.display='none';document.getElementById('auth-screen').style.display='flex'}
+function showAuth(){document.getElementById('app').style.display='none';document.getElementById('auth-screen').style.display='flex';document.getElementById('bottom-nav').style.display='none'}
 
 async function migrateXPIfNeeded(){
   if(!user)return;
@@ -1579,9 +1579,11 @@ async function showApp(){
   if(!user?.user_metadata?.setup_complete){
     document.getElementById('app').style.display='none';
     document.getElementById('onboard-screen').style.display='flex';
+    document.getElementById('bottom-nav').style.display='none';
   }else{
     document.getElementById('onboard-screen').style.display='none';
     document.getElementById('app').style.display='block';
+    document.getElementById('bottom-nav').style.display='block';
     switchTab(localStorage.getItem('rise-tab')||'quest');
     upsertProfile();
     await renderAll();

@@ -550,7 +550,7 @@ input[type="text"],input[type="number"],input[type="date"],input[type="time"]{ma
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 <script>
 // Self-healing version check — clears stale SW cache on deploy
-const APP_VERSION = '20260518-v10';
+const APP_VERSION = '20260520-v11';
 (function(){
   if(localStorage.getItem('rise-app-version')!==APP_VERSION){
     localStorage.setItem('rise-app-version',APP_VERSION);
@@ -657,8 +657,7 @@ const EXERCISE_POOL=[
   {key:'onearmhang',       label:'One-Arm Hang',              tiers:[5,  10,  20,  35,  55],  unit:'sec',  minTier:3, tip:'Single arm dead hang — grip, forearm, and shoulder resilience'},
   // ── CORE ──────────────────────────────────────────────────────────────────
   {key:'plank',            label:'Plank Hold',                tiers:[30, 60,  90,  150, 210], unit:'sec',  tip:'Hips level, neutral spine — squeeze glutes, abs, and quads together'},
-  {key:'sideplankleft',    label:'Side Plank (Left)',         tiers:[20, 40,  65,  100, 140], unit:'sec',  tip:'Left hip up, body in straight line — lateral stability foundation'},
-  {key:'sideplankright',   label:'Side Plank (Right)',        tiers:[20, 40,  65,  100, 140], unit:'sec',  tip:'Right hip up, body in straight line — lateral stability foundation'},
+  {key:'sideplank',       label:'Side Plank (Both Sides)',   tiers:[20, 40,  65,  100, 140], unit:'sec each', tip:'Hold each side — left hip up then right hip up, body in a straight line'},
   {key:'hollowbody',       label:'Hollow Body Hold',          tiers:[20, 40,  65,  100, 140], unit:'sec',  tip:'Lower back flat, arms overhead — the cornerstone of gymnastics core'},
   {key:'legraises',        label:'Hanging Leg Raises',        tiers:[8,  15,  25,  40,  60],  unit:'reps', tip:'From bar, raise straight legs to horizontal with full control'},
   {key:'vups',             label:'V-Ups',                     tiers:[10, 20,  35,  55,  80],  unit:'reps', tip:'Simultaneously raise legs and torso — full peak contraction'},
@@ -1008,13 +1007,7 @@ function getRankInfo(l){return getRankInfoByTier(getTierFromLevel(l))}
 function getTrainingClass(){return getActiveClasses()[0]||'calisthenics'} // legacy compat
 function getClassPool(cls){if(cls==='strength')return STRENGTH_EXERCISE_POOL;if(cls==='cardio')return CARDIO_EXERCISE_POOL;return EXERCISE_POOL}
 
-function getStreakMultiplier(streak){
-  if(streak>=30)return 2.0;
-  if(streak>=14)return 1.75;
-  if(streak>=7) return 1.5;
-  if(streak>=3) return 1.25;
-  return 1.0;
-}
+function getStreakMultiplier(streak){return 1}
 
 async function awardClassXP(cls,amount,reason,extraMeta){
   if(!user||!amount)return;
@@ -1061,10 +1054,7 @@ function updateXPDisplay(){
   if(!user)return;
   const streak=getQuestStreak();
   const streakEl=document.getElementById('ps-streak-num');
-  const multEl=document.getElementById('ps-mult');
-  const multi=getStreakMultiplier(streak);
   if(streakEl)streakEl.textContent=streak;
-  if(multEl)multEl.textContent=multi>1?`${multi}× XP bonus`:'';
   // Level badge — show highest level
   const highestLevel=getHighestLevel();
   const levelEl=document.getElementById('level-badge');
@@ -1172,26 +1162,24 @@ function getQuestCount(date,level){
 
 function selectDailyExercises(date){
   const activeClasses=getActiveClasses();
-  const totalCount=getQuestCount(date,getHighestLevel());
+  const countPerClass=getQuestCount(date,getHighestLevel());
   let seed=date.replace(/-/g,'').split('').reduce((a,c,i)=>a+c.charCodeAt(0)*(i+1),0);
   const lcg=()=>{seed=(seed*1664525+1013904223)&0x7fffffff;return seed/0x7fffffff};
-  // Distribute exercises evenly across active classes
-  const perClass=Math.ceil(totalCount/activeClasses.length);
   const result=[];
+  // Each class independently generates a full set — 3 classes = 3x the work
   for(const cls of activeClasses){
     const tierIdx=Math.min(getClassRankTier(cls),4);
     const pool=[...getClassPool(cls)].filter(ex=>(ex.minTier||0)<=tierIdx);
     for(let i=pool.length-1;i>0;i--){const j=Math.floor(lcg()*(i+1));[pool[i],pool[j]]=[pool[j],pool[i]]}
-    const take=activeClasses.length===1?totalCount:perClass;
-    pool.slice(0,take).forEach(ex=>result.push({
+    pool.slice(0,countPerClass).forEach(ex=>result.push({
       key:ex.key,label:ex.label,
       target:`${ex.tiers[tierIdx]}${ex.unit?' '+ex.unit:''}`.trim(),
       tip:ex.tip,done:false,cls
     }));
   }
-  // Shuffle the combined list so classes aren't all grouped
+  // Shuffle so classes interleave rather than block
   for(let i=result.length-1;i>0;i--){const j=Math.floor(lcg()*(i+1));[result[i],result[j]]=[result[j],result[i]]}
-  return result.slice(0,Math.max(totalCount,3));
+  return result;
 }
 
 function makeNewQuestState(date){
@@ -1251,16 +1239,14 @@ async function toggleQuestItem(idx){
   const next={...cur,exercises:exs};
   if(questAllDone(next)&&!next.bonus_awarded){
     next.bonus_awarded=true;
-    const currentStreak=getQuestStreak();
-    const newStreak=currentStreak+1;
-    const multi=getStreakMultiplier(newStreak);
+    const newStreak=getQuestStreak()+1;
     const classesInQuest=[...new Set(next.exercises.map(e=>e.cls).filter(Boolean))];
     const toReward=classesInQuest.length>0?classesInQuest:getActiveClasses();
     const baseMeta={...user.user_metadata,quest_state:next,quest_streak:newStreak};
     const{data:saved}=await db.auth.updateUser({data:baseMeta});
     if(saved?.user)user=saved.user;
     for(const cls of toReward){
-      await awardClassXP(cls,Math.round(QUEST_BONUS_XP*multi),'Daily Quest Complete');
+      await awardClassXP(cls,QUEST_BONUS_XP,'Daily Quest Complete');
     }
   }else{
     const meta={...user.user_metadata,quest_state:next};
@@ -1277,7 +1263,6 @@ function renderDailyQuest(){
   const state=getCurrentQuestState();
   const allDone=questAllDone(state);
   const streak=getQuestStreak();
-  const multi=getStreakMultiplier(streak);
   const items=(state.exercises||[]).map((e,i)=>({idx:i,...e}));
   const activeClassCount=getActiveClasses().length;
   const itemsHTML=items.map(it=>{
@@ -1295,18 +1280,16 @@ function renderDailyQuest(){
   }).join('');
   card.classList.remove('trial-card');
   const streakHTML=streak>=1?`<span class="quest-streak-badge">🔥 ${streak}-day streak</span>`:'';
-  const multiHTML=multi>1?`<span class="multiplier-badge">${multi}x XP</span>`:'';
   const remaining=items.filter(it=>!it.done).length;
-  const bonusXP=Math.round(QUEST_BONUS_XP*multi);
   const statusHTML=allDone
-    ?`<span class="quest-complete">✓ QUEST COMPLETE · +${bonusXP} XP EARNED</span>`
+    ?`<span class="quest-complete">✓ QUEST COMPLETE · +${QUEST_BONUS_XP} XP EARNED</span>`
     :`<span class="quest-pending">${remaining} exercise${remaining!==1?'s':''} remaining · failure costs −${QUEST_PENALTY_XP} XP</span>`;
   card.innerHTML=`
     <div class="quest-header">
       <span class="quest-system-label">⚡ DAILY QUEST</span>
-      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">${streakHTML}${multiHTML}</div>
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">${streakHTML}</div>
     </div>
-    <div class="quest-message">The system has assigned today's mandatory training. Complete every exercise to earn XP${multi>1?' with your '+multi+'x streak bonus':''} and extend your streak.</div>
+    <div class="quest-message">The system has assigned today's mandatory training. Complete every exercise to earn XP and extend your streak.</div>
     <div class="quest-items">${itemsHTML}</div>
     <div class="quest-status">${statusHTML}</div>`;
   updateSystemStatus();

@@ -1,4 +1,4 @@
-const CACHE = 'rise-v10';
+const CACHE = 'rise-v11';
 const PRECACHE = ['/icon.svg', '/manifest.json'];
 
 self.addEventListener('install', e => {
